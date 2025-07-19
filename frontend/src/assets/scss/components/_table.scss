@@ -6,16 +6,16 @@
   $big-height-image: 100px;
   $small-height-image: 45px;
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper .ant-table {
+  &.ant-table-wrapper .ant-table {
     border-radius: $admin-border-radius $admin-border-radius 0 0 !important;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table {
+  &.ant-table-wrapper table {
     table-layout: fixed !important;
     border-radius: $admin-border-radius $admin-border-radius 0 0 !important;
   }
 
-  // &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
+  // &.ant-table-wrapper
   //   table
   //   :where(th, td) {
   //   overflow: hidden;
@@ -23,35 +23,25 @@
   //   white-space: nowrap;
   // }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
+  &.ant-table-wrapper
     table
     :where(th.ant-table-cell, th .ant-table-column-title, td) {
     text-align: center !important;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    table
-    td.ant-table-cell.left {
+  &.ant-table-wrapper table td.ant-table-cell.left {
     text-align: left !important;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    table
-    td.ant-table-cell.right {
+  &.ant-table-wrapper table td.ant-table-cell.right {
     text-align: right !important;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    table
-    td.ant-table-cell
-    .ant-tag {
+  &.ant-table-wrapper table td.ant-table-cell .ant-tag {
     margin-inline-end: 0 !important;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    table
-    td
-    button.action {
+  &.ant-table-wrapper table td button.action {
     padding: 2px 4px;
     border: 2px solid #fff;
     border-radius: 50%;
@@ -61,96 +51,59 @@
     transition: 0.2s ease-in-out;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    table
-    td
-    button.action.info {
+  &.ant-table-wrapper table td button.action.info {
     background: $blue-secondary-btn-color;
     border-color: $blue-secondary-btn-color;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    table
-    td
-    button.action.update {
+  &.ant-table-wrapper table td button.action.update {
     background: $yellow-primary-btn-color;
     border-color: $yellow-primary-btn-color;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    table
-    td
-    button.action.lock {
+  &.ant-table-wrapper table td button.action.lock {
     background: $red-primary-btn-color;
     border-color: $red-primary-btn-color;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    table
-    td
-    button.action.print {
+  &.ant-table-wrapper table td button.action.print {
     background: $ternary-color;
     border-color: $ternary-color;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    table
-    td
-    button.action:is(:hover, .active) {
+  &.ant-table-wrapper table td button.action:is(:hover, .active) {
     background: #fff;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    table
-    td
-    button.action.info:where(:hover, .active) {
+  &.ant-table-wrapper table td button.action.info:where(:hover, .active) {
     color: $blue-secondary-btn-color;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    table
-    td
-    button.action.update:where(:hover, .active) {
+  &.ant-table-wrapper table td button.action.update:where(:hover, .active) {
     color: $yellow-primary-btn-color;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    table
-    td
-    button.action.lock:where(:hover, .active) {
+  &.ant-table-wrapper table td button.action.lock:where(:hover, .active) {
     color: $red-primary-btn-color;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    table
-    td
-    button.action.print:where(:hover, .active) {
+  &.ant-table-wrapper table td button.action.print:where(:hover, .active) {
     color: $ternary-color;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    table
-    td
-    button.action.margin-lr {
+  &.ant-table-wrapper table td button.action.margin-lr {
     margin: 0 4%;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    table
-    td
-    button.action.margin-l {
+  &.ant-table-wrapper table td button.action.margin-l {
     margin-left: 4%;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    table
-    td
-    button.action.margin-r {
+  &.ant-table-wrapper table td button.action.margin-r {
     margin-right: 4%;
   }
 
-  &:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper
-    .ant-pagination {
+  &.ant-table-wrapper .ant-pagination {
   }
 
   &.customer-cards td,

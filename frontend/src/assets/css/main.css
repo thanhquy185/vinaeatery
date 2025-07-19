@@ -972,26 +972,26 @@ table td.right {
   font-size: 1.6rem;
 }
 
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper .ant-table {
+.table-actions.ant-table-wrapper .ant-table {
   border-radius: 8px 8px 0 0 !important;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table {
+.table-actions.ant-table-wrapper table {
   table-layout: fixed !important;
   border-radius: 8px 8px 0 0 !important;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table :where(th.ant-table-cell, th .ant-table-column-title, td) {
+.table-actions.ant-table-wrapper table :where(th.ant-table-cell, th .ant-table-column-title, td) {
   text-align: center !important;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table td.ant-table-cell.left {
+.table-actions.ant-table-wrapper table td.ant-table-cell.left {
   text-align: left !important;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table td.ant-table-cell.right {
+.table-actions.ant-table-wrapper table td.ant-table-cell.right {
   text-align: right !important;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table td.ant-table-cell .ant-tag {
+.table-actions.ant-table-wrapper table td.ant-table-cell .ant-tag {
   margin-inline-end: 0 !important;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table td button.action {
+.table-actions.ant-table-wrapper table td button.action {
   padding: 2px 4px;
   border: 2px solid #fff;
   border-radius: 50%;
@@ -1000,44 +1000,44 @@ table td.right {
   cursor: pointer;
   transition: 0.2s ease-in-out;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table td button.action.info {
+.table-actions.ant-table-wrapper table td button.action.info {
   background: #007bff;
   border-color: #007bff;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table td button.action.update {
+.table-actions.ant-table-wrapper table td button.action.update {
   background: #bf873e;
   border-color: #bf873e;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table td button.action.lock {
+.table-actions.ant-table-wrapper table td button.action.lock {
   background: #9f4d4d;
   border-color: #9f4d4d;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table td button.action.print {
+.table-actions.ant-table-wrapper table td button.action.print {
   background: #a1a1ac;
   border-color: #a1a1ac;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table td button.action:is(:hover, .active) {
+.table-actions.ant-table-wrapper table td button.action:is(:hover, .active) {
   background: #fff;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table td button.action.info:where(:hover, .active) {
+.table-actions.ant-table-wrapper table td button.action.info:where(:hover, .active) {
   color: #007bff;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table td button.action.update:where(:hover, .active) {
+.table-actions.ant-table-wrapper table td button.action.update:where(:hover, .active) {
   color: #bf873e;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table td button.action.lock:where(:hover, .active) {
+.table-actions.ant-table-wrapper table td button.action.lock:where(:hover, .active) {
   color: #9f4d4d;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table td button.action.print:where(:hover, .active) {
+.table-actions.ant-table-wrapper table td button.action.print:where(:hover, .active) {
   color: #a1a1ac;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table td button.action.margin-lr {
+.table-actions.ant-table-wrapper table td button.action.margin-lr {
   margin: 0 4%;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table td button.action.margin-l {
+.table-actions.ant-table-wrapper table td button.action.margin-l {
   margin-left: 4%;
 }
-.table-actions:where(.css-dev-only-do-not-override-ut69n1).ant-table-wrapper table td button.action.margin-r {
+.table-actions.ant-table-wrapper table td button.action.margin-r {
   margin-right: 4%;
 }
 .table-actions.customer-cards td, .table-actions.category-foods td, .table-actions.foods td {
