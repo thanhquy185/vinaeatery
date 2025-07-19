@@ -36,8 +36,6 @@ import CustomFindSelect from "../../../components/admin/find-select";
 import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";
 import CustomCardStatic from "../../../components/admin/card-static";
 import CustomTableActions from "../../../components/admin/table-actions";
-import CustomInput from "../../../components/admin/input";
-import CustomSelect from "../../../components/admin/select";
 import CustomTableNoActions from "../../../components/admin/table-no-actions";
 import CustomModal from "../../../components/admin/modal";
 import { getVietnamCurrentDatetime } from "../../../services/dayjs";
@@ -55,6 +53,8 @@ import {
 import { openNotification } from "../../../utils/showNotification";
 import { ruleRequired } from "../../../common/rules";
 import { openConfirmation } from "../../../utils/showConfirmation";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 // Các giá trị chung
 // - Trạng thái
@@ -977,33 +977,38 @@ const AdminInputTicketsPage = () => {
         <button
           id="print-ticket-button"
           className="ticket__print-btn"
-          // onClick={(e) => {
-          //   // In phiếu
-          //   const element = document.getElementById("content-print");
-          //   html2canvas(element, { scale: 2 }).then((canvas) => {
-          //     const imgData = canvas.toDataURL("image/jpeg", 1.0);
-          //     const pdf = new jsPDF("p", "mm", "a4");
+          onClick={(e) => {
+            // In phiếu
+            const element = document.getElementById("content-print");
+            html2canvas(element!, { scale: 2 }).then((canvas) => {
+              const imgData = canvas.toDataURL("image/jpeg", 1.0);
+              const pdf = new jsPDF("p", "mm", "a4");
 
-          //     const margin = 4;
+              const margin = 4;
 
-          //     const imgProps = pdf.getImageProperties(imgData);
-          //     const pdfWidth = pdf.internal.pageSize.getWidth() - margin * 2;
-          //     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+              const imgProps = pdf.getImageProperties(imgData);
+              const pdfWidth = pdf.internal.pageSize.getWidth() - margin * 2;
+              const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-          //     pdf.addImage(
-          //       imgData,
-          //       "JPEG",
-          //       margin,
-          //       margin,
-          //       pdfWidth,
-          //       pdfHeight
-          //     );
-          //     pdf.save(`${dateTime}_PHNHAPHANG#${id}.pdf`);
-          //   });
+              pdf.addImage(
+                imgData,
+                "JPEG",
+                margin,
+                margin,
+                pdfWidth,
+                pdfHeight
+              );
+              pdf.save(`${dateTime}_PHNHAPHANG#${id}.pdf`);
+            });
 
-          //   // Thông báo thành công
-          //   showToast("success", `In phiếu thành công !`, 1.2, -75, -67);
-          // }}
+            // Thông báo thành công
+            openNotification({
+          type: "success",
+          message: "Thành công",
+          description: "In phiếu thành công !",
+          duration: 1.5,
+        });
+          }}
         >
           <FontAwesomeIcon icon={faFileArrowDown} /> &nbsp;&nbsp;Tải xuống phiếu
         </button>
