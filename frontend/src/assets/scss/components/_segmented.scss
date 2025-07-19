@@ -1,0 +1,28 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/colors" as *;
+@use "../abstracts/mixins" as *;
+
+.segmented {
+  $padding: 4px;
+
+  width: 100%;
+  padding: $padding;
+  //   background: none;
+
+  & .ant-segmented-group {
+    width: 100%;
+    // background: #f5f5f5;
+  }
+
+  & .ant-segmented-item {
+    width: 25%;
+  }
+
+  & .ant-segmented-item-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: calc($admin-segmented-height - calc($padding * 2));
+    font-size: 1.6rem;
+  }
+}

@@ -1,0 +1,98 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/colors" as *;
+@use "../abstracts/mixins" as *;
+
+.use-table {
+  width: 100%;
+  background: #fff;
+  padding: 20px;
+  border-left: 6px solid #fff; /* màu theo trạng thái */
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+
+  &.red {
+    border-color: $red-secondary-btn-color;
+  }
+
+  &.green {
+    border-color: $green-secondary-btn-color;
+  }
+
+  &.yellow {
+    border-color: $yellow-secondary-btn-color;
+  }
+
+  &.gray {
+    border-color: #bbb;
+  }
+
+  &:hover {
+    transform: translateY(-6px);
+    // transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  & .title {
+    color: $primary-color;
+    font-size: 2.2rem;
+    font-weight: 700;
+  }
+
+  &.red .title {
+    color: $red-secondary-btn-color;
+  }
+
+  &.green .title {
+    color: $green-secondary-btn-color;
+  }
+
+  &.yellow .title {
+    color: $yellow-secondary-btn-color;
+  }
+
+  &.gray .title {
+    color: #bbb;
+  }
+
+  & .info {
+    font-size: 1.6rem;
+    color: #333;
+    margin-top: 8px;
+  }
+
+  & .info b {
+    color: #000;
+    font-weight: 600;
+  }
+
+  & .info .status {
+    // display: inline-block;
+    padding: 4px 10px;
+    border-radius: 8px;
+    color: white;
+    font-size: 1.4rem;
+    font-weight: 600;
+  }
+
+  /* Các màu trạng thái */
+  &.red .info > .status {
+    background-color: $red-secondary-btn-color;
+  }
+
+  &.green .info > .status {
+    background-color: $green-secondary-btn-color;
+  }
+
+  &.yellow .info > .status {
+    background-color: $yellow-secondary-btn-color;
+  }
+
+  &.gray .info > .status {
+    background-color: #bbb;
+  }
+
+  & .title + .info {
+    margin-top: 16px;
+  }
+}

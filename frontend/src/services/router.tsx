@@ -1,0 +1,124 @@
+import { useEffect, useState, type JSX } from "react";
+import { createBrowserRouter } from "react-router-dom";
+import type { FunctionsType } from "../common/types";
+import AdminLayout from "../layouts/admin-layout";
+import AdminDashboardProfitPage from "../pages/admin/dashboard/dashboard-profit";
+import AdminDashboardRevenuePage from "../pages/admin/dashboard/dashboard-revenue";
+import AdminDashboardExpensePage from "../pages/admin/dashboard/dashboard-expense";
+import AdminUseTablesPage from "../pages/admin/active/use-tables";
+import AdminCallFoodsPage from "../pages/admin/active/call-foods";
+import AdminOrdersPage from "../pages/admin/active/orders";
+import AdminOrderTablesPage from "../pages/admin/active/order-tables";
+import AdminCustomerCardsPage from "../pages/admin/manager-customer/customer-card";
+import AdminCustomersPage from "../pages/admin/manager-customer/customers";
+import AdminFloorsPage from "../pages/admin/manager-table/floors";
+import AdminCategoryTablesPage from "../pages/admin/manager-table/category-tables";
+import AdminTablesPage from "../pages/admin/manager-table/tables";
+import AdminInputTicketsPage from "../pages/admin/manager-food/input-tickets";
+import AdminSuppliersPage from "../pages/admin/manager-food/suppliers";
+import AdminCategoryIngredientsPage from "../pages/admin/manager-food/category-ingredients";
+import AdminIngredientsPage from "../pages/admin/manager-food/ingredients";
+import AdminCategoryFoodsPage from "../pages/admin/manager-food/category-foods";
+import AdminFoodsPage from "../pages/admin/manager-food/foods";
+import AdminPayslipPage from "../pages/admin/manager-employee/payslip";
+import AdminCategoryRewardPunishesPage from "../pages/admin/manager-employee/category-reward-punishes";
+import AdminRewardPunishesPage from "../pages/admin/manager-employee/reward-punishes";
+import AdminSchedulesPage from "../pages/admin/manager-employee/schedules";
+import AdminShiftsPage from "../pages/admin/manager-employee/shifts";
+import AdminRolesPage from "../pages/admin/manager-employee/roles";
+import AdminEmployeesPage from "../pages/admin/manager-employee/employees";
+import ClientLayout from "../layouts/client-layout";
+// import ClientMainPage from "../pages/client/main";
+import LoginPage from "../pages/public/login";
+import ErrorPage from "../pages/public/error";
+import UnauthorizedPage from "../pages/public/unauthorized";
+import { FindAllFunction } from "./api";
+import { openNotification } from "../utils/showNotification";
+
+// Router giúp chuyển hướng trang
+// Chú thích
+// - typeof createBrowserRouter: lấy kiểu của hàm createBrowserRouter
+// - ReturnType<...>: lấy kiểu giá trị trả về của hàm đó
+// - Promise<...>: vì hàm là async, nên nó trả về một Promise chứa kiểu router
+export const getRouter = async (): Promise<
+  ReturnType<typeof createBrowserRouter>
+> => {
+  // Danh sách chức năng (truy vấn csdl)
+  const responseFunction = await FindAllFunction();
+  if (responseFunction?.status !== 200) {
+    console.error("Truy vấn dữ liệu thất bại");
+    return createBrowserRouter([]); // hoặc route lỗi
+  }
+  const functions = responseFunction.data as Array<FunctionsType>;
+
+  // Hàm trả về element tương ứng với chức năng
+  const elementMap: Record<string, JSX.Element> = {
+    "dashboard-profit": <AdminDashboardProfitPage />,
+    "dashboard-revenue": <AdminDashboardRevenuePage />,
+    "dashboard-expense": <AdminDashboardExpensePage />,
+    "use-tables": <AdminUseTablesPage />,
+    "call-foods": <AdminCallFoodsPage />,
+    orders: <AdminOrdersPage />,
+    "order-tables": <AdminOrderTablesPage />,
+    "customer-cards": <AdminCustomerCardsPage />,
+    customers: <AdminCustomersPage />,
+    floors: <AdminFloorsPage />,
+    "category-tables": <AdminCategoryTablesPage />,
+    tables: <AdminTablesPage />,
+    "input-tickets": <AdminInputTicketsPage />,
+    suppliers: <AdminSuppliersPage />,
+    "category-ingredients": <AdminCategoryIngredientsPage />,
+    ingredients: <AdminIngredientsPage />,
+    "category-foods": <AdminCategoryFoodsPage />,
+    foods: <AdminFoodsPage />,
+    payslip: <AdminPayslipPage />,
+    "category-reward-punishes": <AdminCategoryRewardPunishesPage />,
+    "reward-punishes": <AdminRewardPunishesPage />,
+    schedules: <AdminSchedulesPage />,
+    shifts: <AdminShiftsPage />,
+    roles: <AdminRolesPage />,
+    employees: <AdminEmployeesPage />,
+  };
+  const getElementByFunction = (nameEN: string): JSX.Element | null => {
+    return elementMap[nameEN] || null; // hoặc fallback như <NotFoundPage />
+  };
+
+  return createBrowserRouter([
+    {
+      path: "/admin",
+      element: <AdminLayout />,
+      errorElement: <ErrorPage />,
+      id: "admin",
+      loader: () => {
+        return { username: "admin", role: "superuser", functions: functions };
+      },
+      children: functions?.map((func) => ({
+        path: func.nameEN,
+        element: getElementByFunction(func.nameEN!),
+      })),
+    },
+    {
+      path: "/client/:tableId",
+      element: <ClientLayout />,
+      errorElement: <ErrorPage />,
+      // children: [
+      //   {
+      //     index: true,
+      //     element: <ClientMainPage />,
+      //   },
+      // ],
+    },
+    {
+      path: "/login",
+      element: <LoginPage />,
+    },
+    {
+      path: "/error",
+      element: <ErrorPage />,
+    },
+    {
+      path: "/unauthorized",
+      element: <UnauthorizedPage />,
+    },
+  ]);
+};

@@ -1,0 +1,81 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/colors" as *;
+@use "../abstracts/mixins" as *;
+
+.seat-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 50px;
+}
+
+.seat-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.seat-item {
+  position: relative;
+  @include flexCenter();
+  @include size(60px);
+  // background: #fe98b1;
+  background: #ffadd2;
+  border: 3px solid #ffadd2;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+// .seat-item.original {
+//   background: #91caff;
+// }
+
+// .seat-item.vip {
+//   background: #ffa39e;
+// }
+
+.seat-item.vip {
+  border-color: #fbe089;
+}
+
+.seat-item.selected {
+  background: #3dc55d;
+  border-color: #3dc55d;
+}
+
+.seat-item.reserved {
+  background: #eee;
+  border-color: #eee;
+}
+
+.seat-item.empty {
+  visibility: hidden;
+}
+
+.seat-item:not(:where(.selected, .reserved)):hover {
+  transform: scale(1.1);
+}
+
+.seat-item:not(:where(.selected, .reserved)):where(:hover, .active) {
+  background: $secondary-color;
+  border-color: $secondary-color;
+}
+
+.seat-item:where(.selected, .reserved) {
+  cursor: not-allowed;
+}
+
+.seat-item img {
+  @include size(40px);
+}
+
+.seat-item p {
+  position: absolute;
+  color: #fff;
+}
+
+.seat .info {
+  margin-top: 20px;
+  font-weight: bold;
+}

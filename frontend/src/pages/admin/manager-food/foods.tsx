@@ -1,0 +1,1607 @@
+import {
+  useEffect,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCircleInfo,
+  faLock,
+  faPenToSquare,
+  faPlus,
+  faUnlock,
+} from "@fortawesome/free-solid-svg-icons";
+import { Form, Image, Input, InputNumber, Select, Tag } from "antd";
+import type { SelectProps } from "antd";
+import type { RcFile } from "antd/es/upload";
+import type { ColumnsType } from "antd/es/table";
+import type {
+  CategoryFoodsType,
+  FoodsFormatType,
+  IngredientsFormatType,
+  RecipesFormatType,
+} from "../../../common/types";
+import { CustomPaginationProps } from "../../../common/pagination-props";
+import CustomFindInput from "../../../components/admin/find-input";
+import CustomFindSelect from "../../../components/admin/find-select";
+import CustomTableActions from "../../../components/admin/table-actions";
+import CustomModal from "../../../components/admin/modal";
+import CustomUpload from "../../../components/admin/upload";
+// import CustomInput from "../../../components/admin/input";
+import CustomTableNoActions from "../../../components/admin/table-no-actions";
+import {
+  FindAllCategoryFood,
+  FindAllFood,
+  FindAllIngredient,
+  HandleCreateFood,
+  HandleLockFood,
+  HandleUpdateFood,
+} from "../../../services/api";
+import { openNotification } from "../../../utils/showNotification";
+import { vietnamMoneyFormat } from "../../../utils/otherEvents";
+import TextArea from "antd/es/input/TextArea";
+import { ruleRequired } from "../../../common/rules";
+import { openConfirmation } from "../../../utils/showConfirmation";
+import { foodStatus } from "../../../common/values";
+
+// Các giá trị chung
+// - Kiểu dữ liệu của tham số khi xử lý bảng công thức
+interface RecipeTableProps {
+  recipe?: RecipesFormatType[];
+  setRecipe?: Dispatch<SetStateAction<RecipesFormatType[]>>;
+}
+// - Kích thước bảng công thức
+const recipeTableWidth = ["10%", "25%", "15%", "35%", "15%"];
+// - Tiêu đề bảng công thức
+const recipeTableTitle = [
+  "Mã nguyên liệu",
+  "Tên nguyên liệu",
+  "Số lượng",
+  "Ghi chú",
+  "Tồn kho",
+];
+// - Thuộc tính csdl bảng công thức
+const recipeTableAttributes = [
+  "ingredientId",
+  "ingredientName",
+  "quantity",
+  "note",
+  "ingredientInventory",
+];
+// - Định dạng bảng công thức
+const recipeTableFormat = ["", "", "", "left"];
+// - Đơn vị
+const units = [
+  "Phần",
+  "Suất",
+  "Dĩa",
+  "Tô",
+  "Bát",
+  "Chén",
+  "Nồi",
+  "Đĩa",
+  "Thố",
+  "Khẩu phần",
+  "Set",
+  "Combo",
+  "Món",
+];
+
+// Admin Foods Page
+const AdminFoodsPage = () => {
+  // Cấu hình cột bảng dữ liệu của Món ăn
+  const [loading, setLoading] = useState<boolean>(false);
+  const columns: ColumnsType<FoodsFormatType> = [
+    {
+      title: "#",
+      dataIndex: "id",
+      key: "id",
+      sorter: true,
+      width: "10%",
+    },
+    {
+      title: "Hình ảnh",
+      dataIndex: "image",
+      key: "image",
+      width: "15%",
+      align: "center",
+      render: (image: string) => (
+        <Image
+          src={
+            image!
+              ? "/src/assets/images/foods/" + image
+              : "/src/assets/images/others/no-image.png"
+          }
+          alt=""
+        />
+      ),
+    },
+    {
+      title: "Tên món ăn",
+      dataIndex: "name",
+      key: "name",
+      sorter: true,
+      width: "20%",
+      className: "left",
+    },
+    {
+      title: "Loại món ăn",
+      key: "categoryFood",
+      width: "15%",
+      render: (record) =>
+        `#${record.categoryFood?.id} - ${record.categoryFood?.name}`,
+    },
+    {
+      title: "Đơn vị",
+      dataIndex: "unit",
+      key: "unit",
+      sorter: true,
+      width: "10%",
+    },
+    {
+      title: "Giá bán",
+      dataIndex: "price",
+      key: "price",
+      sorter: true,
+      width: "10%",
+      render: (price) => vietnamMoneyFormat(price),
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      // sorter: true,
+      width: "10%",
+      render: (status: string) => (
+        <Tag color={status === foodStatus["active"] ? "green" : "red"}>
+          {status}
+        </Tag>
+      ),
+    },
+    {
+      title: "",
+      dataIndex: "",
+      key: "actions",
+      width: "10%",
+      render: (text: any, record: FoodsFormatType, index: number) => (
+        <>
+          <button
+            className="action info"
+            onClick={() =>
+              updatePropertiesModal(
+                "Chi tiết món ăn",
+                true,
+                "89%",
+                "info foods",
+                AdminFoodsModal.detail(record)
+              )
+            }
+          >
+            <FontAwesomeIcon icon={faCircleInfo} />
+          </button>
+          <button
+            className="action update margin-lr"
+            onClick={() =>
+              updatePropertiesModal(
+                "Cập nhật món ăn",
+                true,
+                "89%",
+                "update foods",
+                AdminFoodsModal.update(record)
+              )
+            }
+          >
+            <FontAwesomeIcon icon={faPenToSquare} />
+          </button>
+          <button
+            className="action lock"
+            onClick={() =>
+              updatePropertiesModal(
+                (record.status == foodStatus["active"] ? "Khoá" : "Mở khoá") +
+                  " món ăn",
+                true,
+                "30%",
+                "lock foods",
+                AdminFoodsModal.lock(record!.id as number, record!.status)
+              )
+            }
+          >
+            <FontAwesomeIcon
+              icon={record.status == foodStatus["active"] ? faLock : faUnlock}
+            />
+          </button>
+        </>
+      ),
+    },
+  ];
+  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
+  const [categoryFoods, setCategoryFoods] = useState<CategoryFoodsType[]>([]);
+  const [foods, setFoods] = useState<FoodsFormatType[]>([]);
+  const {
+    currentItems,
+    handleTableChange,
+    paginationProps,
+    sortField,
+    sortOrder,
+  } = CustomPaginationProps(foods, 4, [1, 2, 3, 4, 5]);
+
+  // Các biến giữ giá trị từ việc lọc thông tin
+  // - Tìm kiếm thông tin
+  // - Filter Find (Tìm kiếm thông tin)
+  const findOptions = [
+    { label: "#", value: "id" },
+    { label: "Tên", value: "name" },
+  ];
+  const [filterFindType, setFilterFindType] = useState<string | null>(
+    findOptions[0].value
+  );
+  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
+  // - Loại món ăn
+  const categoryOptions: SelectProps["options"] = categoryFoods!.map(
+    (categoryFood) => ({
+      label: `#${categoryFood.id} - ${categoryFood.name}`,
+      value: categoryFood.id,
+    })
+  );
+  const [filterCategoryValue, setFilterCategoryValue] = useState<
+    string[] | null
+  >(null);
+  // - Trạng thái
+  const statusOptions: SelectProps["options"] = [
+    { label: foodStatus["active"], value: foodStatus["active"] },
+    { label: foodStatus["inactive"], value: foodStatus["inactive"] },
+  ];
+  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
+    null
+  );
+
+  // Các thành phần giữ giá trị cho việc hiển thị modal
+  // - Các biến
+  const [titleModal, setTitleModal] = useState<string>("");
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [widthModal, setWidthModal] = useState<string>("");
+  const [classNameModal, setClassNameModal] = useState<string>("");
+  const [childrenModal, setChildrenModal] = useState<ReactNode>();
+  // - Hàm cập nhật
+  const updatePropertiesModal = (
+    titleModal: string,
+    openModal: boolean,
+    widthModal: string,
+    classNameModal: string,
+    childrenModal: ReactNode
+  ) => {
+    setTitleModal(titleModal);
+    setOpenModal(openModal);
+    setWidthModal(widthModal);
+    setClassNameModal(classNameModal);
+    setChildrenModal(childrenModal);
+  };
+  // - Các giá trị mặc định cho nhãn
+  const defaultLabels = {
+    title1: "Thông tin cơ bản",
+    title2: "Thông tin nguyên liệu",
+    id: "Mã món ăn",
+    image: "Hình ảnh",
+    name: "Tên món ăn",
+    categoryFood: "Loại món ăn",
+    unit: "Đơn vị",
+    price: "Giá bán (VNĐ)",
+    description: "Mô tả",
+    status: "Trạng thái",
+    recipe: "Công thức",
+  };
+  // - Các giá trị mặc định cho nhập liệu
+  const defaultInputs = {
+    title1: "",
+    title2: "",
+    id: "Được xác định sau khi xác nhận thêm !",
+    image: "Chọn Hình ảnh",
+    name: "Nhập Tên món ăn",
+    categoryFood: "Chọn Loại món ăn",
+    unit: "Chọn Đơn vị",
+    price: "Nhập Giá bán (VNĐ)",
+    description: "Nhập Mô tả",
+    status: "Chọn Trạng thái",
+    recipe: "",
+  };
+  // - Các modal tương ứng cho từng chức năng
+  const DetailFoods = ({
+    id,
+    image,
+    name,
+    categoryFood,
+    unit,
+    price,
+    description,
+    status,
+    recipe,
+  }: FoodsFormatType) => {
+    const [form] = Form.useForm();
+
+    return (
+      <>
+        <Form
+          layout="vertical"
+          form={form}
+          initialValues={{
+            id: id!,
+            // image:
+            //   "/src/assets/images/" +
+            //   (image! ? "foods/" + image! : "others/no-image.png"),
+            name: name!,
+            categoryFood: "#" + categoryFood!.id + " - " + categoryFood!.name,
+            unit: unit!,
+            price: price!,
+            description: description!,
+            status: status!,
+          }}
+          className="modal__form split-3"
+          autoComplete="off"
+        >
+          <div className="modal__form-group-warper">
+            <p className="modal__form-group-title">{defaultLabels["title1"]}</p>
+            <div className="modal__form-group">
+              <Form.Item
+                label={defaultLabels["image"]}
+                className="modal__form-group-item margin-bottom-0"
+              >
+                <CustomUpload
+                  defaultSrc={image! as string}
+                  alt="image-preview"
+                  imageClassName="image-preview"
+                  imageCategoryName="foods"
+                  uploadClassName="image-uploader"
+                  labelButton={defaultInputs["image"]}
+                  disabled={true}
+                />
+              </Form.Item>
+            </div>
+            <div className="modal__form-group">
+              <Form.Item
+                name="id"
+                label={defaultLabels["id"]}
+                className="modal__form-group-item"
+              >
+                <Input className="text-center" disabled={true} />
+              </Form.Item>
+              <Form.Item
+                name="name"
+                label={defaultLabels["name"]}
+                className="modal__form-group-item multiple-2"
+              >
+                <Input disabled={true} />
+              </Form.Item>
+              <Form.Item
+                name="categoryFood"
+                label={defaultLabels["categoryFood"]}
+                className="modal__form-group-item"
+              >
+                <Select disabled={true} />
+              </Form.Item>
+              <div className="modal__form-group-item-warper split-2">
+                <Form.Item
+                  name="unit"
+                  label={defaultLabels["unit"]}
+                  className="modal__form-group-item"
+                >
+                  <Select disabled={true} />
+                </Form.Item>
+                <Form.Item
+                  name="price"
+                  label={defaultLabels["price"]}
+                  className="modal__form-group-item"
+                >
+                  <InputNumber value={price!} disabled={true} />
+                </Form.Item>
+              </div>
+            </div>
+            <div className="modal__form-group">
+              <Form.Item
+                name="status"
+                label={defaultLabels["status"]}
+                className="modal__form-group-item"
+              >
+                <Select disabled={true} />
+              </Form.Item>
+              <Form.Item label="." className="modal__form-group-item hidden">
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="description"
+                label={defaultLabels["description"]}
+                className="modal__form-group-item"
+              >
+                <TextArea className="multiple-2" disabled={true} />
+              </Form.Item>
+            </div>
+          </div>
+          <div className="modal__form-group-warper">
+            <p className="modal__form-group-title">{defaultLabels["title2"]}</p>
+            <div className="modal__form-group">
+              <Form.Item
+                label={defaultLabels["recipe"]}
+                className="modal__form-group-item multiple-3 margin-bottom-0"
+              >
+                <CustomTableNoActions
+                  className="recipe"
+                  columnWidths={recipeTableWidth}
+                  columnTitles={recipeTableTitle}
+                  data={recipe!}
+                  attributes={recipeTableAttributes}
+                  format={recipeTableFormat}
+                />
+              </Form.Item>
+            </div>
+          </div>
+        </Form>
+      </>
+    );
+  };
+  const CreateFoods = () => {
+    const [form] = Form.useForm();
+    const [imageFile, setImageFile] = useState<RcFile>();
+    const [recipe, setRecipe] = useState<RecipesFormatType[]>([]);
+
+    return (
+      <>
+        <Form
+          layout="vertical"
+          form={form}
+          className="modal__form split-3"
+          autoComplete="off"
+          onFinish={async () => {
+            // Nút để submit form
+            const submitButton = document.querySelector(
+              ".modal__form button[type='submit']"
+            );
+
+            // Thêm class 'active' thể hiện nút đang được nhấn
+            submitButton?.classList.add("active");
+
+            // Hỏi trước khi xử khi xử lý ?
+            const answer = await openConfirmation({
+              title: `Bạn có chắc chắn thêm ?`,
+              content: "Hành động này không thể hoàn tác.",
+            });
+            if (answer) {
+              // Danh sách dữ liệu
+              const values = form.getFieldsValue();
+
+              // Gọi api xử lý
+              const res = await HandleCreateFood({
+                name: values!.name || undefined,
+                image: imageFile! || undefined,
+                categoryFoodId: values!.categoryFood || undefined,
+                unit: values!.unit || undefined,
+                price: values!.price || undefined,
+                description: values!.description || undefined,
+                status: values!.status || undefined,
+                recipe: recipe || [],
+              });
+              if (res.status === 200) {
+                openNotification({
+                  type: "success",
+                  message: "Thành công",
+                  description: "Thêm thành công !",
+                  duration: 1.5,
+                });
+
+                setTimeout(() => {
+                  getAllFood();
+                  setOpenModal(false);
+                }, 1500);
+              } else {
+                openNotification({
+                  type: "error",
+                  message: "Thất bại",
+                  description: "Thêm thất bại !",
+                  duration: 1.5,
+                });
+
+                setTimeout(() => {
+                  // Xoá class 'active' thể hiện nút không còn được nhấn
+                  submitButton?.classList.remove("active");
+                }, 1500);
+              }
+            }
+
+            // Xoá class 'active' thể hiện nút không còn được nhấn
+            submitButton?.classList.remove("active");
+          }}
+        >
+          <div className="modal__form-group-warper">
+            <p className="modal__form-group-title">{defaultLabels["title1"]}</p>
+            <div className="modal__form-group">
+              <Form.Item
+                label={defaultLabels["image"]}
+                htmlFor="create-image"
+                className="modal__form-group-item"
+              >
+                <CustomUpload
+                  imageFile={imageFile}
+                  setImageFile={setImageFile}
+                  alt="image-preview"
+                  htmlFor="create-image"
+                  imageClassName="image-preview"
+                  uploadClassName="image-uploader"
+                  labelButton={defaultInputs["image"]}
+                />
+              </Form.Item>
+            </div>
+            <div className="modal__form-group">
+              <Form.Item
+                name="id"
+                label={defaultLabels["id"]}
+                className="modal__form-group-item"
+              >
+                <Input
+                  className="text-center"
+                  placeholder={defaultInputs["id"]}
+                  disabled={true}
+                />
+              </Form.Item>
+              <Form.Item
+                name="name"
+                label={defaultLabels["name"]}
+                htmlFor="create-name"
+                className="modal__form-group-item multiple-2"
+                rules={[ruleRequired("Tên món ăn không được để trống !")]}
+              >
+                <Input id="create-name" placeholder={defaultInputs["name"]} />
+              </Form.Item>
+              <Form.Item
+                name="categoryFood"
+                label={defaultLabels["categoryFood"]}
+                htmlFor="create-category"
+                className="modal__form-group-item"
+                rules={[ruleRequired("Loại món ăn không được để trống !")]}
+              >
+                <Select
+                  showSearch={true}
+                  allowClear={true}
+                  id="create-category"
+                  placeholder={defaultInputs["categoryFood"]}
+                  options={categoryFoods!.map((categoryFood) => ({
+                    label: `#${categoryFood.id} - ${categoryFood.name}`,
+                    value: categoryFood.id,
+                  }))}
+                />
+              </Form.Item>
+              <div className="modal__form-group-item-warper split-2">
+                <Form.Item
+                  name="unit"
+                  label={defaultLabels["unit"]}
+                  htmlFor="create-unit"
+                  className="modal__form-group-item"
+                  rules={[ruleRequired("Cần chọn Đơn vị !")]}
+                >
+                  <Select
+                    showSearch={true}
+                    allowClear={true}
+                    id="create-unit"
+                    placeholder={defaultInputs["unit"]}
+                    options={units!.map((unit) => ({
+                      label: unit,
+                      value: unit,
+                    }))}
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="price"
+                  label={defaultLabels["price"]}
+                  htmlFor="create-price"
+                  className="modal__form-group-item"
+                  rules={[ruleRequired("Cần nhập Giá bán !")]}
+                >
+                  <InputNumber
+                    min={1}
+                    id="create-price"
+                    placeholder={defaultInputs["price"]}
+                  />
+                </Form.Item>
+              </div>
+            </div>
+            <div className="modal__form-group">
+              <Form.Item
+                name="status"
+                label={defaultLabels["status"]}
+                htmlFor="create-status"
+                className="modal__form-group-item"
+                rules={[ruleRequired("Trạng thái không được để trống !")]}
+              >
+                <Select
+                  showSearch={true}
+                  allowClear={true}
+                  id="create-status"
+                  placeholder={defaultInputs["status"]}
+                  options={[
+                    {
+                      label: foodStatus["active"],
+                      value: foodStatus["active"],
+                    },
+                    {
+                      label: foodStatus["inactive"],
+                      value: foodStatus["inactive"],
+                    },
+                  ]}
+                />
+              </Form.Item>
+              <Form.Item label="." className="modal__form-group-item hidden">
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="description"
+                label={defaultLabels["description"]}
+                htmlFor="create-description"
+                className="modal__form-group-item"
+              >
+                <TextArea
+                  id="create-description"
+                  className="multiple-2"
+                  placeholder={defaultInputs["description"]}
+                />
+              </Form.Item>
+            </div>
+          </div>
+          <div className="modal__form-group-warper">
+            <p className="modal__form-group-title">{defaultLabels["title2"]}</p>
+            <div className="modal__form-group">
+              <Form.Item
+                label={defaultLabels["recipe"]}
+                htmlFor="create-recipe"
+                className="modal__form-group-item multiple-3"
+              >
+                <CustomTableNoActions
+                  id="create-recipe"
+                  className="recipe"
+                  columnWidths={recipeTableWidth}
+                  columnTitles={recipeTableTitle}
+                  data={recipe}
+                  attributes={recipeTableAttributes}
+                  format={recipeTableFormat}
+                />
+                <div className="buttons">
+                  <button
+                    type="button"
+                    className="btn secondary-btn margin-r"
+                    onClick={() =>
+                      updatePropertiesSecondModal(
+                        "Xoá nguyên liệu",
+                        true,
+                        "60%",
+                        "secondary recipes",
+                        AdminRecipesModal.delete({
+                          recipe,
+                          setRecipe,
+                        })
+                      )
+                    }
+                  >
+                    Xoá nguyên liệu
+                  </button>
+                  <button
+                    type="button"
+                    className="btn secondary-btn"
+                    onClick={() =>
+                      updatePropertiesSecondModal(
+                        "Thêm nguyên liệu",
+                        true,
+                        "60%",
+                        "secondary recipes",
+                        AdminRecipesModal.create({
+                          recipe,
+                          setRecipe,
+                        })
+                      )
+                    }
+                  >
+                    Thêm nguyên liệu
+                  </button>
+                </div>
+              </Form.Item>
+            </div>
+          </div>
+          <div className="modal__buttons">
+            <button type="submit" className="modal__button btn create">
+              Xác nhận
+            </button>
+          </div>
+        </Form>
+      </>
+    );
+  };
+  const UpdateFoods = ({
+    id,
+    image,
+    name,
+    categoryFood,
+    unit,
+    price,
+    description,
+    status,
+    recipe,
+  }: FoodsFormatType) => {
+    const [form] = Form.useForm();
+    const [imageFile, setImageFile] = useState<RcFile>();
+    const [recipeState, setRecipeState] = useState<RecipesFormatType[]>(
+      recipe!
+    );
+
+    return (
+      <>
+        <Form
+          layout="vertical"
+          form={form}
+          autoComplete="off"
+          initialValues={{
+            id: id!,
+            // image:
+            //   "/src/assets/images/" +
+            //   (image! ? "foods/" + image! : "others/no-image.png"),
+            name: name!,
+            categoryFood: categoryFood!.id,
+            unit: unit!,
+            price: price!,
+            description: description!,
+            status: status!,
+          }}
+          className="modal__form split-3"
+          onFinish={async () => {
+            // Nút để submit form
+            const submitButton = document.querySelector(
+              ".modal__form button[type='submit']"
+            );
+
+            // Thêm class 'active' thể hiện nút đang được nhấn
+            submitButton?.classList.add("active");
+
+            // Hỏi trước khi xử khi xử lý ?
+            const answer = await openConfirmation({
+              title: `Bạn có chắc chắn cập nhật ?`,
+              content: "Hành động này không thể hoàn tác.",
+            });
+            if (answer) {
+              // Danh sách dữ liệu
+              const values = form.getFieldsValue();
+
+              // Gọi api xử lý
+              const res = await HandleUpdateFood({
+                id: values!.id,
+                name: values!.name || undefined,
+                image: imageFile! || undefined,
+                categoryFoodId: values!.categoryFood || undefined,
+                unit: values!.unit || undefined,
+                price: values!.price || undefined,
+                description: values!.description || undefined,
+                timeUpdate: new Date().toISOString(),
+                recipe: recipeState! || [],
+              });
+              if (res.status === 200) {
+                openNotification({
+                  type: "success",
+                  message: "Thành công",
+                  description: "Cập nhật thành công !",
+                  duration: 1.5,
+                });
+
+                setTimeout(() => {
+                  getAllFood();
+                  setOpenModal(false);
+                }, 1500);
+              } else {
+                openNotification({
+                  type: "error",
+                  message: "Thất bại",
+                  description: "Cập nhật thất bại !",
+                  duration: 1.5,
+                });
+
+                setTimeout(() => {
+                  // Xoá class 'active' thể hiện nút không còn được nhấn
+                  submitButton?.classList.remove("active");
+                }, 1500);
+              }
+            }
+
+            // Xoá class 'active' thể hiện nút không còn được nhấn
+            submitButton?.classList.remove("active");
+          }}
+        >
+          <div className="modal__form-group-warper">
+            <p className="modal__form-group-title">{defaultLabels["title1"]}</p>
+            <div className="modal__form-group">
+              <Form.Item
+                label={defaultLabels["image"]}
+                htmlFor="update-image"
+                className="modal__form-group-item"
+              >
+                <CustomUpload
+                  defaultSrc={image! as string}
+                  imageFile={imageFile}
+                  setImageFile={setImageFile}
+                  alt="image-preview"
+                  htmlFor="update-image"
+                  imageClassName="image-preview"
+                  imageCategoryName="foods"
+                  uploadClassName="image-uploader"
+                  labelButton={defaultInputs["image"]}
+                />
+              </Form.Item>
+            </div>
+            <div className="modal__form-group">
+              <Form.Item
+                name="id"
+                label={defaultLabels["id"]}
+                className="modal__form-group-item"
+              >
+                <Input className="text-center" disabled={true} />
+              </Form.Item>
+              <Form.Item
+                name="name"
+                label={defaultLabels["name"]}
+                htmlFor="update-name"
+                className="modal__form-group-item multiple-2"
+                rules={[ruleRequired("Tên món ăn không được để trống !")]}
+              >
+                <Input id="update-name" placeholder={defaultInputs["name"]} />
+              </Form.Item>
+              <Form.Item
+                name="categoryFood"
+                label={defaultLabels["categoryFood"]}
+                htmlFor="update-category"
+                className="modal__form-group-item"
+                rules={[ruleRequired("Loại món ăn không được để trống !")]}
+              >
+                <Select
+                  showSearch={true}
+                  allowClear={true}
+                  id="update-category"
+                  placeholder={defaultInputs["categoryFood"]}
+                  options={categoryFoods?.map((categoryFood) => ({
+                    label: "#" + categoryFood.id + " - " + categoryFood.name,
+                    value: categoryFood.id,
+                  }))}
+                />
+              </Form.Item>
+              <div className="modal__form-group-item-warper split-2">
+                <Form.Item
+                  name="unit"
+                  label={defaultLabels["unit"]}
+                  htmlFor="update-unit"
+                  className="modal__form-group-item"
+                  rules={[ruleRequired("Cần chọn Đơn vị !")]}
+                >
+                  <Select
+                    showSearch={true}
+                    allowClear={true}
+                    id="update-unit"
+                    placeholder={defaultInputs["unit"]}
+                    options={units?.map((unit) => ({
+                      label: unit,
+                      value: unit,
+                    }))}
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="price"
+                  label={defaultLabels["price"]}
+                  htmlFor="update-price"
+                  className="modal__form-group-item"
+                  rules={[ruleRequired("Cần nhập Giá bán !")]}
+                >
+                  <InputNumber
+                    min={1}
+                    id="update-price"
+                    placeholder={defaultInputs["price"]}
+                  />
+                </Form.Item>
+              </div>
+            </div>
+            <div className="modal__form-group">
+              <Form.Item
+                name="status"
+                label={defaultLabels["status"]}
+                className="modal__form-group-item"
+              >
+                <Select disabled={true} />
+              </Form.Item>
+              <Form.Item label="." className="modal__form-group-item hidden">
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="description"
+                label={defaultLabels["description"]}
+                htmlFor="update-description"
+                className="modal__form-group-item"
+              >
+                <TextArea
+                  id="update-description"
+                  className="multiple-2"
+                  placeholder={defaultInputs["description"]}
+                />
+              </Form.Item>
+            </div>
+          </div>
+          <div className="modal__form-group-warper">
+            <p className="modal__form-group-title">{defaultLabels["title2"]}</p>
+            <div className="modal__form-group">
+              <Form.Item
+                label={defaultLabels["recipe"]}
+                htmlFor="update-recipe"
+                className="modal__form-group-item multiple-3"
+              >
+                <CustomTableNoActions
+                  id="update-recipe"
+                  className="recipe"
+                  columnWidths={recipeTableWidth}
+                  columnTitles={recipeTableTitle}
+                  data={recipeState}
+                  attributes={recipeTableAttributes}
+                  format={recipeTableFormat}
+                />
+                <div className="buttons">
+                  <button
+                    type="button"
+                    className="btn secondary-btn margin-r"
+                    onClick={() =>
+                      updatePropertiesSecondModal(
+                        "Xoá nguyên liệu",
+                        true,
+                        "60%",
+                        "secondary recipes",
+                        AdminRecipesModal.delete({
+                          recipe: recipeState,
+                          setRecipe: setRecipeState,
+                        })
+                      )
+                    }
+                  >
+                    Xoá nguyên liệu
+                  </button>
+                  <button
+                    type="button"
+                    className="btn secondary-btn"
+                    onClick={() =>
+                      updatePropertiesSecondModal(
+                        "Thêm nguyên liệu",
+                        true,
+                        "60%",
+                        "secondary recipes",
+                        AdminRecipesModal.create({
+                          recipe: recipeState,
+                          setRecipe: setRecipeState,
+                        })
+                      )
+                    }
+                  >
+                    Thêm nguyên liệu
+                  </button>
+                </div>
+              </Form.Item>
+            </div>
+          </div>
+          <div className="modal__buttons">
+            <button type="button" className="modal__button btn update">
+              Xác nhận
+            </button>
+          </div>
+        </Form>
+      </>
+    );
+  };
+  const LockFoods = ({
+    id,
+    status,
+  }: {
+    id: number;
+    status: string | undefined;
+  }) => {
+    const [form] = Form.useForm();
+    const statusValue = status == foodStatus["active"] ? true : false;
+
+    return (
+      <>
+        <Form
+          layout="vertical"
+          form={form}
+          className="modal__form"
+          onFinish={async () => {
+            // Nút để submit form
+            const submitButton = document.querySelector(
+              ".modal__form button[type='submit']"
+            );
+
+            // Thêm class 'active' thể hiện nút đang được nhấn
+            submitButton?.classList.add("active");
+
+            // Hỏi trước khi xử khi xử lý ?
+            const answer = await openConfirmation({
+              title: `Bạn có chắc chắn ${statusValue ? "khoá" : "mở khoá"} ?`,
+              content: "Hành động này không thể hoàn tác.",
+            });
+            if (answer) {
+              // Gọi api xử lý
+              const res = await HandleLockFood({
+                id: id!,
+                status: status!,
+                timeUpdate: new Date().toISOString(),
+              });
+              if (res.status == 200) {
+                openNotification({
+                  type: "success",
+                  message: "Thành công",
+                  description: `${
+                    statusValue ? "Khoá" : "Mở khoá"
+                  } thành công !`,
+                  duration: 1.5,
+                });
+
+                setTimeout(() => {
+                  getAllFood();
+                  setOpenModal(false);
+                }, 1500);
+              } else {
+                openNotification({
+                  type: "error",
+                  message: "Thất bại",
+                  description: `${statusValue ? "Khoá" : "Mở khoá"} thất bại !`,
+                  duration: 1.5,
+                });
+
+                setTimeout(() => {
+                  // Xoá class 'active' thể hiện nút không còn được nhấn
+                  submitButton?.classList.remove("active");
+                }, 1500);
+              }
+            }
+
+            // Xoá class 'active' thể hiện nút không còn được nhấn
+            submitButton?.classList.remove("active");
+          }}
+        >
+          <div className="modal__form-image">
+            <img
+              src={
+                statusValue
+                  ? "/src/assets/images/others/lock-icon.png"
+                  : "/src/assets/images/others/unlock-icon.png"
+              }
+              alt=""
+            />
+          </div>
+          <div className="modal__form-content">
+            <p>
+              Bạn có xác nhận rằng <b>{statusValue ? "khoá" : "mở khoá"}</b> món
+              ăn có mã đối tượng là <b>{id}</b> ?
+            </p>
+          </div>
+          <div className="modal__buttons">
+            <button type="submit" className="modal__button btn lock">
+              Xác nhận
+            </button>
+          </div>
+        </Form>
+      </>
+    );
+  };
+  const AdminFoodsModal = {
+    detail: (food: FoodsFormatType) => (
+      <DetailFoods
+        id={food!.id}
+        image={food!.image}
+        name={food!.name}
+        categoryFood={food!.categoryFood}
+        unit={food!.unit}
+        price={food!.price}
+        description={food!.description}
+        status={food!.status}
+        recipe={food!.recipe}
+      />
+    ),
+    create: () => <CreateFoods />,
+    update: (food: FoodsFormatType) => (
+      <UpdateFoods
+        id={food!.id}
+        image={food!.image}
+        name={food!.name}
+        categoryFood={food!.categoryFood}
+        unit={food!.unit}
+        price={food!.price}
+        description={food!.description}
+        status={food!.status}
+        recipe={food!.recipe}
+      />
+    ),
+    lock: (id: number, status: string | undefined) => (
+      <LockFoods id={id} status={status} />
+    ),
+  };
+
+  // Các thành phần giữ giá trị cho việc hiển thị modal thứ 2
+  // - Các biến
+  const [titleSecondModal, setTitleSecondModal] = useState<string>("");
+  const [openSecondModal, setOpenSecondModal] = useState<boolean>(false);
+  const [widthSecondModal, setWidthSecondModal] = useState<string>("");
+  const [classNameSecondModal, setClassNameSecondModal] = useState<string>("");
+  const [childrenSecondModal, setChildrenSecondModal] = useState<ReactNode>();
+  // - Các giá trị mặc định cho nhãn
+  const defaultSecondLabels = {
+    title: "Thông tin nguyên liệu",
+    ingredientCreate:
+      "Nguyên liệu (Mã nguyên liệu - Tên nguyên liệu - Loại nguyên liệu - Định lượng & Đơn vị)",
+    ingredientDelete:
+      "Nguyên liệu (Mã nguyên liệu - Tên nguyên liệu - Số lượng - Ghi chú)",
+    quantity: "Số lượng",
+    note: "Ghi chú",
+  };
+  // - Các giá trị mặc định cho nhập liệu
+  const defaultSecondInputs = {
+    title: "Thông tin nguyên liệu",
+    ingredientCreate:
+      "Chọn Nguyên liệu (Mã nguyên liệu - Tên nguyên liệu - Loại nguyên liệu - Định lượng & Đơn vị)",
+    ingredientDelete:
+      "Chọn Nguyên liệu (Mã nguyên liệu - Tên nguyên liệu - Số lượng - Ghi chú)",
+    quantity: "Nhập Số lượng",
+    note: "Nhập Ghi chú",
+  };
+  // - Hàm cập nhật
+  const updatePropertiesSecondModal = (
+    titleSecondModal: string,
+    openSecondModal: boolean,
+    widthSecondModal: string,
+    classNameSecondModal: string,
+    childrenSecondModal: ReactNode
+  ) => {
+    setTitleSecondModal(titleSecondModal);
+    setOpenSecondModal(openSecondModal);
+    setWidthSecondModal(widthSecondModal);
+    setClassNameSecondModal(classNameSecondModal);
+    setChildrenSecondModal(childrenSecondModal);
+  };
+  // - Các modal tương ứng cho từng chức năng
+  const CreateRecipes = ({ recipe, setRecipe }: RecipeTableProps) => {
+    const [form] = Form.useForm();
+
+    // Gọi api để truy vấn danh sách nguyên liệu "hoạt động"
+    const [ingredients, setIngredients] = useState<IngredientsFormatType[]>([]);
+    const getAllIngredient = async () => {
+      setLoading(true);
+      const res = await FindAllIngredient({
+        statusValue: ["Hoạt động"],
+      });
+      if (res!.status === 200) {
+        setIngredients(res!.data);
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+      }
+    };
+    useEffect(() => {
+      getAllIngredient();
+    }, []);
+
+    return (
+      <>
+        <Form
+          layout="vertical"
+          form={form}
+          className="modal__form secondary split-2"
+          autoComplete="off"
+          onFinish={async () => {
+            // Nút để submit form
+            const submitButton = document.querySelector(
+              ".modal__form.secondary button[type='submit']"
+            );
+
+            // Thêm class 'active' thể hiện nút đang được nhấn
+            submitButton?.classList.add("active");
+
+            // Hỏi trước khi xử khi xử lý ?
+            const answer = await openConfirmation({
+              title: `Bạn có chắc chắn thêm ?`,
+              content: "Hành động này không thể hoàn tác.",
+            });
+            if (answer) {
+              // Danh sách dữ liệu
+              const values = form.getFieldsValue();
+
+              // Định dạng dữ liệu
+              const newIngredient: RecipesFormatType = {
+                ingredientId: JSON.parse(values!.ingredient)!.id || undefined,
+                ingredientName:
+                  JSON.parse(values!.ingredient)!.name || undefined,
+                ingredientInventory:
+                  JSON.parse(values!.ingredient)!.inventory || undefined,
+                quantity: values!.quantity || undefined,
+                note: values!.note || undefined,
+              };
+
+              // Cập nhật danh sách nguyên liệu mới
+              let newRecipe: RecipesFormatType[] = [...recipe!];
+              // - Kiểm tra nguyên liệu đã có tồn tại trong công thức hay chưa ?
+              let isExists = false;
+              for (let i = 0; i < newRecipe.length; i++) {
+                if (newRecipe[i].ingredientId === newIngredient.ingredientId) {
+                  newRecipe[i].quantity = newIngredient.quantity;
+                  newRecipe[i].note = newIngredient.note;
+                  isExists = true;
+                }
+              }
+              if (!isExists) {
+                newRecipe.push(newIngredient);
+              }
+              // - Sắp xếp theo mã nguyên liệu tăng dần
+              newRecipe.sort(
+                (a, b) =>
+                  (a!.ingredientId as number) - (b!.ingredientId as number)
+              );
+              // - Cập nhật
+              setRecipe!(newRecipe!);
+
+              // Thành công thì thông báo
+              setOpenSecondModal(false);
+              openNotification({
+                type: "success",
+                message: "Thành công",
+                description: "Thêm thành công !",
+                duration: 1.5,
+              });
+            }
+
+            // Xoá class 'active' thể hiện nút không còn được nhấn
+            submitButton?.classList.remove("active");
+          }}
+        >
+          <div className="modal__form-group-warper">
+            <p className="modal__form-group-title">
+              {defaultSecondLabels["title"]}
+            </p>
+            <div className="modal__form-group">
+              <Form.Item
+                name="ingredient"
+                label={defaultSecondLabels["ingredientCreate"]}
+                htmlFor="create-ingredient"
+                className="modal__form-group-item multiple-2"
+                rules={[ruleRequired("Nguyên liệu không được để trống !")]}
+              >
+                <Select
+                  mode={undefined}
+                  showSearch={true}
+                  allowClear={true}
+                  id="create-ingredient"
+                  placeholder={defaultSecondInputs["ingredientCreate"]}
+                  options={ingredients?.map((ingredient) => ({
+                    label:
+                      "#" +
+                      ingredient!.id +
+                      " - " +
+                      ingredient!.name +
+                      " - " +
+                      ingredient!.categoryIngredient!.name +
+                      " (#" +
+                      ingredient!.categoryIngredient!.id +
+                      ")" +
+                      " - " +
+                      ingredient!.capacity +
+                      " " +
+                      ingredient!.unit,
+                    value: JSON.stringify(ingredient!),
+                  }))}
+                />
+              </Form.Item>
+              <Form.Item
+                name="quantity"
+                label={defaultSecondLabels["quantity"]}
+                htmlFor="create-quantity"
+                className="modal__form-group-item"
+                rules={[ruleRequired("Số lượng không được để trống !")]}
+              >
+                <InputNumber
+                  min={1}
+                  id="create-quantity"
+                  placeholder={defaultSecondInputs["quantity"]}
+                />
+              </Form.Item>
+            </div>
+            <div className="modal__form-group">
+              <Form.Item label="." className="modal__form-group-item hidden">
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="note"
+                label={defaultSecondLabels["note"]}
+                htmlFor="create-note"
+                className="modal__form-group-item"
+              >
+                <TextArea
+                  id="create-note"
+                  className="multiple-2"
+                  placeholder={defaultSecondInputs["note"]}
+                />
+              </Form.Item>
+            </div>
+            <div className="modal__buttons">
+              <button type="submit" className="modal__button btn secondary-btn">
+                Xác nhận
+              </button>
+            </div>
+          </div>
+        </Form>
+      </>
+    );
+  };
+  const DeleteRecipes = ({ recipe, setRecipe }: RecipeTableProps) => {
+    const [form] = Form.useForm();
+
+    return (
+      <>
+        <Form
+          layout="vertical"
+          form={form}
+          className="modal__form split-2"
+          autoComplete="off"
+          onFinish={async () => {
+            // Nút để submit form
+            const submitButton = document.querySelector(
+              ".modal__form.secondary button[type='submit']"
+            );
+
+            // Thêm class 'active' thể hiện nút đang được nhấn
+            submitButton?.classList.add("active");
+
+            // Hỏi trước khi xử khi xử lý ?
+            const answer = await openConfirmation({
+              title: `Bạn có chắc chắn xoá ?`,
+              content: "Hành động này không thể hoàn tác.",
+            });
+            if (answer) {
+              // Nguyên liệu cần xoá
+              const ingredient = JSON.parse(form.getFieldValue("ingredient"));
+
+              // Cập nhật danh sách nguyên liệu mới
+              let newRecipe: RecipesFormatType[] = [];
+              for (let i = 0; i < recipe!.length; i++) {
+                if (recipe![i].ingredientId !== ingredient.ingredientId) {
+                  newRecipe.push(recipe![i]);
+                }
+              }
+              setRecipe!(newRecipe!);
+
+              // Thành công thì thông báo
+              setOpenSecondModal(false);
+              openNotification({
+                type: "success",
+                message: "Thành công",
+                description: "Xoá thành công !",
+                duration: 1.5,
+              });
+            }
+
+            // Xoá class 'active' thể hiện nút không còn được nhấn
+            submitButton?.classList.remove("active");
+          }}
+        >
+          <div className="modal__form-group-warper">
+            <p className="modal__form-group-title">
+              {defaultSecondLabels["title"]}
+            </p>
+            <div className="modal__form-group">
+              <Form.Item
+                name="ingredient"
+                label={defaultSecondLabels["ingredientDelete"]}
+                htmlFor="update-ingredient"
+                className="modal__form-group-item multiple-2"
+                rules={[ruleRequired("Nguyên liệu không được để trống !")]}
+              >
+                <Select
+                  showSearch={true}
+                  allowClear={true}
+                  id="update-ingredient"
+                  placeholder={defaultSecondInputs["ingredientDelete"]}
+                  options={recipe?.map((ingredient) => ({
+                    label:
+                      "#" +
+                      ingredient.ingredientId +
+                      " - " +
+                      ingredient.ingredientName +
+                      " - " +
+                      ingredient.quantity +
+                      " - " +
+                      ingredient.note,
+                    value: JSON.stringify(ingredient),
+                  }))}
+                />
+              </Form.Item>
+              {/* <Form.Item
+                name="quantity"
+                label={defaultSecondLabels["quantity"]}
+                htmlFor="update-quantity"
+                className="modal__form-group-item"
+              >
+                <InputNumber id="update-quantity" disabled={true} />
+              </Form.Item> */}
+            </div>
+            <div className="modal__form-group">
+              <Form.Item label="." className="modal__form-group-item hidden">
+                <Input />
+              </Form.Item>
+              {/* <Form.Item
+                name="note"
+                label={defaultSecondLabels["note"]}
+                htmlFor="update-note"
+                className="modal__form-group-item"
+              >
+                <TextArea
+                  id="update-note"
+                  className="multiple-2"
+                  disabled={true}
+                />
+              </Form.Item> */}
+            </div>
+            <div className="modal__buttons">
+              <button type="submit" className="modal__button btn secondary-btn">
+                Xác nhận
+              </button>
+            </div>
+          </div>
+        </Form>
+      </>
+    );
+  };
+  const AdminRecipesModal = {
+    create: ({ recipe, setRecipe }: RecipeTableProps) => (
+      <CreateRecipes recipe={recipe} setRecipe={setRecipe} />
+    ),
+    delete: ({ recipe, setRecipe }: RecipeTableProps) => (
+      <DeleteRecipes recipe={recipe} setRecipe={setRecipe} />
+    ),
+  };
+
+  // Hàm cập nhật danh sách các nhà cung cấp (gọi API)
+  const getAllCategoryFood = async () => {
+    setLoading(true);
+    const res = await FindAllCategoryFood({ statusValue: ["Hoạt động"] });
+    if (res!.status === 200) {
+      setLoading(false);
+      setCategoryFoods(res!.data);
+    } else {
+      openNotification({
+        type: "error",
+        message: "Truy vấn dữ liệu thất bại",
+        description: "Lỗi phát sinh khi truy vấn dữ liệu",
+        duration: 2,
+      });
+    }
+  };
+  const getAllFood = async () => {
+    setLoading(true);
+    const res = await FindAllFood({
+      findType: filterFindType!,
+      findValue: filterFindValue!,
+      categoryValue: filterCategoryValue!,
+      statusValue: filterStatusValue!,
+    });
+    if (res!.status === 200) {
+      setLoading(false);
+      setFoods(res!.data);
+    } else {
+      console.log(res);
+      openNotification({
+        type: "error",
+        message: "Truy vấn dữ liệu thất bại",
+        description: "Lỗi phát sinh khi truy vấn dữ liệu",
+        duration: 2,
+      });
+    }
+  };
+
+  //
+  useEffect(() => {
+    getAllCategoryFood();
+    getAllFood();
+  }, []);
+  useEffect(() => {
+    getAllFood();
+  }, [filterFindType, filterFindValue, filterCategoryValue, filterStatusValue]);
+
+  return (
+    <>
+      <main className="main">
+        <div className="main__header">
+          <h1 className="main__title">Quản lý món ăn - Món ăn</h1>
+        </div>
+        <div className="main__filter">
+          <CustomFindInput
+            selectItems={findOptions}
+            placeholder="Nhập thông tin cần tìm kiếm"
+            defaultValue=""
+            className="main__filter-find"
+            setFilterFindType={setFilterFindType}
+            setFilterFindValue={setFilterFindValue}
+          />
+          <CustomFindSelect
+            mode="tags"
+            placeholder="Chọn Loại món ăn"
+            optionFilterProp="label"
+            maxTagCount="responsive"
+            className="main__filter-select filter-category"
+            options={categoryOptions}
+            setFilterSelectValue={setFilterCategoryValue}
+          />
+          <CustomFindSelect
+            mode={undefined}
+            placeholder="Chọn Trạng thái"
+            optionFilterProp="label"
+            maxTagCount="responsive"
+            className="main__filter-select filter-status"
+            options={statusOptions}
+            setFilterSelectValue={setFilterStatusValue}
+          />
+          <button
+            className={
+              "main__filter-button btn create" +
+              (openModal &&
+              String(titleModal).includes("Thêm") &&
+              String(classNameModal).includes("create")
+                ? " active"
+                : "")
+            }
+            onClick={() =>
+              updatePropertiesModal(
+                "Thêm món ăn",
+                true,
+                "89%",
+                "create foods",
+                AdminFoodsModal.create()
+              )
+            }
+          >
+            <FontAwesomeIcon icon={faPlus} className="icon" />
+            &nbsp;Thêm
+          </button>
+        </div>
+        <div className="main__table">
+          <CustomTableActions
+            columns={columns}
+            rowKey={(record) => record!.id as number}
+            data={currentItems}
+            loading={loading}
+            pagination={paginationProps}
+            className="table-actions foods"
+            onChange={handleTableChange}
+          />
+        </div>
+      </main>
+      {openModal && (
+        <CustomModal
+          key="modal"
+          title={titleModal}
+          openModal={openModal}
+          setOpenModal={() => setOpenModal(false)}
+          width={widthModal}
+          className={classNameModal}
+          children={childrenModal}
+        />
+      )}
+      {openSecondModal && (
+        <CustomModal
+          key="second-modal"
+          title={titleSecondModal}
+          openModal={openSecondModal}
+          setOpenModal={() => setOpenSecondModal(false)}
+          width={widthSecondModal}
+          className={classNameSecondModal}
+          children={childrenSecondModal}
+        />
+      )}
+    </>
+  );
+};
+
+export default AdminFoodsPage;

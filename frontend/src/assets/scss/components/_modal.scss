@@ -1,0 +1,465 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/colors" as *;
+@use "../abstracts/mixins" as *;
+
+.modal {
+  $padding-vertical: 20px; // (Theo css của component)
+  $padding-horizontal: 24px; // (Theo css của component)
+  $margin-bottom: 32px; // (Theo css của component)
+  $border-radius: 6px; // (Theo css của component)
+  $header-height: 50px;
+  $form-item-height: 40px;
+  $form-label-height: 33px;
+  $form-primary-button-height: 30px;
+  $form-image-height: 180px;
+
+  //   width: 800px !important;
+
+  &.ant-modal {
+    margin: 64px 0;
+  }
+
+  & .ant-modal-content {
+    padding-top: 0 !important;
+  }
+
+  & .ant-modal-header {
+    transform: translateX(-$padding-horizontal);
+    @include size(calc(100% + calc($padding-horizontal * 2)), $header-height);
+    margin-bottom: $padding-vertical;
+    background: inherit;
+  }
+
+  &.info .ant-modal-header {
+    background: $blue-secondary-btn-color;
+  }
+
+  &.create .ant-modal-header {
+    background: $green-primary-btn-color;
+  }
+
+  &.update .ant-modal-header {
+    background: $yellow-primary-btn-color;
+  }
+
+  &.lock .ant-modal-header {
+    background: $red-primary-btn-color;
+  }
+
+  &.print .ant-modal-header {
+    background: $ternary-color;
+  }
+
+  &.secondary .ant-modal-header {
+    background: #2286e3;
+  }
+
+  &.secondary.red .ant-modal-header {
+    background: $red-secondary-btn-color;
+  }
+
+  &.secondary.yellow .ant-modal-header {
+    background: $yellow-secondary-btn-color;
+  }
+
+  &.secondary.green .ant-modal-header {
+    background: $green-secondary-btn-color;
+  }
+
+  & .ant-modal-title {
+    color: #fff;
+    font-size: 1.8rem;
+    line-height: $header-height;
+    text-align: center;
+  }
+
+  & .ant-modal-close {
+    top: 0 !important;
+    right: 0 !important;
+    @include size($header-height);
+    color: #fff;
+  }
+
+  & .ant-modal-close:hover {
+    color: $red-secondary-btn-color;
+  }
+
+  &:where(.use-tables, .call-foods) .ant-modal-content {
+    padding-top: 20px !important;
+    border: 3px dashed #c14400;
+    background: #fffcf7;
+  }
+
+  &.use-tables .ant-modal-content {
+    padding-top: 12px !important;
+  }
+
+  /* Ghim tròn trên đầu */
+  &.call-foods .ant-modal-content::before {
+    content: "";
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    z-index: 2;
+    transform: translateX(-50%);
+    @include size(34px);
+    background: radial-gradient(circle at 30% 30%, #a0522d, #5a2d0c);
+    border-radius: 50%;
+    border: 2px solid #4e2a0a;
+    box-shadow: inset -1px -2px 3px rgba(0, 0, 0, 0.4),
+      0 2px 4px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Lỗ đục phía dưới ghim (giống lỗ thủng giấy) */
+  &.call-foods .ant-modal-content::after {
+    content: "";
+    position: absolute;
+    top: 1px;
+    left: 50%;
+    z-index: 1;
+    transform: translateX(-50%);
+    @include size(12px);
+    background: #2f1d0e;
+    border-radius: 50%;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  }
+
+  // &.use-tables .ant-modal-title,
+  // &.call-foods .ant-modal-title {
+  //   margin-bottom: 16px;
+  //   // color: $primary-color;
+  //   color: #b30000;
+  //   font-size: 2.8rem;
+  // }
+
+  &:where(.use-tables, .call-foods) .ant-modal-title {
+    margin-bottom: 16px;
+    // color: $primary-color;
+    color: #b30000;
+    font-size: 2.8rem;
+  }
+
+  &:where(.use-tables, .call-foods) .ant-modal-close {
+    color: #000;
+  }
+
+  &:where(.use-tables, .call-foods) .ant-modal-close:hover {
+    color: $red-secondary-btn-color;
+  }
+
+  &:where(.use-tables, .call-foods) .info {
+    font-size: 1.8rem;
+    margin-top: 4px;
+  }
+
+  &:where(.use-tables, .call-foods) .info b {
+    width: 25%;
+    display: inline-block;
+    font-weight: 600;
+  }
+
+  &:where(.use-tables, .call-foods) table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4px;
+  }
+
+  &:where(.use-tables, .call-foods) table th,
+  &:where(.use-tables, .call-foods) table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-size: 1.4rem;
+    text-align: center;
+  }
+
+  &:where(.use-tables, .call-foods) table th {
+    background-color: #ffe0cc;
+    font-weight: 600;
+  }
+
+  &:where(.use-tables, .call-foods) table td {
+    background-color: #fff;
+  }
+
+  &:where(.use-tables, .call-foods) table td.left {
+    text-align: left;
+  }
+
+  &:where(.use-tables, .call-foods) .note {
+    margin-top: 20px;
+    color: #444;
+    font-size: 1.8rem;
+    font-style: italic;
+  }
+
+  &:where(.use-tables, .call-foods) .status.purple {
+    font-weight: 600;
+    color: purple;
+  }
+
+  &:where(.use-tables, .call-foods) .status.green {
+    font-weight: 600;
+    color: green;
+  }
+
+  &:where(.use-tables, .call-foods) .status.red {
+    font-weight: 600;
+    color: red;
+  }
+
+  &:where(.use-tables, .call-foods) .status.gray {
+    font-weight: 600;
+    color: gray;
+  }
+
+  &.use-tables .buttons {
+    margin-top: 30px;
+  }
+
+  &__form.ant-form,
+  &__form.ant-form &__form-group-warper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $padding-vertical $padding-horizontal;
+    width: 100%;
+  }
+
+  &__form-group-title {
+    width: 100% !important;
+    font-size: 1.8rem;
+    color: #000;
+    font-weight: 600;
+    border-bottom: 2px solid #000;
+  }
+
+  &__form.ant-form.split-2 &__form-group {
+    width: calc(50% - calc($padding-horizontal / 2));
+  }
+
+  &__form.ant-form.split-3 &__form-group {
+    width: calc(calc(100% / 3) - calc($padding-horizontal * 2 / 3));
+  }
+
+  &__form-image,
+  &__form-content {
+    width: 100%;
+  }
+
+  &__form-image img {
+    @include size(150px);
+    margin-left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &__form-content p {
+    color: #777;
+    font-size: 1.8rem;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  &__form-content p b {
+    color: $red-primary-btn-color;
+    text-decoration: underline;
+  }
+
+  &__form-group,
+  &__form-group-item,
+  &__form-group-item .ant-space-compact {
+    width: 100%;
+  }
+
+  &__form.ant-form &__form-group-item-warper {
+    display: flex;
+    gap: $padding-horizontal;
+    width: 100%;
+  }
+
+  &__form.ant-form &__form-group-warper.split-2 &__form-group,
+  &__form.ant-form &__form-group-item-warper.split-2 &__form-group-item {
+    width: calc(calc(100% - $padding-horizontal) / 2);
+  }
+
+  &__form.ant-form &__form-group-item.multiple-2 {
+    width: calc(100% * 2 + $padding-horizontal);
+  }
+
+  &__form.ant-form &__form-group-item.multiple-3 {
+    width: calc(100% * 3 + calc($padding-horizontal * 2));
+  }
+
+  &__form.ant-form &__form-group-item.hidden {
+    visibility: hidden;
+  }
+
+  &__form.ant-form &__form-group-item {
+    margin-bottom: $margin-bottom;
+  }
+
+  &__form.ant-form &__form-group-item.margin-bottom-0,
+  &__form-group-item.margin-bottom-0 {
+    margin-bottom: 0;
+  }
+
+  & .ant-form-item-label label,
+  & .ant-form-item-control input,
+  & .ant-form-item-control textarea,
+  & .ant-form-item-control .ant-input-number,
+  & .ant-form-item-control .ant-picker,
+  & .ant-form-item-control .ant-select-selector,
+  & .ant-form-item-control .ant-select-arrow,
+  & .ant-form-item-control .ant-select-clear,
+  & .ant-form-item-control .ant-upload #image-button[type="button"] {
+    @include size(100%, $form-item-height);
+    font-size: 1.6rem;
+    border-radius: $border-radius !important;
+  }
+
+  & .ant-select {
+    height: 100%;
+  }
+
+  // & .ant-form-item-control,
+  // & .ant-form-item-control .ant-input-number {
+  //   @include size(100%, $form-item-height);
+  // }
+
+  & .ant-form-item-control .ant-select-selector {
+    height: $form-item-height !important;
+  }
+
+  & .ant-form-item-control .ant-select-arrow,
+  & .ant-form-item-control .ant-select-clear {
+    @include size(calc($form-item-height / 2));
+    justify-content: flex-end;
+    top: calc($form-item-height / 4);
+    margin-top: 0;
+  }
+
+  & .ant-form-item-control .ant-select-clear {
+    display: flex;
+  }
+
+  & .ant-form-item-control input.text-center {
+    text-align: center;
+  }
+
+  & .ant-form-item-control :is(.ant-image-img, .ant-image-mask) {
+    @include size(180px);
+    margin-top: -14px;
+  }
+
+  &
+    .ant-form-item-control:has(.ant-image-img)
+    .ant-form-item-control-input-content {
+    @include flexCenter();
+    height: calc($form-item-height * 2) + calc($form-label-height * 2) +
+      calc($margin-bottom * 2);
+  }
+
+  & .ant-form-item-control .ant-upload,
+  & .ant-form-item-control .ant-upload #image-button[type="button"] {
+    width: 100%;
+  }
+
+  & .ant-form-item-control .ant-upload #image-button[type="button"] {
+    position: absolute;
+    top: calc(
+      calc($form-item-height * 2) + calc($form-label-height * 2) +
+        calc($margin-bottom * 2)
+    );
+    left: 0;
+  }
+
+  &__form.ant-form
+    &__form-group-item:has(
+      .ant-form-item-control .ant-upload #image-button[type="button"]
+    )
+    + * {
+    margin-top: calc($form-item-height + $margin-bottom);
+  }
+
+  &.ant-modal.employees
+    .ant-form-item-control
+    :is(.ant-image-img, .ant-image-mask) {
+    width: calc(180px * 3 / 4);
+  }
+
+  &.ant-modal.foods
+    .ant-form-item-control
+    :is(.ant-image-img, .ant-image-mask) {
+    @include size(240px, 180px);
+    margin-top: 80px;
+  }
+
+  &.ant-modal.foods
+    .ant-form-item-control
+    .ant-upload
+    #image-button[type="button"] {
+    top: calc(
+      calc($form-item-height * 3) + calc($form-label-height * 3) +
+        calc($margin-bottom * 3)
+    );
+  }
+
+  &__form.ant-form &__form-group-item button.secondary-btn {
+    position: absolute;
+    top: calc(-24px - calc($padding-horizontal / 4));
+    right: 0;
+    @include flexCenter();
+    @include size(12%, 24px);
+    border-width: 3px;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+
+  &__form.ant-form &__form-group-item button.secondary-btn.diff {
+    width: 20%;
+  }
+
+  &__form.ant-form &__form-group-item button.secondary-btn.margin-r {
+    right: calc(12% + calc($padding-horizontal / 4));
+  }
+
+  &.ant-modal.films &__form-group-item button.secondary-btn {
+    width: 22%;
+  }
+
+  &.ant-modal.films &__form-group-item button.secondary-btn.margin-r {
+    right: calc(22% + calc($padding-horizontal / 4));
+  }
+
+  &__form textarea.multiple-2 {
+    height: calc(
+      $form-label-height + calc($form-item-height * 2) + $margin-bottom
+    );
+  }
+
+  &__buttons {
+    @include flexCenter();
+    gap: $padding-horizontal;
+    width: 100%;
+  }
+
+  &__buttons.mg-top {
+    margin-top: 30px;
+  }
+
+  &__button {
+    @include size(100%, $form-primary-button-height);
+    font-size: 1.3rem;
+    border-radius: $border-radius;
+  }
+
+  &__button.secondary {
+    width: calc(100% / 5 - calc($padding-horizontal * 4 / 5));
+  }
+
+  &__button.secondary:first-of-type {
+    margin-left: auto;
+  }
+
+  //   &__form.half &__button {
+  //     width: calc(50% - calc($padding-horizontal / 2));
+  //   }
+}

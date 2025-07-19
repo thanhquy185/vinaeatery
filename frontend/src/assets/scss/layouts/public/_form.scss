@@ -1,0 +1,150 @@
+@use "../../abstracts/variables" as *;
+@use "../../abstracts/colors" as *;
+@use "../../abstracts/mixins" as *;
+
+.form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  width: 30%;
+  background: #fff;
+  padding: 24px 26px;
+  border-radius: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  // &__title {
+  //   position: relative;
+  //   top: -24px;
+  //   left: -26px;
+  //   width: calc(100% + 26px * 2);
+  //   background: $primary-color;
+  //   padding: 20px 0;
+  //   border-radius: 20px 20px 0 0;
+  //   color: #fff;
+  //   font-size: 2.8rem;
+  //   font-weight: bold;
+  //   text-align: center;
+  // }
+
+  &__title {
+    // padding-bottom: 32px;
+    border-radius: 20px 20px 0 0;
+    color: $primary-color;
+    font-size: 2.8rem;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  &__line {
+    @include size(100%, 5px);
+    margin: 20px 0 24px;
+    background: $primary-color;
+    border-radius: 8px;
+  }
+
+  &__form-group {
+    position: relative;
+  }
+
+  &__form-group + &__form-group {
+    margin-top: 32px;
+  }
+
+  &__form-group label,
+  &__form-group input,
+  &__form-group .icon {
+    font-size: 1.8rem;
+    transition: 0.2s ease-in-out;
+  }
+
+  &__form-group label,
+  &__form-group input {
+    @include size(100%, 40px);
+  }
+
+  &__form-group input {
+    padding: 0 37px 0 10px;
+    border: 1px solid #dedede;
+    margin-top: 8px;
+    border-radius: 4px;
+  }
+
+  &__form-group input::placeholder {
+    color: #dedede;
+  }
+
+  &__form-group:has(.icon:hover) input,
+  &__form-group input:where(:hover, :focus, :not(:placeholder-shown)) {
+    border-color: #000;
+    box-shadow: $common-box-shadow;
+  }
+
+  &__form-group .icon:hover,
+  &__form-group input:not(:placeholder-shown),
+  &__form-group:has(input:where(:hover, :focus, :not(:placeholder-shown)))
+    .icon {
+    color: #000;
+  }
+
+  &__form-group :where(.icon, .error-icon) {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    @include size(20px, 20px);
+    padding-left: 10px;
+    line-height: 20px;
+    transition: 0.2s ease-in-out;
+    cursor: pointer;
+  }
+
+  &__form-group .icon {
+    color: #dedede;
+  }
+
+  &__form-group .error-icon {
+    right: 12px;
+    bottom: 12px;
+    @include size(16px, 16px);
+    padding-left: 12px;
+    line-height: 16px;
+  }
+
+  &__form-group .icon:hover {
+    color: $primary-color;
+  }
+
+  &__form-group button {
+    @include size(100%, 40px);
+    border-radius: 4px;
+    margin-top: 10px;
+    font-size: 1.8rem;
+  }
+
+  &__form-group button:hover {
+    background: #fff;
+    color: $primary-color;
+  }
+
+  &__action {
+    margin-top: 28px;
+    color: #777;
+    text-align: center;
+  }
+
+  &__action.left {
+    margin-top: 12px;
+    font-size: 1.4rem;
+    text-align: left;
+  }
+
+  &__action a {
+    display: inline-block;
+    color: $blue-primary-btn-color;
+    transition: 0.2s ease-in-out;
+  }
+
+  &__action a:hover {
+    color: #0057b4;
+  }
+}
