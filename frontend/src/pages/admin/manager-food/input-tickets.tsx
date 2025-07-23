@@ -2,8 +2,6 @@ import {
   useEffect,
   useState,
   type Dispatch,
-  type ReactElement,
-  type ReactHTMLElement,
   type ReactNode,
   type SetStateAction,
 } from "react";
