@@ -14,6 +14,7 @@ import vn.tuhoc.vinaeatery.domain.Food;
 import vn.tuhoc.vinaeatery.domain.Ingredient;
 import vn.tuhoc.vinaeatery.domain.criteria.FoodCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.FoodDTO;
+import vn.tuhoc.vinaeatery.domain.dto.IngredientDTO;
 import vn.tuhoc.vinaeatery.domain.dto.RecipeDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.FoodStatusEnum;
 import vn.tuhoc.vinaeatery.repository.CategoryFoodRepository;
@@ -34,6 +35,33 @@ public class FoodService {
     // Methods
     public Food getOneById(Integer id) {
         return this.foodRepository.findOneById(id);
+    }
+
+    public FoodDTO getOneFormatById(Integer id) {
+        Food food = getOneById(id);
+        FoodDTO foodDTO = new FoodDTO();
+
+        if (food != null) {
+            List<RecipeDTO> recipeDTO = new ArrayList<>();
+            for (Recipe recipe : recipeRepository.findAllByFoodId(food.getId())) {
+                Ingredient ingredient = ingredientRepository.findOneById(recipe.getId().getIngredientId());
+                recipeDTO.add(new RecipeDTO(ingredient.getId(), ingredient.getName(), ingredient.getInventory(),
+                        recipe.getQuantity(), ingredient.getNote()));
+            }
+
+            foodDTO.setId(food.getId());
+            foodDTO.setImage(food.getImage());
+            foodDTO.setName(food.getName());
+            foodDTO.setCategoryFood(categoryFoodRepository.findOneById(food.getCategoryFoodId()));
+            foodDTO.setPrice(food.getPrice());
+            foodDTO.setUnit(food.getUnit());
+            foodDTO.setDescription(food.getDescription());
+            foodDTO.setStatus(food.getStatus());
+            foodDTO.setTimeUpdate(food.getTimeUpdate());
+            foodDTO.setRecipe(recipeDTO);
+        }
+
+        return foodDTO;
     }
 
     public Food getLastOne() {

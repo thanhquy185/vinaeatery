@@ -18,6 +18,7 @@ import type {
   IngredientsType,
   InputTicketsFormatType,
   InputTicketsType,
+  OrderTablesFormatType,
   RestResponseType,
   RolesFormatType,
   RolesType,
@@ -127,7 +128,7 @@ export const HandleLockCustomerCard = ({
   });
 };
 
-// Các api của đối tượng Nhà cung cấp (Customer)
+// Các api của đối tượng Khách hàng (Customer)
 export const FindAllCustomer = ({
   findType,
   findValue,
@@ -215,6 +216,40 @@ export const HandleLockCustomer = ({
   });
 };
 
+// Các api của đối tượng Đơn đặt bàn (Order Table)
+export const FindAllOrderTable = ({
+  findType,
+  findValue,
+  timeValue,
+  statusValue,
+}: FilterDataProps): Promise<AxiosResponse<OrderTablesFormatType[], any>> => {
+  const params: Record<string, string> = {};
+
+  if (findValue! !== "") {
+    if (findType! === "id") params.id = findValue!;
+    if (findType! === "fullname") params.fullname = findValue!;
+    if (findType! === "phone") params.phone = findValue!;
+  }
+  if (timeValue! && timeValue!.length > 0) {
+    if (timeValue![0] !== "") params.timeOrderStart = timeValue![0];
+    if (timeValue![1] !== "") params.timeOrderEnd = timeValue![1];
+  }
+  if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+
+
+  return instance.get<OrderTablesFormatType[]>(
+    "/api/order-tables/list-format",
+    {
+      params,
+    }
+  );
+};
+export const FindOneOrderTable = (
+  id: string
+): Promise<AxiosResponse<OrderTablesFormatType, any>> => {
+  return instance.get(`/api/order-tables/detail/${id}`);
+};
+
 // Các api của đối tượng Tầng (Floor)
 export const FindAllFloor = ({
   findType,
@@ -272,7 +307,7 @@ export const HandleLockFloor = ({
   });
 };
 
-// Các api của đối tượng Loại nguyên liệu (Category Table)
+// Các api của đối tượng Loại bàn (Category Table)
 export const FindAllCategoryTable = ({
   findType,
   findValue,

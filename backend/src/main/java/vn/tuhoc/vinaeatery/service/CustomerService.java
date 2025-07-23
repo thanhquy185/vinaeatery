@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Customer_;
+import vn.tuhoc.vinaeatery.domain.TableE;
 import vn.tuhoc.vinaeatery.domain.Customer;
 import vn.tuhoc.vinaeatery.domain.criteria.CustomerCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CustomerDTO;
+import vn.tuhoc.vinaeatery.domain.dto.TableDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.CustomerCardRepository;
 import vn.tuhoc.vinaeatery.repository.CustomerRepository;
@@ -27,6 +29,26 @@ public class CustomerService {
     // Methods
     public Customer getOneById(Integer id) {
         return this.customerRepository.findOneById(id);
+    }
+
+    public CustomerDTO getOneFormatById(Integer id) {
+        Customer customer = getOneById(id);
+        CustomerDTO customerDTO = new CustomerDTO();
+
+        if (customer != null) {
+            customerDTO.setFullname(customer.getFullname());
+            customerDTO.setBirthday(customer.getBirthday());
+            customerDTO.setGender(customer.getGender());
+            customerDTO.setPhone(customer.getPhone());
+            customerDTO.setEmail(customer.getEmail());
+            customerDTO.setAddress(customer.getAddress());
+            customerDTO.setDescription(customer.getDescription());
+            customerDTO.setStatus(customer.getStatus());
+            customerDTO.setTotalThreshold(customer.getTotalThreshold());
+            customerDTO.setTimeUpdate(customer.getTimeUpdate());
+        }
+
+        return customerDTO;
     }
 
     public List<Customer> getAll() {

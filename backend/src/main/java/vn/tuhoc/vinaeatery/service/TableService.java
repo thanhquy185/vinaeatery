@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.TableE_;
+import vn.tuhoc.vinaeatery.domain.Ingredient;
 import vn.tuhoc.vinaeatery.domain.TableE;
 import vn.tuhoc.vinaeatery.domain.criteria.TableCriteria;
+import vn.tuhoc.vinaeatery.domain.dto.IngredientDTO;
 import vn.tuhoc.vinaeatery.domain.dto.TableDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.CategoryTableRepository;
@@ -33,6 +35,23 @@ public class TableService {
 
     public TableE getOneById(Integer id) {
         return this.tableRepository.findOneById(id);
+    }
+
+    public TableDTO getOneFormatById(Integer id) {
+        TableE table = getOneById(id);
+        TableDTO tableDTO = new TableDTO();
+
+        if (table != null) {
+            tableDTO.setId(id);
+            tableDTO.setName(table.getName());
+            tableDTO.setCategoryTable(categoryTableRepository.findOneById(table.getCategoryTableId()));
+            tableDTO.setFloor(floorRepository.findOneById(table.getFloorId()));
+            tableDTO.setDescription(table.getDescription());
+            tableDTO.setStatus(table.getStatus());
+            tableDTO.setTimeUpdate(table.getTimeUpdate());
+        }
+
+        return tableDTO;
     }
 
     public List<TableE> getAll() {

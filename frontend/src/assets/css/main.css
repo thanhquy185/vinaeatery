@@ -2775,13 +2775,10 @@ body:has(.sidebar.hide) .main {
 .main__filter.call-foods .main__filter-select.filter-time, .main__filter.use-tables .main__filter-select.filter-time {
   width: calc(40% - 15px);
 }
-.main__filter.order-tables .main__filter-select.filter-date {
-  width: calc(25% - 15px);
-}
-.main__segmented + .main__filter, .main__chart, .main__cards, .main__table, .main__info, .main__calendar {
+.main__use-tables, .main__segmented + .main__filter, .main__chart, .main__cards, .main__table, .main__info, .main__calendar {
   margin-top: 15px;
 }
-.main__use-tables, .main__order-sheets {
+.main__order-sheets {
   margin-top: 30px;
 }
 .main__cards {

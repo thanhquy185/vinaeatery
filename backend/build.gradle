@@ -39,7 +39,7 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
     // DevTools
-    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // MySQL JDBC Driver
     implementation 'com.mysql:mysql-connector-j:9.2.0'

@@ -5,6 +5,7 @@ import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
 import java.time.LocalDateTime;
+import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 
 @StaticMetamodel(OrderTable.class)
 @Generated("org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor")
@@ -65,6 +66,11 @@ public abstract class OrderTable_ {
 	 * @see vn.tuhoc.vinaeatery.domain.OrderTable#email
 	 **/
 	public static volatile SingularAttribute<OrderTable, String> email;
+	
+	/**
+	 * @see vn.tuhoc.vinaeatery.domain.OrderTable#status
+	 **/
+	public static volatile SingularAttribute<OrderTable, CommonStatusEnum> status;
 
 	public static final String TIME_ARRIVE = "timeArrive";
 	public static final String NOTE = "note";
@@ -76,6 +82,7 @@ public abstract class OrderTable_ {
 	public static final String FULLNAME = "fullname";
 	public static final String TIME_ORDER = "timeOrder";
 	public static final String EMAIL = "email";
+	public static final String STATUS = "status";
 
 }
 

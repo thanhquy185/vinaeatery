@@ -23,14 +23,14 @@ public abstract class UseTable_ {
 	public static volatile SingularAttribute<UseTable, LocalDateTime> timeStart;
 	
 	/**
+	 * @see vn.tuhoc.vinaeatery.domain.UseTable#orderId
+	 **/
+	public static volatile SingularAttribute<UseTable, Integer> orderId;
+	
+	/**
 	 * @see vn.tuhoc.vinaeatery.domain.UseTable#orderTableId
 	 **/
 	public static volatile SingularAttribute<UseTable, Integer> orderTableId;
-	
-	/**
-	 * @see vn.tuhoc.vinaeatery.domain.UseTable#customerId
-	 **/
-	public static volatile SingularAttribute<UseTable, Integer> customerId;
 	
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.UseTable#tableId
@@ -54,8 +54,8 @@ public abstract class UseTable_ {
 
 	public static final String TIME_END = "timeEnd";
 	public static final String TIME_START = "timeStart";
+	public static final String ORDER_ID = "orderId";
 	public static final String ORDER_TABLE_ID = "orderTableId";
-	public static final String CUSTOMER_ID = "customerId";
 	public static final String TABLE_ID = "tableId";
 	public static final String ID = "id";
 	public static final String STATUS = "status";

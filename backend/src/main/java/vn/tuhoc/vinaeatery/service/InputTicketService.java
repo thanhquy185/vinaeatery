@@ -58,8 +58,8 @@ public class InputTicketService {
         //
         if (inputTicketCriteria.getId() == null && inputTicketCriteria.getTimeCreateStart() == null
                 && inputTicketCriteria.getTimeCreateEnd() == null
-                && inputTicketCriteria.getSupplierId() == null
                 && inputTicketCriteria.getEmployeeId() == null
+                && inputTicketCriteria.getSupplierId() == null
                 && inputTicketCriteria.getStatusMerge() == null
                 && inputTicketCriteria.getPayStatus() == null
                 && inputTicketCriteria.getStatus() == null
@@ -86,17 +86,17 @@ public class InputTicketService {
                     .timeCreateBefore(inputTicketCriteria.getTimeCreateEnd().get());
             combinedSpec = combinedSpec.and(currentSpec);
         }
+        if (inputTicketCriteria.getEmployeeId() != null && inputTicketCriteria.getEmployeeId().isPresent()) {
+            if (inputTicketCriteria.getEmployeeId().get().matches("\\d+")) {
+                Specification<InputTicket> currentSpec = InputTicketSpecification
+                .employeeIdEqual(inputTicketCriteria.getEmployeeId().get());
+                combinedSpec = combinedSpec.and(currentSpec);
+            }
+        }
         if (inputTicketCriteria.getSupplierId() != null && inputTicketCriteria.getSupplierId().isPresent()) {
             if (inputTicketCriteria.getSupplierId().get().matches("\\d+")) {
                 Specification<InputTicket> currentSpec = InputTicketSpecification
                         .supplierIdEqual(inputTicketCriteria.getSupplierId().get());
-                combinedSpec = combinedSpec.and(currentSpec);
-            }
-        }
-        if (inputTicketCriteria.getEmployeeId() != null && inputTicketCriteria.getEmployeeId().isPresent()) {
-            if (inputTicketCriteria.getEmployeeId().get().matches("\\d+")) {
-                Specification<InputTicket> currentSpec = InputTicketSpecification
-                        .employeeIdEqual(inputTicketCriteria.getEmployeeId().get());
                 combinedSpec = combinedSpec.and(currentSpec);
             }
         }

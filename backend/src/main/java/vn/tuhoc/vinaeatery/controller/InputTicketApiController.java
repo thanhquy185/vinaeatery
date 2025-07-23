@@ -26,7 +26,7 @@ import vn.tuhoc.vinaeatery.domain.criteria.InputTicketCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.InputTicketDTO;
 import vn.tuhoc.vinaeatery.domain.dto.InputTicketUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.InputTicketStatusEnum;
-import vn.tuhoc.vinaeatery.domain.enumm.PayStatusEnum;
+// import vn.tuhoc.vinaeatery.domain.enumm.PayStatusEnum;
 // import vn.tuhoc.vinaeatery.service.EmployeeService;
 import vn.tuhoc.vinaeatery.service.IngredientService;
 import vn.tuhoc.vinaeatery.service.InputTicketDetailService;
@@ -88,7 +88,6 @@ public class InputTicketApiController {
                         new InputTicketDetailId(inputTicketCreated.getId(),
                                 inputTicketDetailForCrud.getIngredientId()),
                         inputTicketDetailForCrud.getPrice(), inputTicketDetailForCrud.getQuantity());
-
                 this.inputTicketDetailService.upsert(newInputTicketDetail);
             }
         }

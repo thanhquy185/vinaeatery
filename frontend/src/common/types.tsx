@@ -71,16 +71,32 @@ export interface OrderDetailsType {
 }
 
 // Kiểu dữ liệu Đơn đặt bàn
+// - Chưa format
 export interface OrderTablesType {
-  id: number;
+  id?: number;
   timeOrder?: string;
   timeArrive?: string;
-  employee?: EmployeesType;
-  customerFullname?: string;
-  customerPhone?: string;
-  customerEmail?: string;
-  customerAddress?: string;
+  employeeId?: number;
+  fullname?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
   note?: string;
+  status?: string;
+  timeUpdate?: string;
+}
+// - Đã format
+export interface OrderTablesFormatType {
+  id?: number;
+  timeOrder?: string;
+  timeArrive?: string;
+  employee?: EmployeesFormatType;
+  fullname?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  note?: string;
+  status?: string;
   timeUpdate?: string;
 }
 
@@ -418,6 +434,7 @@ export interface EmployeesType {
   status?: string;
   timeUpdate?: string;
 }
+// - Đã format
 export interface EmployeesFormatType {
   id?: number;
   image?: string;

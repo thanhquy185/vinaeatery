@@ -278,11 +278,11 @@ const AdminSidebar = () => {
             icon={faTableCells}
             items={seatManagerItems}
           /> */}
-          <SidebarGroup
+          {/* <SidebarGroup
             title="Quản lý món ăn"
             icon={faCubesStacked}
             items={foodManagerItems}
-          />
+          /> */}
           {/* <SidebarGroup
             title="Quản lý nhân sự"
             icon={faUsersGear}

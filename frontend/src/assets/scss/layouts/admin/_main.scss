@@ -4,10 +4,7 @@
 
 .main {
   $filter-find-width: 40%;
-  $filter-select-width: calc(
-    calc(calc(100% - $filter-find-width) / 3) -
-      calc(calc($admin-space / 2) * 2 / 3)
-  );
+  $filter-select-width: calc(calc(calc(100% - $filter-find-width) / 3) - calc(calc($admin-space / 2) * 2 / 3));
   $filter-button-width: 10%;
   $card-padding: 24px; // Theo mặc định của ant
   $calendar-border-radius: 8px;
@@ -49,7 +46,7 @@
     // border-radius: $main-border-radius;
   }
 
-  &__chart.split-2 > * {
+  &__chart.split-2>* {
     width: 50%;
     // background: #fff;
     // border-radius: $main-border-radius;
@@ -62,7 +59,7 @@
     flex-wrap: wrap;
   }
 
-  &__chart-card > * {
+  &__chart-card>* {
     width: calc(100% / 2 - calc($admin-space / 4));
     border: none;
   }
@@ -129,9 +126,7 @@
   }
 
   &__filter-select.big {
-    width: calc(
-      $filter-select-width + calc($filter-select-width - $filter-button-width)
-    );
+    width: calc($filter-select-width + calc($filter-select-width - $filter-button-width));
   }
 
   &__filter-select .ant-select-selection-overflow {
@@ -149,8 +144,7 @@
   }
 
   &__filter-find .ant-select-selection-item,
-  &__filter-select
-    :where(.ant-select-selection-item, .ant-select-selection-placeholder) {
+  &__filter-select :where(.ant-select-selection-item, .ant-select-selection-placeholder) {
     line-height: calc($admin-filter-height - 4px) !important;
   }
 
@@ -192,14 +186,12 @@
     width: calc($filter-find-width - calc($admin-space / 2));
   }
 
-  &__filter.order-tables &__filter-select.filter-date {
-    width: calc(
-      calc(calc(100% - $filter-find-width - $filter-button-width) / 2) -
-        calc($admin-space / 2)
-    );
-  }
+  // &__filter.order-tables &__filter-select.filter-date {
+  //   width: calc(calc(calc(100% - $filter-find-width - $filter-button-width) / 2) - calc($admin-space / 2));
+  // }
 
-  &__segmented + &__filter,
+  &__use-tables,
+  &__segmented+&__filter,
   &__chart,
   &__cards,
   &__table,
@@ -208,7 +200,6 @@
     margin-top: calc($admin-space / 2);
   }
 
-  &__use-tables,
   &__order-sheets {
     margin-top: $admin-space;
   }
@@ -262,15 +253,12 @@
     // margin-top: $admin-space;
   }
 
-  &__calendar
-    :where(
-      .fc-daygrid-body,
-      .fc-scrollgrid-sync-table,
-      .fc-col-header,
-      .fc-timegrid-body,
-      .fc-timegrid-slots table,
-      .fc-timegrid-cols table
-    ) {
+  &__calendar :where(.fc-daygrid-body,
+    .fc-scrollgrid-sync-table,
+    .fc-col-header,
+    .fc-timegrid-body,
+    .fc-timegrid-slots table,
+    .fc-timegrid-cols table) {
     width: 100% !important;
   }
 
@@ -280,9 +268,7 @@
     transition: 0.1s ease;
   }
 
-  &__calendar
-    :where(.fc-scrollgrid-sync-table, .fc-timegrid-slots)
-    td:not(.fc-scrollgrid-shrink):hover {
+  &__calendar :where(.fc-scrollgrid-sync-table, .fc-timegrid-slots) td:not(.fc-scrollgrid-shrink):hover {
     background: #eee;
     // color: #fff;
   }
@@ -333,17 +319,11 @@
     height: 80px !important;
   }
 
-  &__filter-select.filter-employee
-    .ant-select-selection-item
-    .hasImageInLabel
-    > img {
+  &__filter-select.filter-employee .ant-select-selection-item .hasImageInLabel>img {
     @include size(40px !important);
   }
 
-  &__filter-select.filter-employee
-    .ant-select-selection-item
-    .hasImageInLabel
-    span {
+  &__filter-select.filter-employee .ant-select-selection-item .hasImageInLabel span {
     height: calc(60px / 3) !important;
     line-height: calc(60px / 3);
   }

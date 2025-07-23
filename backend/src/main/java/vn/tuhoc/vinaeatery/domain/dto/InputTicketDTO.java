@@ -31,7 +31,6 @@ public class InputTicketDTO {
     private Long totalPrice;
     @Convert(converter = PayStatusConverter.class)
     private PayStatusEnum payStatus;
-    @Column(columnDefinition = "TINYINT(3)")
     @Convert(converter = InputTicketStatusConverter.class)
     private InputTicketStatusEnum status;
     private List<InputTicketDetailDTO> inputTicketDetails;

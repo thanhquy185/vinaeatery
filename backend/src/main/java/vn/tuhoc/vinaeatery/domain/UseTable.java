@@ -32,7 +32,7 @@ public class UseTable {
     private Integer id;
     @NotNull(message = "Bàn không được để trống !")
     private Integer tableId;
-    private Integer customerId;
+    private Integer orderId;
     private Integer orderTableId;
     @Column(columnDefinition = "DATETIME")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

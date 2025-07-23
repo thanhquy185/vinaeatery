@@ -2,12 +2,14 @@ import { useEffect, useState, type ReactNode } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleInfo,
+  faLock,
   faPenToSquare,
   faPlus,
+  faUnlock,
 } from "@fortawesome/free-solid-svg-icons";
-import { Form } from "antd";
+import { Form, Tag, type SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import type { OrderTablesType } from "../../../common/types";
+import type { OrderTablesFormatType } from "../../../common/types";
 import { CustomPaginationProps } from "../../../common/pagination-props";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";
@@ -17,44 +19,42 @@ import CustomSelect from "../../../components/admin/select";
 import CustomTextArea from "../../../components/admin/text-area";
 import CustomDatePicker from "../../../components/admin/date-picker";
 import CustomModal from "../../../components/admin/modal";
+import { commonStatus } from "../../../common/values";
+import CustomFindSelect from "../../../components/admin/find-select";
+import { FindAllOrderTable } from "../../../services/api";
+import { openNotification } from "../../../utils/showNotification";
 
 // Admin Order Tables Page
 const AdminOrderTablesPage = () => {
   // Cấu hình cột bảng dữ liệu của Đơn đặt bàn
-  const columns: ColumnsType<OrderTablesType> = [
+  const [loading, setLoading] = useState<boolean>(false);
+  const columns: ColumnsType<OrderTablesFormatType> = [
     {
       title: "#",
       dataIndex: "id",
       key: "id",
       sorter: true,
-      width: "8%",
+      width: "10%",
     },
     {
       title: "Thời gian đặt bàn",
       dataIndex: "timeOrder",
       key: "timeOrder",
       sorter: true,
-      width: "16%",
-    },
-    {
-      title: "Thời gian đến ăn",
-      dataIndex: "timeArrive",
-      key: "timeArrive",
-      sorter: true,
-      width: "16%",
+      width: "18%",
     },
     {
       title: "Tên khách hàng",
-      dataIndex: "customerFullname",
-      key: "customerFullname",
+      dataIndex: "fullname",
+      key: "fullname",
       sorter: true,
       width: "18%",
-      className: "left",
     },
     {
       title: "Số điện thoại",
-      dataIndex: "customerPhone",
-      key: "customerPhone",
+      dataIndex: "phone",
+      key: "phone",
+      sorter: true,
       width: "12%",
     },
     {
@@ -65,11 +65,22 @@ const AdminOrderTablesPage = () => {
       className: "left",
     },
     {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      width: "10%",
+      render: (status: string) => (
+        <Tag color={status === commonStatus["active"] ? "green" : "red"}>
+          {status}
+        </Tag>
+      ),
+    },
+    {
       title: "",
       dataIndex: "",
       key: "actions",
-      width: "8%",
-      render: (text: any, record: OrderTablesType, index: number) => (
+      width: "10%",
+      render: (text: any, record: OrderTablesFormatType, index: number) => (
         <>
           <button
             className="action info"
@@ -86,7 +97,7 @@ const AdminOrderTablesPage = () => {
             <FontAwesomeIcon icon={faCircleInfo} />
           </button>
           <button
-            className="action update margin-l"
+            className="action update margin-lr"
             onClick={() =>
               updatePropertiesModal(
                 "Cập nhật đơn đặt bàn",
@@ -99,30 +110,29 @@ const AdminOrderTablesPage = () => {
           >
             <FontAwesomeIcon icon={faPenToSquare} />
           </button>
+          <button
+            className="action lock"
+            onClick={() =>
+              updatePropertiesModal(
+                (record.status == commonStatus["active"] ? "Khoá" : "Mở khoá") +
+                " đơn đặt ăn",
+                true,
+                "30%",
+                "lock order-tables",
+                AdminOrderTablesModal.lock(record!.id as number, record!.status)
+              )
+            }
+          >
+            <FontAwesomeIcon
+              icon={record.status == commonStatus["active"] ? faLock : faUnlock}
+            />
+          </button>
         </>
       ),
     },
   ];
   // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
-  const [orderTables, setOrderTables] = useState<OrderTablesType[]>([
-    {
-      id: 1,
-      timeOrder: "2025-06-26 00:00:00",
-      timeArrive: "2025-06-27 15:00:00",
-      employee: {
-        id: 1,
-        fullname: "Nhân viên 1",
-        phone: "0987654321",
-        email: "nv1@gmail.com",
-        address: "địa chỉ nv1",
-      },
-      customerFullname: "abc",
-      customerPhone: "1234567890",
-      customerEmail: "abc@gmail.com",
-      customerAddress: "địa chỉ abc",
-      note: "tầng 2, bàn nào nhìn cửa sổ được",
-    },
-  ]);
+  const [orderTables, setOrderTables] = useState<OrderTablesFormatType[]>([]);
   const {
     currentItems,
     handleTableChange,
@@ -135,19 +145,24 @@ const AdminOrderTablesPage = () => {
   // - Tìm kiếm thông tin
   const findOptions = [
     { label: "#", value: "id" },
-    { label: "Tên", value: "name" },
+    { label: "Tên", value: "fullname" },
     { label: "SĐT", value: "phone" },
   ];
   const [filterFindType, setFilterFindType] = useState<string | null>(
     findOptions[0].value
   );
   const [filterFindValue, setFilterFindValue] = useState<string | null>("");
-  // - Ngày đặt bàn
-  const [filterDateOrderValue, setFilterDateOrderValue] =
+  // - Thời gian đặt bàn
+  const [filterTimeValue, setFilterTimeValue] =
     useState<[string, string]>();
-  // - Ngày đến ăn
-  const [filterDateArriveValue, setFilterDateArriveValue] =
-    useState<[string, string]>();
+  /// - Trạng thái
+  const statusOptions: SelectProps["options"] = [
+    { label: commonStatus["active"], value: commonStatus["active"] },
+    { label: commonStatus["inactive"], value: commonStatus["inactive"] },
+  ];
+  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
+    null
+  );
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -210,7 +225,7 @@ const AdminOrderTablesPage = () => {
     customerEmail,
     customerAddress,
     note,
-  }: OrderTablesType) => {
+  }: OrderTablesFormatType) => {
     const [form] = Form.useForm();
 
     return (
@@ -265,13 +280,12 @@ const AdminOrderTablesPage = () => {
                   className="employees"
                   options={[
                     {
-                      label: `${
-                        employee!.fullname +
+                      label: `${employee!.fullname +
                         " - " +
                         employee!.phone +
                         " - " +
                         employee!.email
-                      }`,
+                        }`,
                       value: employee!.id,
                     },
                   ]}
@@ -491,7 +505,7 @@ const AdminOrderTablesPage = () => {
     customerEmail,
     customerAddress,
     note,
-  }: OrderTablesType) => {
+  }: OrderTablesFormatType) => {
     const [form] = Form.useForm();
     const [timeOrderValue, setTimeOrderValue] = useState<string | string[]>(
       timeOrder!
@@ -660,7 +674,7 @@ const AdminOrderTablesPage = () => {
     );
   };
   const AdminOrderTablesModal = {
-    detail: (orderTable: OrderTablesType) => (
+    detail: (orderTable: OrderTablesFormatType) => (
       <DetailOrderTables
         id={orderTable!.id}
         timeOrder={orderTable!.timeOrder}
@@ -674,7 +688,7 @@ const AdminOrderTablesPage = () => {
       />
     ),
     create: () => <CreateOrderTables />,
-    update: (orderTable: OrderTablesType) => (
+    update: (orderTable: OrderTablesFormatType) => (
       <UpdateOrderTables
         id={orderTable!.id}
         timeOrder={orderTable!.timeOrder}
@@ -688,6 +702,36 @@ const AdminOrderTablesPage = () => {
       />
     ),
   };
+
+  // Hàm cập nhật danh sách các đơn đặt bàn (gọi API)
+  const getAllOrderTable = async () => {
+    setLoading(true);
+    const res = await FindAllOrderTable({
+      findType: filterFindType!,
+      findValue: filterFindValue!,
+      timeValue: filterTimeValue!,
+      statusValue: filterStatusValue!,
+    });
+    if (res!.status === 200) {
+      setLoading(false);
+      setOrderTables(res!.data);
+    } else {
+      openNotification({
+        type: "error",
+        message: "Truy vấn dữ liệu thất bại",
+        description: "Lỗi phát sinh khi truy vấn dữ liệu",
+        duration: 2,
+      });
+    }
+  };
+
+  //
+  useEffect(() => {
+    getAllOrderTable();
+  }, []);
+  useEffect(() => {
+    getAllOrderTable();
+  }, [filterFindType, filterFindValue, filterTimeValue, filterStatusValue]);
 
   return (
     <>
@@ -705,21 +749,26 @@ const AdminOrderTablesPage = () => {
             setFilterFindValue={setFilterFindValue}
           />
           <CustomDateRangePicker
-            placeholder={["Ngày đặt bắt đầu", "Ngày đặt kết thúc"]}
-            className="main__filter-select filter-date"
-            setDateRangeValue={setFilterDateOrderValue}
+            showTime={true}
+            placeholder={["Thời gian bắt đầu", "Thời gian kết thúc"]}
+            className="main__filter-select filter-time big"
+            setDateRangeValue={setFilterTimeValue}
           />
-          <CustomDateRangePicker
-            placeholder={["Ngày đến bắt đầu", "Ngày đến kết thúc"]}
-            className="main__filter-select filter-date"
-            setDateRangeValue={setFilterDateArriveValue}
+          <CustomFindSelect
+            mode={undefined}
+            placeholder="Chọn Trạng thái"
+            optionFilterProp="label"
+            maxTagCount="responsive"
+            className="main__filter-select filter-status"
+            options={statusOptions}
+            setFilterSelectValue={setFilterStatusValue}
           />
           <button
             className={
               "main__filter-button btn create" +
               (openModal &&
-              String(titleModal).includes("Thêm") &&
-              String(classNameModal).includes("create")
+                String(titleModal).includes("Thêm") &&
+                String(classNameModal).includes("create")
                 ? " active"
                 : "")
             }
@@ -740,8 +789,9 @@ const AdminOrderTablesPage = () => {
         <div className="main__table">
           <CustomTableActions
             columns={columns}
-            rowKey={(record) => record.id}
+            rowKey={(record) => record!.id as number}
             data={currentItems}
+            loading={loading}
             pagination={paginationProps}
             className="table-actions order-tables"
             onChange={handleTableChange}
