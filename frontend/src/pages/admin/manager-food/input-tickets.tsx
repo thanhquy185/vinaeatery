@@ -28,6 +28,7 @@ import type {
   InputTicketsFormatType,
   SuppliersType,
 } from "../../../common/types";
+import { ruleRequired } from "../../../common/rules";
 import { CustomPaginationProps } from "../../../common/pagination-props";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
@@ -36,7 +37,6 @@ import CustomCardStatic from "../../../components/admin/card-static";
 import CustomTableActions from "../../../components/admin/table-actions";
 import CustomTableNoActions from "../../../components/admin/table-no-actions";
 import CustomModal from "../../../components/admin/modal";
-import { getVietnamCurrentDatetime } from "../../../services/dayjs";
 import {
   FindAllIngredient,
   FindAllInputTicket,
@@ -44,15 +44,14 @@ import {
   HandleCreateInputTicket,
   HandleUpdateInputTicket,
 } from "../../../services/api";
+import { getVietnamCurrentDatetime } from "../../../services/dayjs";
 import {
   numberToVietnamWords,
   vietnamMoneyFormat,
 } from "../../../utils/otherEvents";
-import { openNotification } from "../../../utils/showNotification";
-import { ruleRequired } from "../../../common/rules";
 import { openConfirmation } from "../../../utils/showConfirmation";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import { openNotification } from "../../../utils/showNotification";
+import { handlePrintTicket } from "../../../utils/printTicket";
 
 // Các giá trị chung
 // - Trạng thái
@@ -130,7 +129,7 @@ const AdminInputTicketsPage = () => {
       key: "payStatus",
       width: "12%",
       render: (status: string) => (
-        <Tag color={status === pay ? "magenta" : "default"}>{status}</Tag>
+        <Tag color={status === pay ? "volcano" : "default"}>{status}</Tag>
       ),
     },
     {
@@ -168,7 +167,7 @@ const AdminInputTicketsPage = () => {
                 "Chi tiết phiếu nhập",
                 true,
                 "89%",
-                "info inputTickets",
+                "info input-tickets",
                 AdminInputTicketsModal.detail(record)
               )
             }
@@ -182,7 +181,7 @@ const AdminInputTicketsPage = () => {
                 "Cập nhật phiếu nhập",
                 true,
                 "89%",
-                "update inputTickets",
+                "update input-tickets",
                 AdminInputTicketsModal.update(record)
               )
             }
@@ -196,7 +195,7 @@ const AdminInputTicketsPage = () => {
                 "In phiếu nhập",
                 true,
                 "80%",
-                "print inputTickets",
+                "print input-tickets",
                 AdminInputTicketsModal.print(record)
               )
             }
@@ -641,7 +640,7 @@ const AdminInputTicketsPage = () => {
               >
                 <CustomTableNoActions
                   id="create-inputTicketDetails"
-                  className="suppliers"
+                  className="inputTicketDetails"
                   columnWidths={IPDetailsColumnWidths}
                   columnTitles={IPDetailsColumnTitles}
                   data={inputTicketDetails}
@@ -942,32 +941,24 @@ const AdminInputTicketsPage = () => {
             />
           </main>
           <footer className="ticket__footer input_ticket">
-            <p className="ticket_customer">
+            <p className="ticket__customer">
               Ngày {day} tháng {month} năm {year}
-              <br />
               <b>Nhân viên lập phiếu</b>
-              <br />
               (Ký tên, ghi rõ họ tên)
             </p>
-            <p className="ticket_customer">
+            <p className="ticket__customer">
               Ngày {day} tháng {month} năm {year}
-              <br />
               <b>Thủ kho</b>
-              <br />
               (Ký tên, ghi rõ họ tên)
             </p>
-            <p className="ticket_customer">
+            <p className="ticket__customer">
               Ngày {day} tháng {month} năm {year}
-              <br />
               <b>Thủ quỹ</b>
-              <br />
               (Ký tên, ghi rõ họ tên)
             </p>
-            <p className="ticket_customer">
+            <p className="ticket__customer">
               Ngày {day} tháng {month} năm {year}
-              <br />
               <b>Giám đốc</b>
-              <br />
               (Ký tên, ghi rõ họ tên)
             </p>
           </footer>
@@ -976,36 +967,12 @@ const AdminInputTicketsPage = () => {
           id="print-ticket-button"
           className="ticket__print-btn"
           onClick={(e) => {
-            // In phiếu
-            const element = document.getElementById("content-print");
-            html2canvas(element!, { scale: 2 }).then((canvas) => {
-              const imgData = canvas.toDataURL("image/jpeg", 1.0);
-              const pdf = new jsPDF("p", "mm", "a4");
-
-              const margin = 4;
-
-              const imgProps = pdf.getImageProperties(imgData);
-              const pdfWidth = pdf.internal.pageSize.getWidth() - margin * 2;
-              const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-              pdf.addImage(
-                imgData,
-                "JPEG",
-                margin,
-                margin,
-                pdfWidth,
-                pdfHeight
-              );
-              pdf.save(`${dateTime}_PHNHAPHANG#${id}.pdf`);
+            handlePrintTicket({
+              contentPrint: "content-print",
+              dateTime: dateTime,
+              title: "PHNHAPHANG",
+              id: id,
             });
-
-            // Thông báo thành công
-            openNotification({
-          type: "success",
-          message: "Thành công",
-          description: "In phiếu thành công !",
-          duration: 1.5,
-        });
           }}
         >
           <FontAwesomeIcon icon={faFileArrowDown} /> &nbsp;&nbsp;Tải xuống phiếu
@@ -1082,7 +1049,7 @@ const AdminInputTicketsPage = () => {
         payStatus: payStatus!,
         status: status!,
       });
-      if (res.data) {
+      if (res.status === 200) {
         openNotification({
           type: "success",
           message: "Thành công",
@@ -1097,7 +1064,17 @@ const AdminInputTicketsPage = () => {
         openNotification({
           type: "error",
           message: "Thất bại",
-          description: "Cập nhật thất bại !",
+          description:
+            res.status === 400
+              ? String(res.data)
+                  .split("|")
+                  .map((line, index) => (
+                    <div key={index}>
+                      {line}
+                      <br />
+                    </div>
+                  ))
+              : "Cập nhật thất bại !",
           duration: 1.5,
         });
         setTimeout(() => {

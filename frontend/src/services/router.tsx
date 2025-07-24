@@ -32,8 +32,8 @@ import ClientLayout from "../layouts/client-layout";
 import LoginPage from "../pages/public/login";
 import ErrorPage from "../pages/public/error";
 import UnauthorizedPage from "../pages/public/unauthorized";
-import { FindAllFunction } from "./api";
 import { openNotification } from "../utils/showNotification";
+import { FindAllFunction } from "./api";
 
 // Router giúp chuyển hướng trang
 // Chú thích

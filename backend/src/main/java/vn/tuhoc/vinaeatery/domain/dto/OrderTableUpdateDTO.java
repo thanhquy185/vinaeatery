@@ -2,6 +2,8 @@ package vn.tuhoc.vinaeatery.domain.dto;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -15,7 +17,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OrderTableUpdateDTO {
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timeOrder;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timeArrive;
     private String note;
     @NotNull(message = "Họ và tên không được để trống !")

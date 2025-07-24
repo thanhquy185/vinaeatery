@@ -48,24 +48,39 @@ export interface OrderSheetsDetailType {
 }
 
 // Kiểu dữ liệu Đơn món ăn
+// - Chưa format
 export interface OrdersType {
-  id: number;
+  id?: number;
   timeCreate?: string;
-  employee?: EmployeesType;
-  table?: TablesType;
-  customer?: CustomersType;
+  employeeId?: number;
+  customerId?: number;
   totalPrice?: number;
   payStatus?: string;
   status?: string;
   orderDetails?: OrderDetailsType[];
 }
+// - Đã format
+export interface OrdersFormatType {
+  id?: number;
+  timeCreate?: string;
+  employee?: EmployeesFormatType;
+  customer?: CustomersFormatType;
+  totalPrice?: number;
+  payStatus?: string;
+  status?: string;
+  orderDetails?: OrderDetailsFormatType[];
+}
 
 // Kiểu dữ liệu Chi tiết đơn món ăn
+// - Chưa format
 export interface OrderDetailsType {
-  id: {
-    order: OrdersType;
-    food: FoodsType;
-  };
+  foodId: number;
+  price: number;
+  quantity: number;
+}
+// - Đã format
+export interface OrderDetailsFormatType {
+  food: FoodsType;
   price: number;
   quantity: number;
 }

@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,14 +33,18 @@ public class InputTicket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(columnDefinition = "DATETIME")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @NotNull(message = "Thời gian tạo phiếu không được để trống !")
     private LocalDateTime timeCreate;
+    @NotNull(message = "Mã nhân viên không được để trống !")
     private Integer employeeId;
+    @NotNull(message = "Mã nhà cung cấp không được để trống !")
     private Integer supplierId;
     private Long totalPrice;
     @Convert(converter = PayStatusConverter.class)
+    @NotNull(message = "Thanh toán không được để trống !")
     private PayStatusEnum payStatus;
     @Column(columnDefinition = "TINYINT(3)")
     @Convert(converter = InputTicketStatusConverter.class)
+    @NotNull(message = "Trạng thái không được để trống !")
     private InputTicketStatusEnum status;
 }

@@ -18,7 +18,10 @@ import type {
   IngredientsType,
   InputTicketsFormatType,
   InputTicketsType,
+  OrdersFormatType,
+  OrdersType,
   OrderTablesFormatType,
+  OrderTablesType,
   RestResponseType,
   RolesFormatType,
   RolesType,
@@ -26,6 +29,178 @@ import type {
   TablesFormatType,
   TablesType,
 } from "../common/types";
+
+// Các api của đối tượng Phiếu nhập (Input Ticket)
+export const FindAllOrder = ({
+  findType,
+  findValue,
+  timeValue,
+  statusValue,
+}: FilterDataProps): Promise<AxiosResponse<OrdersFormatType[], any>> => {
+  const params: Record<string, string> = {};
+
+  if (findValue! !== "") {
+    if (findType! === "id") params.id = findValue!;
+    if (findType! === "customer") params.customerId = findValue!;
+  }
+  if (timeValue! && timeValue!.length > 0) {
+    if (timeValue![0] !== "") params.timeCreateStart = timeValue![0];
+    if (timeValue![1] !== "") params.timeCreateEnd = timeValue![1];
+  }
+  if (statusValue! && statusValue!.length > 0)
+    params.statusMerge = statusValue!.join(",");
+
+  return instance.get<OrdersFormatType[]>(
+    "/api/orders/list-format",
+    {
+      params,
+    }
+  );
+};
+export const FindOneOrder = (
+  id: string
+): Promise<AxiosResponse<OrdersFormatType, any>> => {
+  return instance.get(`/api/orders/detail/${id}`);
+};
+export const HandleCreateOrder = ({
+  timeCreate,
+  employeeId,
+  customerId,
+  totalPrice,
+  payStatus,
+  status,
+  orderDetails,
+}: OrdersType): Promise<AxiosResponse<RestResponseType, any>> => {
+  const formData = new FormData();
+
+  formData.append(
+    "order",
+    new Blob(
+      [
+        JSON.stringify({
+          timeCreate,
+          employeeId,
+          customerId,
+          totalPrice,
+          payStatus,
+          status,
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+  if (orderDetails)
+    formData.append(
+      "orderDetails",
+      new Blob([JSON.stringify(orderDetails)], {
+        type: "application/json",
+      })
+    );
+
+  return instance.post(`/api/orders/create`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+export const HandleUpdateOrder = ({
+  id,
+  payStatus,
+  status,
+}: OrdersType): Promise<AxiosResponse<RestResponseType, any>> => {
+  return instance.put(`/api/orders/update/${id}`, {
+    payStatus,
+    status,
+  });
+};
+
+// Các api của đối tượng Đơn đặt bàn (Order Table)
+export const FindAllOrderTable = ({
+  findType,
+  findValue,
+  timeValue,
+  statusValue,
+}: FilterDataProps): Promise<AxiosResponse<OrderTablesFormatType[], any>> => {
+  const params: Record<string, string> = {};
+
+  if (findValue! !== "") {
+    if (findType! === "id") params.id = findValue!;
+    if (findType! === "fullname") params.fullname = findValue!;
+    if (findType! === "phone") params.phone = findValue!;
+  }
+  if (timeValue! && timeValue!.length > 0) {
+    if (timeValue![0] !== "") params.timeOrderStart = timeValue![0];
+    if (timeValue![1] !== "") params.timeOrderEnd = timeValue![1];
+  }
+  if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+
+  return instance.get<OrderTablesFormatType[]>(
+    "/api/order-tables/list-format",
+    {
+      params,
+    }
+  );
+};
+export const FindOneOrderTable = (
+  id: string
+): Promise<AxiosResponse<OrderTablesFormatType, any>> => {
+  return instance.get(`/api/order-tables/detail/${id}`);
+};
+export const HandleCreateOrderTable = ({
+  timeOrder,
+  timeArrive,
+  employeeId,
+  note,
+  fullname,
+  phone,
+  email,
+  address,
+  status,
+}: OrderTablesType): Promise<AxiosResponse<RestResponseType, any>> => {
+  return instance.post(`/api/order-tables/create`, {
+    timeOrder,
+    timeArrive,
+    employeeId,
+    note,
+    fullname,
+    phone,
+    email,
+    address,
+    status,
+  });
+};
+export const HandleUpdateOrderTable = ({
+  id,
+  timeOrder,
+  timeArrive,
+  note,
+  fullname,
+  phone,
+  email,
+  address,
+  timeUpdate,
+}: OrderTablesType): Promise<AxiosResponse<RestResponseType, any>> => {
+  return instance.put(`/api/order-tables/update/${id}`, {
+    timeOrder,
+    timeArrive,
+    note,
+    fullname,
+    phone,
+    email,
+    address,
+    timeUpdate,
+  });
+};
+export const HandleLockOrderTable = ({
+  id,
+  status,
+  timeUpdate,
+}: OrderTablesType): Promise<AxiosResponse<RestResponseType, any>> => {
+  return instance.put(`/api/order-tables/lock/${id}`, {
+    status,
+    timeUpdate,
+  });
+};
 
 // Các api của đối tượng Thẻ khách hàng (Customer Card)
 export const FindAllCustomerCard = ({
@@ -214,40 +389,6 @@ export const HandleLockCustomer = ({
     status,
     timeUpdate,
   });
-};
-
-// Các api của đối tượng Đơn đặt bàn (Order Table)
-export const FindAllOrderTable = ({
-  findType,
-  findValue,
-  timeValue,
-  statusValue,
-}: FilterDataProps): Promise<AxiosResponse<OrderTablesFormatType[], any>> => {
-  const params: Record<string, string> = {};
-
-  if (findValue! !== "") {
-    if (findType! === "id") params.id = findValue!;
-    if (findType! === "fullname") params.fullname = findValue!;
-    if (findType! === "phone") params.phone = findValue!;
-  }
-  if (timeValue! && timeValue!.length > 0) {
-    if (timeValue![0] !== "") params.timeOrderStart = timeValue![0];
-    if (timeValue![1] !== "") params.timeOrderEnd = timeValue![1];
-  }
-  if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
-
-
-  return instance.get<OrderTablesFormatType[]>(
-    "/api/order-tables/list-format",
-    {
-      params,
-    }
-  );
-};
-export const FindOneOrderTable = (
-  id: string
-): Promise<AxiosResponse<OrderTablesFormatType, any>> => {
-  return instance.get(`/api/order-tables/detail/${id}`);
 };
 
 // Các api của đối tượng Tầng (Floor)

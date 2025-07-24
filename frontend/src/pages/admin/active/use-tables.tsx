@@ -1,7 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Form, Select, type SelectProps } from "antd";
 import CustomFindSelect from "../../../components/admin/find-select";
-import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";
 import CustomModal from "../../../components/admin/modal";
 import { ruleRequired } from "../../../common/rules";
 import { openConfirmation } from "../../../utils/showConfirmation";

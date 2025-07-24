@@ -17,6 +17,7 @@ import {
   faChevronRight,
   faChevronUp,
   faClipboardList,
+  faClockRotateLeft,
   faCreditCard,
   faCubesStacked,
   faDollarSign,
@@ -66,6 +67,7 @@ const iconMap: Record<string, IconProp> = {
   "dashboard-profit": faDollarSign,
   "dashboard-revenue": faMoneyBillTrendUp,
   "dashboard-expense": faHandHoldingDollar,
+  "history-tables": faClockRotateLeft,
   "use-tables": faSignal,
   orders: faReceipt,
   "order-tables": faPhoneVolume,
@@ -155,6 +157,11 @@ const AdminSidebar = () => {
     },
   ];
   const activeManagerItems: SidebarGroupProps["items"] = [
+    // {
+    //   url: "/admin/history-tables",
+    //   nameVN: "Lịch sử bàn ăn",
+    //   nameEN: "history-tables",
+    // },
     {
       url: "/admin/use-tables",
       nameVN: "Sử dụng bàn ăn",

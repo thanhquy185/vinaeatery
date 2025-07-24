@@ -32,7 +32,6 @@ public class OrderDTO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timeCreate;
     private EmployeeDTO employee;
-    private TableDTO table;
     private CustomerDTO customer;
     private Long totalPrice;
     @Convert(converter = PayStatusConverter.class)

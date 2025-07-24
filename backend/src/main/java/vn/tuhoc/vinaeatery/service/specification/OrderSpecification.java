@@ -31,11 +31,6 @@ public class OrderSpecification {
                 employeeId);
     }
 
-    public static Specification<Order> tableIdEqual(String tableId) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Order_.TABLE_ID),
-                tableId);
-    }
-
     public static Specification<Order> customerIdEqual(String customerId) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Order_.CUSTOMER_ID),
                 customerId);

@@ -59,7 +59,6 @@ public class OrderService {
         if (orderCriteria.getId() == null && orderCriteria.getTimeCreateStart() == null
                 && orderCriteria.getTimeCreateEnd() == null
                 && orderCriteria.getEmployeeId() == null
-                && orderCriteria.getTableId() == null
                 && orderCriteria.getCustomerId() == null
                 && orderCriteria.getStatusMerge() == null
                 && orderCriteria.getPayStatus() == null
@@ -91,13 +90,6 @@ public class OrderService {
             if (orderCriteria.getEmployeeId().get().matches("\\d+")) {
                 Specification<Order> currentSpec = OrderSpecification
                         .employeeIdEqual(orderCriteria.getEmployeeId().get());
-                combinedSpec = combinedSpec.and(currentSpec);
-            }
-        }
-        if (orderCriteria.getTableId() != null && orderCriteria.getTableId().isPresent()) {
-            if (orderCriteria.getTableId().get().matches("\\d+")) {
-                Specification<Order> currentSpec = OrderSpecification
-                        .tableIdEqual(orderCriteria.getTableId().get());
                 combinedSpec = combinedSpec.and(currentSpec);
             }
         }
@@ -175,7 +167,6 @@ public class OrderService {
 
             listFormat.add(new OrderDTO(order.getId(), order.getTimeCreate(),
                     employeeService.getOneFormatById(order.getEmployeeId()),
-                    tableService.getOneFormatById(order.getTableId()),
                     customerService.getOneFormatById(order.getCustomerId()),
                     order.getTotalPrice(), order.getPayStatus(), order.getStatus(),
                     orderDetails));

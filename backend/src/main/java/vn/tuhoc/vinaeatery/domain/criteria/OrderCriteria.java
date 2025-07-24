@@ -17,7 +17,6 @@ public class OrderCriteria {
     private Optional<String> timeCreateStart;
     private Optional<String> timeCreateEnd;
     private Optional<String> employeeId;
-    private Optional<String> tableId;
     private Optional<String> customerId;
     private Optional<String> statusMerge;
     private Optional<String> payStatus;

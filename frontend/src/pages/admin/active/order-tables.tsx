@@ -7,22 +7,36 @@ import {
   faPlus,
   faUnlock,
 } from "@fortawesome/free-solid-svg-icons";
-import { Form, Tag, type SelectProps } from "antd";
+import dayjs from "dayjs";
+import {
+  DatePicker,
+  Form,
+  Input,
+  Select,
+  Space,
+  Tag,
+  type SelectProps,
+} from "antd";
+import TextArea from "antd/es/input/TextArea";
 import type { ColumnsType } from "antd/es/table";
 import type { OrderTablesFormatType } from "../../../common/types";
+import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules";
+import { commonStatus } from "../../../common/values";
 import { CustomPaginationProps } from "../../../common/pagination-props";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";
 import CustomTableActions from "../../../components/admin/table-actions";
-import CustomInput from "../../../components/admin/input";
-import CustomSelect from "../../../components/admin/select";
-import CustomTextArea from "../../../components/admin/text-area";
-import CustomDatePicker from "../../../components/admin/date-picker";
 import CustomModal from "../../../components/admin/modal";
-import { commonStatus } from "../../../common/values";
 import CustomFindSelect from "../../../components/admin/find-select";
-import { FindAllOrderTable } from "../../../services/api";
+import {
+  FindAllOrderTable,
+  HandleCreateOrderTable,
+  HandleLockOrderTable,
+  HandleUpdateOrderTable,
+} from "../../../services/api";
+import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
+import { showCreateValidAddress } from "../../../utils/showCreateValidAddress";
 
 // Admin Order Tables Page
 const AdminOrderTablesPage = () => {
@@ -115,7 +129,7 @@ const AdminOrderTablesPage = () => {
             onClick={() =>
               updatePropertiesModal(
                 (record.status == commonStatus["active"] ? "Khoá" : "Mở khoá") +
-                " đơn đặt ăn",
+                  " đơn đặt ăn",
                 true,
                 "30%",
                 "lock order-tables",
@@ -153,8 +167,7 @@ const AdminOrderTablesPage = () => {
   );
   const [filterFindValue, setFilterFindValue] = useState<string | null>("");
   // - Thời gian đặt bàn
-  const [filterTimeValue, setFilterTimeValue] =
-    useState<[string, string]>();
+  const [filterTimeValue, setFilterTimeValue] = useState<[string, string]>();
   /// - Trạng thái
   const statusOptions: SelectProps["options"] = [
     { label: commonStatus["active"], value: commonStatus["active"] },
@@ -194,25 +207,27 @@ const AdminOrderTablesPage = () => {
     timeArrive: "Thời gian đến ăn",
     employee:
       "Nhân viên xác nhận (Mã nhân viên - Họ và tên - Số điện thoại - Email)",
-    customerFullname: "Họ và tên",
-    customerPhone: "Số điện thoại",
-    customerEmail: "Email",
-    customerAddress: "Địa chỉ",
     note: "Ghi chú",
+    fullname: "Họ và tên",
+    phone: "Số điện thoại",
+    email: "Email",
+    address: "Địa chỉ",
+    status: "Trạng thái",
   };
   // - Các giá trị mặc định cho nhập liệu
   const defaultInputs = {
     title1: "",
     title2: "",
-    id: "Được xác định sau khi xác nhận thêm !",
+    id: "Chưa xác định !",
     timeOrder: "Thời gian đặt bàn",
     timeArrive: "Thời gian đến ăn",
     employee: "",
-    customerFullname: "Nhập Họ và tên",
-    customerPhone: "Nhập Số điện thoại",
-    customerEmail: "Nhập Email",
-    customerAddress: "Nhập Địa chỉ",
+    fullname: "Nhập Họ và tên",
+    phone: "Nhập Số điện thoại",
+    email: "Nhập Email",
+    address: "Nhập Địa chỉ",
     note: "Nhập Ghi chú",
+    status: "Chọn Trạng thái",
   };
   // - Các modal tương ứng cho từng chức năng
   const DetailOrderTables = ({
@@ -220,11 +235,12 @@ const AdminOrderTablesPage = () => {
     timeOrder,
     timeArrive,
     employee,
-    customerFullname,
-    customerPhone,
-    customerEmail,
-    customerAddress,
+    fullname,
+    phone,
+    email,
+    address,
     note,
+    status,
   }: OrderTablesFormatType) => {
     const [form] = Form.useForm();
 
@@ -233,75 +249,77 @@ const AdminOrderTablesPage = () => {
         <Form
           layout="vertical"
           form={form}
-          initialValues={{ layout: "vertical" }}
+          initialValues={{
+            id: id!,
+            timeOrder: dayjs(timeOrder!),
+            timeArrive: dayjs(timeArrive!),
+            employee:
+              "#" +
+              employee!.id +
+              " - " +
+              employee!.fullname +
+              " - " +
+              employee!.phone +
+              " - " +
+              employee!.email,
+            note: note!,
+            fullname: fullname!,
+            phone: phone!,
+            email: email!,
+            address: address!,
+            status: status!,
+          }}
           className="modal__form split-3"
           autoComplete="off"
         >
           <div className="modal__form-group-warper">
             <p className="modal__form-group-title">{defaultLabels["title1"]}</p>
             <div className="modal__form-group">
+              <div className="modal__form-group-item-warper split-2">
+                <Form.Item
+                  name="id"
+                  label={defaultLabels["id"]}
+                  className="modal__form-group-item"
+                >
+                  <Input className="text-center" disabled={true} />
+                </Form.Item>
+                <Form.Item
+                  name="status"
+                  label={defaultLabels["status"]}
+                  className="modal__form-group-item"
+                >
+                  <Select disabled={true} />
+                </Form.Item>
+              </div>
               <Form.Item
-                label={defaultLabels["id"]}
-                className="modal__form-group-item"
-              >
-                <CustomInput
-                  className="text-center"
-                  value={id!}
-                  disabled={true}
-                />
-              </Form.Item>
-              <Form.Item
+                name="timeOrder"
                 label={defaultLabels["timeOrder"]}
                 className="modal__form-group-item"
               >
-                <CustomDatePicker
-                  showTime={true}
-                  value={timeOrder!}
-                  disabled={true}
-                />
+                <DatePicker showTime={true} disabled={true} />
               </Form.Item>
               <Form.Item
+                name="timeArrive"
                 label={defaultLabels["timeArrive"]}
                 className="modal__form-group-item"
               >
-                <CustomDatePicker
-                  showTime={true}
-                  value={timeArrive!}
-                  disabled={true}
-                />
+                <DatePicker showTime={true} disabled={true} />
               </Form.Item>
             </div>
             <div className="modal__form-group">
               <Form.Item
+                name="employee"
                 label={defaultLabels["employee"]}
                 className="modal__form-group-item multiple-2"
               >
-                <CustomSelect
-                  className="employees"
-                  options={[
-                    {
-                      label: `${employee!.fullname +
-                        " - " +
-                        employee!.phone +
-                        " - " +
-                        employee!.email
-                        }`,
-                      value: employee!.id,
-                    },
-                  ]}
-                  value={employee!.id}
-                  disabled={true}
-                />
+                <Select disabled={true} />
               </Form.Item>
               <Form.Item
+                name="note"
                 label={defaultLabels["note"]}
                 className="modal__form-group-item multiple-2"
               >
-                <CustomTextArea
-                  className="multiple-2"
-                  value={note!}
-                  disabled={true}
-                />
+                <TextArea className="multiple-2" disabled={true} />
               </Form.Item>
             </div>
           </div>
@@ -309,32 +327,36 @@ const AdminOrderTablesPage = () => {
             <p className="modal__form-group-title">{defaultLabels["title2"]}</p>
             <div className="modal__form-group">
               <Form.Item
-                label={defaultLabels["customerFullname"]}
+                name="fullname"
+                label={defaultLabels["fullname"]}
                 className="modal__form-group-item"
               >
-                <CustomInput value={customerFullname!} disabled={true} />
+                <Input disabled={true} />
               </Form.Item>
               <Form.Item
-                label={defaultLabels["customerAddress"]}
+                name="address"
+                label={defaultLabels["address"]}
                 className="modal__form-group-item multiple-3 margin-bottom-0"
               >
-                <CustomInput value={customerAddress!} disabled={true} />
+                <Input disabled={true} />
               </Form.Item>
             </div>
             <div className="modal__form-group">
               <Form.Item
-                label={defaultLabels["customerPhone"]}
+                name="phone"
+                label={defaultLabels["phone"]}
                 className="modal__form-group-item"
               >
-                <CustomInput value={customerPhone!} disabled={true} />
+                <Input disabled={true} />
               </Form.Item>
             </div>
             <div className="modal__form-group">
               <Form.Item
-                label={defaultLabels["customerEmail"]}
+                name="email"
+                label={defaultLabels["email"]}
                 className="modal__form-group-item"
               >
-                <CustomInput value={customerEmail!} disabled={true} />
+                <Input disabled={true} />
               </Form.Item>
             </div>
           </div>
@@ -344,92 +366,169 @@ const AdminOrderTablesPage = () => {
   };
   const CreateOrderTables = () => {
     const [form] = Form.useForm();
-    const [timeOrderValue, setTimeOrderValue] = useState<string | string[]>();
-    const [timeArriveValue, setTimeArriveValue] = useState<string | string[]>();
-    const [customerFullnameValue, setCustomerFullnameValue] =
-      useState<string>();
-    const [customerPhoneValue, setCustomerPhoneValue] = useState<string>();
-    const [customerEmailValue, setCustomerEmailValue] = useState<string>();
-    const [customerAddressValue, setCustomerAddressValue] = useState<string>();
-    const [noteValue, setNoteValue] = useState<string>();
 
     return (
       <>
         <Form
           layout="vertical"
           form={form}
-          initialValues={{ layout: "vertical" }}
           className="modal__form split-3"
           autoComplete="off"
+          onFinish={async () => {
+            // Nút để submit form
+            const submitButton = document.querySelector(
+              ".modal__form button[type='submit']"
+            );
+
+            // Thêm class 'active' thể hiện nút đang được nhấn
+            submitButton?.classList.add("active");
+
+            // Hỏi trước khi xử khi xử lý ?
+            const answer = await openConfirmation({
+              title: `Bạn có chắc chắn thêm ?`,
+              content: "Hành động này không thể hoàn tác.",
+            });
+            if (answer) {
+              // Danh sách dữ liệu
+              const values = form.getFieldsValue();
+
+              // Gọi api xử lý
+              const res = await HandleCreateOrderTable({
+                timeOrder:
+                  values!.timeOrder && dayjs(values!.timeOrder).isValid()
+                    ? dayjs(values!.timeOrder).format("YYYY-MM-DD HH:mm:ss")
+                    : undefined,
+                timeArrive:
+                  values!.timeArrive && dayjs(values!.timeArrive).isValid()
+                    ? dayjs(values!.timeArrive).format("YYYY-MM-DD HH:mm:ss")
+                    : undefined,
+                employeeId: 2,
+                note: values!.note || undefined,
+                fullname: values!.fullname || undefined,
+                phone: values!.phone || undefined,
+                email: values!.email || undefined,
+                address: values!.address || undefined,
+                status: values!.status || undefined,
+              });
+              if (res.status === 200) {
+                openNotification({
+                  type: "success",
+                  message: "Thành công",
+                  description: "Thêm thành công !",
+                  duration: 1.5,
+                });
+
+                setTimeout(() => {
+                  getAllOrderTable();
+                  setOpenModal(false);
+                }, 1500);
+              } else {
+                openNotification({
+                  type: "error",
+                  message: "Thất bại",
+                  description: "Thêm thất bại !",
+                  duration: 1.5,
+                });
+
+                setTimeout(() => {
+                  // Xoá class 'active' thể hiện nút không còn được nhấn
+                  submitButton?.classList.remove("active");
+                }, 1500);
+              }
+            }
+
+            // Xoá class 'active' thể hiện nút không còn được nhấn
+            submitButton?.classList.remove("active");
+          }}
         >
           <div className="modal__form-group-warper">
             <p className="modal__form-group-title">{defaultLabels["title1"]}</p>
             <div className="modal__form-group">
+              <div className="modal__form-group-item-warper split-2">
+                <Form.Item
+                  name="id"
+                  label={defaultLabels["id"]}
+                  className="modal__form-group-item"
+                >
+                  <Input
+                    placeholder={defaultInputs["id"]}
+                    className="text-center"
+                    disabled={true}
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="status"
+                  label={defaultLabels["status"]}
+                  htmlFor="create-status"
+                  className="modal__form-group-item"
+                  rules={[ruleRequired("Cần chọn Trạng thái !")]}
+                >
+                  <Select
+                    allowClear={true}
+                    id="create-status"
+                    placeholder={defaultInputs["status"]}
+                    options={[
+                      {
+                        label: commonStatus["active"],
+                        value: commonStatus["active"],
+                      },
+                      {
+                        label: commonStatus["inactive"],
+                        value: commonStatus["inactive"],
+                      },
+                    ]}
+                  />
+                </Form.Item>
+              </div>
               <Form.Item
-                label={defaultLabels["id"]}
-                className="modal__form-group-item"
-              >
-                <CustomInput
-                  value={defaultInputs["id"]}
-                  className="text-center"
-                  disabled={true}
-                />
-              </Form.Item>
-              <Form.Item
+                name="timeOrder"
                 label={defaultLabels["timeOrder"]}
                 htmlFor="create-timeOrder"
                 className="modal__form-group-item"
+                rules={[
+                  ruleRequired("Thời gian đặt bàn không được để trống !"),
+                ]}
               >
-                <CustomDatePicker
+                <DatePicker
                   showTime={true}
                   id="create-timeOrder"
                   placeholder={defaultInputs["timeOrder"]}
-                  value={timeOrderValue as string}
-                  setDatePickerValue={setTimeOrderValue}
                 />
               </Form.Item>
               <Form.Item
+                name="timeArrive"
                 label={defaultLabels["timeArrive"]}
                 htmlFor="create-timeArrive"
                 className="modal__form-group-item"
               >
-                <CustomDatePicker
+                <DatePicker
                   showTime={true}
                   id="create-timeArrive"
                   placeholder={defaultInputs["timeArrive"]}
-                  value={timeArriveValue as string}
-                  setDatePickerValue={setTimeArriveValue}
                 />
               </Form.Item>
             </div>
             <div className="modal__form-group">
               <Form.Item
+                name="employee"
                 label={defaultLabels["employee"]}
                 className="modal__form-group-item multiple-2"
               >
-                <CustomSelect
-                  className="employees"
+                <Select
                   placeholder={defaultInputs["employee"]}
-                  options={[
-                    {
-                      label: "Xử lý khi đăng nhập",
-                      value: 0,
-                    },
-                  ]}
-                  value={0}
                   disabled={true}
                 />
               </Form.Item>
               <Form.Item
+                name="note"
                 label={defaultLabels["note"]}
                 htmlFor="create-note"
                 className="modal__form-group-item multiple-2"
               >
-                <CustomTextArea
+                <TextArea
                   id="create-note"
                   className="multiple-2"
                   placeholder={defaultInputs["note"]}
-                  setTextAreaValue={setNoteValue}
                 />
               </Form.Item>
             </div>
@@ -438,58 +537,78 @@ const AdminOrderTablesPage = () => {
             <p className="modal__form-group-title">{defaultLabels["title2"]}</p>
             <div className="modal__form-group">
               <Form.Item
-                label={defaultLabels["customerFullname"]}
-                htmlFor="create-customerFullname"
+                name="fullname"
+                label={defaultLabels["fullname"]}
+                htmlFor="create-fullname"
                 className="modal__form-group-item"
+                rules={[ruleRequired("Họ và tên không được để trống !")]}
               >
-                <CustomInput
-                  id="create-customerFullname"
-                  placeholder={defaultInputs["customerFullname"]}
-                  setInputValue={setCustomerFullnameValue}
+                <Input
+                  id="create-fullname"
+                  placeholder={defaultInputs["fullname"]}
                 />
               </Form.Item>
               <Form.Item
-                label={defaultLabels["customerAddress"]}
-                htmlFor="create-customerAddress"
+                label={defaultLabels["address"]}
                 className="modal__form-group-item multiple-3"
               >
-                <CustomInput
-                  id="create-customerAddress"
-                  placeholder={defaultInputs["customerAddress"]}
-                  setInputValue={setCustomerAddressValue}
-                />
-                <button className="btn secondary-btn">Tạo địa chỉ</button>
+                <Space.Compact>
+                  <Form.Item name="address" noStyle>
+                    <Input
+                      id="create-address"
+                      placeholder={defaultInputs["address"]}
+                    />
+                  </Form.Item>
+                  <button
+                    type="button"
+                    className="btn secondary-btn"
+                    onClick={async () => {
+                      const result = await showCreateValidAddress();
+                      if (result) {
+                        const { houseNumberAndStreetName, province, ward } =
+                          result;
+
+                        form.setFieldsValue({
+                          address: `${houseNumberAndStreetName}, ${ward}, ${province}`,
+                        });
+                      }
+                    }}
+                  >
+                    Tạo địa chỉ
+                  </button>
+                </Space.Compact>
               </Form.Item>
             </div>
             <div className="modal__form-group">
               <Form.Item
-                label={defaultLabels["customerPhone"]}
-                htmlFor="create-customerPhone"
+                name="phone"
+                label={defaultLabels["phone"]}
+                htmlFor="create-phone"
                 className="modal__form-group-item"
+                rules={[
+                  ruleRequired("Số điện thoại không được để trống !"),
+                  rulePhone(),
+                ]}
               >
-                <CustomInput
-                  id="create-customerPhone"
-                  placeholder={defaultInputs["customerPhone"]}
-                  setInputValue={setCustomerPhoneValue}
-                />
+                <Input id="create-phone" placeholder={defaultInputs["phone"]} />
               </Form.Item>
             </div>
             <div className="modal__form-group">
               <Form.Item
-                label={defaultLabels["customerEmail"]}
-                htmlFor="create-customerEmail"
+                name="email"
+                label={defaultLabels["email"]}
+                htmlFor="create-email"
                 className="modal__form-group-item"
+                rules={[ruleEmail()]}
               >
-                <CustomInput
-                  id="create-customerEmail"
-                  placeholder={defaultInputs["customerEmail"]}
-                  setInputValue={setCustomerEmailValue}
-                />
+                <Input id="create-email" placeholder={defaultInputs["email"]} />
               </Form.Item>
             </div>
           </div>
           <div className="modal__buttons">
-            <button className="modal__button btn create">Xác nhận</button>
+            <button type="submit" className="modal__button btn create">
+              Xác nhận
+            </button>
           </div>
         </Form>
       </>
@@ -500,110 +619,174 @@ const AdminOrderTablesPage = () => {
     timeOrder,
     timeArrive,
     employee,
-    customerFullname,
-    customerPhone,
-    customerEmail,
-    customerAddress,
+    fullname,
+    phone,
+    email,
+    address,
     note,
+    status,
   }: OrderTablesFormatType) => {
     const [form] = Form.useForm();
-    const [timeOrderValue, setTimeOrderValue] = useState<string | string[]>(
-      timeOrder!
-    );
-    const [timeArriveValue, setTimeArriveValue] = useState<string | string[]>(
-      timeArrive!
-    );
-    const [customerFullnameValue, setCustomerFullnameValue] = useState<string>(
-      customerFullname!
-    );
-    const [customerPhoneValue, setCustomerPhoneValue] = useState<string>(
-      customerPhone!
-    );
-    const [customerEmailValue, setCustomerEmailValue] = useState<string>(
-      customerEmail!
-    );
-    const [customerAddressValue, setCustomerAddressValue] = useState<string>(
-      customerAddress!
-    );
-    const [noteValue, setNoteValue] = useState<string>(note!);
 
     return (
       <>
         <Form
           layout="vertical"
           form={form}
-          initialValues={{ layout: "vertical" }}
+          initialValues={{
+            id: id!,
+            timeOrder: dayjs(timeOrder!),
+            timeArrive: dayjs(timeArrive!),
+            employee:
+              "#" +
+              employee!.id +
+              " - " +
+              employee!.fullname +
+              " - " +
+              employee!.phone +
+              " - " +
+              employee!.email,
+            note: note!,
+            fullname: fullname!,
+            phone: phone!,
+            email: email!,
+            address: address!,
+            status: status!,
+          }}
           className="modal__form split-3"
           autoComplete="off"
+          onFinish={async () => {
+            // Nút để submit form
+            const submitButton = document.querySelector(
+              ".modal__form button[type='submit']"
+            );
+
+            // Thêm class 'active' thể hiện nút đang được nhấn
+            submitButton?.classList.add("active");
+
+            // Hỏi trước khi xử khi xử lý ?
+            const answer = await openConfirmation({
+              title: `Bạn có chắc chắn thêm ?`,
+              content: "Hành động này không thể hoàn tác.",
+            });
+            if (answer) {
+              // Danh sách dữ liệu
+              const values = form.getFieldsValue();
+
+              // Gọi api xử lý
+              const res = await HandleUpdateOrderTable({
+                id: id!,
+                timeOrder:
+                  values!.timeOrder && dayjs(values!.timeOrder).isValid()
+                    ? dayjs(values!.timeOrder).format("YYYY-MM-DD HH:mm:ss")
+                    : undefined,
+                timeArrive:
+                  values!.timeArrive && dayjs(values!.timeArrive).isValid()
+                    ? dayjs(values!.timeArrive).format("YYYY-MM-DD HH:mm:ss")
+                    : undefined,
+                note: values!.note || undefined,
+                fullname: values!.fullname || undefined,
+                phone: values!.phone || undefined,
+                email: values!.email || undefined,
+                address: values!.address || undefined,
+                timeUpdate: new Date().toISOString(),
+              });
+              if (res.status === 200) {
+                openNotification({
+                  type: "success",
+                  message: "Thành công",
+                  description: "Cập nhật thành công !",
+                  duration: 1.5,
+                });
+
+                setTimeout(() => {
+                  getAllOrderTable();
+                  setOpenModal(false);
+                }, 1500);
+              } else {
+                openNotification({
+                  type: "error",
+                  message: "Thất bại",
+                  description: "Cập nhật thất bại !",
+                  duration: 1.5,
+                });
+
+                setTimeout(() => {
+                  // Xoá class 'active' thể hiện nút không còn được nhấn
+                  submitButton?.classList.remove("active");
+                }, 1500);
+              }
+            }
+
+            // Xoá class 'active' thể hiện nút không còn được nhấn
+            submitButton?.classList.remove("active");
+          }}
         >
           <div className="modal__form-group-warper">
             <p className="modal__form-group-title">{defaultLabels["title1"]}</p>
             <div className="modal__form-group">
+              <div className="modal__form-group-item-warper split-2">
+                <Form.Item
+                  name="id"
+                  label={defaultLabels["id"]}
+                  className="modal__form-group-item"
+                >
+                  <Input className="text-center" disabled={true} />
+                </Form.Item>
+                <Form.Item
+                  name="status"
+                  label={defaultLabels["status"]}
+                  className="modal__form-group-item"
+                >
+                  <Select disabled={true} />
+                </Form.Item>
+              </div>
               <Form.Item
-                label={defaultLabels["id"]}
-                className="modal__form-group-item"
-              >
-                <CustomInput
-                  className="text-center"
-                  value={id!}
-                  disabled={true}
-                />
-              </Form.Item>
-              <Form.Item
+                name="timeOrder"
                 label={defaultLabels["timeOrder"]}
                 htmlFor="update-timeOrder"
                 className="modal__form-group-item"
+                rules={[
+                  ruleRequired("Thời gian đặt bàn không được để trống !"),
+                ]}
               >
-                <CustomDatePicker
+                <DatePicker
                   showTime={true}
                   id="update-timeOrder"
                   placeholder={defaultInputs["timeOrder"]}
-                  value={timeOrderValue as string}
-                  setDatePickerValue={setTimeOrderValue}
                 />
               </Form.Item>
               <Form.Item
+                name="timeArrive"
                 label={defaultLabels["timeArrive"]}
                 htmlFor="update-timeArrive"
                 className="modal__form-group-item"
               >
-                <CustomDatePicker
+                <DatePicker
                   showTime={true}
                   id="update-timeArrive"
                   placeholder={defaultInputs["timeArrive"]}
-                  value={timeArriveValue as string}
-                  setDatePickerValue={setTimeArriveValue}
                 />
               </Form.Item>
             </div>
             <div className="modal__form-group">
               <Form.Item
+                name="employee"
                 label={defaultLabels["employee"]}
                 className="modal__form-group-item multiple-2"
               >
-                <CustomSelect
-                  className="employees"
-                  options={[
-                    {
-                      label: "Xử lý khi đăng nhập",
-                      value: employee!.id,
-                    },
-                  ]}
-                  value={employee!.id}
-                  disabled={true}
-                />
+                <Select disabled={true} />
               </Form.Item>
               <Form.Item
+                name="note"
                 label={defaultLabels["note"]}
                 htmlFor="update-note"
                 className="modal__form-group-item multiple-2"
               >
-                <CustomTextArea
+                <TextArea
                   id="update-note"
                   className="multiple-2"
                   placeholder={defaultInputs["note"]}
-                  value={noteValue}
-                  setTextAreaValue={setNoteValue}
                 />
               </Form.Item>
             </div>
@@ -612,62 +795,173 @@ const AdminOrderTablesPage = () => {
             <p className="modal__form-group-title">{defaultLabels["title2"]}</p>
             <div className="modal__form-group">
               <Form.Item
-                label={defaultLabels["customerFullname"]}
-                htmlFor="update-customerFullname"
+                name="fullname"
+                label={defaultLabels["fullname"]}
+                htmlFor="update-fullname"
                 className="modal__form-group-item"
+                rules={[ruleRequired("Họ và tên không được để trống !")]}
               >
-                <CustomInput
-                  id="update-customerFullname"
-                  placeholder={defaultInputs["customerFullname"]}
-                  value={customerFullnameValue}
-                  setInputValue={setCustomerFullnameValue}
+                <Input
+                  id="update-fullname"
+                  placeholder={defaultInputs["fullname"]}
                 />
               </Form.Item>
               <Form.Item
-                label={defaultLabels["customerAddress"]}
-                htmlFor="update-customerAddress"
+                label={defaultLabels["address"]}
                 className="modal__form-group-item multiple-3"
               >
-                <CustomInput
-                  id="update-customerAddress"
-                  placeholder={defaultInputs["customerAddress"]}
-                  value={customerAddressValue}
-                  setInputValue={setCustomerAddressValue}
-                />
-                <button className="btn secondary-btn">Tạo địa chỉ</button>
+                <Space.Compact>
+                  <Form.Item name="address" noStyle>
+                    <Input
+                      id="update-address"
+                      placeholder={defaultInputs["address"]}
+                    />
+                  </Form.Item>
+                  <button
+                    type="button"
+                    className="btn secondary-btn"
+                    onClick={async () => {
+                      const result = await showCreateValidAddress();
+                      if (result) {
+                        const { houseNumberAndStreetName, province, ward } =
+                          result;
+
+                        form.setFieldsValue({
+                          address: `${houseNumberAndStreetName}, ${ward}, ${province}`,
+                        });
+                      }
+                    }}
+                  >
+                    Tạo địa chỉ
+                  </button>
+                </Space.Compact>
               </Form.Item>
             </div>
             <div className="modal__form-group">
               <Form.Item
-                label={defaultLabels["customerPhone"]}
-                htmlFor="update-customerPhone"
+                name="phone"
+                label={defaultLabels["phone"]}
+                htmlFor="update-phone"
                 className="modal__form-group-item"
+                rules={[
+                  ruleRequired("Số điện thoại không được để trống !"),
+                  rulePhone(),
+                ]}
               >
-                <CustomInput
-                  id="update-customerPhone"
-                  placeholder={defaultInputs["customerPhone"]}
-                  value={customerPhoneValue}
-                  setInputValue={setCustomerPhoneValue}
-                />
+                <Input id="update-phone" placeholder={defaultInputs["phone"]} />
               </Form.Item>
             </div>
             <div className="modal__form-group">
               <Form.Item
-                label={defaultLabels["customerEmail"]}
-                htmlFor="update-customerEmail"
+                name="email"
+                label={defaultLabels["email"]}
+                htmlFor="update-email"
                 className="modal__form-group-item"
+                rules={[ruleEmail()]}
               >
-                <CustomInput
-                  id="update-customerEmail"
-                  placeholder={defaultInputs["customerEmail"]}
-                  value={customerEmailValue}
-                  setInputValue={setCustomerEmailValue}
-                />
+                <Input id="update-email" placeholder={defaultInputs["email"]} />
               </Form.Item>
             </div>
           </div>
           <div className="modal__buttons">
-            <button className="modal__button btn update">Xác nhận</button>
+            <button type="submit" className="modal__button btn update">
+              Xác nhận
+            </button>
+          </div>
+        </Form>
+      </>
+    );
+  };
+  const LockOrderTables = ({
+    id,
+    status,
+  }: {
+    id: number;
+    status: string | undefined;
+  }) => {
+    const [form] = Form.useForm();
+    const statusValue = status == commonStatus["active"] ? true : false;
+
+    return (
+      <>
+        <Form
+          layout="vertical"
+          form={form}
+          className="modal__form"
+          onFinish={async () => {
+            // Nút để submit form
+            const submitButton = document.querySelector(
+              ".modal__form button[type='submit']"
+            );
+
+            // Thêm class 'active' thể hiện nút đang được nhấn
+            submitButton?.classList.add("active");
+
+            // Hỏi trước khi xử khi xử lý ?
+            const answer = await openConfirmation({
+              title: `Bạn có chắc chắn ${statusValue ? "khoá" : "mở khoá"} ?`,
+              content: "Hành động này không thể hoàn tác.",
+            });
+            if (answer) {
+              // Gọi api xử lý
+              const res = await HandleLockOrderTable({
+                id: id!,
+                status: status!,
+                timeUpdate: new Date().toISOString(),
+              });
+              if (res.status == 200) {
+                openNotification({
+                  type: "success",
+                  message: "Thành công",
+                  description: `${
+                    statusValue ? "Khoá" : "Mở khoá"
+                  } thành công !`,
+                  duration: 1.5,
+                });
+
+                setTimeout(() => {
+                  getAllOrderTable();
+                  setOpenModal(false);
+                }, 1500);
+              } else {
+                openNotification({
+                  type: "error",
+                  message: "Thất bại",
+                  description: `${statusValue ? "Khoá" : "Mở khoá"} thất bại !`,
+                  duration: 1.5,
+                });
+
+                setTimeout(() => {
+                  // Xoá class 'active' thể hiện nút không còn được nhấn
+                  submitButton?.classList.remove("active");
+                }, 1500);
+              }
+            }
+
+            // Xoá class 'active' thể hiện nút không còn được nhấn
+            submitButton?.classList.remove("active");
+          }}
+        >
+          <div className="modal__form-image">
+            <img
+              src={
+                statusValue
+                  ? "/src/assets/images/others/lock-icon.png"
+                  : "/src/assets/images/others/unlock-icon.png"
+              }
+              alt=""
+            />
+          </div>
+          <div className="modal__form-content">
+            <p>
+              Bạn có xác nhận rằng <b>{statusValue ? "khoá" : "mở khoá"}</b> nhà
+              cung cấp có mã đối tượng là <b>{id}</b> ?
+            </p>
+          </div>
+          <div className="modal__buttons">
+            <button type="submit" className="modal__button btn lock">
+              Xác nhận
+            </button>
           </div>
         </Form>
       </>
@@ -680,11 +974,12 @@ const AdminOrderTablesPage = () => {
         timeOrder={orderTable!.timeOrder}
         timeArrive={orderTable!.timeArrive}
         employee={orderTable!.employee}
-        customerFullname={orderTable!.customerFullname}
-        customerPhone={orderTable!.customerPhone}
-        customerEmail={orderTable!.customerEmail}
-        customerAddress={orderTable!.customerAddress}
+        fullname={orderTable!.fullname}
+        phone={orderTable!.phone}
+        email={orderTable!.email}
+        address={orderTable!.address}
         note={orderTable!.note}
+        status={orderTable!.status}
       />
     ),
     create: () => <CreateOrderTables />,
@@ -694,12 +989,16 @@ const AdminOrderTablesPage = () => {
         timeOrder={orderTable!.timeOrder}
         timeArrive={orderTable!.timeArrive}
         employee={orderTable!.employee}
-        customerFullname={orderTable!.customerFullname}
-        customerPhone={orderTable!.customerPhone}
-        customerEmail={orderTable!.customerEmail}
-        customerAddress={orderTable!.customerAddress}
+        fullname={orderTable!.fullname}
+        phone={orderTable!.phone}
+        email={orderTable!.email}
+        address={orderTable!.address}
         note={orderTable!.note}
+        status={orderTable!.status}
       />
+    ),
+    lock: (id: number, status: string | undefined) => (
+      <LockOrderTables id={id} status={status} />
     ),
   };
 
@@ -767,8 +1066,8 @@ const AdminOrderTablesPage = () => {
             className={
               "main__filter-button btn create" +
               (openModal &&
-                String(titleModal).includes("Thêm") &&
-                String(classNameModal).includes("create")
+              String(titleModal).includes("Thêm") &&
+              String(classNameModal).includes("create")
                 ? " active"
                 : "")
             }

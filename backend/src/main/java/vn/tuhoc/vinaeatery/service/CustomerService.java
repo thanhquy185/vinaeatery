@@ -36,6 +36,7 @@ public class CustomerService {
         CustomerDTO customerDTO = new CustomerDTO();
 
         if (customer != null) {
+            customerDTO.setId(customer.getId());
             customerDTO.setFullname(customer.getFullname());
             customerDTO.setBirthday(customer.getBirthday());
             customerDTO.setGender(customer.getGender());
@@ -43,8 +44,9 @@ public class CustomerService {
             customerDTO.setEmail(customer.getEmail());
             customerDTO.setAddress(customer.getAddress());
             customerDTO.setDescription(customer.getDescription());
-            customerDTO.setStatus(customer.getStatus());
+            customerDTO.setCustomerCard(customerCardRepository.findOneById(customer.getCustomerCardId()));
             customerDTO.setTotalThreshold(customer.getTotalThreshold());
+            customerDTO.setStatus(customer.getStatus());
             customerDTO.setTimeUpdate(customer.getTimeUpdate());
         }
 

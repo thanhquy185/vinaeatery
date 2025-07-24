@@ -1,11 +1,12 @@
 // version đơn giản (không contextHolder)
 import { notification } from "antd";
+import type { ReactNode } from "react";
 
 // Kiểu dữ liệu các tham số truyền vào
 type openNotificationWithIconProps = {
   type: "success" | "info" | "warning" | "error";
   message?: string;
-  description?: string;
+  description?: string | ReactNode[];
   duration?: number;
   placement?:
     | "topLeft"
