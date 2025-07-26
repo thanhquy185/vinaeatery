@@ -19,17 +19,20 @@ import {
   faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { Image } from "antd";
+import TextArea from "antd/es/input/TextArea";
 import type {
   CategoryFoodsType,
   FoodsFormatType,
   ShoppingCartsType,
+  UseTablesFormatType,
 } from "../common/types";
+import { OrderSheetStatus, UseTableStatus } from "../common/values";
 import CustomBrand from "../components/common/brand";
 import CustomTextArea from "../components/admin/text-area";
 import CustomDrawer from "../components/client/drawer";
 import CustomCardFilter from "../components/client/card-filter";
 import CustomCardFood from "../components/client/card-food";
-import { FindAllCategoryFood, FindAllFood, FindTableId } from "../services/api";
+import { FindAllCategoryFood, FindAllFood, FindOneNewUseTableByTableId, HandleCreateOrderSheet } from "../services/api";
 import { openNotification } from "../utils/showNotification";
 import { vietnamMoneyFormat } from "../utils/otherEvents";
 import { openConfirmation } from "../utils/showConfirmation";
@@ -39,6 +42,7 @@ type ClientLayoutProps = {
   tableId?: string;
   shoppingCart?: ShoppingCartsType[];
   setShoppingCart?: Dispatch<SetStateAction<ShoppingCartsType[]>>;
+  currentUseTable?: UseTablesFormatType;
 };
 
 // Client Header
@@ -46,6 +50,7 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
   tableId,
   shoppingCart,
   setShoppingCart,
+  currentUseTable,
 }) => {
   // Cách thành phần drawer theo từng icon
   const ClientDrawers = {
@@ -81,7 +86,7 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
 
               // Hỏi trước khi xử khi xử lý ?
               const answer = await openConfirmation({
-                title: "Bạn có chắc chắn gọi nhân viên ?",
+                title: "Bạn có chắc chắn gọi ?",
                 content: "Hành động này không thể hoàn tác.",
               });
               if (answer) {
@@ -112,14 +117,29 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
           <button
             type="button"
             className="drawer__button btn"
-            onClick={() =>
-              openNotification({
-                type: "success",
-                message: "Thành công",
-                description: "Đã góp ý nhân viên",
-                duration: 1.5,
-              })
-            }
+            onClick={async (e) => {
+              // Nút hiện tại
+              const button = e.currentTarget;
+              // Thêm class 'active' thể hiện nút đang được nhấn
+              button.classList.add("active");
+
+              // Hỏi trước khi xử khi xử lý ?
+              const answer = await openConfirmation({
+                title: "Bạn có chắc chắn góp ý ?",
+                content: "Hành động này không thể hoàn tác.",
+              });
+              if (answer) {
+                openNotification({
+                  type: "success",
+                  message: "Thành công",
+                  description: "Đã góp ý nhân viên",
+                  duration: 1.5,
+                });
+              }
+
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              button.classList.remove("active");
+            }}
           >
             Gửi góp ý
           </button>
@@ -133,6 +153,7 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
         },
         0
       );
+      const [noteValue, setNoteValue] = useState<string>();
 
       return (
         <>
@@ -290,14 +311,86 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
                   >
                     Xoá tất cả
                   </button>
-                  <button type="button" className="client__cart-button btn">
+                  <button
+                    type="button"
+                    className="client__cart-button btn"
+                    onClick={async (e) => {
+                      // Nút hiện tại
+                      const button = e.currentTarget;
+                      // Thêm class 'active' thể hiện nút đang được nhấn
+                      button.classList.add("active");
+
+                      // Hỏi trước khi xử khi xử lý ?
+                      const answer = await openConfirmation({
+                        title: "Bạn có chắc chắn gọi món ?",
+                        content: "Hành động này không thể hoàn tác.",
+                      });
+                      if (answer) {
+                        // Nếu giỏ hàng trống thì báo lỗi
+                        if (shoppingCart?.length == 0) {
+                          openNotification({
+                            type: "warning",
+                            message: "Cảnh báo",
+                            description: "Không có món ăn nào trong giỏ hàng !",
+                            duration: 1.5,
+                          });
+
+                          // Xoá class 'active' thể hiện nút không còn được nhấn
+                          button?.classList.remove("active");
+
+                          return;
+                        }
+
+                        // Định dạng lại dữ liệu chi tiết phiếu gọi món
+                        const orderSheetDetails = shoppingCart?.map((item) => ({ foodId: item!.food?.id!, price: item!.food?.price!, quantity: item!.quantity! }));
+
+                        // Gọi api xử lý
+                        const res = await HandleCreateOrderSheet({
+                          timeCreate: new Date().toISOString(),
+                          tableId: Number(tableId!),
+                          totalPrice: totalPriceValue! || 0,
+                          note: noteValue! || undefined,
+                          status: "Đang chờ xác nhận",
+                          orderSheetDetails: orderSheetDetails!
+                        });
+                        if (res.status === 200) {
+                          openNotification({
+                            type: "success",
+                            message: "Thành công",
+                            description: "Gọi món thành công !",
+                            duration: 1.5,
+                          });
+
+                          setTimeout(() => {
+                            setShoppingCart!([]);
+                          }, 1500);
+                        } else {
+                          openNotification({
+                            type: "error",
+                            message: "Thất bại",
+                            description: "Gọi món thất bại !",
+                            duration: 1.5,
+                          });
+
+                          setTimeout(() => {
+                            // Xoá class 'active' thể hiện nút không còn được nhấn
+                            button?.classList.remove("active");
+                          }, 1500);
+                        }
+                      }
+
+                      // Xoá class 'active' thể hiện nút không còn được nhấn
+                      button.classList.remove("active");
+                    }}>
                     Gọi món
                   </button>
                 </div>
               </div>
-              <CustomTextArea
+              <TextArea
                 className="client__cart-note"
                 placeholder="Nhập ghi chú khi gọi món"
+                value={noteValue}
+                onChange={(e) => setNoteValue(e.target.value)}
               />
             </div>
           </div>
@@ -308,34 +401,45 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
       return (
         <>
           <div className="client__orders">
-            <div className="client__order">
-              <p className="client__order-time">10:30:00</p>
-              <div className="client__order-info red">
-                <b className="client__order-title">Phiếu: #PH001</b>
-                <table className="client__order-details">
-                  <colgroup>
-                    <col width="55%" />
-                    <col width="15%" />
-                    <col width="30%" />
-                  </colgroup>
-                  <tr>
-                    <td className="left">Phở bò</td>
-                    <td>1x</td>
-                    <td className="right">45.000đ</td>
-                  </tr>
-                  <tr>
-                    <td className="left">Trà đào</td>
-                    <td>2x</td>
-                    <td className="right">60.000đ</td>
-                  </tr>
-                </table>
-                <p className="client__order-total">Tổng cộng: 165.000đ</p>
-                <p className="client__order-status">Đã xác nhận</p>
-                <p className="client__order-message">
-                  Lời nhắn: Rau muống tạm hết hàng
-                </p>
-              </div>
-            </div>
+            {currentUseTable!.orderSheets?.sort((a, b) => new Date(b.timeCreate!).getTime() - new Date(a.timeCreate!).getTime())?.map((orderSheet) => (
+              <>
+                <div className="client__order">
+                  <p className="client__order-time">{orderSheet!.timeCreate!.split(" ")[1]}</p>
+                  <div className={"client__order-info " + (orderSheet!.status! == OrderSheetStatus.serviced ? "purple" : orderSheet!.status! == OrderSheetStatus.confirm ? "green" : orderSheet!.status! == OrderSheetStatus.canceled ? "red" : "gray")}>
+                    <b className="client__order-title">Phiếu: #{orderSheet!.id!}</b>
+                    <table className="client__order-details">
+                      <colgroup>
+                        <col width="55%" />
+                        <col width="15%" />
+                        <col width="30%" />
+                      </colgroup>
+                      {/* <tr>
+                        <td className="left">Phở bò</td>
+                        <td>1x</td>
+                        <td className="right">45.000đ</td>
+                      </tr>
+                      <tr>
+                        <td className="left">Trà đào</td>
+                        <td>2x</td>
+                        <td className="right">60.000đ</td>
+                      </tr> */}
+                      {orderSheet!.orderSheetDetails?.map((orderSheet) => (
+                        <tr>
+                          <td className="left">{orderSheet!.food.name!}</td>
+                          <td>{orderSheet!.quantity!}x</td>
+                          <td className="right">{vietnamMoneyFormat(orderSheet!.price!)}đ</td>
+                        </tr>
+                      ))}
+                    </table>
+                    <p className="client__order-total">Tổng cộng: {vietnamMoneyFormat(orderSheet!.totalPrice!)}đ</p>
+                    <p className={"client__order-status " + (orderSheet!.status! == OrderSheetStatus.serviced ? "purple" : orderSheet!.status! == OrderSheetStatus.confirm ? "green" : orderSheet!.status! == OrderSheetStatus.canceled ? "red" : "gray")}>{orderSheet!.status!}</p>
+                    <p className="client__order-message">
+                      Lời nhắn: {orderSheet!.message!}
+                    </p>
+                  </div>
+                </div>
+              </>
+            ))}
           </div>
         </>
       );
@@ -347,43 +451,47 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
       <header className="client__header-warper">
         <div className="client__header container">
           <CustomBrand to="#!" prefixClassName="client__" name="VINAEATERY" />
-          <div className="client__actions">
-            {/* <button type="button" className="client__action">
+          {currentUseTable!.status === UseTableStatus.occupied &&
+            (
+              <div className="client__actions">
+                {/* <button type="button" className="client__action">
               <FontAwesomeIcon icon={faGear} className="client__icon" />
             </button> */}
-            <CustomDrawer
-              prefixClassName="client__"
-              icon={faQrcode}
-              title="QR Code"
-              children={ClientDrawers.qr()}
-            />
-            <CustomDrawer
-              prefixClassName="client__"
-              icon={faBell}
-              title="Gọi nhân viên"
-              children={ClientDrawers.call()}
-            />
-            <CustomDrawer
-              prefixClassName="client__"
-              icon={faCommentDots}
-              title="Góp ý nhân viên"
-              children={ClientDrawers.message()}
-            />
-            <CustomDrawer
-              prefixClassName="client__"
-              icon={faShoppingCart}
-              title="Giỏ hàng"
-              size="large"
-              children={ClientDrawers.shoppingCart()}
-            />
-            <CustomDrawer
-              prefixClassName="client__"
-              icon={faReceipt}
-              title="Phiếu gọi món"
-              size="large"
-              children={ClientDrawers.callTickets()}
-            />
-          </div>
+                <CustomDrawer
+                  prefixClassName="client__"
+                  icon={faQrcode}
+                  title="QR Code"
+                  children={ClientDrawers.qr()}
+                />
+                <CustomDrawer
+                  prefixClassName="client__"
+                  icon={faBell}
+                  title="Gọi nhân viên"
+                  children={ClientDrawers.call()}
+                />
+                <CustomDrawer
+                  prefixClassName="client__"
+                  icon={faCommentDots}
+                  title="Góp ý nhân viên"
+                  children={ClientDrawers.message()}
+                />
+                <CustomDrawer
+                  prefixClassName="client__"
+                  icon={faShoppingCart}
+                  title="Giỏ hàng"
+                  size="large"
+                  children={ClientDrawers.shoppingCart()}
+                />
+                <CustomDrawer
+                  prefixClassName="client__"
+                  icon={faReceipt}
+                  title="Phiếu gọi món"
+                  size="large"
+                  children={ClientDrawers.callTickets()}
+                />
+              </div>
+            )
+          }
         </div>
       </header>
     </>
@@ -394,6 +502,7 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
 const ClientMain: React.FC<ClientLayoutProps> = ({
   shoppingCart,
   setShoppingCart,
+  currentUseTable,
 }) => {
   //
   const filterListRef = useRef<HTMLDivElement>(null);
@@ -436,8 +545,10 @@ const ClientMain: React.FC<ClientLayoutProps> = ({
 
   //
   useEffect(() => {
-    getAllCategoryFood();
-    getAllFood();
+    if (currentUseTable!.status === UseTableStatus.occupied) {
+      getAllCategoryFood();
+      getAllFood();
+    }
   }, []);
   useEffect(() => {
     getAllFood();
@@ -446,29 +557,45 @@ const ClientMain: React.FC<ClientLayoutProps> = ({
   return (
     <>
       <main className="client__main">
-        <aside className="client__filter">
-          <div className="client__filter-list-warper">
-            <div ref={filterListRef} className="client__filter-list">
-              {categoryFoods?.map((categoryFood) => (
-                <CustomCardFilter
-                  object={categoryFood}
-                  active={filterCategory === categoryFood.id}
-                  currentValue={filterCategory}
-                  setSelectValue={setFilterCategory}
-                />
-              ))}
-            </div>
-          </div>
-        </aside>
-        <div className="client__foods">
-          {foods?.map((food) => (
-            <CustomCardFood
-              object={food}
-              shoppingCart={shoppingCart}
-              setSelectFood={setShoppingCart}
-            />
-          ))}
-        </div>
+        {currentUseTable!.status === UseTableStatus.occupied ?
+          (
+            <>
+              <aside className="client__filter">
+                <div className="client__filter-list-warper">
+                  <div ref={filterListRef} className="client__filter-list">
+                    {categoryFoods?.map((categoryFood) => (
+                      <CustomCardFilter
+                        object={categoryFood}
+                        active={filterCategory === categoryFood.id}
+                        currentValue={filterCategory}
+                        setSelectValue={setFilterCategory}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </aside>
+              <div className="client__foods">
+                {foods?.map((food) => (
+                  <CustomCardFood
+                    object={food}
+                    shoppingCart={shoppingCart}
+                    setSelectFood={setShoppingCart}
+                  />
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="client__inform container">
+              {
+                currentUseTable!.status === UseTableStatus.reserved
+                  ? "Rất tiếc, bàn này đã được khách khác đặt trước. Mong quý khách thông cảm!"
+                  : currentUseTable!.status === UseTableStatus.empty
+                    ? "Xin vui lòng chờ trong giây lát để chúng tôi chuẩn bị bàn cho quý khách."
+                    : "Bàn hiện đang được bảo trì. Rất mong quý khách thông cảm vì sự bất tiện này!"
+              }
+            </p>
+          )
+        }
       </main>
     </>
   );
@@ -478,16 +605,17 @@ const ClientMain: React.FC<ClientLayoutProps> = ({
 const ClientLayout = () => {
   // Id của bàn hiện tại (thông qua url trang)
   const { tableId } = useParams();
-  // - Kiểm tra id bàn có tồn tại hay không ?
-  const [isExists, setIsExists] = useState<boolean>(true);
-  const isExistsTableId = async () => {
-    const res = await FindTableId({
-      id: tableId!,
+  // - 
+  const [loading, setLoading] = useState(true);
+  const [isExists, setIsExists] = useState<boolean>(false);
+  const [currentUseTable, setCurrentUseTable] = useState<UseTablesFormatType>();
+  const getUseTableById = async () => {
+    const res = await FindOneNewUseTableByTableId({
+      tableId: tableId!,
     });
-    if (res!.status === 200) {
-      if (!(res!.config ? res!.data!.data : res!.data)) {
-        setIsExists(false);
-      }
+    if (res!.status === 200 && res!.data?.id) {
+      setCurrentUseTable(res!.data);
+      setIsExists(true);
     } else {
       openNotification({
         type: "error",
@@ -496,16 +624,19 @@ const ClientLayout = () => {
         duration: 2,
       });
     }
+    setLoading(false);
   };
   // - Dữ liệu về giỏ hàng hiện tại của bàn
   const [shoppingCart, setShoppingCart] = useState<ShoppingCartsType[]>([]);
-  // - Dữ liệu về phiếu gọi món hiện tại của bàn
-  const [orderSheets, setOrderSheets] = useState<any>([]);
+  // // - Dữ liệu về phiếu gọi món hiện tại của bàn
+  // const [orderSheets, setOrderSheets] = useState<any>([]);
 
   //
   useEffect(() => {
-    isExistsTableId();
+    getUseTableById();
   }, []);
+
+  if (loading) return null;
 
   return (
     <>
@@ -517,11 +648,13 @@ const ClientLayout = () => {
             tableId={tableId}
             shoppingCart={shoppingCart}
             setShoppingCart={setShoppingCart}
+            currentUseTable={currentUseTable}
           />
           <ClientMain
             tableId={tableId}
             shoppingCart={shoppingCart}
             setShoppingCart={setShoppingCart}
+            currentUseTable={currentUseTable}
           />
         </>
       )}

@@ -44,7 +44,7 @@ import { vietnamMoneyFormat } from "../../../utils/otherEvents";
 import TextArea from "antd/es/input/TextArea";
 import { ruleRequired } from "../../../common/rules";
 import { openConfirmation } from "../../../utils/showConfirmation";
-import { foodStatus } from "../../../common/values";
+import { FoodStatus } from "../../../common/values";
 
 // Các giá trị chung
 // - Kiểu dữ liệu của tham số khi xử lý bảng công thức
@@ -155,7 +155,7 @@ const AdminFoodsPage = () => {
       // sorter: true,
       width: "10%",
       render: (status: string) => (
-        <Tag color={status === foodStatus["active"] ? "green" : "red"}>
+        <Tag color={status === FoodStatus["active"] ? "green" : "red"}>
           {status}
         </Tag>
       ),
@@ -199,8 +199,8 @@ const AdminFoodsPage = () => {
             className="action lock"
             onClick={() =>
               updatePropertiesModal(
-                (record.status == foodStatus["active"] ? "Khoá" : "Mở khoá") +
-                  " món ăn",
+                (record.status == FoodStatus["active"] ? "Khoá" : "Mở khoá") +
+                " món ăn",
                 true,
                 "30%",
                 "lock foods",
@@ -209,7 +209,7 @@ const AdminFoodsPage = () => {
             }
           >
             <FontAwesomeIcon
-              icon={record.status == foodStatus["active"] ? faLock : faUnlock}
+              icon={record.status == FoodStatus["active"] ? faLock : faUnlock}
             />
           </button>
         </>
@@ -250,8 +250,8 @@ const AdminFoodsPage = () => {
   >(null);
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
-    { label: foodStatus["active"], value: foodStatus["active"] },
-    { label: foodStatus["inactive"], value: foodStatus["inactive"] },
+    { label: FoodStatus["active"], value: FoodStatus["active"] },
+    { label: FoodStatus["inactive"], value: FoodStatus["inactive"] },
   ];
   const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
     null
@@ -618,12 +618,12 @@ const AdminFoodsPage = () => {
                   placeholder={defaultInputs["status"]}
                   options={[
                     {
-                      label: foodStatus["active"],
-                      value: foodStatus["active"],
+                      label: FoodStatus["active"],
+                      value: FoodStatus["active"],
                     },
                     {
-                      label: foodStatus["inactive"],
-                      value: foodStatus["inactive"],
+                      label: FoodStatus["inactive"],
+                      value: FoodStatus["inactive"],
                     },
                   ]}
                 />
@@ -999,7 +999,7 @@ const AdminFoodsPage = () => {
     status: string | undefined;
   }) => {
     const [form] = Form.useForm();
-    const statusValue = status == foodStatus["active"] ? true : false;
+    const statusValue = status == FoodStatus["active"] ? true : false;
 
     return (
       <>
@@ -1032,9 +1032,8 @@ const AdminFoodsPage = () => {
                 openNotification({
                   type: "success",
                   message: "Thành công",
-                  description: `${
-                    statusValue ? "Khoá" : "Mở khoá"
-                  } thành công !`,
+                  description: `${statusValue ? "Khoá" : "Mở khoá"
+                    } thành công !`,
                   duration: 1.5,
                 });
 
@@ -1547,8 +1546,8 @@ const AdminFoodsPage = () => {
             className={
               "main__filter-button btn create" +
               (openModal &&
-              String(titleModal).includes("Thêm") &&
-              String(classNameModal).includes("create")
+                String(titleModal).includes("Thêm") &&
+                String(classNameModal).includes("create")
                 ? " active"
                 : "")
             }

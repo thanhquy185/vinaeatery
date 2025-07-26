@@ -19,15 +19,14 @@ public interface RoleDetailRepository
     // Methods
     RoleDetail findOneById(RoleDetailId id);
 
-    @Modifying
+    // @Modifying
     @Transactional
     @Query(value = "SELECT * FROM vinaeatery.role_details WHERE role_id = :role_id", nativeQuery = true)
     List<RoleDetail> findAllByRoleId(@Param("role_id") Integer roleId);
 
     void deleteById(RoleDetailId id);
 
-
-    @Modifying
+    // @Modifying
     @Transactional
     @Query(value = "DELETE FROM vinaeatery.role_details WHERE role_id = :role_id", nativeQuery = true)
     void deleteAllByRoleId(@Param("role_id") Integer roleId);

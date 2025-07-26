@@ -33,7 +33,7 @@ import dayjs from "dayjs";
 import { showCreateValidAddress } from "../../../utils/showCreateValidAddress";
 import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules";
 import { openConfirmation } from "../../../utils/showConfirmation";
-import { commonStatus } from "../../../common/values";
+import { CommonStatus } from "../../../common/values";
 
 // Các giá trị chung
 // - Giới tính
@@ -87,7 +87,7 @@ const AdminCustomersPage = () => {
       key: "status",
       width: "10%",
       render: (status: string) => (
-        <Tag color={status === commonStatus["active"] ? "green" : "red"}>
+        <Tag color={status === CommonStatus["active"] ? "green" : "red"}>
           {status}
         </Tag>
       ),
@@ -131,8 +131,8 @@ const AdminCustomersPage = () => {
             className="action lock"
             onClick={() =>
               updatePropertiesModal(
-                (record.status == commonStatus["active"] ? "Khoá" : "Mở khoá") +
-                  " khách hàng",
+                (record.status == CommonStatus["active"] ? "Khoá" : "Mở khoá") +
+                " khách hàng",
                 true,
                 "30%",
                 "lock customers",
@@ -141,7 +141,7 @@ const AdminCustomersPage = () => {
             }
           >
             <FontAwesomeIcon
-              icon={record.status == commonStatus["active"] ? faLock : faUnlock}
+              icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
             />
           </button>
         </>
@@ -182,8 +182,8 @@ const AdminCustomersPage = () => {
   >(null);
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
-    { label: commonStatus["active"], value: commonStatus["active"] },
-    { label: commonStatus["inactive"], value: commonStatus["inactive"] },
+    { label: CommonStatus["active"], value: CommonStatus["active"] },
+    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
   ];
   const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
     null
@@ -543,12 +543,12 @@ const AdminCustomersPage = () => {
                   placeholder={defaultInputs["status"]}
                   options={[
                     {
-                      label: commonStatus["active"],
-                      value: commonStatus["active"],
+                      label: CommonStatus["active"],
+                      value: CommonStatus["active"],
                     },
                     {
-                      label: commonStatus["inactive"],
-                      value: commonStatus["inactive"],
+                      label: CommonStatus["inactive"],
+                      value: CommonStatus["inactive"],
                     },
                   ]}
                 />
@@ -888,7 +888,7 @@ const AdminCustomersPage = () => {
     status: string | undefined;
   }) => {
     const [form] = Form.useForm();
-    const statusValue = status == commonStatus["active"] ? true : false;
+    const statusValue = status == CommonStatus["active"] ? true : false;
 
     return (
       <>
@@ -921,9 +921,8 @@ const AdminCustomersPage = () => {
                 openNotification({
                   type: "success",
                   message: "Thành công",
-                  description: `${
-                    statusValue ? "Khoá" : "Mở khoá"
-                  } thành công !`,
+                  description: `${statusValue ? "Khoá" : "Mở khoá"
+                    } thành công !`,
                   duration: 1.5,
                 });
 
@@ -935,7 +934,9 @@ const AdminCustomersPage = () => {
                 openNotification({
                   type: "error",
                   message: "Thất bại",
-                  description: `${statusValue ? "Khoá" : "Mở khoá"} thất bại !`,
+                  description:
+                    String(res.data) ??
+                    `${statusValue ? "Khoá" : "Mở khoá"} thất bại !`,
                   duration: 1.5,
                 });
 
@@ -1098,8 +1099,8 @@ const AdminCustomersPage = () => {
             className={
               "main__filter-button btn create" +
               (openModal &&
-              String(titleModal).includes("Thêm") &&
-              String(classNameModal).includes("create")
+                String(titleModal).includes("Thêm") &&
+                String(classNameModal).includes("create")
                 ? " active"
                 : "")
             }

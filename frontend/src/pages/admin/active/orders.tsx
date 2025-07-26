@@ -52,15 +52,9 @@ import {
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
 import { handlePrintTicket } from "../../../utils/printTicket";
+import { OrderStatus, PayStatus } from "../../../common/values";
 
 // Các giá trị chung
-// - Trạng thái
-const confirm = "Đã xác nhận";
-const cancel = "Đã huỷ đơn";
-const pending = "Đang chờ xác nhận";
-// - Thanh toán
-const pay = "Đã thanh toán";
-const notPay = "Chưa thanh toán";
 // - Chi tiết phiếu nhập
 interface OrderDetailsTableProps {
   orderDetails?: OrderDetailsFormatType[];
@@ -127,7 +121,7 @@ const AdminOrdersPage = () => {
       key: "payStatus",
       width: "12%",
       render: (status: string) => (
-        <Tag color={status === pay ? "volcano" : "default"}>{status}</Tag>
+        <Tag color={status === PayStatus.pay ? "volcano" : "default"}>{status}</Tag>
       ),
     },
     {
@@ -138,7 +132,7 @@ const AdminOrdersPage = () => {
       render: (status: string) => (
         <Tag
           color={
-            status === confirm ? "green" : status === cancel ? "red" : "default"
+            status === OrderStatus.confirm ? "green" : status === OrderStatus.canceled ? "red" : "default"
           }
         >
           {status}
@@ -222,11 +216,11 @@ const AdminOrdersPage = () => {
   const [filterTimeValue, setFilterTimeValue] = useState<[string, string]>();
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
-    { label: confirm, value: confirm },
-    { label: cancel, value: cancel },
-    { label: pending, value: pending },
-    { label: pay, value: pay },
-    { label: notPay, value: notPay },
+    { label: OrderStatus.confirm, value: OrderStatus.confirm },
+    { label: OrderStatus.canceled, value: OrderStatus.canceled },
+    { label: OrderStatus.pending, value: OrderStatus.pending },
+    { label: PayStatus.pay, value: PayStatus.pay },
+    { label: PayStatus.notPay, value: PayStatus.notPay },
   ];
   const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
     []
@@ -484,8 +478,8 @@ const AdminOrdersPage = () => {
                 employeeId: 2,
                 customerId: values!.customer || undefined,
                 totalPrice: totalPriceValue,
-                payStatus: notPay,
-                status: pending,
+                payStatus: PayStatus.notPay,
+                status: OrderStatus.pending,
                 orderDetails: orderDetails.map((orderDetail) => ({
                   foodId: orderDetail.food.id!,
                   price: orderDetail.price,
@@ -807,23 +801,23 @@ const AdminOrdersPage = () => {
             </div>
           </div>
           <div className="modal__buttons">
-            {status === pending && (
+            {status === OrderStatus.pending && (
               <>
                 <button
                   className="modal__button secondary btn green-secondary"
                   onClick={(e) =>
-                    callApiToUpdateOrder(id!, e.target as HTMLElement, confirm)
+                    callApiToUpdateOrder(id!, e.target as HTMLElement, OrderStatus.confirm)
                   }
                 >
-                  {confirm}
+                  {OrderStatus.confirm}
                 </button>
                 <button
                   className="modal__button secondary btn red-secondary"
                   onClick={(e) =>
-                    callApiToUpdateOrder(id!, e.target as HTMLElement, cancel)
+                    callApiToUpdateOrder(id!, e.target as HTMLElement, OrderStatus.canceled)
                   }
                 >
-                  {cancel}
+                  {OrderStatus.canceled}
                 </button>
               </>
             )}
@@ -833,11 +827,11 @@ const AdminOrdersPage = () => {
                 callApiToUpdateOrder(
                   id!,
                   e.target as HTMLElement,
-                  payStatus === pay ? notPay : pay
+                  payStatus === PayStatus.pay ? PayStatus.notPay : PayStatus.pay
                 )
               }
             >
-              {payStatus === pay ? notPay : pay}
+              {payStatus === PayStatus.pay ? PayStatus.notPay : PayStatus.pay}
             </button>
           </div>
         </Form>
@@ -996,9 +990,9 @@ const AdminOrdersPage = () => {
       // Biến giữ giá trị tương ứng với "trạng thái" cần thay đổi
       let payStatus = null,
         status = null;
-      if (value === confirm || value === cancel) {
+      if (value === OrderStatus.confirm || value === OrderStatus.canceled) {
         status = value;
-      } else if (value === pay || value === notPay) {
+      } else if (value === PayStatus.pay || value === PayStatus.notPay) {
         payStatus = value;
       }
 
@@ -1026,13 +1020,13 @@ const AdminOrdersPage = () => {
           description:
             res.status === 400
               ? String(res.data)
-                  .split("|")
-                  .map((line, index) => (
-                    <div key={index}>
-                      {line}
-                      <br />
-                    </div>
-                  ))
+                .split("|")
+                .map((line, index) => (
+                  <div key={index}>
+                    {line}
+                    <br />
+                  </div>
+                ))
               : "Cập nhật thất bại !",
           duration: 1.5,
         });
@@ -1432,13 +1426,13 @@ const AdminOrdersPage = () => {
     orders.forEach((order) => {
       totalPrice += order.totalPrice!;
       totalOrder += 1;
-      if (order.status! === confirm) {
+      if (order.status! === OrderStatus.confirm) {
         totalConfirm += 1;
       }
-      if (order.status! === cancel) {
+      if (order.status! === OrderStatus.canceled) {
         totalCancel += 1;
       }
-      if (order.status! === pending) {
+      if (order.status! === OrderStatus.pending) {
         totalPending += 1;
       }
     });
@@ -1514,8 +1508,8 @@ const AdminOrdersPage = () => {
             className={
               "main__filter-button btn create" +
               (openModal &&
-              String(titleModal).includes("Thêm") &&
-              String(classNameModal).includes("create")
+                String(titleModal).includes("Thêm") &&
+                String(classNameModal).includes("create")
                 ? " active"
                 : "")
             }
@@ -1548,19 +1542,19 @@ const AdminOrdersPage = () => {
             valueStyle={{ color: "#274cf4" }}
           />
           <CustomCardStatic
-            title={confirm}
+            title={OrderStatus.confirm}
             value={confirmCardValue}
             prefix={<CheckCircleOutlined />}
             valueStyle={{ color: "#3f8600" }}
           />
           <CustomCardStatic
-            title={cancel}
+            title={OrderStatus.canceled}
             value={cancelCardValue}
             prefix={<CloseCircleOutlined />}
             valueStyle={{ color: "#cf1322" }}
           />
           <CustomCardStatic
-            title={pending}
+            title={OrderStatus.pending}
             value={pendingCardValue}
             prefix={<ClockCircleOutlined />}
             valueStyle={{ color: "#676767" }}

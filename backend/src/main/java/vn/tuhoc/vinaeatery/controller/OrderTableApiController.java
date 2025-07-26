@@ -16,13 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.OrderTable;
+import vn.tuhoc.vinaeatery.domain.UseTable;
 import vn.tuhoc.vinaeatery.domain.criteria.OrderTableCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderTableDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderTableUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.service.OrderTableService;
+import vn.tuhoc.vinaeatery.service.TableService;
 import vn.tuhoc.vinaeatery.service.TimeService;
+import vn.tuhoc.vinaeatery.service.UseTableService;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +35,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @AllArgsConstructor
 public class OrderTableApiController {
     // Properties
+    private final UseTableService useTableService;
     private final OrderTableService orderTableService;
+    private final TableService tableService;
     private final TimeService timeService;
 
     // Methods
@@ -97,6 +102,14 @@ public class OrderTableApiController {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
+        }
+
+        UseTable useTable = useTableService.getNewOneByOrderTableId(id);
+        if (useTable != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(
+                            String.format("Đơn đặt bàn này đang được sử dụng trong bàn ăn %s !",
+                                    tableService.getOneById(useTable.getTableId()).getName())));
         }
 
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE

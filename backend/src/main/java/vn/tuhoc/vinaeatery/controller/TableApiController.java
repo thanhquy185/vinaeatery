@@ -36,12 +36,6 @@ public class TableApiController {
     private final TimeService timeService;
 
     // Methods
-    @GetMapping("/{id}")
-    public ResponseEntity<?> tableIsExists(@PathVariable("id") Integer id) {
-        Boolean result = tableService.isExists(id);
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
-
     @GetMapping("/list")
     public ResponseEntity<List<?>> listTable(TableCriteria tableCriteria) {
         List<TableE> listTable = this.tableService.getAll(tableCriteria);

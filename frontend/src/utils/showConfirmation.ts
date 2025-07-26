@@ -13,8 +13,8 @@ type ConfirmOptions = {
 export const openConfirmation = ({
   title,
   content,
-  okText = "Yes",
-  cancelText = "No",
+  okText = "Đồng ý",
+  cancelText = "Từ chối",
   icon = React.createElement(QuestionCircleOutlined, {
     style: { color: "red" },
   }),

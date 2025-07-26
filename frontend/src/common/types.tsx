@@ -13,6 +13,7 @@ export interface FilterDataProps {
   findType?: string;
   findValue?: string;
   timeValue?: [string, string];
+  floorValue?: string[];
   categoryValue?: string[];
   customerCardValue?: string[];
   surchargeTypeValue?: string[];
@@ -26,25 +27,74 @@ export interface ShoppingCartsType {
   quantity?: number;
 }
 
-// Kiểu dữ liệu Phiếu gọi món
-export interface OrderSheetsType {
-  id: number;
-  timeCreate?: string;
-  timeAuthorized?: string;
-  employee?: EmployeesType;
-  table?: TablesType;
-  note?: string;
+// Kiểu dữ liệu Sử dụng bàn ăn
+// - Chưa format
+export interface UseTablesType {
+  id?: number;
+  timeStart?: string;
+  timeEnd?: string;
+  tableId?: number;
+  employeeId?: number;
+  customerId?: number;
+  orderId?: number;
+  orderTableId?: number;
   status?: string;
-  orderSheetDetails?: OrderSheetsDetailType[];
+  // orderSheets?: OrderSheetsType[];
+}
+// - Đã format
+export interface UseTablesFormatType {
+  id?: number;
+  timeStart?: string;
+  timeEnd?: string;
+  table?: TablesFormatType;
+  employee?: EmployeesFormatType;
+  customer?: CustomersFormatType;
+  order?: OrdersFormatType;
+  orderTable?: OrderTablesFormatType;
+  status?: string;
+  orderSheets?: OrderSheetsFormatType[];
+}
+
+// Kiểu dữ liệu Phiếu gọi món
+// - Chưa format
+export interface OrderSheetsType {
+  id?: number;
+  timeCreate?: string;
+  timeService?: string;
+  employeeId?: number;
+  tableId?: number;
+  totalPrice?: number;
+  note?: string;
+  message?: string;
+  status?: string;
+  orderSheetDetails?: OrderSheetDetailsType[];
+}
+// - Đã format
+export interface OrderSheetsFormatType {
+  id?: number;
+  timeCreate?: string;
+  timeService?: string;
+  employee?: EmployeesFormatType;
+  table?: TablesFormatType;
+  totalPrice?: number;
+  note?: string;
+  message?: string;
+  status?: string;
+  orderSheetDetails?: OrderSheetDetailsFormatType[];
 }
 
 // Kiểu dữ liệu Chi tiết phiếu gọi món
-export interface OrderSheetsDetailType {
-  id: {
-    orderSheet: OrderSheetsType;
-    food: FoodsType;
-  };
-  quantity?: number;
+// - Chưa format
+export interface OrderSheetDetailsType {
+  foodId: number;
+  price: number;
+  quantity: number;
+}
+// - Đã format
+export interface OrderSheetDetailsFormatType {
+  food: FoodsFormatType;
+  price: number;
+  quantity: number;
 }
 
 // Kiểu dữ liệu Đơn món ăn

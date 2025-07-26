@@ -24,9 +24,8 @@ import vn.tuhoc.vinaeatery.service.specification.OrderSpecification;
 @AllArgsConstructor
 public class OrderService {
     // Properties
-    private final FoodService foodService;
-    private final TableService tableService;
     private final CustomerService customerService;
+    private final FoodService foodService;
     private final EmployeeService employeeService;
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
@@ -34,6 +33,35 @@ public class OrderService {
     // Methods
     public Order getOneById(Integer id) {
         return this.orderRepository.findOneById(id);
+    }
+
+    public OrderDTO getOneFormatById(Integer id) {
+        OrderDTO orderDTO = new OrderDTO();
+        Order order = this.orderRepository.findOneById(id);
+        if (order != null) {
+            List<OrderDetailDTO> orderDetails = new ArrayList<>();
+            for (OrderDetail orderDetail : orderDetailRepository
+                    .findAllByOrderId(order.getId())) {
+                orderDetails.add(new OrderDetailDTO(
+                        foodService.getOneFormatById(orderDetail.getId().getFoodId()),
+                        orderDetail.getPrice(), orderDetail.getQuantity()));
+            }
+
+            orderDTO.setId(order.getId());
+            orderDTO.setTimeCreate(order.getTimeCreate());
+            if (order.getEmployeeId() != null) {
+                orderDTO.setEmployee(employeeService.getOneFormatById(order.getEmployeeId()));
+            }
+            if (order.getCustomerId() != null) {
+                orderDTO.setCustomer(customerService.getOneFormatById(order.getCustomerId()));
+            }
+            orderDTO.setTotalPrice(order.getTotalPrice());
+            orderDTO.setPayStatus(order.getPayStatus());
+            orderDTO.setStatus(order.getStatus());
+            orderDTO.setOrderDetails(orderDetails);
+        }
+
+        return orderDTO;
     }
 
     public List<Order> getAll() {
@@ -48,8 +76,8 @@ public class OrderService {
             switch (sortStr) {
                 case "ID tăng dần" -> sort = Sort.by(Order_.ID).ascending();
                 case "ID giảm dần" -> sort = Sort.by(Order_.ID).descending();
-                case "Thời gian tạo phiếu tăng dần" -> sort = Sort.by(Order_.TIME_CREATE).ascending();
-                case "Thời gian tạo phiếu giảm dần" -> sort = Sort.by(Order_.TIME_CREATE).descending();
+                case "Thời gian tạo đơn tăng dần" -> sort = Sort.by(Order_.TIME_CREATE).ascending();
+                case "Thời gian tạo đơn giảm dần" -> sort = Sort.by(Order_.TIME_CREATE).descending();
                 case "Tổng thanh toán tăng dần" -> sort = Sort.by(Order_.TOTAL_PRICE).ascending();
                 case "Tổng thanh toán giảm dần" -> sort = Sort.by(Order_.TOTAL_PRICE).descending();
             }
@@ -141,9 +169,9 @@ public class OrderService {
         if (orderCriteria.getStatus() != null && orderCriteria.getStatus().isPresent()) {
             String statusString = orderCriteria.getStatus().get();
             Integer statusInteger = 0;
-            for (OrderStatusEnum OrderStatus : OrderStatusEnum.values()) {
-                if (OrderStatus.getDescription().equals(statusString)) {
-                    statusInteger = OrderStatus.getValue();
+            for (OrderStatusEnum orderStatus : OrderStatusEnum.values()) {
+                if (orderStatus.getDescription().equals(statusString)) {
+                    statusInteger = orderStatus.getValue();
                     break;
                 }
             }
@@ -165,11 +193,21 @@ public class OrderService {
                         orderDetail.getPrice(), orderDetail.getQuantity()));
             }
 
-            listFormat.add(new OrderDTO(order.getId(), order.getTimeCreate(),
-                    employeeService.getOneFormatById(order.getEmployeeId()),
-                    customerService.getOneFormatById(order.getCustomerId()),
-                    order.getTotalPrice(), order.getPayStatus(), order.getStatus(),
-                    orderDetails));
+            OrderDTO orderDTO = new OrderDTO();
+            orderDTO.setId(order.getId());
+            orderDTO.setTimeCreate(order.getTimeCreate());
+            if (order.getEmployeeId() != null) {
+                orderDTO.setEmployee(employeeService.getOneFormatById(order.getEmployeeId()));
+            }
+            if (order.getCustomerId() != null) {
+                orderDTO.setCustomer(customerService.getOneFormatById(order.getCustomerId()));
+            }
+            orderDTO.setTotalPrice(order.getTotalPrice());
+            orderDTO.setPayStatus(order.getPayStatus());
+            orderDTO.setStatus(order.getStatus());
+            orderDTO.setOrderDetails(orderDetails);
+
+            listFormat.add(orderDTO);
         }
 
         return listFormat;

@@ -18,11 +18,11 @@ import vn.tuhoc.vinaeatery.repository.converter.CommonStatusConverter;
 @Setter
 public class OrderTableDTO {
     private Integer id;
-    private EmployeeDTO employee;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timeOrder;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timeArrive;
+    private EmployeeDTO employee;
     private String note;
     private String fullname;
     private String phone;

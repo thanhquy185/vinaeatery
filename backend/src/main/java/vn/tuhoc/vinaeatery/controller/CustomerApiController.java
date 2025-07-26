@@ -16,13 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Customer;
+import vn.tuhoc.vinaeatery.domain.UseTable;
 import vn.tuhoc.vinaeatery.domain.criteria.CustomerCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.CustomerDTO;
 import vn.tuhoc.vinaeatery.domain.dto.CustomerUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.service.CustomerService;
+import vn.tuhoc.vinaeatery.service.TableService;
 import vn.tuhoc.vinaeatery.service.TimeService;
+import vn.tuhoc.vinaeatery.service.UseTableService;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +35,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @AllArgsConstructor
 public class CustomerApiController {
     // Properties
+    private final UseTableService useTableService;
     private final CustomerService customerService;
+    private final TableService tableService;
     private final TimeService timeService;
 
     // Methods
@@ -97,6 +102,14 @@ public class CustomerApiController {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
+        }
+
+        UseTable useTable = useTableService.getNewOneByCustomerId(id);
+        if (useTable != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(String.format("Khách hàng này đang sử dụng bàn ăn %s !",
+                                    tableService.getOneById(useTable.getTableId()).getName())));
         }
 
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE

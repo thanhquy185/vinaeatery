@@ -30,14 +30,15 @@ public class IngredientService {
     }
 
     public IngredientDTO getOneFormatById(Integer id) {
-        Ingredient ingredient = getOneById(id);
         IngredientDTO ingredientDTO = new IngredientDTO();
-
+        Ingredient ingredient = getOneById(id);
         if (ingredient != null) {
-            ingredientDTO.setId(id);
+            ingredientDTO.setId(ingredient.getId());
             ingredientDTO.setName(ingredient.getName());
-            ingredientDTO.setCategoryIngredient(
-                    categoryIngredientRepository.findOneById(ingredient.getCategoryIngredientId()));
+            if (ingredient.getCategoryIngredientId() != null) {
+                ingredientDTO.setCategoryIngredient(
+                        categoryIngredientRepository.findOneById(ingredient.getCategoryIngredientId()));
+            }
             ingredientDTO.setUnit(ingredient.getUnit());
             ingredientDTO.setCapacity(ingredient.getCapacity());
             ingredientDTO.setDateCreate(ingredient.getDateCreate());
@@ -118,16 +119,29 @@ public class IngredientService {
     }
 
     public List<IngredientDTO> getAllFormat(IngredientCriteria ingredientCriteria) {
-        List<IngredientDTO> listIngredientFormat = new ArrayList<>();
+        List<IngredientDTO> listFormat = new ArrayList<>();
         for (Ingredient ingredient : getAll(ingredientCriteria)) {
-            listIngredientFormat.add(new IngredientDTO(ingredient.getId(), ingredient.getName(),
-                    categoryIngredientRepository.findOneById(ingredient.getCategoryIngredientId()),
-                    ingredient.getUnit(), ingredient.getCapacity(), ingredient.getDateCreate(),
-                    ingredient.getDateRemove(), ingredient.getInputPrice(), ingredient.getInventory(),
-                    ingredient.getNote(), ingredient.getStatus(), ingredient.getTimeUpdate()));
+            IngredientDTO ingredientDTO = new IngredientDTO();
+            ingredientDTO.setId(ingredient.getId());
+            ingredientDTO.setName(ingredient.getName());
+            if (ingredient.getCategoryIngredientId() != null) {
+                ingredientDTO.setCategoryIngredient(
+                        categoryIngredientRepository.findOneById(ingredient.getCategoryIngredientId()));
+            }
+            ingredientDTO.setUnit(ingredient.getUnit());
+            ingredientDTO.setCapacity(ingredient.getCapacity());
+            ingredientDTO.setDateCreate(ingredient.getDateCreate());
+            ingredientDTO.setDateRemove(ingredient.getDateRemove());
+            ingredientDTO.setInputPrice(ingredient.getInputPrice());
+            ingredientDTO.setInventory(ingredient.getInventory());
+            ingredientDTO.setNote(ingredient.getNote());
+            ingredientDTO.setStatus(ingredient.getStatus());
+            ingredientDTO.setTimeUpdate(ingredient.getTimeUpdate());
+
+            listFormat.add(ingredientDTO);
         }
 
-        return listIngredientFormat;
+        return listFormat;
     }
 
     public List<Ingredient> getAllByCategoryIngredientId(Integer categoryIngredientId) {

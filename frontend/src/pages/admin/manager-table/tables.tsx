@@ -32,7 +32,7 @@ import { openNotification } from "../../../utils/showNotification";
 import TextArea from "antd/es/input/TextArea";
 import { ruleRequired } from "../../../common/rules";
 import { openConfirmation } from "../../../utils/showConfirmation";
-import { commonStatus } from "../../../common/values";
+import { CommonStatus } from "../../../common/values";
 
 // Admin Tables Page
 const AdminTablesPage = () => {
@@ -83,7 +83,7 @@ const AdminTablesPage = () => {
       key: "status",
       width: "10%",
       render: (status: string) => (
-        <Tag color={status === commonStatus["active"] ? "green" : "red"}>
+        <Tag color={status === CommonStatus["active"] ? "green" : "red"}>
           {status}
         </Tag>
       ),
@@ -127,8 +127,8 @@ const AdminTablesPage = () => {
             className="action lock"
             onClick={() =>
               updatePropertiesModal(
-                (record.status == commonStatus["active"] ? "Khoá" : "Mở khoá") +
-                  " bàn ăn",
+                (record.status == CommonStatus["active"] ? "Khoá" : "Mở khoá") +
+                " bàn ăn",
                 true,
                 "30%",
                 "lock tables",
@@ -137,7 +137,7 @@ const AdminTablesPage = () => {
             }
           >
             <FontAwesomeIcon
-              icon={record.status == commonStatus["active"] ? faLock : faUnlock}
+              icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
             />
           </button>
         </>
@@ -181,8 +181,8 @@ const AdminTablesPage = () => {
   >(null);
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
-    { label: commonStatus["active"], value: commonStatus["active"] },
-    { label: commonStatus["inactive"], value: commonStatus["inactive"] },
+    { label: CommonStatus["active"], value: CommonStatus["active"] },
+    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
   ];
   const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
     null
@@ -320,7 +320,7 @@ const AdminTablesPage = () => {
       </>
     );
   };
-  const CreateTables = ({}) => {
+  const CreateTables = ({ }) => {
     const [form] = Form.useForm();
 
     return (
@@ -456,12 +456,12 @@ const AdminTablesPage = () => {
                   placeholder={defaultInputs["status"]}
                   options={[
                     {
-                      label: commonStatus["active"],
-                      value: commonStatus["active"],
+                      label: CommonStatus["active"],
+                      value: CommonStatus["active"],
                     },
                     {
-                      label: commonStatus["inactive"],
-                      value: commonStatus["inactive"],
+                      label: CommonStatus["inactive"],
+                      value: CommonStatus["inactive"],
                     },
                   ]}
                 />
@@ -701,7 +701,7 @@ const AdminTablesPage = () => {
     status: string | undefined;
   }) => {
     const [form] = Form.useForm();
-    const statusValue = status == commonStatus["active"] ? true : false;
+    const statusValue = status == CommonStatus["active"] ? true : false;
 
     return (
       <>
@@ -734,9 +734,8 @@ const AdminTablesPage = () => {
                 openNotification({
                   type: "success",
                   message: "Thành công",
-                  description: `${
-                    statusValue ? "Khoá" : "Mở khoá"
-                  } thành công !`,
+                  description: `${statusValue ? "Khoá" : "Mở khoá"
+                    } thành công !`,
                   duration: 1.5,
                 });
 
@@ -912,8 +911,8 @@ const AdminTablesPage = () => {
             className={
               "main__filter-button btn create" +
               (openModal &&
-              String(titleModal).includes("Thêm") &&
-              String(classNameModal).includes("create")
+                String(titleModal).includes("Thêm") &&
+                String(classNameModal).includes("create")
                 ? " active"
                 : "")
             }

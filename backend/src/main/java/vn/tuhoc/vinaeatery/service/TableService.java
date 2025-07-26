@@ -29,23 +29,23 @@ public class TableService {
     private final TableRepository tableRepository;
 
     // Methods
-    public Boolean isExists(Integer id) {
-        return this.tableRepository.existsById(id);
-    }
-
     public TableE getOneById(Integer id) {
         return this.tableRepository.findOneById(id);
     }
 
     public TableDTO getOneFormatById(Integer id) {
-        TableE table = getOneById(id);
         TableDTO tableDTO = new TableDTO();
-
+        TableE table = getOneById(id);
         if (table != null) {
-            tableDTO.setId(id);
+            tableDTO.setId(table.getId());
             tableDTO.setName(table.getName());
-            tableDTO.setCategoryTable(categoryTableRepository.findOneById(table.getCategoryTableId()));
-            tableDTO.setFloor(floorRepository.findOneById(table.getFloorId()));
+            if (table.getCategoryTableId() != null) {
+                tableDTO.setCategoryTable(categoryTableRepository.findOneById(table.getCategoryTableId()));
+            }
+            if (table.getFloorId() != null) {
+                tableDTO.setFloor(floorRepository.findOneById(table.getFloorId()));
+            }
+            tableDTO.setSeats(table.getSeats());
             tableDTO.setDescription(table.getDescription());
             tableDTO.setStatus(table.getStatus());
             tableDTO.setTimeUpdate(table.getTimeUpdate());
@@ -130,15 +130,26 @@ public class TableService {
     }
 
     public List<TableDTO> getAllFormat(TableCriteria tableCriteria) {
-        List<TableDTO> listTableFormat = new ArrayList<>();
+        List<TableDTO> listFormat = new ArrayList<>();
         for (TableE table : getAll(tableCriteria)) {
-            listTableFormat.add(new TableDTO(table.getId(), table.getName(),
-                    categoryTableRepository.findOneById(table.getCategoryTableId()),
-                    floorRepository.findOneById(table.getFloorId()), table.getSeats(),
-                    table.getDescription(), table.getStatus(), table.getTimeUpdate()));
+            TableDTO tableDTO = new TableDTO();
+            tableDTO.setId(table.getId());
+            tableDTO.setName(table.getName());
+            if (table.getCategoryTableId() != null) {
+                tableDTO.setCategoryTable(categoryTableRepository.findOneById(table.getCategoryTableId()));
+            }
+            if (table.getFloorId() != null) {
+                tableDTO.setFloor(floorRepository.findOneById(table.getFloorId()));
+            }
+            tableDTO.setSeats(table.getSeats());
+            tableDTO.setDescription(table.getDescription());
+            tableDTO.setStatus(table.getStatus());
+            tableDTO.setTimeUpdate(table.getTimeUpdate());
+
+            listFormat.add(tableDTO);
         }
 
-        return listTableFormat;
+        return listFormat;
     }
 
     public List<TableE> getAllByCategoryTableId(Integer categoryTableId) {

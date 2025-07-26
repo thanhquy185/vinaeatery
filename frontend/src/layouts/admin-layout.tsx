@@ -71,7 +71,7 @@ const iconMap: Record<string, IconProp> = {
   "use-tables": faSignal,
   orders: faReceipt,
   "order-tables": faPhoneVolume,
-  "call-foods": faBellConcierge,
+  "order-sheets": faBellConcierge,
   "customer-cards": faCreditCard,
   customers: faPersonBreastfeeding,
   floors: faLayerGroup,
@@ -168,9 +168,9 @@ const AdminSidebar = () => {
       nameEN: "use-tables",
     },
     {
-      url: "/admin/call-foods",
+      url: "/admin/order-sheets",
       nameVN: "Gọi món ăn",
-      nameEN: "call-foods",
+      nameEN: "order-sheets",
     },
     {
       url: "/admin/orders",

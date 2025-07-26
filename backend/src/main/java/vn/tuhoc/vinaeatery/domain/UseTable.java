@@ -29,11 +29,7 @@ public class UseTable {
     // Properties
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    @NotNull(message = "Bàn không được để trống !")
-    private Integer tableId;
-    private Integer orderId;
-    private Integer orderTableId;
+    private Long id;
     @Column(columnDefinition = "DATETIME")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @NotNull(message = "Thời gian bắt đầu không được để trống !")
@@ -41,6 +37,12 @@ public class UseTable {
     @Column(columnDefinition = "DATETIME")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timeEnd;
+    @NotNull(message = "Bàn không được để trống !")
+    private Integer tableId;
+    private Integer employeeId;
+    private Integer customerId;
+    private Integer orderId;
+    private Integer orderTableId;
     @Convert(converter = UseTableStatusConverter.class)
     @NotNull(message = "Trạng thái không được để trống !")
     private UseTableStatusEnum status;

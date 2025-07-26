@@ -29,11 +29,6 @@ public abstract class Order_ {
 	public static volatile SingularAttribute<Order, Integer> customerId;
 	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.Order#tableId
-	 **/
-	public static volatile SingularAttribute<Order, Integer> tableId;
-	
-	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Order#employeeId
 	 **/
 	public static volatile SingularAttribute<Order, Integer> employeeId;
@@ -61,7 +56,6 @@ public abstract class Order_ {
 	public static final String TIME_CREATE = "timeCreate";
 	public static final String TOTAL_PRICE = "totalPrice";
 	public static final String CUSTOMER_ID = "customerId";
-	public static final String TABLE_ID = "tableId";
 	public static final String EMPLOYEE_ID = "employeeId";
 	public static final String ID = "id";
 	public static final String PAY_STATUS = "payStatus";

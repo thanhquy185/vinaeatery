@@ -14,7 +14,6 @@ import vn.tuhoc.vinaeatery.domain.Food;
 import vn.tuhoc.vinaeatery.domain.Ingredient;
 import vn.tuhoc.vinaeatery.domain.criteria.FoodCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.FoodDTO;
-import vn.tuhoc.vinaeatery.domain.dto.IngredientDTO;
 import vn.tuhoc.vinaeatery.domain.dto.RecipeDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.FoodStatusEnum;
 import vn.tuhoc.vinaeatery.repository.CategoryFoodRepository;
@@ -38,9 +37,8 @@ public class FoodService {
     }
 
     public FoodDTO getOneFormatById(Integer id) {
-        Food food = getOneById(id);
         FoodDTO foodDTO = new FoodDTO();
-
+        Food food = getOneById(id);
         if (food != null) {
             List<RecipeDTO> recipeDTO = new ArrayList<>();
             for (Recipe recipe : recipeRepository.findAllByFoodId(food.getId())) {
@@ -52,7 +50,9 @@ public class FoodService {
             foodDTO.setId(food.getId());
             foodDTO.setImage(food.getImage());
             foodDTO.setName(food.getName());
-            foodDTO.setCategoryFood(categoryFoodRepository.findOneById(food.getCategoryFoodId()));
+            if(food.getCategoryFoodId() != null) {
+                foodDTO.setCategoryFood(categoryFoodRepository.findOneById(food.getCategoryFoodId()));
+            }
             foodDTO.setPrice(food.getPrice());
             foodDTO.setUnit(food.getUnit());
             foodDTO.setDescription(food.getDescription());
@@ -134,7 +134,7 @@ public class FoodService {
     }
 
     public List<FoodDTO> getAllFormat(FoodCriteria foodCriteria) {
-        List<FoodDTO> listFoodFormat = new ArrayList<>();
+        List<FoodDTO> listFormat = new ArrayList<>();
         for (Food food : getAll(foodCriteria)) {
             List<RecipeDTO> recipeDTO = new ArrayList<>();
             for (Recipe recipe : recipeRepository.findAllByFoodId(food.getId())) {
@@ -143,22 +143,25 @@ public class FoodService {
                         recipe.getQuantity(), ingredient.getNote()));
             }
 
-            FoodDTO newFood = new FoodDTO();
-            newFood.setId(food.getId());
-            newFood.setImage(food.getImage());
-            newFood.setName(food.getName());
-            newFood.setCategoryFood(categoryFoodRepository.findOneById(food.getCategoryFoodId()));
-            newFood.setPrice(food.getPrice());
-            newFood.setUnit(food.getUnit());
-            newFood.setDescription(food.getDescription());
-            newFood.setStatus(food.getStatus());
-            newFood.setTimeUpdate(food.getTimeUpdate());
-            newFood.setRecipe(recipeDTO);
+            FoodDTO foodDTO = new FoodDTO();
+            foodDTO.setId(food.getId());
+            foodDTO.setImage(food.getImage());
+            foodDTO.setName(food.getName());
+            if(food.getCategoryFoodId() != null) {
 
-            listFoodFormat.add(newFood);
+            }
+            foodDTO.setCategoryFood(categoryFoodRepository.findOneById(food.getCategoryFoodId()));
+            foodDTO.setPrice(food.getPrice());
+            foodDTO.setUnit(food.getUnit());
+            foodDTO.setDescription(food.getDescription());
+            foodDTO.setStatus(food.getStatus());
+            foodDTO.setTimeUpdate(food.getTimeUpdate());
+            foodDTO.setRecipe(recipeDTO);
+
+            listFormat.add(foodDTO);
         }
 
-        return listFoodFormat;
+        return listFormat;
     }
 
     public List<Food> getAllByCategoryFoodId(Integer categoryFoodId) {

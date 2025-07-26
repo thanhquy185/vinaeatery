@@ -6,6 +6,10 @@ CREATE DATABASE IF NOT EXISTS vinaeatery
 ALTER TABLE vinaeatery.use_tables
 ADD CONSTRAINT FK_useTables_tables FOREIGN KEY(table_id) REFERENCES tables(id);
 ALTER TABLE vinaeatery.use_tables
+ADD CONSTRAINT FK_useTables_employees FOREIGN KEY(employee_id) REFERENCES employees(id);
+ALTER TABLE vinaeatery.use_tables
+ADD CONSTRAINT FK_useTables_customers FOREIGN KEY(customer_id) REFERENCES customers(id);
+ALTER TABLE vinaeatery.use_tables
 ADD CONSTRAINT FK_useTables_orders FOREIGN KEY(order_id) REFERENCES orders(id);
 ALTER TABLE vinaeatery.use_tables
 ADD CONSTRAINT FK_useTables_orderTables FOREIGN KEY(order_table_id) REFERENCES order_tables(id);
@@ -51,6 +55,16 @@ ALTER TABLE vinaeatery.order_details
 ADD CONSTRAINT FK_orderDetails_orders FOREIGN KEY(order_id) REFERENCES orders(id);
 ALTER TABLE vinaeatery.order_details
 ADD CONSTRAINT FK_orderDetails_foods FOREIGN KEY(food_id) REFERENCES foods(id);
+-- order_sheets
+ALTER TABLE vinaeatery.order_sheets
+ADD CONSTRAINT FK_orderSheets_employees FOREIGN KEY(employee_id) REFERENCES employees(id);
+ALTER TABLE vinaeatery.order_sheets
+ADD CONSTRAINT FK_orderSheets_tables FOREIGN KEY(table_id) REFERENCES tables(id);
+-- order_sheet_details
+ALTER TABLE vinaeatery.order_sheet_details
+ADD CONSTRAINT FK_orderSheetDetails_orderSheets FOREIGN KEY(order_sheet_id) REFERENCES order_sheets(id);
+ALTER TABLE vinaeatery.order_sheet_details
+ADD CONSTRAINT FK_orderSheetDetails_foods FOREIGN KEY(food_id) REFERENCES foods(id);
 -- role_details
 ALTER TABLE vinaeatery.role_details
 ADD CONSTRAINT FK_roleDetails_roles FOREIGN KEY(role_id) REFERENCES roles(id);
@@ -67,7 +81,7 @@ VALUES (1, "Thống kê Lợi nhuận", "dashboard-profit", "dashboard", "Xem"),
 	(2, "Thống kê Doanh thu", "dashboard-revenue", "dashboard", "Xem"),
 	(3, "Thống kê Chi tiêu", "dashboard-expense", "dashboard", "Xem"),
     (4, "Sử dụng bàn ăn", "use-tables", "active", "Xem|Cập nhật"),
-    (5, "Gọi món ăn", "call-foods", "active", "Xem|Cập nhật"),
+    (5, "Gọi món ăn", "order-sheets", "active", "Xem|Cập nhật"),
     (6, "Đơn món ăn", "orders", "active", "Xem|Thêm|Cập nhật"),
     (7, "Đặt bàn", "order-tables", "active", "Xem|Thêm|Cập nhật"),
     (8, "Thẻ khách hàng", "customer-cards", "customer", "Xem|Thêm|Cập nhật|Khóa"),
@@ -448,3 +462,52 @@ VALUES	(1, 1, 120000, 1), (1, 3, 95000, 1), (1, 12, 45000, 1),
 	(19, 5, 75000, 1), (19, 14, 70000, 1), (19, 15, 40000, 1),
 	(20, 1, 120000, 1), (20, 7, 70000, 1), (20, 12, 45000, 1);
 
+INSERT INTO vinaeatery.use_tables (id, time_start, time_end, table_id, employee_id, customer_id, order_id, order_table_id, status)
+VALUES (1, '2025-07-24 00:00:00', null, 1, null, null, null, null, 1),
+    (2, '2025-07-24 00:00:00', null, 2, null, null, null, null, 1),
+    (3, '2025-07-24 00:00:00', null, 3, null, null, null, null, 1),
+    (4, '2025-07-24 00:00:00', null, 4, null, null, null, null, 1),
+    (5, '2025-07-24 00:00:00', null, 5, null, null, null, null, 1),
+    (6, '2025-07-24 00:00:00', null, 6, null, null, null, null, 1),
+    (7, '2025-07-24 00:00:00', null, 7, null, null, null, null, 1),
+    (8, '2025-07-24 00:00:00', null, 8, null, null, null, null, 1),
+    (9, '2025-07-24 00:00:00', null, 9, null, null, null, null, 1),
+    (10, '2025-07-24 00:00:00', null, 10, null, null, null, null, 1),
+    (11, '2025-07-24 00:00:00', null, 11, null, null, null, null, 1),
+    (12, '2025-07-24 00:00:00', null, 12, null, null, null, null, 1),
+    (13, '2025-07-24 00:00:00', null, 13, null, null, null, null, 1),
+    (14, '2025-07-24 00:00:00', null, 14, null, null, null, null, 1),
+    (15, '2025-07-24 00:00:00', null, 15, null, null, null, null, 1),
+    (16, '2025-07-24 00:00:00', null, 16, null, null, null, null, 1),
+    (17, '2025-07-24 00:00:00', null, 17, null, null, null, null, 1),
+    (18, '2025-07-24 00:00:00', null, 18, null, null, null, null, 1),
+    (19, '2025-07-24 00:00:00', null, 19, null, null, null, null, 1),
+    (20, '2025-07-24 00:00:00', null, 20, null, null, null, null, 1),
+    (21, '2025-07-24 00:00:00', null, 21, null, null, null, null, 1),
+    (22, '2025-07-24 00:00:00', null, 22, null, null, null, null, 1),
+    (23, '2025-07-24 00:00:00', null, 23, null, null, null, null, 1),
+    (24, '2025-07-24 00:00:00', null, 24, null, null, null, null, 1),
+    (25, '2025-07-24 00:00:00', null, 25, null, null, null, null, 1),
+    (26, '2025-07-24 00:00:00', null, 26, null, null, null, null, 1),
+    (27, '2025-07-24 00:00:00', null, 27, null, null, null, null, 1),
+    (28, '2025-07-24 00:00:00', null, 28, null, null, null, null, 1),
+    (29, '2025-07-24 00:00:00', null, 29, null, null, null, null, 1),
+    (30, '2025-07-24 00:00:00', null, 30, null, null, null, null, 1);
+
+-- INSERT INTO vinaeatery.use_tables (id, table_id, employee_id, time_start, time_end, order_id, order_table_id, status)
+-- VALUES (31, 1, null, '2025-07-24 00:00:00', '2025-07-24 00:00:00', null, null, 1);
+-- update vinaeatery.use_tables set status = 2 where id = 2;
+-- update vinaeatery.use_tables set status = 3 where id = 3;
+-- update vinaeatery.use_tables set time_end = '2025-07-25 18:50:00' where id = 3;
+
+INSERT INTO vinaeatery.order_sheets (id, time_create, time_service, employee_id, table_id, total_price, note, message, status)
+VALUES (1, '2025-07-24 00:00:00', null, null, 1, 750000, null, null, 0);
+
+INSERT INTO vinaeatery.order_sheet_details (order_sheet_id, food_id, price, quantity)
+VALUES (1, 1, 120000, 2), (1, 4, 100000, 4), (1, 9, 110000, 1);
+
+-- select os.*
+-- from vinaeatery.order_sheets as os
+-- join vinaeatery.use_tables as ut on ut.table_id = os.table_id
+-- where ut.table_id = 3 and ut.status = 3 and (os.time_create >= ut.time_start and ut.time_end is null)
+-- 	or (os.time_create >= ut.time_start and os.time_create <= ut.time_end);

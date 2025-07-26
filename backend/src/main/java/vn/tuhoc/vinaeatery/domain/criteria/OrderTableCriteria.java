@@ -18,6 +18,7 @@ public class OrderTableCriteria {
     private Optional<String> timeOrderEnd;
     private Optional<String> timeArriveStart;
     private Optional<String> timeArriveEnd;
+    private Optional<String> employeeId;
     private Optional<String> fullname;
     private Optional<String> phone;
     private Optional<String> email;

@@ -117,7 +117,7 @@ public class CustomerCardApiController {
         if (customerService.getAllByCustomerCardId(id) != null
                 && !customerService.getAllByCustomerCardId(id).isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr("Thẻ khách hàng này đang được sử dụng !"));
+                    .body(ValidationUtil.buildRestResponseWithStr("Thẻ khách hàng này đang được ít nhất 1 khách hàng sử dụng !"));
         }
 
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE

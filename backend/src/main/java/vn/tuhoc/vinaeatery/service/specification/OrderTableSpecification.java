@@ -38,6 +38,11 @@ public class OrderTableSpecification {
                         LocalDateTime.parse(timeArriveEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
+    public static Specification<OrderTable> employeeIdEqual(String employeeId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(OrderTable_.EMPLOYEE_ID),
+                employeeId);
+    }
+
     public static Specification<OrderTable> fullnameLike(String fullname) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get(OrderTable_.FULLNAME),
                 "%" + fullname + "%");

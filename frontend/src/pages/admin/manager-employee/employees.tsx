@@ -25,6 +25,7 @@ import type {
   RoleHistoriesFormatType,
   RolesFormatType,
 } from "../../../common/types.tsx";
+import { CommonStatus } from "../../../common/values.tsx";
 import { CustomPaginationProps } from "../../../common/pagination-props.tsx";
 import CustomFindInput from "../../../components/admin/find-input.tsx";
 import CustomFindSelect from "../../../components/admin/find-select.tsx";
@@ -43,7 +44,6 @@ import {
   HandleLockEmployee,
   HandleUpdateEmployee,
 } from "../../../services/api.tsx";
-import { commonStatus } from "../../../common/values.tsx";
 import dayjs from "dayjs";
 import CustomTableNoActions from "../../../components/admin/table-no-actions.tsx";
 import { showCreateValidAddress } from "../../../utils/showCreateValidAddress.tsx";
@@ -118,7 +118,7 @@ const AdminEmployeesPage = () => {
       key: "status",
       width: "10%",
       render: (status: string) => (
-        <Tag color={status === commonStatus["active"] ? "green" : "red"}>
+        <Tag color={status === CommonStatus["active"] ? "green" : "red"}>
           {status}
         </Tag>
       ),
@@ -162,8 +162,8 @@ const AdminEmployeesPage = () => {
             className="action lock  margin-r"
             onClick={() =>
               updatePropertiesModal(
-                (record.status == commonStatus["active"] ? "Khoá" : "Mở khoá") +
-                  " nhân viên",
+                (record.status == CommonStatus["active"] ? "Khoá" : "Mở khoá") +
+                " nhân viên",
                 true,
                 "30%",
                 "lock employees",
@@ -172,7 +172,7 @@ const AdminEmployeesPage = () => {
             }
           >
             <FontAwesomeIcon
-              icon={record.status == commonStatus["active"] ? faLock : faUnlock}
+              icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
             />
           </button>
           <button
@@ -223,8 +223,8 @@ const AdminEmployeesPage = () => {
   const [filterRoleValue, setFilterRoleValue] = useState<string[] | null>(null);
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
-    { label: commonStatus["active"], value: commonStatus["active"] },
-    { label: commonStatus["inactive"], value: commonStatus["inactive"] },
+    { label: CommonStatus["active"], value: CommonStatus["active"] },
+    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
   ];
   const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
     null
@@ -486,7 +486,7 @@ const AdminEmployeesPage = () => {
       </>
     );
   };
-  const CreateEmployees = ({}) => {
+  const CreateEmployees = ({ }) => {
     const [form] = Form.useForm();
     const [imageFile, setImageFile] = useState<RcFile>();
 
@@ -667,12 +667,12 @@ const AdminEmployeesPage = () => {
                   placeholder={defaultInputs["status"]}
                   options={[
                     {
-                      label: commonStatus["active"],
-                      value: commonStatus["active"],
+                      label: CommonStatus["active"],
+                      value: CommonStatus["active"],
                     },
                     {
-                      label: commonStatus["inactive"],
-                      value: commonStatus["inactive"],
+                      label: CommonStatus["inactive"],
+                      value: CommonStatus["inactive"],
                     },
                   ]}
                 />
@@ -1156,7 +1156,7 @@ const AdminEmployeesPage = () => {
     status: string | undefined;
   }) => {
     const [form] = Form.useForm();
-    const statusValue = status == commonStatus["active"] ? true : false;
+    const statusValue = status == CommonStatus["active"] ? true : false;
 
     return (
       <>
@@ -1189,9 +1189,8 @@ const AdminEmployeesPage = () => {
                 openNotification({
                   type: "success",
                   message: "Thành công",
-                  description: `${
-                    statusValue ? "Khoá" : "Mở khoá"
-                  } thành công !`,
+                  description: `${statusValue ? "Khoá" : "Mở khoá"
+                    } thành công !`,
                   duration: 1.5,
                 });
 
@@ -1548,8 +1547,8 @@ const AdminEmployeesPage = () => {
             className={
               "main__filter-button btn create" +
               (openModal &&
-              String(titleModal).includes("Thêm") &&
-              String(classNameModal).includes("create")
+                String(titleModal).includes("Thêm") &&
+                String(classNameModal).includes("create")
                 ? " active"
                 : "")
             }

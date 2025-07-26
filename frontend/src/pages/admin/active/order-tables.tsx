@@ -21,7 +21,7 @@ import TextArea from "antd/es/input/TextArea";
 import type { ColumnsType } from "antd/es/table";
 import type { OrderTablesFormatType } from "../../../common/types";
 import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules";
-import { commonStatus } from "../../../common/values";
+import { CommonStatus } from "../../../common/values";
 import { CustomPaginationProps } from "../../../common/pagination-props";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";
@@ -84,7 +84,7 @@ const AdminOrderTablesPage = () => {
       key: "status",
       width: "10%",
       render: (status: string) => (
-        <Tag color={status === commonStatus["active"] ? "green" : "red"}>
+        <Tag color={status === CommonStatus["active"] ? "green" : "red"}>
           {status}
         </Tag>
       ),
@@ -128,8 +128,8 @@ const AdminOrderTablesPage = () => {
             className="action lock"
             onClick={() =>
               updatePropertiesModal(
-                (record.status == commonStatus["active"] ? "Khoá" : "Mở khoá") +
-                  " đơn đặt ăn",
+                (record.status == CommonStatus["active"] ? "Khoá" : "Mở khoá") +
+                " đơn đặt ăn",
                 true,
                 "30%",
                 "lock order-tables",
@@ -138,7 +138,7 @@ const AdminOrderTablesPage = () => {
             }
           >
             <FontAwesomeIcon
-              icon={record.status == commonStatus["active"] ? faLock : faUnlock}
+              icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
             />
           </button>
         </>
@@ -170,8 +170,8 @@ const AdminOrderTablesPage = () => {
   const [filterTimeValue, setFilterTimeValue] = useState<[string, string]>();
   /// - Trạng thái
   const statusOptions: SelectProps["options"] = [
-    { label: commonStatus["active"], value: commonStatus["active"] },
-    { label: commonStatus["inactive"], value: commonStatus["inactive"] },
+    { label: CommonStatus["active"], value: CommonStatus["active"] },
+    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
   ];
   const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
     null
@@ -469,12 +469,12 @@ const AdminOrderTablesPage = () => {
                     placeholder={defaultInputs["status"]}
                     options={[
                       {
-                        label: commonStatus["active"],
-                        value: commonStatus["active"],
+                        label: CommonStatus["active"],
+                        value: CommonStatus["active"],
                       },
                       {
-                        label: commonStatus["inactive"],
-                        value: commonStatus["inactive"],
+                        label: CommonStatus["inactive"],
+                        value: CommonStatus["inactive"],
                       },
                     ]}
                   />
@@ -880,7 +880,7 @@ const AdminOrderTablesPage = () => {
     status: string | undefined;
   }) => {
     const [form] = Form.useForm();
-    const statusValue = status == commonStatus["active"] ? true : false;
+    const statusValue = status == CommonStatus["active"] ? true : false;
 
     return (
       <>
@@ -913,9 +913,8 @@ const AdminOrderTablesPage = () => {
                 openNotification({
                   type: "success",
                   message: "Thành công",
-                  description: `${
-                    statusValue ? "Khoá" : "Mở khoá"
-                  } thành công !`,
+                  description: `${statusValue ? "Khoá" : "Mở khoá"
+                    } thành công !`,
                   duration: 1.5,
                 });
 
@@ -927,7 +926,9 @@ const AdminOrderTablesPage = () => {
                 openNotification({
                   type: "error",
                   message: "Thất bại",
-                  description: `${statusValue ? "Khoá" : "Mở khoá"} thất bại !`,
+                  description:
+                    String(res.data) ??
+                    `${statusValue ? "Khoá" : "Mở khoá"} thất bại !`,
                   duration: 1.5,
                 });
 
@@ -1066,8 +1067,8 @@ const AdminOrderTablesPage = () => {
             className={
               "main__filter-button btn create" +
               (openModal &&
-              String(titleModal).includes("Thêm") &&
-              String(classNameModal).includes("create")
+                String(titleModal).includes("Thêm") &&
+                String(classNameModal).includes("create")
                 ? " active"
                 : "")
             }

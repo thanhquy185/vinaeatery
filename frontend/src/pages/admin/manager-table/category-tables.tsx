@@ -26,7 +26,7 @@ import {
   HandleUpdateCategoryTable,
 } from "../../../services/api";
 import { openConfirmation } from "../../../utils/showConfirmation";
-import { commonStatus } from "../../../common/values";
+import { CommonStatus } from "../../../common/values";
 
 // Các giá trị chung
 // - Loại phụ thu
@@ -72,7 +72,7 @@ const AdminCategoryTablesPage = () => {
       key: "status",
       width: "12%",
       render: (status: string) => (
-        <Tag color={status === commonStatus["active"] ? "green" : "red"}>
+        <Tag color={status === CommonStatus["active"] ? "green" : "red"}>
           {status}
         </Tag>
       ),
@@ -116,8 +116,8 @@ const AdminCategoryTablesPage = () => {
             className="action lock"
             onClick={() =>
               updatePropertiesModal(
-                (record.status == commonStatus["active"] ? "Khoá" : "Mở khoá") +
-                  " loại bàn ăn",
+                (record.status == CommonStatus["active"] ? "Khoá" : "Mở khoá") +
+                " loại bàn ăn",
                 true,
                 "30%",
                 "lock category-tables",
@@ -129,7 +129,7 @@ const AdminCategoryTablesPage = () => {
             }
           >
             <FontAwesomeIcon
-              icon={record.status == commonStatus["active"] ? faLock : faUnlock}
+              icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
             />
           </button>
         </>
@@ -172,8 +172,8 @@ const AdminCategoryTablesPage = () => {
   >(null);
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
-    { label: commonStatus["active"], value: commonStatus["active"] },
-    { label: commonStatus["inactive"], value: commonStatus["inactive"] },
+    { label: CommonStatus["active"], value: CommonStatus["active"] },
+    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
   ];
   const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
     null
@@ -301,7 +301,7 @@ const AdminCategoryTablesPage = () => {
       </>
     );
   };
-  const CreateCategoryTables = ({}) => {
+  const CreateCategoryTables = ({ }) => {
     const [form] = Form.useForm();
 
     return (
@@ -417,12 +417,12 @@ const AdminCategoryTablesPage = () => {
                   placeholder={defaultInputs["status"]}
                   options={[
                     {
-                      label: commonStatus["active"],
-                      value: commonStatus["active"],
+                      label: CommonStatus["active"],
+                      value: CommonStatus["active"],
                     },
                     {
-                      label: commonStatus["inactive"],
-                      value: commonStatus["inactive"],
+                      label: CommonStatus["inactive"],
+                      value: CommonStatus["inactive"],
                     },
                   ]}
                 />
@@ -639,7 +639,7 @@ const AdminCategoryTablesPage = () => {
     status: string | undefined;
   }) => {
     const [form] = Form.useForm();
-    const statusValue = status == commonStatus["active"] ? true : false;
+    const statusValue = status == CommonStatus["active"] ? true : false;
 
     return (
       <>
@@ -672,9 +672,8 @@ const AdminCategoryTablesPage = () => {
                 openNotification({
                   type: "success",
                   message: "Thành công",
-                  description: `${
-                    statusValue ? "Khoá" : "Mở khoá"
-                  } thành công !`,
+                  description: `${statusValue ? "Khoá" : "Mở khoá"
+                    } thành công !`,
                   duration: 1.5,
                 });
 
@@ -825,8 +824,8 @@ const AdminCategoryTablesPage = () => {
             className={
               "main__filter-button btn create" +
               (openModal &&
-              String(titleModal).includes("Thêm") &&
-              String(classNameModal).includes("create")
+                String(titleModal).includes("Thêm") &&
+                String(classNameModal).includes("create")
                 ? " active"
                 : "")
             }

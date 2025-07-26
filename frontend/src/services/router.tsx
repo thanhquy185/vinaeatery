@@ -6,7 +6,7 @@ import AdminDashboardProfitPage from "../pages/admin/dashboard/dashboard-profit"
 import AdminDashboardRevenuePage from "../pages/admin/dashboard/dashboard-revenue";
 import AdminDashboardExpensePage from "../pages/admin/dashboard/dashboard-expense";
 import AdminUseTablesPage from "../pages/admin/active/use-tables";
-import AdminCallFoodsPage from "../pages/admin/active/call-foods";
+import AdminOrderSheetsPage from "../pages/admin/active/order-sheets";
 import AdminOrdersPage from "../pages/admin/active/orders";
 import AdminOrderTablesPage from "../pages/admin/active/order-tables";
 import AdminCustomerCardsPage from "../pages/admin/manager-customer/customer-card";
@@ -57,7 +57,7 @@ export const getRouter = async (): Promise<
     "dashboard-revenue": <AdminDashboardRevenuePage />,
     "dashboard-expense": <AdminDashboardExpensePage />,
     "use-tables": <AdminUseTablesPage />,
-    "call-foods": <AdminCallFoodsPage />,
+    "order-sheets": <AdminOrderSheetsPage />,
     orders: <AdminOrdersPage />,
     "order-tables": <AdminOrderTablesPage />,
     "customer-cards": <AdminCustomerCardsPage />,

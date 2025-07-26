@@ -28,7 +28,7 @@ import {
 } from "../../../services/api";
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
-import { commonStatus } from "../../../common/values";
+import { CommonStatus } from "../../../common/values";
 
 // Admin Category Foods Page
 const AdminCategoryFoodsPage = () => {
@@ -71,7 +71,7 @@ const AdminCategoryFoodsPage = () => {
       key: "status",
       width: "20%",
       render: (status: string) => (
-        <Tag color={status === commonStatus["active"] ? "green" : "red"}>
+        <Tag color={status === CommonStatus["active"] ? "green" : "red"}>
           {status}
         </Tag>
       ),
@@ -115,8 +115,8 @@ const AdminCategoryFoodsPage = () => {
             className="action lock"
             onClick={() =>
               updatePropertiesModal(
-                (record.status == commonStatus["active"] ? "Khoá" : "Mở khoá") +
-                  " loại món ăn",
+                (record.status == CommonStatus["active"] ? "Khoá" : "Mở khoá") +
+                " loại món ăn",
                 true,
                 "30%",
                 "lock category-foods",
@@ -128,7 +128,7 @@ const AdminCategoryFoodsPage = () => {
             }
           >
             <FontAwesomeIcon
-              icon={record.status == commonStatus["active"] ? faLock : faUnlock}
+              icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
             />
           </button>
         </>
@@ -157,8 +157,8 @@ const AdminCategoryFoodsPage = () => {
   const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
-    { label: commonStatus["active"], value: commonStatus["active"] },
-    { label: commonStatus["inactive"], value: commonStatus["inactive"] },
+    { label: CommonStatus["active"], value: CommonStatus["active"] },
+    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
   ];
   const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
     null
@@ -283,7 +283,7 @@ const AdminCategoryFoodsPage = () => {
       </>
     );
   };
-  const CreateCategoryFoods = ({}) => {
+  const CreateCategoryFoods = ({ }) => {
     const [form] = Form.useForm();
     const [imageFile, setImageFile] = useState<RcFile>();
 
@@ -415,12 +415,12 @@ const AdminCategoryFoodsPage = () => {
                   placeholder={defaultInputs["status"]}
                   options={[
                     {
-                      label: commonStatus["active"],
-                      value: commonStatus["active"],
+                      label: CommonStatus["active"],
+                      value: CommonStatus["active"],
                     },
                     {
-                      label: commonStatus["inactive"],
-                      value: commonStatus["inactive"],
+                      label: CommonStatus["inactive"],
+                      value: CommonStatus["inactive"],
                     },
                   ]}
                 />
@@ -591,7 +591,7 @@ const AdminCategoryFoodsPage = () => {
     status: string | undefined;
   }) => {
     const [form] = Form.useForm();
-    const statusValue = status == commonStatus["active"] ? true : false;
+    const statusValue = status == CommonStatus["active"] ? true : false;
 
     return (
       <>
@@ -624,9 +624,8 @@ const AdminCategoryFoodsPage = () => {
                 openNotification({
                   type: "success",
                   message: "Thành công",
-                  description: `${
-                    statusValue ? "Khoá" : "Mở khoá"
-                  } thành công !`,
+                  description: `${statusValue ? "Khoá" : "Mở khoá"
+                    } thành công !`,
                   duration: 1.5,
                 });
 
@@ -762,8 +761,8 @@ const AdminCategoryFoodsPage = () => {
             className={
               "main__filter-button btn create" +
               (openModal &&
-              String(titleModal).includes("Thêm") &&
-              String(classNameModal).includes("create")
+                String(titleModal).includes("Thêm") &&
+                String(classNameModal).includes("create")
                 ? " active"
                 : "")
             }

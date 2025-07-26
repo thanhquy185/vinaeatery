@@ -84,7 +84,7 @@
     color: $red-secondary-btn-color;
   }
 
-  &:where(.use-tables, .call-foods) .ant-modal-content {
+  &:where(.use-tables, .order-sheets) .ant-modal-content {
     padding-top: 20px !important;
     border: 3px dashed #c14400;
     background: #fffcf7;
@@ -95,7 +95,7 @@
   }
 
   /* Ghim tròn trên đầu */
-  &.call-foods .ant-modal-content::before {
+  &.order-sheets .ant-modal-content::before {
     content: "";
     position: absolute;
     top: -18px;
@@ -111,7 +111,7 @@
   }
 
   /* Lỗ đục phía dưới ghim (giống lỗ thủng giấy) */
-  &.call-foods .ant-modal-content::after {
+  &.order-sheets .ant-modal-content::after {
     content: "";
     position: absolute;
     top: 1px;
@@ -125,89 +125,104 @@
   }
 
   // &.use-tables .ant-modal-title,
-  // &.call-foods .ant-modal-title {
+  // &.order-sheets .ant-modal-title {
   //   margin-bottom: 16px;
   //   // color: $primary-color;
   //   color: #b30000;
   //   font-size: 2.8rem;
   // }
 
-  &:where(.use-tables, .call-foods) .ant-modal-title {
+  &:where(.use-tables, .order-sheets) .ant-modal-title {
     margin-bottom: 16px;
     // color: $primary-color;
     color: #b30000;
     font-size: 2.8rem;
   }
 
-  &:where(.use-tables, .call-foods) .ant-modal-close {
+  &:where(.use-tables, .order-sheets) .ant-modal-close {
     color: #000;
   }
 
-  &:where(.use-tables, .call-foods) .ant-modal-close:hover {
+  &:where(.use-tables, .order-sheets) .ant-modal-close:hover {
     color: $red-secondary-btn-color;
   }
 
-  &:where(.use-tables, .call-foods) .info {
+  &:where(.use-tables, .order-sheets) .info {
     font-size: 1.8rem;
     margin-top: 4px;
   }
 
-  &:where(.use-tables, .call-foods) .info b {
+  &.order-sheets .info:has(textarea) {
+    margin-top: 12px;
+  }
+
+  &.order-sheets .info textarea {
+    height: 80px;
+    font-size: 1.6rem;
+  }
+
+
+  &:where(.use-tables, .order-sheets) .info b {
     width: 25%;
     display: inline-block;
     font-weight: 600;
   }
 
-  &:where(.use-tables, .call-foods) table {
+  &:where(.use-tables, .order-sheets) table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 4px;
   }
 
-  &:where(.use-tables, .call-foods) table th,
-  &:where(.use-tables, .call-foods) table td {
+  &:where(.use-tables, .order-sheets) table th,
+  &:where(.use-tables, .order-sheets) table td {
     border: 1px solid #ccc;
     padding: 10px;
     font-size: 1.4rem;
     text-align: center;
   }
 
-  &:where(.use-tables, .call-foods) table th {
+  &:where(.use-tables, .order-sheets) table th {
     background-color: #ffe0cc;
     font-weight: 600;
   }
 
-  &:where(.use-tables, .call-foods) table td {
+  &:where(.use-tables, .order-sheets) table td {
     background-color: #fff;
   }
 
-  &:where(.use-tables, .call-foods) table td.left {
+  &:where(.use-tables, .order-sheets) table td.left {
     text-align: left;
   }
 
-  &:where(.use-tables, .call-foods) .note {
+  &:where(.use-tables, .order-sheets) .note {
     margin-top: 20px;
     color: #444;
     font-size: 1.8rem;
     font-style: italic;
   }
 
-  &:where(.use-tables, .call-foods) .status.purple {
+  &:where(.use-tables, .order-sheets) .status.purple {
     font-weight: 600;
     color: purple;
   }
 
-  &:where(.use-tables, .call-foods) .status.green {
+  &:where(.use-tables, .order-sheets) .status.green {
     font-weight: 600;
     color: green;
   }
 
-  &:where(.use-tables, .call-foods) .status.red {
+  &:where(.use-tables, .order-sheets) .status.yellow {
+    font-weight: 600;
+    color: orange;
+  }
+
+  &:where(.use-tables, .order-sheets) .status.red {
     font-weight: 600;
     color: red;
   }
 
-  &:where(.use-tables, .call-foods) .status.gray {
+  &:where(.use-tables, .order-sheets) .status.gray {
     font-weight: 600;
     color: gray;
   }
@@ -349,12 +364,9 @@
     margin-top: -14px;
   }
 
-  &
-    .ant-form-item-control:has(.ant-image-img)
-    .ant-form-item-control-input-content {
+  & .ant-form-item-control:has(.ant-image-img) .ant-form-item-control-input-content {
     @include flexCenter();
-    height: calc($form-item-height * 2) + calc($form-label-height * 2) +
-      calc($margin-bottom * 2);
+    height: calc($form-item-height * 2) + calc($form-label-height * 2) + calc($margin-bottom * 2);
   }
 
   & .ant-form-item-control .ant-upload,
@@ -364,42 +376,25 @@
 
   & .ant-form-item-control .ant-upload #image-button[type="button"] {
     position: absolute;
-    top: calc(
-      calc($form-item-height * 2) + calc($form-label-height * 2) +
-        calc($margin-bottom * 2)
-    );
+    top: calc(calc($form-item-height * 2) + calc($form-label-height * 2) + calc($margin-bottom * 2));
     left: 0;
   }
 
-  &__form.ant-form
-    &__form-group-item:has(
-      .ant-form-item-control .ant-upload #image-button[type="button"]
-    )
-    + * {
+  &__form.ant-form &__form-group-item:has(.ant-form-item-control .ant-upload #image-button[type="button"])+* {
     margin-top: calc($form-item-height + $margin-bottom);
   }
 
-  &.ant-modal.employees
-    .ant-form-item-control
-    :is(.ant-image-img, .ant-image-mask) {
+  &.ant-modal.employees .ant-form-item-control :is(.ant-image-img, .ant-image-mask) {
     width: calc(180px * 3 / 4);
   }
 
-  &.ant-modal.foods
-    .ant-form-item-control
-    :is(.ant-image-img, .ant-image-mask) {
+  &.ant-modal.foods .ant-form-item-control :is(.ant-image-img, .ant-image-mask) {
     @include size(240px, 180px);
     margin-top: 80px;
   }
 
-  &.ant-modal.foods
-    .ant-form-item-control
-    .ant-upload
-    #image-button[type="button"] {
-    top: calc(
-      calc($form-item-height * 3) + calc($form-label-height * 3) +
-        calc($margin-bottom * 3)
-    );
+  &.ant-modal.foods .ant-form-item-control .ant-upload #image-button[type="button"] {
+    top: calc(calc($form-item-height * 3) + calc($form-label-height * 3) + calc($margin-bottom * 3));
   }
 
   &__form.ant-form &__form-group-item button.secondary-btn {
@@ -430,9 +425,7 @@
   }
 
   &__form textarea.multiple-2 {
-    height: calc(
-      $form-label-height + calc($form-item-height * 2) + $margin-bottom
-    );
+    height: calc($form-label-height + calc($form-item-height * 2) + $margin-bottom );
   }
 
   &__buttons {

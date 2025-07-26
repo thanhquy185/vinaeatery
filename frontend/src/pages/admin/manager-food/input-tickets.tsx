@@ -28,6 +28,7 @@ import type {
   InputTicketsFormatType,
   SuppliersType,
 } from "../../../common/types";
+import { InputTicketStatus, PayStatus } from "../../../common/values";
 import { ruleRequired } from "../../../common/rules";
 import { CustomPaginationProps } from "../../../common/pagination-props";
 import CustomFindInput from "../../../components/admin/find-input";
@@ -54,14 +55,6 @@ import { openNotification } from "../../../utils/showNotification";
 import { handlePrintTicket } from "../../../utils/printTicket";
 
 // Các giá trị chung
-// - Trạng thái
-const giveback = "Đã trả hàng";
-const confirm = "Đã nhập hàng";
-const cancel = "Đã huỷ phiếu";
-const pending = "Đang chờ xác nhận";
-// - Thanh toán
-const pay = "Đã thanh toán";
-const notPay = "Chưa thanh toán";
 // - Chi tiết phiếu nhập
 interface InputTicketDetailsTableProps {
   inputTicketDetails?: InputTicketDetailsFormatType[];
@@ -129,7 +122,7 @@ const AdminInputTicketsPage = () => {
       key: "payStatus",
       width: "12%",
       render: (status: string) => (
-        <Tag color={status === pay ? "volcano" : "default"}>{status}</Tag>
+        <Tag color={status === PayStatus.pay ? "volcano" : "default"}>{status}</Tag>
       ),
     },
     {
@@ -140,13 +133,13 @@ const AdminInputTicketsPage = () => {
       render: (status: string) => (
         <Tag
           color={
-            status === giveback
+            status === InputTicketStatus.giveback
               ? "purple"
-              : status === confirm
-              ? "green"
-              : status === cancel
-              ? "red"
-              : "default"
+              : status === InputTicketStatus.confirm
+                ? "green"
+                : status === InputTicketStatus.canceled
+                  ? "red"
+                  : "default"
           }
         >
           {status}
@@ -232,12 +225,12 @@ const AdminInputTicketsPage = () => {
   const [filterTimeValue, setFilterTimeValue] = useState<[string, string]>();
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
-    { label: giveback, value: giveback },
-    { label: confirm, value: confirm },
-    { label: cancel, value: cancel },
-    { label: pending, value: pending },
-    { label: pay, value: pay },
-    { label: notPay, value: notPay },
+    { label: InputTicketStatus.giveback, value: InputTicketStatus.giveback },
+    { label: InputTicketStatus.confirm, value: InputTicketStatus.confirm },
+    { label: InputTicketStatus.canceled, value: InputTicketStatus.canceled },
+    { label: InputTicketStatus.pending, value: InputTicketStatus.pending },
+    { label: PayStatus.pay, value: PayStatus.pay },
+    { label: PayStatus.notPay, value: PayStatus.notPay },
   ];
   const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
     null
@@ -494,8 +487,8 @@ const AdminInputTicketsPage = () => {
                 employeeId: 5, // Mặc định là Quản lý kho hàng (sau xử lý đăng nhập)
                 supplierId: values!.supplier || undefined,
                 totalPrice: totalPriceValue,
-                payStatus: notPay,
-                status: pending,
+                payStatus: PayStatus.notPay,
+                status: InputTicketStatus.pending,
                 inputTicketDetails: inputTicketDetails.map(
                   (inputTicketDetail) => ({
                     ingredientId: inputTicketDetail.ingredient.id!,
@@ -816,21 +809,21 @@ const AdminInputTicketsPage = () => {
             </div>
           </div>
           <div className="modal__buttons">
-            {status === confirm && (
+            {status === InputTicketStatus.confirm && (
               <button
                 className="modal__button secondary btn purple-secondary"
                 onClick={(e) =>
                   callApiToUpdateInputTicket(
                     id!,
                     e.target as HTMLElement,
-                    giveback
+                    InputTicketStatus.giveback
                   )
                 }
               >
-                {giveback}
+                {InputTicketStatus.giveback}
               </button>
             )}
-            {status === pending && (
+            {status === InputTicketStatus.pending && (
               <>
                 <button
                   className="modal__button secondary btn green-secondary"
@@ -838,11 +831,11 @@ const AdminInputTicketsPage = () => {
                     callApiToUpdateInputTicket(
                       id!,
                       e.target as HTMLElement,
-                      confirm
+                      InputTicketStatus.confirm
                     )
                   }
                 >
-                  {confirm}
+                  {InputTicketStatus.confirm}
                 </button>
                 <button
                   className="modal__button secondary btn red-secondary"
@@ -850,11 +843,11 @@ const AdminInputTicketsPage = () => {
                     callApiToUpdateInputTicket(
                       id!,
                       e.target as HTMLElement,
-                      cancel
+                      InputTicketStatus.canceled
                     )
                   }
                 >
-                  {cancel}
+                  {InputTicketStatus.canceled}
                 </button>
               </>
             )}
@@ -864,11 +857,11 @@ const AdminInputTicketsPage = () => {
                 callApiToUpdateInputTicket(
                   id!,
                   e.target as HTMLElement,
-                  payStatus === pay ? notPay : pay
+                  payStatus! === PayStatus.pay ? PayStatus.notPay : PayStatus.pay
                 )
               }
             >
-              {payStatus === pay ? notPay : pay}
+              {payStatus === PayStatus.pay ? PayStatus.notPay : PayStatus.pay}
             </button>
           </div>
         </Form>
@@ -1037,9 +1030,9 @@ const AdminInputTicketsPage = () => {
       // Biến giữ giá trị tương ứng với "trạng thái" cần thay đổi
       let payStatus = null,
         status = null;
-      if (value === giveback || value === confirm || value === cancel) {
+      if (value === InputTicketStatus.giveback || value === InputTicketStatus.confirm || value === InputTicketStatus.canceled) {
         status = value;
-      } else if (value === pay || value === notPay) {
+      } else if (value === PayStatus.pay || value === PayStatus.notPay) {
         payStatus = value;
       }
 
@@ -1067,13 +1060,13 @@ const AdminInputTicketsPage = () => {
           description:
             res.status === 400
               ? String(res.data)
-                  .split("|")
-                  .map((line, index) => (
-                    <div key={index}>
-                      {line}
-                      <br />
-                    </div>
-                  ))
+                .split("|")
+                .map((line, index) => (
+                  <div key={index}>
+                    {line}
+                    <br />
+                  </div>
+                ))
               : "Cập nhật thất bại !",
           duration: 1.5,
         });
@@ -1496,16 +1489,16 @@ const AdminInputTicketsPage = () => {
       totalPending = 0;
     inputTickets.forEach((inputTicket) => {
       totalPrice += inputTicket.totalPrice!;
-      if (inputTicket.status! === giveback) {
+      if (inputTicket.status! === InputTicketStatus.giveback) {
         totalGiveBack += 1;
       }
-      if (inputTicket.status! === confirm) {
+      if (inputTicket.status! === InputTicketStatus.confirm) {
         totalConfirm += 1;
       }
-      if (inputTicket.status! === cancel) {
+      if (inputTicket.status! === InputTicketStatus.canceled) {
         totalCancel += 1;
       }
-      if (inputTicket.status! === pending) {
+      if (inputTicket.status! === InputTicketStatus.pending) {
         totalPending += 1;
       }
     });
@@ -1581,8 +1574,8 @@ const AdminInputTicketsPage = () => {
             className={
               "main__filter-button btn create" +
               (openModal &&
-              String(titleModal).includes("Thêm") &&
-              String(classNameModal).includes("create")
+                String(titleModal).includes("Thêm") &&
+                String(classNameModal).includes("create")
                 ? " active"
                 : "")
             }
@@ -1609,25 +1602,25 @@ const AdminInputTicketsPage = () => {
             valueStyle={{ color: "#d2a016" }}
           />
           <CustomCardStatic
-            title={giveback}
+            title={InputTicketStatus.giveback}
             value={giveBackCardValue}
             prefix={<IssuesCloseOutlined />}
             valueStyle={{ color: "#7b13cf" }}
           />
           <CustomCardStatic
-            title={confirm}
+            title={InputTicketStatus.confirm}
             value={confirmCardValue}
             prefix={<CheckCircleOutlined />}
             valueStyle={{ color: "#3f8600" }}
           />
           <CustomCardStatic
-            title={cancel}
+            title={InputTicketStatus.canceled}
             value={cancelCardValue}
             prefix={<CloseCircleOutlined />}
             valueStyle={{ color: "#cf1322" }}
           />
           <CustomCardStatic
-            title={pending}
+            title={InputTicketStatus.pending}
             value={pendingCardValue}
             prefix={<ClockCircleOutlined />}
             valueStyle={{ color: "#676767" }}

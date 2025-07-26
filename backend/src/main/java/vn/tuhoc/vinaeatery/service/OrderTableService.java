@@ -9,14 +9,12 @@ import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.OrderTable_;
-import vn.tuhoc.vinaeatery.domain.InputTicket;
 import vn.tuhoc.vinaeatery.domain.OrderTable;
 import vn.tuhoc.vinaeatery.domain.criteria.OrderTableCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.EmployeeDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderTableDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.OrderTableRepository;
-import vn.tuhoc.vinaeatery.service.specification.InputTicketSpecification;
 import vn.tuhoc.vinaeatery.service.specification.OrderTableSpecification;
 
 @Service
@@ -29,6 +27,27 @@ public class OrderTableService {
     // Methods
     public OrderTable getOneById(Integer id) {
         return this.orderTableRepository.findOneById(id);
+    }
+
+    public OrderTableDTO getOneFormatById(Integer id) {
+        OrderTableDTO orderTableDTO = new OrderTableDTO();
+        OrderTable orderTable = this.orderTableRepository.findOneById(id);
+        if (orderTable != null) {
+            orderTableDTO.setId(orderTable.getId());
+            orderTableDTO.setTimeOrder(orderTable.getTimeOrder());
+            orderTableDTO.setTimeArrive(orderTable.getTimeArrive());
+            if (orderTable.getEmployeeId() != null) {
+                orderTableDTO.setEmployee(employeeService.getOneFormatById(orderTable.getEmployeeId()));
+            }
+            orderTableDTO.setNote(orderTable.getNote());
+            orderTableDTO.setFullname(orderTable.getFullname());
+            orderTableDTO.setPhone(orderTable.getPhone());
+            orderTableDTO.setEmail(orderTable.getEmail());
+            orderTableDTO.setAddress(orderTable.getAddress());
+            orderTableDTO.setStatus(orderTable.getStatus());
+        }
+
+        return orderTableDTO;
     }
 
     public List<OrderTable> getAll() {
@@ -54,9 +73,10 @@ public class OrderTableService {
 
         //
         if (orderTableCriteria.getId() == null && orderTableCriteria.getTimeOrderStart() == null
-                && orderTableCriteria.getTimeOrderEnd() == null && orderTableCriteria.getFullname() == null
-                && orderTableCriteria.getPhone() == null && orderTableCriteria.getEmail() == null
-                && orderTableCriteria.getStatus() == null && orderTableCriteria.getSort() == null) {
+                && orderTableCriteria.getTimeOrderEnd() == null && orderTableCriteria.getEmployeeId() == null
+                && orderTableCriteria.getFullname() == null && orderTableCriteria.getPhone() == null
+                && orderTableCriteria.getEmail() == null && orderTableCriteria.getStatus() == null
+                && orderTableCriteria.getSort() == null) {
             return this.orderTableRepository.findAll(sort);
         }
         //
@@ -87,6 +107,13 @@ public class OrderTableService {
             Specification<OrderTable> currentSpec = OrderTableSpecification
                     .timeArriveBefore(orderTableCriteria.getTimeArriveEnd().get());
             combinedSpec = combinedSpec.and(currentSpec);
+        }
+        if (orderTableCriteria.getEmployeeId() != null && orderTableCriteria.getEmployeeId().isPresent()) {
+            if (orderTableCriteria.getEmployeeId().get().matches("\\d+")) {
+                Specification<OrderTable> currentSpec = OrderTableSpecification
+                        .employeeIdEqual(orderTableCriteria.getEmployeeId().get());
+                combinedSpec = combinedSpec.and(currentSpec);
+            }
         }
         if (orderTableCriteria.getFullname() != null && orderTableCriteria.getFullname().isPresent()) {
             Specification<OrderTable> currentSpec = OrderTableSpecification
@@ -124,12 +151,21 @@ public class OrderTableService {
     public List<OrderTableDTO> getAllFormat(OrderTableCriteria orderTableCriteria) {
         List<OrderTableDTO> listFormat = new ArrayList<>();
         for (OrderTable orderTable : getAll(orderTableCriteria)) {
-            EmployeeDTO employee = employeeService.getOneFormatById(orderTable.getEmployeeId());
+            OrderTableDTO orderTableDTO = new OrderTableDTO();
+            orderTableDTO.setId(orderTable.getId());
+            orderTableDTO.setTimeOrder(orderTable.getTimeOrder());
+            orderTableDTO.setTimeArrive(orderTable.getTimeArrive());
+            if (orderTable.getEmployeeId() != null) {
+                orderTableDTO.setEmployee(employeeService.getOneFormatById(orderTable.getEmployeeId()));
+            }
+            orderTableDTO.setNote(orderTable.getNote());
+            orderTableDTO.setFullname(orderTable.getFullname());
+            orderTableDTO.setPhone(orderTable.getPhone());
+            orderTableDTO.setEmail(orderTable.getEmail());
+            orderTableDTO.setAddress(orderTable.getAddress());
+            orderTableDTO.setStatus(orderTable.getStatus());
 
-            OrderTableDTO newOrderTable = new OrderTableDTO(orderTable.getId(), employee, orderTable.getTimeOrder(),
-                    orderTable.getTimeArrive(), orderTable.getNote(), orderTable.getFullname(), orderTable.getPhone(),
-                    orderTable.getEmail(), orderTable.getAddress(), orderTable.getStatus(), orderTable.getTimeUpdate());
-            listFormat.add(newOrderTable);
+            listFormat.add(orderTableDTO);
         }
 
         return listFormat;

@@ -9,11 +9,9 @@ import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Customer_;
-import vn.tuhoc.vinaeatery.domain.TableE;
 import vn.tuhoc.vinaeatery.domain.Customer;
 import vn.tuhoc.vinaeatery.domain.criteria.CustomerCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CustomerDTO;
-import vn.tuhoc.vinaeatery.domain.dto.TableDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.CustomerCardRepository;
 import vn.tuhoc.vinaeatery.repository.CustomerRepository;
@@ -32,9 +30,8 @@ public class CustomerService {
     }
 
     public CustomerDTO getOneFormatById(Integer id) {
-        Customer customer = getOneById(id);
         CustomerDTO customerDTO = new CustomerDTO();
-
+        Customer customer = getOneById(id);
         if (customer != null) {
             customerDTO.setId(customer.getId());
             customerDTO.setFullname(customer.getFullname());
@@ -44,7 +41,9 @@ public class CustomerService {
             customerDTO.setEmail(customer.getEmail());
             customerDTO.setAddress(customer.getAddress());
             customerDTO.setDescription(customer.getDescription());
-            customerDTO.setCustomerCard(customerCardRepository.findOneById(customer.getCustomerCardId()));
+            if (customer.getCustomerCardId() != null) {
+                customerDTO.setCustomerCard(customerCardRepository.findOneById(customer.getCustomerCardId()));
+            }
             customerDTO.setTotalThreshold(customer.getTotalThreshold());
             customerDTO.setStatus(customer.getStatus());
             customerDTO.setTimeUpdate(customer.getTimeUpdate());
@@ -127,16 +126,28 @@ public class CustomerService {
     }
 
     public List<CustomerDTO> getAllFormat(CustomerCriteria customerCriteria) {
-        List<CustomerDTO> listTableFormat = new ArrayList<>();
+        List<CustomerDTO> listFormat = new ArrayList<>();
         for (Customer customer : getAll(customerCriteria)) {
-            listTableFormat.add(new CustomerDTO(customer.getId(),
-                    customerCardRepository.findOneById(customer.getCustomerCardId()), customer.getTotalThreshold(),
-                    customer.getFullname(), customer.getBirthday(), customer.getGender(), customer.getPhone(),
-                    customer.getEmail(), customer.getAddress(), customer.getDescription(), customer.getStatus(),
-                    customer.getTimeUpdate()));
+            CustomerDTO customerDTO = new CustomerDTO();
+            customerDTO.setId(customer.getId());
+            customerDTO.setFullname(customer.getFullname());
+            customerDTO.setBirthday(customer.getBirthday());
+            customerDTO.setGender(customer.getGender());
+            customerDTO.setPhone(customer.getPhone());
+            customerDTO.setEmail(customer.getEmail());
+            customerDTO.setAddress(customer.getAddress());
+            customerDTO.setDescription(customer.getDescription());
+            if (customer.getCustomerCardId() != null) {
+                customerDTO.setCustomerCard(customerCardRepository.findOneById(customer.getCustomerCardId()));
+            }
+            customerDTO.setTotalThreshold(customer.getTotalThreshold());
+            customerDTO.setStatus(customer.getStatus());
+            customerDTO.setTimeUpdate(customer.getTimeUpdate());
+
+            listFormat.add(customerDTO);
         }
 
-        return listTableFormat;
+        return listFormat;
     }
 
     public List<Customer> getAllByCustomerCardId(Integer customerCardId) {

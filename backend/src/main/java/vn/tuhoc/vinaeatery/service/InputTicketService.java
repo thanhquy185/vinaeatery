@@ -36,6 +36,35 @@ public class InputTicketService {
         return this.inputTicketRepository.findOneById(id);
     }
 
+    public InputTicketDTO getOneFormatById(Integer id) {
+        InputTicketDTO inputTicketDTO = new InputTicketDTO();
+        InputTicket inputTicket = this.inputTicketRepository.findOneById(id);
+        if (inputTicket != null) {
+            List<InputTicketDetailDTO> inputTicketDetails = new ArrayList<>();
+            for (InputTicketDetail inputTicketDetail : inputTicketDetailRepository
+                    .findAllByInputTicketId(inputTicket.getId())) {
+                inputTicketDetails.add(new InputTicketDetailDTO(
+                        ingredientService.getOneFormatById(inputTicketDetail.getId().getIngredientId()),
+                        inputTicketDetail.getPrice(), inputTicketDetail.getQuantity()));
+            }
+
+            inputTicketDTO.setId(inputTicket.getId());
+            inputTicketDTO.setTimeCreate(inputTicket.getTimeCreate());
+            if(inputTicket.getEmployeeId() != null) {
+                inputTicketDTO.setEmployee(employeeService.getOneFormatById(inputTicket.getEmployeeId()));
+            }
+            if(inputTicket.getSupplierId() != null) {
+                inputTicketDTO.setSupplier(supplierRepository.findOneById(inputTicket.getSupplierId()));
+            }
+            inputTicketDTO.setTotalPrice(inputTicket.getTotalPrice());
+            inputTicketDTO.setPayStatus(inputTicket.getPayStatus());
+            inputTicketDTO.setStatus(inputTicket.getStatus());
+            inputTicketDTO.setInputTicketDetails(inputTicketDetails);
+        }
+
+        return inputTicketDTO;
+    }
+
     public List<InputTicket> getAll() {
         return this.inputTicketRepository.findAll();
     }
@@ -89,7 +118,7 @@ public class InputTicketService {
         if (inputTicketCriteria.getEmployeeId() != null && inputTicketCriteria.getEmployeeId().isPresent()) {
             if (inputTicketCriteria.getEmployeeId().get().matches("\\d+")) {
                 Specification<InputTicket> currentSpec = InputTicketSpecification
-                .employeeIdEqual(inputTicketCriteria.getEmployeeId().get());
+                        .employeeIdEqual(inputTicketCriteria.getEmployeeId().get());
                 combinedSpec = combinedSpec.and(currentSpec);
             }
         }
@@ -165,16 +194,27 @@ public class InputTicketService {
                         inputTicketDetail.getPrice(), inputTicketDetail.getQuantity()));
             }
 
-            listFormat.add(new InputTicketDTO(inputTicket.getId(), inputTicket.getTimeCreate(),
-                    employeeService.getOneFormatById(inputTicket.getEmployeeId()),
-                    supplierRepository.findOneById(inputTicket.getSupplierId()), inputTicket.getTotalPrice(),
-                    inputTicket.getPayStatus(), inputTicket.getStatus(), inputTicketDetails));
+            InputTicketDTO inputTicketDTO = new InputTicketDTO();
+            inputTicketDTO.setId(inputTicket.getId());
+            inputTicketDTO.setTimeCreate(inputTicket.getTimeCreate());
+            if(inputTicket.getEmployeeId() != null) {
+                inputTicketDTO.setEmployee(employeeService.getOneFormatById(inputTicket.getEmployeeId()));
+            }
+            if(inputTicket.getSupplierId() != null) {
+                inputTicketDTO.setSupplier(supplierRepository.findOneById(inputTicket.getSupplierId()));
+            }
+            inputTicketDTO.setTotalPrice(inputTicket.getTotalPrice());
+            inputTicketDTO.setPayStatus(inputTicket.getPayStatus());
+            inputTicketDTO.setStatus(inputTicket.getStatus());
+            inputTicketDTO.setInputTicketDetails(inputTicketDetails);
+
+            listFormat.add(inputTicketDTO);
         }
 
         return listFormat;
     }
 
-    public InputTicket upsert(InputTicket InputTicket) {
-        return this.inputTicketRepository.save(InputTicket);
+    public InputTicket upsert(InputTicket inputTicket) {
+        return this.inputTicketRepository.save(inputTicket);
     }
 }

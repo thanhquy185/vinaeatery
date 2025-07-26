@@ -61,7 +61,10 @@ public class EmployeeService {
             employeeDTO.setAddress(employee.getAddress());
             employeeDTO.setDateBegin(employee.getDateBegin());
             employeeDTO.setDateEnd(employee.getDateEnd());
-            employeeDTO.setCurrentRole(roleRepository.findOneById(employee.getRoleId()));
+            if (roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId() != null) {
+                employeeDTO.setCurrentRole(roleRepository
+                        .findOneById(roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId()));
+            }
             employeeDTO.setRoleHistories(roleHistories);
             employeeDTO.setUsername(employee.getUsername());
             employeeDTO.setStatus(employee.getStatus());
@@ -189,30 +192,43 @@ public class EmployeeService {
     }
 
     public List<EmployeeDTO> getAllFormat(EmployeeCriteria employeeCriteria) {
-        List<EmployeeDTO> listEmployeeFormat = new ArrayList<>();
+        List<EmployeeDTO> listFormat = new ArrayList<>();
         for (Employee employee : getAll(employeeCriteria)) {
-            Role currentRole = roleRepository
-                    .findOneById(roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId());
-
             List<RoleHistoryDTO> roleHistories = new ArrayList<>();
             for (RoleHistory roleHistory : roleHistoryRepository.findAllByEmployeeId(employee.getId())) {
-                roleHistories.add(new RoleHistoryDTO(employee.getId(), roleHistory.getId().getRoleId(),
+                roleHistories.add(new RoleHistoryDTO(
+                        employee.getId(),
+                        roleHistory.getId().getRoleId(),
                         roleRepository.findOneById(roleHistory.getId().getRoleId()).getName(),
-                        roleHistory.getId().getDateBegin(), roleHistory.getDateEnd()));
+                        roleHistory.getId().getDateBegin(),
+                        roleHistory.getDateEnd()));
             }
 
-            listEmployeeFormat.add(new EmployeeDTO(employee.getId(), employee.getImage(), employee.getFullname(),
-                    employee.getBirthday(), employee.getGender(), employee.getPhone(), employee.getEmail(),
-                    employee.getAddress(), employee.getDateBegin(), employee.getDateEnd(), currentRole, roleHistories,
-                    employee.getUsername(), employee.getStatus(), employee.getTimeUpdate()));
+            EmployeeDTO employeeDTO = new EmployeeDTO();
+            employeeDTO.setId(employee.getId());
+            employeeDTO.setImage(employee.getImage());
+            employeeDTO.setFullname(employee.getFullname());
+            employeeDTO.setBirthday(employee.getBirthday());
+            employeeDTO.setGender(employee.getGender());
+            employeeDTO.setPhone(employee.getPhone());
+            employeeDTO.setEmail(employee.getEmail());
+            employeeDTO.setAddress(employee.getAddress());
+            employeeDTO.setDateBegin(employee.getDateBegin());
+            employeeDTO.setDateEnd(employee.getDateEnd());
+            if (roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId() != null) {
+                employeeDTO.setCurrentRole(roleRepository
+                        .findOneById(roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId()));
+            }
+            employeeDTO.setRoleHistories(roleHistories);
+            employeeDTO.setUsername(employee.getUsername());
+            employeeDTO.setStatus(employee.getStatus());
+            employeeDTO.setTimeUpdate(employee.getTimeUpdate());
+
+            listFormat.add(employeeDTO);
         }
 
-        return listEmployeeFormat;
+        return listFormat;
     }
-
-    // public List<Employee> getAllByRoleId(Integer roleId) {
-    // return employeeRepository.findAllByRoleId(roleId);
-    // }
 
     public Employee upsert(Employee employee) {
         return this.employeeRepository.save(employee);
