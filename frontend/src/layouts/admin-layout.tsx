@@ -65,8 +65,8 @@ type SidebarGroupProps = {
 // Bản đồ chuỗi đến icon thật
 const iconMap: Record<string, IconProp> = {
   "dashboard-profit": faDollarSign,
-  "dashboard-revenue": faMoneyBillTrendUp,
-  "dashboard-expense": faHandHoldingDollar,
+  "dashboard-orders": faMoneyBillTrendUp,
+  "dashboard-input-tickets": faHandHoldingDollar,
   "table-histories": faClockRotateLeft,
   "use-tables": faSignal,
   orders: faReceipt,
@@ -146,14 +146,14 @@ const AdminSidebar = () => {
       nameEN: "dashboard-profit",
     },
     {
-      url: "/admin/dashboard-revenue",
-      nameVN: "Thống kê Doanh thu",
-      nameEN: "dashboard-revenue",
+      url: "/admin/dashboard-orders",
+      nameVN: "Thống kê Đơn món ăn",
+      nameEN: "dashboard-orders",
     },
     {
-      url: "/admin/dashboard-expense",
-      nameVN: "Thống kê Chi tiêu",
-      nameEN: "dashboard-expense",
+      url: "/admin/dashboard-input-tickets",
+      nameVN: "Thống kê Phiếu nhập",
+      nameEN: "dashboard-input-tickets",
     },
   ];
   const activeManagerItems: SidebarGroupProps["items"] = [
@@ -270,11 +270,11 @@ const AdminSidebar = () => {
             icon={faChartSimple}
             items={dashboardItems}
           />
-          <SidebarGroup
+          {/* <SidebarGroup
             title="Vận hành quán ăn"
             icon={faPlayCircle}
             items={activeManagerItems}
-          />
+          /> */}
           {/* <SidebarGroup
             title="Quản lý khách hàng"
             icon={faPeopleGroup}

@@ -1,19 +1,38 @@
-import { use, useEffect, useState } from "react";
-import { AppleOutlined, FileDoneOutlined, TableOutlined } from "@ant-design/icons";
-import type { FoodsFormatType, OrdersFormatType, TablesFormatType, UseTablesFormatType } from "../../../common/types";
-import { FoodStatus, OrderStatus, PayStatus, UseTableStatus } from "../../../common/values";
+import { useEffect, useState } from "react";
+import {
+  AppleOutlined,
+  FileDoneOutlined,
+  TableOutlined,
+} from "@ant-design/icons";
+import type {
+  FoodsFormatType,
+  OrdersFormatType,
+  TablesFormatType,
+  UseTablesFormatType,
+} from "../../../common/types";
+import {
+  FoodStatus,
+  OrderStatus,
+  PayStatus,
+  UseTableStatus,
+} from "../../../common/values";
 import CustomSegmented from "../../../components/admin/segmented";
 import FilterDashboard from "../../../components/admin/filter-dashboard";
 import CustomTableDashboard from "../../../components/admin/table-dashboard";
-import { FindAllFood, FindAllOrder, FindAllTable, FindAllUseTable } from "../../../services/api";
+import {
+  FindAllFood,
+  FindAllOrder,
+  FindAllTable,
+  FindAllUseTable,
+} from "../../../services/api";
 import { getFilterTimesForDashboard } from "../../../utils/otherEvents";
 import { openNotification } from "../../../utils/showNotification";
 
 // Các giá trị chung
-const tableDataId = "order-table-data-dashboard-revenue";
+const tableDataId = "table-data-dashboard-orders";
 
 // Các chuỗi để lấy được biểu đồ, bảng dữ liệu thông qua css selector
-export const tableDataQueryDashboardRevenue = `#${tableDataId}`;
+export const tableDataQueryDashboardOrders = `#${tableDataId}`;
 
 // Cấu hình chung
 // -
@@ -22,7 +41,7 @@ type SegmentKey = "orders" | "foods" | "tables";
 const columnsWidthType: Record<SegmentKey, string[]> = {
   orders: ["10%", "10%", "10%", "22%", "22%", "26%"],
   foods: ["30%", "22%", "22%", "26%"],
-  tables: ["30%", "22%", "22%", "26%"]
+  tables: ["30%", "22%", "22%", "26%"],
 };
 // - Tiêu đề bảng dữ liệu
 const columnsTitleType: Record<SegmentKey, string[]> = {
@@ -35,7 +54,7 @@ const columnsTitleType: Record<SegmentKey, string[]> = {
     "Doanh thu",
   ],
   foods: ["Món ăn", "Giá bán", "Số lượng bán", "Doanh thu"],
-  tables: ["Bàn ăn", "Tổng số đơn", "Tổng số món ăn", "Doanh thu"]
+  tables: ["Bàn ăn", "Tổng số đơn", "Tổng số món ăn", "Doanh thu"],
 };
 // - Định dạng bảng dữ liệu
 const formatsType: Record<SegmentKey, string[]> = {
@@ -44,8 +63,8 @@ const formatsType: Record<SegmentKey, string[]> = {
   tables: ["info", "", "", "price"],
 };
 
-// Admin Dashboard Revenue Page
-const AdminDashboardRevenuePage = () => {
+// Admin Dashboard Orders Page
+const AdminDashboardOrdersPage = () => {
   // Các thành phần giữ giá trị cho việc hiển thị bảng thống kê
   const [orders, setOrders] = useState<OrdersFormatType[]>([]);
   const [foods, setFoods] = useState<FoodsFormatType[]>([]);
@@ -74,9 +93,9 @@ const AdminDashboardRevenuePage = () => {
   );
 
   // Các biến giữ giá trị từ việc lọc thông tin
-  const [filterTimelineValue, setFilterTimelineValue] = useState<
-    string | null
-  >(null);
+  const [filterTimelineValue, setFilterTimelineValue] = useState<string | null>(
+    null
+  );
   // - Thời gian cụ thể
   const [filterTimeDetailValue, setFilterTimeDetailValue] = useState<
     string | null
@@ -132,7 +151,7 @@ const AdminDashboardRevenuePage = () => {
   };
   const getAllUseTable = async () => {
     const res = await FindAllUseTable({
-      statusValue: [UseTableStatus.occupied]!
+      statusValue: [UseTableStatus.occupied]!,
     });
     if (res!.status === 200) {
       setUseTables(res!.data);
@@ -156,7 +175,10 @@ const AdminDashboardRevenuePage = () => {
   //
   useEffect(() => {
     if (segmentedValue && filterTimelineValue && filterTimeDetailValue) {
-      const times = getFilterTimesForDashboard(filterTimelineValue, filterTimeDetailValue);
+      const times = getFilterTimesForDashboard(
+        filterTimelineValue,
+        filterTimeDetailValue
+      );
       if (times) {
         // Ngày bắt đầu và kết thúc của thống kê
         const dateDashboardStartTemp = times[0].start;
@@ -168,190 +190,251 @@ const AdminDashboardRevenuePage = () => {
 
         // Bảng dữ liệu thống kê theo đơn món ăn
         if (segmentedValue === segmentedOptions[0].label) {
-          let newTbodyValue: (string | number)[][] = [], newTotalOrderValue: number = 0,
-            newTotalQuantityValue: number = 0, newTotalRevenueValue: number = 0;
+          let newTbodyValue: (string | number)[][] = [],
+            newTotalOrderValue: number = 0,
+            newTotalQuantityValue: number = 0,
+            newTotalRevenueValue: number = 0;
           times?.forEach((time, index) => {
             // - Tổng đơn món ăn
-            const totalOrderValue = orders.reduce(
-              (total, order) => {
-                const dateCreate = order.timeCreate?.split(" ")[0]!;
-                if (dateCreate >= time.start && dateCreate <= time.end) {
-                  return total + 1;
-                }
+            const totalOrderValue = orders.reduce((total, order) => {
+              const dateCreate = order.timeCreate?.split(" ")[0]!;
+              if (dateCreate >= time.start && dateCreate <= time.end) {
+                return total + 1;
+              }
 
-                return total;
-              },
-              0
-            );
+              return total;
+            }, 0);
 
             // - Tổng số món ăn
-            const totalQuantityValue = orders.reduce(
-              (total, order) => {
-                const dateCreate = order.timeCreate?.split(" ")[0]!;
-                if (dateCreate >= time.start && dateCreate <= time.end) {
-                  const totalQuantity = order.orderDetails?.reduce((quantity, orderDetails) => {
+            const totalQuantityValue = orders.reduce((total, order) => {
+              const dateCreate = order.timeCreate?.split(" ")[0]!;
+              if (dateCreate >= time.start && dateCreate <= time.end) {
+                const totalQuantity = order.orderDetails?.reduce(
+                  (quantity, orderDetails) => {
                     return quantity + orderDetails.quantity;
-                  }, 0)
+                  },
+                  0
+                );
 
-                  return total + (totalQuantity || 0);
-                }
+                return total + (totalQuantity || 0);
+              }
 
-                return total;
-              },
-              0
-            );
+              return total;
+            }, 0);
 
             // - Doanh thu
-            const totalRevenueValue = orders.reduce(
-              (total, order) => {
-                const dateCreate = order.timeCreate?.split(" ")[0]!;
-                if (dateCreate >= time.start && dateCreate <= time.end) {
-                  return total + (order.totalPrice || 0);
-                }
+            const totalRevenueValue = orders.reduce((total, order) => {
+              const dateCreate = order.timeCreate?.split(" ")[0]!;
+              if (dateCreate >= time.start && dateCreate <= time.end) {
+                return total + (order.totalPrice || 0);
+              }
 
-                return total;
-              },
-              0
-            );
+              return total;
+            }, 0);
 
             // -
-            newTbodyValue.push(
-              [index + 1, time.start, time.end, totalOrderValue, totalQuantityValue, totalRevenueValue]
-            )
+            newTbodyValue.push([
+              index + 1,
+              time.start,
+              time.end,
+              totalOrderValue,
+              totalQuantityValue,
+              totalRevenueValue,
+            ]);
             newTotalOrderValue += totalOrderValue;
             newTotalQuantityValue += totalQuantityValue;
             newTotalRevenueValue += totalRevenueValue;
           });
 
           setTbodyValue(newTbodyValue);
-          setTfootValue([newTotalOrderValue, newTotalQuantityValue, newTotalRevenueValue]);
+          setTfootValue([
+            newTotalOrderValue,
+            newTotalQuantityValue,
+            newTotalRevenueValue,
+          ]);
         }
-        // Bảng dữ liệu thống kê theo món ăn 
+        // Bảng dữ liệu thống kê theo món ăn
         if (segmentedValue === segmentedOptions[1].label) {
-          let newTbodyValue: (string | number)[][] = [], newTotalFoodPriceValue: number = 0,
-            newTotalFoodQuantityValue: number = 0, newTotalRevenueValue: number = 0;
+          let newTbodyValue: (string | number)[][] = [],
+            newTotalFoodPriceValue: number = 0,
+            newTotalFoodQuantityValue: number = 0,
+            newTotalRevenueValue: number = 0;
           if (dateDashboardStartTemp && dateDashboardEndTemp) {
             foods?.forEach((food) => {
               // - Thông tin cơ bản
-              const foodInfo = "#" + food!.id! + " - " + food!.name! + " - " + food!.categoryFood?.name! + " - " + food!.status;
+              const foodInfo =
+                "#" +
+                food!.id! +
+                " - " +
+                food!.name! +
+                " - " +
+                food!.categoryFood?.name! +
+                " - " +
+                food!.status;
 
               // - Giá bán
               const foodPrice = food!.price || 0;
 
               // - Tổng số lượng bán
-              const quantityValue = orders.reduce(
-                (total, order) => {
-                  const dateCreate = order.timeCreate?.split(" ")[0]!;
-                  if (dateCreate >= dateDashboardStartTemp && dateCreate <= dateDashboardEndTemp) {
-                    const totalQuantity = order.orderDetails?.reduce((quantity, orderDetails) => {
+              const quantityValue = orders.reduce((total, order) => {
+                const dateCreate = order.timeCreate?.split(" ")[0]!;
+                if (
+                  dateCreate >= dateDashboardStartTemp &&
+                  dateCreate <= dateDashboardEndTemp
+                ) {
+                  const totalQuantity = order.orderDetails?.reduce(
+                    (quantity, orderDetails) => {
                       if (orderDetails!.food.id === food!.id) {
                         return quantity + orderDetails.quantity;
                       }
 
                       return quantity;
-                    }, 0)
+                    },
+                    0
+                  );
 
-                    return total + (totalQuantity || 0);
-                  }
+                  return total + (totalQuantity || 0);
+                }
 
-                  return total;
-                },
-                0
-              );
+                return total;
+              }, 0);
 
               // - Doanh thu
               const totalRevenueValue = foodPrice * quantityValue;
 
               //
-              newTbodyValue.push([foodInfo, foodPrice, quantityValue, totalRevenueValue]);
+              newTbodyValue.push([
+                foodInfo,
+                foodPrice,
+                quantityValue,
+                totalRevenueValue,
+              ]);
               newTotalFoodPriceValue += foodPrice;
               newTotalFoodQuantityValue += quantityValue;
               newTotalRevenueValue += totalRevenueValue;
-            })
+            });
           }
 
           setTbodyValue(newTbodyValue);
-          setTfootValue([newTotalFoodPriceValue, newTotalFoodQuantityValue, newTotalRevenueValue]);
+          setTfootValue([
+            newTotalFoodPriceValue,
+            newTotalFoodQuantityValue,
+            newTotalRevenueValue,
+          ]);
         }
         // Bảng dữ liệu thống kê theo bàn ăn
         if (segmentedValue === segmentedOptions[2].label) {
-          let newTbodyValue: (string | number)[][] = [], newTotalOrderValue: number = 0,
-            newTotalQuantityValue: number = 0, newTotalRevenueValue: number = 0;
+          let newTbodyValue: (string | number)[][] = [],
+            newTotalOrderValue: number = 0,
+            newTotalQuantityValue: number = 0,
+            newTotalRevenueValue: number = 0;
           tables?.forEach((table) => {
             // - Thông tin cơ bản
-            const tableInfo = "#" + table!.id! + " - " + table!.name! + " - "
-              + table!.categoryTable?.name! + " - " + table!.floor?.name + " - "
-              + table!.status;
+            const tableInfo =
+              "#" +
+              table!.id! +
+              " - " +
+              table!.name! +
+              " - " +
+              table!.categoryTable?.name! +
+              " - " +
+              table!.floor?.name +
+              " - " +
+              table!.status;
 
             // - Tổng số đơn món ăn
             const totalOrderValue = useTables?.reduce((total, useTable) => {
               const dateStart = useTable.timeStart?.split(" ")[0]!;
               const dateEnd = useTable.timeEnd?.split(" ")[0]!;
-              if (useTable.table?.id === table.id && dateStart >= dateDashboardStartTemp
-                && dateStart <= dateDashboardEndTemp && dateEnd >= dateDashboardStartTemp
-                && dateEnd <= dateDashboardEndTemp) {
+              if (
+                useTable.table?.id === table.id &&
+                dateStart >= dateDashboardStartTemp &&
+                dateStart <= dateDashboardEndTemp &&
+                dateEnd >= dateDashboardStartTemp &&
+                dateEnd <= dateDashboardEndTemp
+              ) {
                 return total + 1;
               }
 
               return total;
-            }, 0)
+            }, 0);
 
             // - Tổng số món ăn
             const totalQuantityValue = useTables?.reduce((total, useTable) => {
               const dateStart = useTable.timeStart?.split(" ")[0]!;
               const dateEnd = useTable.timeEnd?.split(" ")[0]!;
-              if (useTable.table?.id === table.id && dateStart >= dateDashboardStartTemp
-                && dateStart <= dateDashboardEndTemp && dateEnd >= dateDashboardStartTemp
-                && dateEnd <= dateDashboardEndTemp) {
-                const quantityValue = useTable.order?.orderDetails?.reduce((quantity, orderDetail) => {
-                  return quantity + (orderDetail.quantity || 0);
-                }, 0)
+              if (
+                useTable.table?.id === table.id &&
+                dateStart >= dateDashboardStartTemp &&
+                dateStart <= dateDashboardEndTemp &&
+                dateEnd >= dateDashboardStartTemp &&
+                dateEnd <= dateDashboardEndTemp
+              ) {
+                const quantityValue = useTable.order?.orderDetails?.reduce(
+                  (quantity, orderDetail) => {
+                    return quantity + (orderDetail.quantity || 0);
+                  },
+                  0
+                );
 
                 return quantityValue || 0;
               }
 
               return total;
-            }, 0)
+            }, 0);
 
             // - Doanh thu
             const totalRevenueValue = useTables?.reduce((total, useTable) => {
               const dateStart = useTable.timeStart?.split(" ")[0]!;
               const dateEnd = useTable.timeEnd?.split(" ")[0]!;
-              if (useTable.table?.id === table.id && dateStart >= dateDashboardStartTemp
-                && dateStart <= dateDashboardEndTemp && dateEnd >= dateDashboardStartTemp
-                && dateEnd <= dateDashboardEndTemp) {
+              if (
+                useTable.table?.id === table.id &&
+                dateStart >= dateDashboardStartTemp &&
+                dateStart <= dateDashboardEndTemp &&
+                dateEnd >= dateDashboardStartTemp &&
+                dateEnd <= dateDashboardEndTemp
+              ) {
                 return useTable.order?.totalPrice || 0;
               }
 
               return total;
-            }, 0)
+            }, 0);
 
             //
-            newTbodyValue.push([tableInfo, totalOrderValue, totalQuantityValue, totalRevenueValue]);
+            newTbodyValue.push([
+              tableInfo,
+              totalOrderValue,
+              totalQuantityValue,
+              totalRevenueValue,
+            ]);
             newTotalOrderValue += totalOrderValue;
             newTotalQuantityValue += totalQuantityValue;
             newTotalRevenueValue += totalRevenueValue;
-          })
+          });
 
           setTbodyValue(newTbodyValue);
-          setTfootValue([newTotalOrderValue, newTotalQuantityValue, newTotalRevenueValue]);
+          setTfootValue([
+            newTotalOrderValue,
+            newTotalQuantityValue,
+            newTotalRevenueValue,
+          ]);
         }
       }
     } else {
       setTbodyValue([]);
       setTfootValue([]);
     }
-  }, [segmentedValue, filterTimelineValue, filterTimeDetailValue])
+  }, [segmentedValue, filterTimelineValue, filterTimeDetailValue]);
 
   return (
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Thống kê - Thống kê Doanh thu</h2>
+          <h2 className="main__title">Thống kê - Thống kê Đơn món ăn</h2>
         </div>
         <div className="main__segmented">
           <CustomSegmented
-            className="segmented dashboard-profit"
+            className="segmented dashboard-orders"
             options={segmentedOptions}
             setSelectedValue={setSegmentedValue}
           />
@@ -360,12 +443,14 @@ const AdminDashboardRevenuePage = () => {
           <FilterDashboard
             setFilterTimelineValue={setFilterTimelineValue}
             setFilterTimeDetailValue={setFilterTimeDetailValue}
-            successLoadData={ordersReady && foodsReady && tablesReady && useTablesReady}
-            typeDashboard="dashboard-revenue"
-            titleDashboard="THỐNG KÊ DOANH THU"
+            successLoadData={
+              ordersReady && foodsReady && tablesReady && useTablesReady
+            }
+            typeDashboard="dashboard-orders"
+            titleDashboard="THỐNG KÊ ĐƠN MÓN ĂN"
             dateDashboardStart={tbodyValue.length > 0 ? dateDashboardStart : ""}
             dateDashboardEnd={tbodyValue.length > 0 ? dateDashboardEnd : ""}
-            titlePrint="TKDOANHTHU"
+            titlePrint="TKDONMONAN"
           />
         </div>
         <div className="main__table dashboard">
@@ -388,4 +473,4 @@ const AdminDashboardRevenuePage = () => {
   );
 };
 
-export default AdminDashboardRevenuePage;
+export default AdminDashboardOrdersPage;

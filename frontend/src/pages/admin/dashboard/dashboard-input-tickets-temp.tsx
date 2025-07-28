@@ -51,8 +51,8 @@ const columnsTitleType: Record<SegmentKey, string[]> = {
   others: [],
 };
 
-// Admin Dashboard Expense Page
-const AdminDashboardExpensePage = () => {
+// Admin Dashboard Input Tickets Page
+const AdminDashboardInputTicketsPageTemp = () => {
   // Các giữ giá trị của thành phần được chọn
   const segmentedOptions = [
     { label: "Tổng quan", value: "Tổng quan", icon: <AppstoreOutlined /> },
@@ -225,4 +225,4 @@ const AdminDashboardExpensePage = () => {
   );
 };
 
-export default AdminDashboardExpensePage;
+export default AdminDashboardInputTicketsPageTemp;

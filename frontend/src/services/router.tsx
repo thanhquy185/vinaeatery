@@ -3,8 +3,8 @@ import { createBrowserRouter } from "react-router-dom";
 import type { FunctionsType } from "../common/types";
 import AdminLayout from "../layouts/admin-layout";
 import AdminDashboardProfitPage from "../pages/admin/dashboard/dashboard-profit";
-import AdminDashboardRevenuePage from "../pages/admin/dashboard/dashboard-revenue";
-import AdminDashboardExpensePage from "../pages/admin/dashboard/dashboard-expense";
+import AdminDashboardOrdersPage from "../pages/admin/dashboard/dashboard-orders";
+import AdminDashboardInputTicketsPage from "../pages/admin/dashboard/dashboard-input-tickets";
 import AdminUseTablesPage from "../pages/admin/active/use-tables";
 import AdminOrderSheetsPage from "../pages/admin/active/order-sheets";
 import AdminOrdersPage from "../pages/admin/active/orders";
@@ -55,8 +55,8 @@ export const getRouter = async (): Promise<
   // Hàm trả về element tương ứng với chức năng
   const elementMap: Record<string, JSX.Element> = {
     "dashboard-profit": <AdminDashboardProfitPage />,
-    "dashboard-revenue": <AdminDashboardRevenuePage />,
-    "dashboard-expense": <AdminDashboardExpensePage />,
+    "dashboard-orders": <AdminDashboardOrdersPage />,
+    "dashboard-input-tickets": <AdminDashboardInputTicketsPage />,
     "table-histories": <AdminTableHistoriesPage />,
     "use-tables": <AdminUseTablesPage />,
     "order-sheets": <AdminOrderSheetsPage />,
