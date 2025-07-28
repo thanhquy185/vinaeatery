@@ -16,13 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.TableE;
+import vn.tuhoc.vinaeatery.domain.UseTable;
 import vn.tuhoc.vinaeatery.domain.criteria.TableCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.TableDTO;
 import vn.tuhoc.vinaeatery.domain.dto.TableUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
+import vn.tuhoc.vinaeatery.domain.enumm.UseTableStatusEnum;
 import vn.tuhoc.vinaeatery.service.TableService;
 import vn.tuhoc.vinaeatery.service.TimeService;
+import vn.tuhoc.vinaeatery.service.UseTableService;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +35,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @AllArgsConstructor
 public class TableApiController {
     // Properties
+    private final UseTableService useTableService;
     private final TableService tableService;
     private final TimeService timeService;
 
@@ -63,6 +67,14 @@ public class TableApiController {
         }
 
         TableE tableCreate = this.tableService.upsert(table);
+        if(tableCreate != null) {
+            UseTable newUseTable = new UseTable();
+            newUseTable.setTimeStart(LocalDateTime.now());
+            newUseTable.setTableId(tableCreate.getId());
+            newUseTable.setStatus(UseTableStatusEnum.REPAIR);
+
+            this.useTableService.upsert(newUseTable);
+        }
         return ResponseEntity.status(HttpStatus.OK).body(tableCreate);
     }
 

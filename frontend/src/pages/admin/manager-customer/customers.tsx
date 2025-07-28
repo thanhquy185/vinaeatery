@@ -14,7 +14,7 @@ import type {
   CustomerCardsType,
   CustomersFormatType,
 } from "../../../common/types";
-import { CustomPaginationProps } from "../../../common/pagination-props";
+import { CustomPaginationProps } from "../../../common/props";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomTableActions from "../../../components/admin/table-actions";

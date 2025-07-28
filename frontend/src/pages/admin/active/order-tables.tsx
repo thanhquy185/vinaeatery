@@ -22,7 +22,7 @@ import type { ColumnsType } from "antd/es/table";
 import type { OrderTablesFormatType } from "../../../common/types";
 import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules";
 import { CommonStatus } from "../../../common/values";
-import { CustomPaginationProps } from "../../../common/pagination-props";
+import { CustomPaginationProps } from "../../../common/props";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";
 import CustomTableActions from "../../../components/admin/table-actions";

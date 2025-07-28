@@ -30,7 +30,7 @@ import type {
 } from "../../../common/types";
 import { InputTicketStatus, PayStatus } from "../../../common/values";
 import { ruleRequired } from "../../../common/rules";
-import { CustomPaginationProps } from "../../../common/pagination-props";
+import { CustomPaginationProps } from "../../../common/props";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";

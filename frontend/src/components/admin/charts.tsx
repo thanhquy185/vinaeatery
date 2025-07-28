@@ -4,33 +4,41 @@ import { PieChart } from "@mui/x-charts/PieChart";
 import type { HighlightItemData } from "@mui/x-charts";
 
 // Biểu đồ đường
-const CustomLineChart = () => {
+const CustomLineChart = (
+  {
+    id, revenueLineValue, expenseLineValue, profitLineValue, xLabelsValue
+  }: {
+    id?: string, revenueLineValue?: number[], expenseLineValue?: number[],
+    profitLineValue?: number[], xLabelsValue?: string[]
+  }) => {
+  const height = 500;
   const margin = { right: 24 };
-  const revenueData = [240, 139, 980, 390, 480];
-  const expenseData = [240, 240, 240, 240, 240];
-  const profitData = [400, 300, 200, 278, 189];
-  const xLabels = ["Page A", "Page B", "Page C", "Page D", "Page E"];
+  const revenueLine = revenueLineValue || [];
+  const expenseLine = expenseLineValue || [];
+  const profitLine = profitLineValue || [];
+  const xLabels = xLabelsValue || [];
 
   return (
     <LineChart
-      height={400}
+      id={id!}
+      height={height}
       series={[
         {
-          data: revenueData,
+          data: revenueLine,
           label: "Doanh thu",
           area: true,
           showMark: true,
           color: "#4e79a7",
         },
         {
-          data: expenseData,
+          data: expenseLine,
           label: "Chi tiêu",
           area: true,
           showMark: true,
           color: "#e15759",
         },
         {
-          data: profitData,
+          data: profitLine,
           label: "Lợi nhuận",
           area: true,
           showMark: true,

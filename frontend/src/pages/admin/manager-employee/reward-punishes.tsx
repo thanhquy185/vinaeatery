@@ -10,7 +10,7 @@ import {
 import { Form, Tag, type SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { RewardPunishesType } from "../../../common/types";
-import { CustomPaginationProps } from "../../../common/pagination-props";
+import { CustomPaginationProps } from "../../../common/props";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";
@@ -119,7 +119,7 @@ const AdminRewardPunishesPage = () => {
             onClick={() =>
               updatePropertiesModal(
                 (record.status == confirm ? "Khoá" : "Mở khoá") +
-                  " thưởng phạt",
+                " thưởng phạt",
                 true,
                 "30%",
                 "lock rewardPunishes",
@@ -765,8 +765,8 @@ const AdminRewardPunishesPage = () => {
             className={
               "main__filter-button btn create" +
               (openModal &&
-              String(titleModal).includes("Thêm") &&
-              String(classNameModal).includes("create")
+                String(titleModal).includes("Thêm") &&
+                String(classNameModal).includes("create")
                 ? " active"
                 : "")
             }

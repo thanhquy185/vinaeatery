@@ -34,6 +34,7 @@ import ErrorPage from "../pages/public/error";
 import UnauthorizedPage from "../pages/public/unauthorized";
 import { openNotification } from "../utils/showNotification";
 import { FindAllFunction } from "./api";
+import AdminTableHistoriesPage from "../pages/admin/active/table-histories";
 
 // Router giúp chuyển hướng trang
 // Chú thích
@@ -56,6 +57,7 @@ export const getRouter = async (): Promise<
     "dashboard-profit": <AdminDashboardProfitPage />,
     "dashboard-revenue": <AdminDashboardRevenuePage />,
     "dashboard-expense": <AdminDashboardExpensePage />,
+    "table-histories": <AdminTableHistoriesPage />,
     "use-tables": <AdminUseTablesPage />,
     "order-sheets": <AdminOrderSheetsPage />,
     orders: <AdminOrdersPage />,

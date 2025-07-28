@@ -15,12 +15,27 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import vn.tuhoc.vinaeatery.domain.Customer;
+import vn.tuhoc.vinaeatery.domain.Order;
+import vn.tuhoc.vinaeatery.domain.OrderDetail;
+import vn.tuhoc.vinaeatery.domain.OrderDetailId;
+import vn.tuhoc.vinaeatery.domain.OrderSheet;
 import vn.tuhoc.vinaeatery.domain.UseTable;
 import vn.tuhoc.vinaeatery.domain.criteria.UseTableCriteria;
+import vn.tuhoc.vinaeatery.domain.dto.OrderSheetDTO;
+import vn.tuhoc.vinaeatery.domain.dto.OrderSheetDetailDTO;
 import vn.tuhoc.vinaeatery.domain.dto.UseTableDTO;
 import vn.tuhoc.vinaeatery.domain.dto.UseTableUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
+import vn.tuhoc.vinaeatery.domain.enumm.OrderSheetStatusEnum;
+import vn.tuhoc.vinaeatery.domain.enumm.OrderStatusEnum;
+import vn.tuhoc.vinaeatery.domain.enumm.PayStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.UseTableStatusEnum;
 import vn.tuhoc.vinaeatery.service.UseTableService;
+import vn.tuhoc.vinaeatery.service.CustomerService;
+import vn.tuhoc.vinaeatery.service.OrderDetailService;
+import vn.tuhoc.vinaeatery.service.OrderService;
+import vn.tuhoc.vinaeatery.service.OrderSheetService;
 import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -32,6 +47,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class UseTableApiController {
     // Properties
     private final UseTableService useTableService;
+    // private final OrderSheetService orderSheetService;
+    private final OrderService orderService;
+    private final OrderDetailService orderDetailService;
+    private final CustomerService customerService;
     private final TimeService timeService;
 
     // Methods
@@ -82,28 +101,107 @@ public class UseTableApiController {
         UseTable useTableUpdated = this.useTableService.getOneById(id);
         if (useTableUpdated != null) {
             useTableUpdated.setTimeEnd(timeService.getDateTimeVN(useTable.getTimeEnd()));
-            useTableUpdated.setStatus(useTable.getStatus());
-            this.useTableService.upsert(useTableUpdated);
+            useTableUpdated.setEmployeeId(useTable.getEmployeeId());
+            // useTableUpdated.setStatus(useTable.getStatus());
 
             UseTable newUseTable = new UseTable();
             newUseTable.setTimeStart(LocalDateTime.now());
             newUseTable.setTimeEnd(null);
             newUseTable.setTableId(useTableUpdated.getTableId());
+            newUseTable.setOrderId(null);
+            newUseTable.setStatus(useTable.getStatus());
             if (useTable.getStatus() == UseTableStatusEnum.OCCUPIED) {
+                // Nếu là "đang có khách", ngược lại là "khách nhận bàn"
                 if (useTable.getCustomerId() != null) {
+                    // useTableUpdated.setEmployeeId(useTable.getEmployeeId());
                     newUseTable.setCustomerId(useTable.getCustomerId());
+                } else {
+                    // Tạo mới khách hàng
+                    Customer newCustomer = new Customer();
+                    if (useTable.getOrderTableNewFullname() != null) {
+                        newCustomer.setFullname(useTable.getOrderTableNewFullname());
+                    }
+                    if (useTable.getOrderTableNewPhone() != null) {
+                        newCustomer.setPhone(useTable.getOrderTableNewPhone());
+                    }
+                    if (useTable.getOrderTableNewEmail() != null) {
+                        newCustomer.setEmail(useTable.getOrderTableNewEmail());
+                    }
+                    if (useTable.getOrderTableNewAddress() != null) {
+                        newCustomer.setAddress(useTable.getOrderTableNewAddress());
+                    }
+                    newCustomer.setCustomerCardId(1);
+                    newCustomer.setTotalThreshold(0L);
+                    newCustomer.setStatus(CommonStatusEnum.ACTIVE);
+                    this.customerService.upsert(newCustomer);
+
+                    // Cập nhật lại mã khách hàng và mã đơn đặt bàn
+                    // useTableUpdated.setCustomerId(newCustomer.getId());
+                    // useTableUpdated.setOrderTableId(null);
+                    newUseTable.setCustomerId(newCustomer.getId());
+                    newUseTable.setOrderTableId(null);
                 }
             } else if (useTable.getStatus() == UseTableStatusEnum.RESERVED) {
                 if (useTable.getOrderTableId() != null) {
+                    // useTable.setOrderTableId(useTable.getOrderTableId());
                     newUseTable.setOrderTableId(useTable.getOrderTableId());
                 }
             } else if (useTable.getStatus() == UseTableStatusEnum.EMPTY) {
+                // Nếu là "thanh toán tiền bàn", ngược lại là "khách trả bàn"
+                if (useTable.getOrderSheets() != null && !useTable.getOrderSheets().isEmpty()) {
+                    Long totalPriceValue = 0L;
+                    for (OrderSheetDTO orderSheet : useTable.getOrderSheets()) {
+                        totalPriceValue += orderSheet.getTotalPrice();
+                    }
 
+                    Order newOrder = new Order();
+                    newOrder.setTimeCreate(LocalDateTime.now());
+                    newOrder.setEmployeeId(useTable.getEmployeeId());
+                    newOrder.setCustomerId(useTableUpdated.getCustomerId());
+                    newOrder.setTotalPrice(totalPriceValue);
+                    newOrder.setPayStatus(PayStatusEnum.PAY);
+                    newOrder.setStatus(OrderStatusEnum.CONFIRM);
+
+                    Customer customer = customerService.getOneById(useTableUpdated.getCustomerId());
+                    customer.setTotalThreshold(customer.getTotalThreshold() + totalPriceValue);
+
+                    Order newOrderAfterHandle = this.orderService.upsert(newOrder);
+                    if (newOrderAfterHandle != null) {
+                        useTableUpdated.setOrderId(newOrderAfterHandle.getId());
+                        // newUseTable.setOrderId(newOrderAfterHandle.getId());
+
+                        for (OrderSheetDTO orderSheet : useTable.getOrderSheets()) {
+                            if (orderSheet.getStatus() == OrderSheetStatusEnum.SERVICED) {
+                                for (OrderSheetDetailDTO orderSheetDetail : orderSheet.getOrderSheetDetails()) {
+                                    OrderDetail newOrderDetail = new OrderDetail();
+                                    newOrderDetail.setId(new OrderDetailId(newOrderAfterHandle.getId(),
+                                            orderSheetDetail.getFood().getId()));
+                                    newOrderDetail.setPrice(orderSheetDetail.getPrice());
+                                    newOrderDetail.setQuantity(orderSheetDetail.getQuantity());
+
+                                    this.orderDetailService.upsert(newOrderDetail);
+                                }
+                            }
+                            // else if (orderSheet.getStatus() == OrderSheetStatusEnum.CONFIRM
+                            // || orderSheet.getStatus() == OrderSheetStatusEnum.PENDING) {
+                            // OrderSheet orderSheetCancel =
+                            // orderSheetService.getOneById(orderSheet.getId());
+                            // orderSheetCancel.setStatus(OrderSheetStatusEnum.CANCELLED);
+                            // this.orderSheetService.upsert(orderSheetCancel);
+                            // }
+                        }
+                    }
+                } else {
+
+                }
+
+                // useTableUpdated.setCustomerId(null);
+                newUseTable.setCustomerId(null);
             } else if (useTable.getStatus() == UseTableStatusEnum.REPAIR) {
 
             }
-            newUseTable.setOrderId(null);
-            newUseTable.setStatus(useTableUpdated.getStatus());
+
+            this.useTableService.upsert(useTableUpdated);
             this.useTableService.upsert(newUseTable);
         }
 

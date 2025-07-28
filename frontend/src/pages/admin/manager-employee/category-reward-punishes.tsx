@@ -12,7 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import CustomTableActions from "../../../components/admin/table-actions";
 import type { CategoryRewardPunishesType } from "../../../common/types";
-import { CustomPaginationProps } from "../../../common/pagination-props";
+import { CustomPaginationProps } from "../../../common/props";
 import type { ColumnsType } from "antd/es/table";
 import CustomModal from "../../../components/admin/modal";
 import CustomInput from "../../../components/admin/input";
@@ -104,7 +104,7 @@ const AdminCategoryRewardPunishesPage = () => {
             onClick={() =>
               updatePropertiesModal(
                 (record.status == active ? "Khoá" : "Mở khoá") +
-                  " loại thưởng phạt",
+                " loại thưởng phạt",
                 true,
                 "30%",
                 "lock categoryRewardPunishes",
@@ -584,8 +584,8 @@ const AdminCategoryRewardPunishesPage = () => {
             className={
               "main__filter-button btn create" +
               (openModal &&
-              String(titleModal).includes("Thêm") &&
-              String(classNameModal).includes("create")
+                String(titleModal).includes("Thêm") &&
+                String(classNameModal).includes("create")
                 ? " active"
                 : "")
             }

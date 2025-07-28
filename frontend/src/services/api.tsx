@@ -95,7 +95,12 @@ export const HandleUpdateUseTable = ({
   customerId,
   orderId,
   orderTableId,
+  orderTableNewFullname,
+  orderTableNewPhone,
+  orderTableNewEmail,
+  orderTableNewAddress,
   status,
+  orderSheets,
 }: UseTablesType): Promise<AxiosResponse<RestResponseType, any>> => {
   return instance.put(`/api/use-tables/update/${id}`, {
     timeEnd,
@@ -103,7 +108,12 @@ export const HandleUpdateUseTable = ({
     customerId,
     orderId,
     orderTableId,
+    orderTableNewFullname,
+    orderTableNewPhone,
+    orderTableNewEmail,
+    orderTableNewAddress,
     status,
+    orderSheets
   });
 };
 

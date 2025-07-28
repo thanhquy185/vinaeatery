@@ -13,7 +13,7 @@ import { Form, Input, Select, Tag } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { ruleRequired } from "../../../common/rules";
 import type { CategoryIngredientsType } from "../../../common/types";
-import { CustomPaginationProps } from "../../../common/pagination-props";
+import { CustomPaginationProps } from "../../../common/props";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomTableActions from "../../../components/admin/table-actions";

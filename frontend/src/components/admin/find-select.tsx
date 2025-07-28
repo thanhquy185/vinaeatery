@@ -5,6 +5,7 @@ import type { Dispatch, SetStateAction } from "react";
 type CustomFindSelectProps = {
   mode: "multiple" | "tags" | undefined;
   placeholder?: string;
+  defaultValue?: { label: string; value: string; } | { label: string; value: string; }[] | null | undefined;
   optionFilterProp: string;
   maxTagCount: number | "responsive" | undefined;
   options: SelectProps["options"];
@@ -16,6 +17,7 @@ type CustomFindSelectProps = {
 const CustomFindSelect: React.FC<CustomFindSelectProps> = ({
   mode,
   placeholder,
+  defaultValue,
   optionFilterProp,
   maxTagCount,
   options,
@@ -42,6 +44,7 @@ const CustomFindSelect: React.FC<CustomFindSelectProps> = ({
         mode={mode}
         showSearch
         allowClear
+        defaultValue={defaultValue}
         placeholder={placeholder}
         optionFilterProp={optionFilterProp}
         maxTagCount={maxTagCount}

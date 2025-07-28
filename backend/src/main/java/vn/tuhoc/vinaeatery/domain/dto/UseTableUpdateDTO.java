@@ -1,6 +1,7 @@
 package vn.tuhoc.vinaeatery.domain.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -24,7 +25,12 @@ public class UseTableUpdateDTO {
     private Integer customerId;
     private Integer orderId;
     private Integer orderTableId;
+    private String orderTableNewFullname;
+    private String orderTableNewPhone;
+    private String orderTableNewEmail;
+    private String orderTableNewAddress;
     @Convert(converter = UseTableStatusConverter.class)
     @NotNull(message = "Trạng thái không được để trống !")
     private UseTableStatusEnum status;
+    private List<OrderSheetDTO> orderSheets;
 }

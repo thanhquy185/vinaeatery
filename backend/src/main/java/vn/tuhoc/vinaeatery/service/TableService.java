@@ -9,10 +9,8 @@ import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.TableE_;
-import vn.tuhoc.vinaeatery.domain.Ingredient;
 import vn.tuhoc.vinaeatery.domain.TableE;
 import vn.tuhoc.vinaeatery.domain.criteria.TableCriteria;
-import vn.tuhoc.vinaeatery.domain.dto.IngredientDTO;
 import vn.tuhoc.vinaeatery.domain.dto.TableDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.CategoryTableRepository;

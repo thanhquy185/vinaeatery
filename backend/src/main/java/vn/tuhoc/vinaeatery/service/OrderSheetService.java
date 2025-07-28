@@ -73,13 +73,13 @@ public class OrderSheetService {
         return this.orderSheetRepository.findAll();
     }
 
-    public List<OrderSheet> getAllWithUseTable(Integer tableId) {
-        return this.orderSheetRepository.findAllWithUseTable(tableId);
+    public List<OrderSheet> getAllWithUseTable(Long useTableId, Integer tableId) {
+        return this.orderSheetRepository.findAllWithUseTable(useTableId, tableId);
     }
 
-    public List<OrderSheetDTO> getAllFormatWithUseTable(Integer tableId) {
+    public List<OrderSheetDTO> getAllFormatWithUseTable(Long useTableId, Integer tableId) {
         List<OrderSheetDTO> orderSheetDTOs = new ArrayList<>();
-        List<OrderSheet> orderSheets = this.orderSheetRepository.findAllWithUseTable(tableId);
+        List<OrderSheet> orderSheets = this.orderSheetRepository.findAllWithUseTable(useTableId, tableId);
         if (orderSheets != null && !orderSheets.isEmpty()) {
             for (OrderSheet orderSheet : orderSheets) {
                 List<OrderSheetDetailDTO> orderSheetDetails = new ArrayList<>();

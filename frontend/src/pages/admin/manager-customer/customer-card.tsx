@@ -14,7 +14,7 @@ import type { RcFile } from "antd/es/upload";
 import TextArea from "antd/es/input/TextArea";
 import type { CustomerCardsType } from "../../../common/types";
 import { ruleRequired } from "../../../common/rules";
-import { CustomPaginationProps } from "../../../common/pagination-props";
+import { CustomPaginationProps } from "../../../common/props";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomUpload from "../../../components/admin/upload";

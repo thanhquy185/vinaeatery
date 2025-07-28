@@ -13,3 +13,4 @@ public class VinaeateryApplication {
 		SpringApplication.run(VinaeateryApplication.class, args);
 	}
 }
+	

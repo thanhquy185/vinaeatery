@@ -1,14 +1,16 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Form, Select, type SelectProps } from "antd";
+import { Form, Input, Select, Space, type SelectProps } from "antd";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomModal from "../../../components/admin/modal";
-import { ruleRequired } from "../../../common/rules";
+import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules";
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
-import type { CustomersFormatType, FloorsType, OrderTablesFormatType, UseTablesFormatType } from "../../../common/types";
+import type { CustomersFormatType, FloorsType, OrderSheetsFormatType, OrderTablesFormatType, UseTablesFormatType } from "../../../common/types";
 import { FindAllCustomer, FindAllFloor, FindAllOrderTable, FindAllUseTableTimeEndIsNull, HandleUpdateUseTable } from "../../../services/api";
 import CustomFindInput from "../../../components/admin/find-input";
-import { UseTableStatus } from "../../../common/values";
+import { CommonStatus, UseTableStatus } from "../../../common/values";
+import { showCreateValidAddress } from "../../../utils/showCreateValidAddress";
+import { vietnamMoneyFormat } from "../../../utils/otherEvents";
 
 type HandleUseTableProps = {
   id?: number;
@@ -17,6 +19,8 @@ type HandleUseTableProps = {
   customerId?: number;
   orderId?: number;
   orderTableId?: number;
+  orderTable?: OrderTablesFormatType;
+  orderSheets?: OrderSheetsFormatType[];
 }
 
 // Admin Status Tables Page
@@ -85,13 +89,7 @@ const AdminUseTablesPage = () => {
     return (
       <>
         <div className="info">
-          <b>Bàn:</b> {table!.name!}
-        </div>
-        <div className="info">
-          <b>Tầng:</b> {table!.floor!.name!}
-        </div>
-        <div className="info">
-          <b>Số chỗ ngồi:</b> {table!.seats!}
+          <b>Bàn ăn:</b> {table!.name} - {table!.categoryTable!.name} - {table!.floor!.name} - Số chỗ: {table!.seats}
         </div>
         <div className="info">
           <b>Thời gian nhận bàn:</b> {timeStart!}
@@ -106,66 +104,67 @@ const AdminUseTablesPage = () => {
           <b>Chi tiết phiếu gọi món:</b>
           <table>
             <colgroup>
+              <col width="15%" />
+              <col width="20%" />
               <col width="20%" />
               <col width="30%" />
-              <col width="30%" />
-              <col width="20%" />
+              <col width="15%" />
             </colgroup>
             <thead>
               <tr>
                 <th>Mã phiếu</th>
                 <th>Thời gian gọi món</th>
-                <th>Thời gian xác nhận</th>
+                <th>Thời gian phục vụ</th>
+                <th>Tổng tiền món ăn</th>
                 <th>Trạng thái</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+              {orderSheets?.map((orderSheet) => (
+                <tr>
+                  <td>{orderSheet!.id!}</td>
+                  <td>{orderSheet!.timeCreate!}</td>
+                  <td>{orderSheet!.timeService!}</td>
+                  <td>{vietnamMoneyFormat(orderSheet!.totalPrice!)}</td>
+                  <td>{orderSheet!.status}</td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
+        {/* <div className="note">*Lưu ý: Khi thanh toán, các phiếu gọi món chưa được phục vụ sẽ bị huỷ !</div> */}
         <div className="modal__buttons mg-top">
           <button
             type="button"
             className="modal__button secondary btn"
-            onClick={async (e) => {
-              // Nút để submit form
-              const submitButton = e.currentTarget;
-
-              // Thêm class 'active' thể hiện nút đang được nhấn
-              submitButton?.classList.add("active");
-
-              // Hỏi trước khi xử khi xử lý ?
-              const answer = await openConfirmation({
-                title: `Bạn có chắc chắn thanh toán ?`,
-                content: "Hành động này không thể hoàn tác.",
-              });
-              if (answer) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Thanh toán tiền bàn thành công !",
-                  duration: 1.5,
-                });
-              }
-
-              // Xoá class 'active' thể hiện nút không còn được nhấn
-              submitButton?.classList.remove("active");
-            }}
-          >
-            Thanh toán tiền bàn
-          </button>
-          <button
-            type="button"
-            className="modal__button secondary btn green-secondary"
             onClick={(e) =>
               callApiToUpdateUseTable({
                 id: id!,
+                orderSheets: orderSheets!,
                 button: e.target as HTMLElement,
                 value: UseTableStatus.empty
               })
             }
           >
-            {UseTableStatus.empty}
+            Thanh toán tiền bàn
           </button>
+          {orderSheets!.length! == 0 &&
+            (
+              <button
+                type="button"
+                className="modal__button secondary btn green-secondary"
+                onClick={(e) =>
+                  callApiToUpdateUseTable({
+                    id: id!,
+                    button: e.target as HTMLElement,
+                    value: UseTableStatus.empty
+                  })
+                }
+              >
+                Khách trả bàn
+              </button>
+            )
+          }
         </div>
       </>
     );
@@ -185,13 +184,7 @@ const AdminUseTablesPage = () => {
     return (
       <>
         <div className="info">
-          <b>Bàn:</b> {table!.name!}
-        </div>
-        <div className="info">
-          <b>Tầng:</b> {table!.floor!.name!}
-        </div>
-        <div className="info">
-          <b>Số chỗ ngồi:</b> {table!.seats!}
+          <b>Bàn ăn:</b> {table!.name} - {table!.categoryTable!.name} - {table!.floor!.name} - Số chỗ: {table!.seats}
         </div>
         <div className="info">
           <b>Thời gian đặt bàn:</b> {orderTable!.timeOrder}
@@ -209,6 +202,15 @@ const AdminUseTablesPage = () => {
           <button
             type="button"
             className="modal__button secondary btn red-secondary"
+            onClick={() =>
+              updatePropertiesSecondModal(
+                "Khách hàng nhận bàn",
+                true,
+                "60%",
+                "secondary red",
+                AdminHandleUseTablesModal.HandleOccupiedFromReversed(id!, orderTable!)
+              )
+            }
           >
             Khách nhận bàn
           </button>
@@ -244,13 +246,7 @@ const AdminUseTablesPage = () => {
     return (
       <>
         <div className="info">
-          <b>Bàn:</b> {table!.name!}
-        </div>
-        <div className="info">
-          <b>Tầng:</b> {table!.floor!.name!}
-        </div>
-        <div className="info">
-          <b>Số chỗ ngồi:</b> {table!.seats!}
+          <b>Bàn ăn:</b> {table!.name} - {table!.categoryTable!.name} - {table!.floor!.name} - Số chỗ: {table!.seats}
         </div>
         <div className="info">
           <b>Trạng thái:</b> <span className="status green">{status!}</span>
@@ -318,13 +314,7 @@ const AdminUseTablesPage = () => {
     return (
       <>
         <div className="info">
-          <b>Bàn:</b> {table!.name!}
-        </div>
-        <div className="info">
-          <b>Tầng:</b> {table!.floor!.name!}
-        </div>
-        <div className="info">
-          <b>Số chỗ ngồi:</b> {table!.seats!}
+          <b>Bàn ăn:</b> {table!.name} - {table!.categoryTable!.name} - {table!.floor!.name} - Số chỗ: {table!.seats}
         </div>
         <div className="info">
           <b>Trạng thái:</b> <span className="status gray">{status!}</span>
@@ -459,6 +449,20 @@ const AdminUseTablesPage = () => {
           form={form}
           autoComplete="off"
           className="modal__form split-2"
+          onFinish={() => {
+            // Nút để submit form
+            const submitButton = document.querySelector(
+              ".modal__form button[type='submit']"
+            );
+
+            callApiToUpdateUseTable({
+              id: id!,
+              customerId: form.getFieldValue("customer"),
+              button: submitButton as HTMLElement,
+              value: UseTableStatus.occupied
+            })
+          }
+          }
         >
           <div className="modal__form-group-warper">
             <div className="modal__form-group">
@@ -484,15 +488,130 @@ const AdminUseTablesPage = () => {
           </div>
           <div className="modal__buttons">
             <button
+              type="submit"
               className="modal__button btn red-secondary"
-              onClick={(e) =>
-                callApiToUpdateUseTable({
-                  id: id!,
-                  customerId: form.getFieldValue("customer"),
-                  button: e.target as HTMLElement,
-                  value: UseTableStatus.occupied
-                })
-              }
+            >
+              Xác nhận
+            </button>
+          </div>
+        </Form>
+      </>
+    );
+  };
+  const HandleOccupiedFromReversed = ({ id, orderTable }: HandleUseTableProps) => {
+    const [form] = Form.useForm();
+
+    return (
+      <>
+        <Form
+          layout="vertical"
+          form={form}
+          initialValues={
+            {
+              fullname: orderTable!.fullname,
+              phone: orderTable!.phone,
+              email: orderTable!.email,
+              address: orderTable!.address,
+            }
+          }
+          autoComplete="off"
+          className="modal__form split-2"
+          onFinish={() => {
+            // Nút để submit form
+            const submitButton = document.querySelector(
+              ".modal__form button[type='submit']"
+            );
+
+            callApiToUpdateUseTable({
+              id: id!,
+              orderTableNewFullname: form.getFieldValue("fullname"),
+              orderTableNewPhone: form.getFieldValue("phone"),
+              orderTableNewEmail: form.getFieldValue("email"),
+              orderTableNewAddress: form.getFieldValue("address"),
+              button: submitButton as HTMLElement,
+              value: UseTableStatus.occupied
+            })
+          }
+          }
+        >
+          <div className="modal__form-group-warper">
+            <div className="modal__form-group">
+              <Form.Item
+                name="fullname"
+                label="Tên khách hàng"
+                htmlFor="fullname"
+                className="modal__form-group-item"
+                rules={[ruleRequired("Tên khách hàng không được để trống !")]}
+              >
+                <Input
+                  id="fullname"
+                  placeholder="Nhập Tên khách hàng"
+                />
+              </Form.Item>
+              <Form.Item
+                label="Địa chỉ"
+                className="modal__form-group-item multiple-2"
+              >
+                <Space.Compact>
+                  <Form.Item name="address" noStyle>
+                    <Input
+                      id="address"
+                      placeholder="Nhập địa chỉ"
+                    />
+                  </Form.Item>
+                  <button
+                    type="button"
+                    className="btn secondary-btn"
+                    onClick={async () => {
+                      const result = await showCreateValidAddress();
+                      if (result) {
+                        const { houseNumberAndStreetName, province, ward } =
+                          result;
+
+                        form.setFieldsValue({
+                          address: `${houseNumberAndStreetName}, ${ward}, ${province}`,
+                        });
+                      }
+                    }}
+                  >
+                    Tạo địa chỉ
+                  </button>
+                </Space.Compact>
+              </Form.Item>
+            </div>
+            <div className="modal__form-group">
+              <div className="modal__form-group-item-warper">
+                <Form.Item
+                  name="phone"
+                  label="Số điện thoại"
+                  htmlFor="phone"
+                  className="modal__form-group-item"
+                  rules={[ruleRequired("Số điện thoại không được để trống !"), rulePhone()]}
+                >
+                  <Input
+                    id="phone"
+                    placeholder="Nhập Số điện thoại"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="email"
+                  label="Email"
+                  htmlFor="email"
+                  className="modal__form-group-item"
+                  rules={[ruleEmail()]}
+                >
+                  <Input
+                    id="email"
+                    placeholder="Nhập Email"
+                  />
+                </Form.Item>
+              </div>
+            </div>
+          </div>
+          <div className="modal__buttons">
+            <button
+              type="submit"
+              className="modal__button btn red-secondary"
             >
               Xác nhận
             </button>
@@ -532,6 +651,20 @@ const AdminUseTablesPage = () => {
           form={form}
           autoComplete="off"
           className="modal__form split-2"
+          onFinish={() => {
+            // Nút để submit form
+            const submitButton = document.querySelector(
+              ".modal__form button[type='submit']"
+            );
+
+            callApiToUpdateUseTable({
+              id: id!,
+              orderTableId: form.getFieldValue("orderTable"),
+              button: submitButton as HTMLElement,
+              value: UseTableStatus.reserved
+            })
+          }
+          }
         >
           <div className="modal__form-group-warper">
             <div className="modal__form-group">
@@ -557,15 +690,8 @@ const AdminUseTablesPage = () => {
           </div>
           <div className="modal__buttons">
             <button
+              type="submit"
               className="modal__button btn yellow-secondary"
-              onClick={(e) =>
-                callApiToUpdateUseTable({
-                  id: id!,
-                  orderTableId: form.getFieldValue("orderTable"),
-                  button: e.target as HTMLElement,
-                  value: UseTableStatus.reserved
-                })
-              }
             >
               Xác nhận
             </button>
@@ -576,17 +702,36 @@ const AdminUseTablesPage = () => {
   };
   const AdminHandleUseTablesModal = {
     handleOccupied: (id?: number) => <HandleOccupied id={id} />,
+    HandleOccupiedFromReversed: (id?: number, orderTable?: OrderTablesFormatType) => <HandleOccupiedFromReversed id={id} orderTable={orderTable} />,
     handleReserved: (id?: number) => <HandleReserved id={id} />,
   };
 
   // Hàm gọi API để cập nhật trạng thái sử dụng bàn ăn
-  const callApiToUpdateUseTable = async ({ id, customerId, orderTableId, button, value }: {
-    id: number,
-    customerId?: number;
-    orderTableId?: number;
-    button: HTMLElement,
-    value: string
-  }) => {
+  const callApiToUpdateUseTable = async (
+    {
+      id,
+      customerId,
+      orderTableId,
+      orderTableNewFullname,
+      orderTableNewPhone,
+      orderTableNewEmail,
+      orderTableNewAddress,
+      orderSheets,
+      button,
+      value
+    }: {
+      id: number,
+      customerId?: number;
+      orderTableId?: number;
+      orderTableNewFullname?: string;
+      orderTableNewPhone?: string;
+      orderTableNewEmail?: string;
+      orderTableNewAddress?: string;
+      orderSheets?: OrderSheetsFormatType[];
+      button: HTMLElement,
+      value: string
+    }
+  ) => {
     // Thêm class 'active' thể hiện là nút được nhấn
     button.classList.add("active");
 
@@ -609,7 +754,12 @@ const AdminUseTablesPage = () => {
         employeeId: 2,
         customerId: value === UseTableStatus.occupied && customerId! ? customerId : undefined,
         orderTableId: value === UseTableStatus.reserved && orderTableId! ? orderTableId : undefined,
+        orderTableNewFullname: value === UseTableStatus.occupied && orderTableNewFullname! ? orderTableNewFullname : undefined,
+        orderTableNewPhone: value === UseTableStatus.occupied && orderTableNewPhone! ? orderTableNewPhone : undefined,
+        orderTableNewEmail: value === UseTableStatus.occupied && orderTableNewEmail! ? orderTableNewEmail : undefined,
+        orderTableNewAddress: value === UseTableStatus.occupied && orderTableNewAddress! ? orderTableNewAddress : undefined,
         status: status!,
+        orderSheets: value === UseTableStatus.empty && orderSheets && orderSheets.length > 0 ? orderSheets! : undefined,
       });
       if (res.status === 200) {
         openNotification({
@@ -728,56 +878,53 @@ const AdminUseTablesPage = () => {
           />
         </div>
         <div className="main__use-tables">
-          {useTables.map((useTable) => (
-            <div
-              className={
-                "use-table " +
-                (useTable!.status === UseTableStatus.occupied
-                  ? "red"
-                  : useTable!.status === UseTableStatus.reserved
-                    ? "yellow"
-                    : useTable!.status === UseTableStatus.empty
-                      ? "green"
-                      : "gray")
-              }
-              onClick={() =>
-                updatePropertiesModal(
-                  "Thông tin bàn ăn",
-                  true,
-                  // useTable!.status === UseTableStatus.occupied
-                  //   ? "80%"
-                  //   : useTable!.status === UseTableStatus.reserved
-                  //   ? "50%"
-                  //   : useTable!.status === UseTableStatus.empty
-                  //   ? "50%"
-                  //   : "50%",
-                  "80%",
-                  "use-tables",
-                  useTable!.status === UseTableStatus.occupied
-                    ? AdminUseTablesModal.occupied(useTable)
+          {useTables.map((useTable) => {
+            if (useTable!.table!.status !== CommonStatus.active) return null;
+
+            return (
+              <div
+                className={
+                  "use-table " +
+                  (useTable!.status === UseTableStatus.occupied
+                    ? "red"
                     : useTable!.status === UseTableStatus.reserved
-                      ? AdminUseTablesModal.reserved(useTable)
+                      ? "yellow"
                       : useTable!.status === UseTableStatus.empty
-                        ? AdminUseTablesModal.empty(useTable)
-                        : AdminUseTablesModal.repair(useTable)
-                )
-              }
-            >
-              <div className="title">{useTable!.table!.name}</div>
-              <div className="info">
-                <b>Tầng:</b> {useTable!.table!.floor!.name}
+                        ? "green"
+                        : "gray")
+                }
+                onClick={() =>
+                  updatePropertiesModal(
+                    "Thông tin bàn ăn",
+                    true,
+                    "80%",
+                    "use-tables",
+                    useTable!.status === UseTableStatus.occupied
+                      ? AdminUseTablesModal.occupied(useTable)
+                      : useTable!.status === UseTableStatus.reserved
+                        ? AdminUseTablesModal.reserved(useTable)
+                        : useTable!.status === UseTableStatus.empty
+                          ? AdminUseTablesModal.empty(useTable)
+                          : AdminUseTablesModal.repair(useTable)
+                  )
+                }
+              >
+                <div className="title">{useTable!.table!.name}</div>
+                <div className="info">
+                  <b>Tầng:</b> {useTable!.table!.floor!.name}
+                </div>
+                <div className="info">
+                  <b>Số chỗ ngồi:</b> {useTable!.table!.seats}
+                </div>
+                <div className="info">
+                  <b>Trạng thái:</b>{" "}
+                  <span className="status">{useTable!.status}</span>
+                </div>
               </div>
-              <div className="info">
-                <b>Số chỗ ngồi:</b> {useTable!.table!.seats}
-              </div>
-              <div className="info">
-                <b>Trạng thái:</b>{" "}
-                <span className="status">{useTable!.status}</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
-      </main>
+      </main >
       {openModal && (
         <CustomModal
           title={titleModal}
@@ -787,18 +934,21 @@ const AdminUseTablesPage = () => {
           className={classNameModal}
           children={SecondModal}
         />
-      )}
-      {openSecondModal && (
-        <CustomModal
-          key="second-modal"
-          title={titleSecondModal}
-          openModal={openSecondModal}
-          setOpenModal={() => setOpenSecondModal(false)}
-          width={widthSecondModal}
-          className={classNameSecondModal}
-          children={childrenSecondModal}
-        />
-      )}
+      )
+      }
+      {
+        openSecondModal && (
+          <CustomModal
+            key="second-modal"
+            title={titleSecondModal}
+            openModal={openSecondModal}
+            setOpenModal={() => setOpenSecondModal(false)}
+            width={widthSecondModal}
+            className={classNameSecondModal}
+            children={childrenSecondModal}
+          />
+        )
+      }
     </>
   );
 };

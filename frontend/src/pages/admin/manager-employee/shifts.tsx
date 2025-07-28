@@ -10,7 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import type { ShiftsType } from "../../../common/types";
 import type { ColumnsType } from "antd/es/table";
-import { CustomPaginationProps } from "../../../common/pagination-props";
+import { CustomPaginationProps } from "../../../common/props";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomTimeRangePicker from "../../../components/admin/time-ranger-picker";
@@ -616,8 +616,8 @@ const AdminShiftsPage = () => {
             className={
               "main__filter-button btn create" +
               (openModal &&
-              String(titleModal).includes("Thêm") &&
-              String(classNameModal).includes("create")
+                String(titleModal).includes("Thêm") &&
+                String(classNameModal).includes("create")
                 ? " active"
                 : "")
             }

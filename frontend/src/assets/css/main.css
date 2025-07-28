@@ -1215,41 +1215,8 @@ table td.right {
   margin-top: 4px;
   font-size: 1.8rem;
 }
-.ticket__charts {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  height: auto;
-}
 .ticket__chart {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  width: 50%;
-  height: auto;
-}
-.ticket__chart > div {
-  width: 100%;
-}
-.ticket__chart > div {
-  height: auto;
-}
-.ticket__chart.pie svg {
-  width: 50%;
-}
-.ticket__chart div g text, .ticket__chart div svg text {
-  color: #777;
-  fill: #777;
-  font-weight: 700;
-  font-size: 1.6rem;
-}
-.ticket__chart div g text {
-  fill: #777;
-}
-.ticket__chart ul {
-  font-size: 1.6rem;
+  margin-top: 6px;
 }
 .ticket__table {
   table-layout: fixed;
@@ -2669,6 +2636,9 @@ body:has(.sidebar.hide) .main {
 .main__chart {
   display: flex;
   gap: 15px;
+}
+.main__chart text {
+  font-size: 2.4rem;
 }
 .main__chart.split-2 > * {
   width: 50%;

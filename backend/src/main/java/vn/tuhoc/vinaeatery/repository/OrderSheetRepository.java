@@ -21,14 +21,14 @@ public interface OrderSheetRepository extends JpaRepository<OrderSheet, Integer>
             SELECT os.*
             FROM vinaeatery.order_sheets AS os
             JOIN vinaeatery.use_tables AS ut ON os.table_id = ut.table_id
-            WHERE ut.table_id = :table_id
+            WHERE ut.id = :use_table_id AND ut.table_id = :table_id
               AND ut.status = 3
               AND (
                     (os.time_create >= ut.time_start AND ut.time_end IS NULL)
                  OR (os.time_create >= ut.time_start AND os.time_create <= ut.time_end)
               )
             """, nativeQuery = true)
-    List<OrderSheet> findAllWithUseTable(@Param("table_id") Integer tableId);
+    List<OrderSheet> findAllWithUseTable(@Param("use_table_id") Long useTableId, @Param("table_id") Integer tableId);
 
     void deleteById(Integer id);
 }

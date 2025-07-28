@@ -26,7 +26,7 @@ const CustomTableRoleDetails: React.FC<CustomTableRoleDetailsProps> = ({
   className,
   type,
   columnWidths = ["40%", "15%", "15%", "15%", "15%"],
-  columnTitles = ["Tên chức năng", "Xem", "Thêm", "Cập nhật", "Khoá"],
+  columnTitles = ["Tên chức năng", "Xem", "Thêm", "Cập nhật", "Khóa"],
   data = [],
   setRoleDetails,
 }) => {

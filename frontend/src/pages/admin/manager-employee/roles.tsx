@@ -10,7 +10,7 @@ import {
 import { Form, Input, InputNumber, Select, Tag, type SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { RoleDetailsType, RolesFormatType } from "../../../common/types";
-import { CustomPaginationProps } from "../../../common/pagination-props";
+import { CustomPaginationProps } from "../../../common/props";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomTableActions from "../../../components/admin/table-actions";

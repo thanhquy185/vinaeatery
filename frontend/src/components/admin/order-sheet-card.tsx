@@ -1,18 +1,12 @@
 import type { OrderSheetsFormatType } from "../../common/types";
+import { OrderSheetStatus } from "../../common/values";
 import { getElapsedTimeText, useElapsedTime } from "../../hook/time";
 
-// Các giá trị chung
-// - Trạng thái
-const serviced = "Đã phục vụ";
-const confirm = "Đang làm món";
-const canceled = "Đã huỷ phiếu";
-const pending = "Đang chờ xác nhận";
-
 const OrderSheetCard = ({ orderSheet, onClick }: { orderSheet: OrderSheetsFormatType, onClick: () => void }) => {
-    const isPending = orderSheet!.status! === pending;
-    const isCancel = orderSheet!.status! === canceled;
-    const isConfirm = orderSheet!.status! === confirm;
-    const isService = orderSheet!.status! === serviced;
+    const isPending = orderSheet!.status! === OrderSheetStatus.pending;
+    const isCancel = orderSheet!.status! === OrderSheetStatus.canceled;
+    const isConfirm = orderSheet!.status! === OrderSheetStatus.confirm;
+    const isService = orderSheet!.status! === OrderSheetStatus.serviced;
     const orderTime = orderSheet!.timeCreate as string;
 
     const elapsed = useElapsedTime(orderTime); // ✅ Hook luôn gọi
@@ -29,8 +23,9 @@ const OrderSheetCard = ({ orderSheet, onClick }: { orderSheet: OrderSheetsFormat
 
     return (
         <div className={`order-sheet ${colorClass}`} onClick={onClick}>
-            <h3>{orderSheet!.table!.name}</h3>
-            <div className="sub-info"><b>Tầng:</b> {orderSheet!.table!.floor!.name}</div>
+            <h3>Phiếu #{orderSheet!.id}</h3>
+            <div className="sub-info"><b>Bàn:</b> {orderSheet!.table!.name} - {orderSheet!.table!.floor!.name}</div>
+            {/* <div className="sub-info"><b>Tầng:</b> {orderSheet!.table!.floor!.name}</div> */}
             <div className="sub-info"><b>Gọi lúc:</b> {orderTime}</div>
             <div className="sub-info">
                 <b>{isPending || isConfirm ? "Đã chờ: " : isService ? "Phục vụ: " : ""}</b> {isPending || isConfirm ? displayedElapsed : isService ? orderSheet!.timeService! : ""}
@@ -41,11 +36,11 @@ const OrderSheetCard = ({ orderSheet, onClick }: { orderSheet: OrderSheetsFormat
             </div>
             <div className={
                 "status " +
-                (orderSheet!.status === serviced
+                (orderSheet!.status === OrderSheetStatus.serviced
                     ? "purple"
-                    : orderSheet!.status === confirm
+                    : orderSheet!.status === OrderSheetStatus.confirm
                         ? "green"
-                        : orderSheet!.status === canceled
+                        : orderSheet!.status === OrderSheetStatus.canceled
                             ? "red"
                             : "")
             }>

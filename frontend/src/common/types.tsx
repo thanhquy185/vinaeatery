@@ -38,8 +38,12 @@ export interface UseTablesType {
   customerId?: number;
   orderId?: number;
   orderTableId?: number;
+  orderTableNewFullname?: string;
+  orderTableNewPhone?: string;
+  orderTableNewEmail?: string;
+  orderTableNewAddress?: string;
   status?: string;
-  // orderSheets?: OrderSheetsType[];
+  orderSheets?: OrderSheetsFormatType[];
 }
 // - Đã format
 export interface UseTablesFormatType {

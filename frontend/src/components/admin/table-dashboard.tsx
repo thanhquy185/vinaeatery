@@ -24,28 +24,29 @@ const CustomTableDashboard: React.FC<CustomTableDashboardProps> = ({
   return (
     <>
       <table id={id} className={"table-dashboard " + className}>
-        {columnsWidth && columnsTitle && (
+        {columnsWidth && columnsTitle && columnsWidth.length > 0 && columnsTitle.length > 0 && (
           <>
             <colgroup>
-              {columnsWidth?.map((columnWidth) => (
-                <col width={columnWidth} />
+              {columnsWidth?.map((columnWidth, index) => (
+                <col key={index} width={columnWidth} />
               ))}
             </colgroup>
             <thead>
               <tr>
-                {columnsTitle?.map((columnTitle) => (
-                  <th>{columnTitle}</th>
+                {columnsTitle?.map((columnTitle, index) => (
+                  <th key={index}>{columnTitle}</th>
                 ))}
               </tr>
             </thead>
           </>
         )}
-        {tbody && (
+        {tbody && tbody.length > 0 && (
           <tbody>
-            {tbody?.map((tr) => (
-              <tr>
+            {tbody?.map((tr, index) => (
+              <tr key={index}>
                 {tr?.map((td, index) => (
                   <td
+                    key={index}
                     className={format && format[index] == "info" ? "left" : ""}
                   >
                     {format && format[index] == "price"
@@ -57,15 +58,16 @@ const CustomTableDashboard: React.FC<CustomTableDashboardProps> = ({
             ))}
           </tbody>
         )}
-        {tfoot && (
-          <tfoot>
-            <tr>
+        {tfoot && tfoot.length > 0 && (
+          <tfoot> 
+            <tr key={0}>
               <td
+                key={0}
                 colSpan={
                   columnsTitle &&
-                  columnsWidth &&
-                  tfoot &&
-                  columnsTitle.length === columnsWidth.length
+                    columnsWidth &&
+                    tfoot &&
+                    columnsTitle.length === columnsWidth.length
                     ? columnsTitle.length - tfoot.length
                     : 1
                 }
@@ -73,9 +75,9 @@ const CustomTableDashboard: React.FC<CustomTableDashboardProps> = ({
                 Tổng:
               </td>
               {tfoot?.map((td, index) => (
-                <td>
+                <td key={index + 1}>
                   {format &&
-                  format[index + (columnsTitle!.length - tfoot.length)] ==
+                    format[index + (columnsTitle!.length - tfoot.length)] ==
                     "price"
                     ? vietnamMoneyFormat(td as number)
                     : td}

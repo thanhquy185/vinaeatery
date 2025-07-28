@@ -56,7 +56,8 @@ public class UseTableService {
                 useTableDTO.setOrderTable(orderTableService.getOneFormatById(useTable.getOrderTableId()));
             }
             useTableDTO.setStatus(useTable.getStatus());
-            useTableDTO.setOrderSheets(orderSheetService.getAllFormatWithUseTable(useTable.getTableId()));
+            useTableDTO.setOrderSheets(
+                    orderSheetService.getAllFormatWithUseTable(useTable.getId(), useTable.getTableId()));
         }
 
         return useTableDTO;
@@ -85,7 +86,8 @@ public class UseTableService {
                 useTableDTO.setOrderTable(orderTableService.getOneFormatById(useTable.getOrderTableId()));
             }
             useTableDTO.setStatus(useTable.getStatus());
-            useTableDTO.setOrderSheets(orderSheetService.getAllFormatWithUseTable(useTable.getTableId()));
+            useTableDTO.setOrderSheets(
+                    orderSheetService.getAllFormatWithUseTable(useTable.getId(), useTable.getTableId()));
         }
 
         return useTableDTO;
@@ -238,7 +240,8 @@ public class UseTableService {
                 useTableDTO.setOrderTable(orderTableService.getOneFormatById(useTable.getOrderTableId()));
             }
             useTableDTO.setStatus(useTable.getStatus());
-            useTableDTO.setOrderSheets(orderSheetService.getAllFormatWithUseTable(useTable.getTableId()));
+            useTableDTO.setOrderSheets(
+                    orderSheetService.getAllFormatWithUseTable(useTable.getId(), useTable.getTableId()));
 
             listFormat.add(useTableDTO);
         }

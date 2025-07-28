@@ -26,7 +26,7 @@ import type {
   RolesFormatType,
 } from "../../../common/types.tsx";
 import { CommonStatus } from "../../../common/values.tsx";
-import { CustomPaginationProps } from "../../../common/pagination-props.tsx";
+import { CustomPaginationProps } from "../../../common/props.tsx";
 import CustomFindInput from "../../../components/admin/find-input.tsx";
 import CustomFindSelect from "../../../components/admin/find-select.tsx";
 import CustomDatePicker from "../../../components/admin/date-picker.tsx";

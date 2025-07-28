@@ -46,6 +46,10 @@
     // border-radius: $main-border-radius;
   }
 
+  &__chart text {
+    font-size: 2.4rem;
+  }
+
   &__chart.split-2>* {
     width: 50%;
     // background: #fff;

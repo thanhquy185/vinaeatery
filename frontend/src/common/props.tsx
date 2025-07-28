@@ -2,6 +2,10 @@ import { useState, useMemo } from "react";
 import type { TablePaginationConfig } from "antd/es/table";
 import type { SorterResult } from "antd/es/table/interface";
 
+// Dashboard Filter Time Props
+export type DashboardFilterTimeProps = { timeline: string, timeDetail: string }
+
+// Custom Pagination Props
 export function CustomPaginationProps<T>(
   data: T[],
   pageSize: number = 4,

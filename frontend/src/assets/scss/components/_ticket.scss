@@ -53,46 +53,50 @@
     font-size: 1.8rem;
   }
 
-  &__charts {
-    @include flex(center, center);
-    gap: 8px;
-    height: auto;
-  }
-
   &__chart {
-    @include flexCenter();
-    flex-direction: column;
-    width: 50%;
-    height: auto;
+    margin-top: 6px;
   }
 
-  &__chart > div {
-    width: 100%;
-  }
+  // &__charts {
+  //   @include flex(center, center);
+  //   gap: 8px;
+  //   height: auto;
+  // }
 
-  &__chart > div {
-    height: auto;
-  }
+  // &__chart {
+  //   @include flexCenter();
+  //   flex-direction: column;
+  //   width: 50%;
+  //   height: auto;
+  // }
 
-  &__chart.pie svg {
-    width: 50%;
-  }
+  // &__chart>div {
+  //   width: 100%;
+  // }
 
-  &__chart div g text,
-  &__chart div svg text {
-    color: #777;
-    fill: #777;
-    font-weight: 700;
-    font-size: 1.6rem;
-  }
+  // &__chart>div {
+  //   height: auto;
+  // }
 
-  &__chart div g text {
-    fill: #777;
-  }
+  // &__chart.pie svg {
+  //   width: 50%;
+  // }
 
-  &__chart ul {
-    font-size: 1.6rem;
-  }
+  // &__chart div g text,
+  // &__chart div svg text {
+  //   color: #777;
+  //   fill: #777;
+  //   font-weight: 700;
+  //   font-size: 1.6rem;
+  // }
+
+  // &__chart div g text {
+  //   fill: #777;
+  // }
+
+  // &__chart ul {
+  //   font-size: 1.6rem;
+  // }
 
   &__table {
     table-layout: fixed;
