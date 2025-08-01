@@ -1,10 +1,10 @@
 import {
-  useEffect,
   useState,
   type Dispatch,
   type ReactNode,
   type SetStateAction,
 } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleInfo,
@@ -14,23 +14,25 @@ import {
   faUnlock,
 } from "@fortawesome/free-solid-svg-icons";
 import { Form, Image, Input, InputNumber, Select, Tag } from "antd";
+import TextArea from "antd/es/input/TextArea";
 import type { SelectProps } from "antd";
 import type { RcFile } from "antd/es/upload";
 import type { ColumnsType } from "antd/es/table";
 import type {
-  CategoryFoodsType,
   FoodsFormatType,
-  IngredientsFormatType,
+  FoodsType,
+  ReactQueryMutationProps,
   RecipesFormatType,
 } from "../../../common/types";
+import { CommonStatus, FoodStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
 import { CustomPaginationProps } from "../../../common/props";
+import { ruleRequired } from "../../../common/rules";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomTableActions from "../../../components/admin/table-actions";
-import CustomModal from "../../../components/admin/modal";
 import CustomUpload from "../../../components/admin/upload";
-// import CustomInput from "../../../components/admin/input";
 import CustomTableNoActions from "../../../components/admin/table-no-actions";
+import CustomModal from "../../../components/admin/modal";
 import {
   FindAllCategoryFood,
   FindAllFood,
@@ -39,14 +41,19 @@ import {
   HandleLockFood,
   HandleUpdateFood,
 } from "../../../services/api";
-import { openNotification } from "../../../utils/showNotification";
 import { vietnamMoneyFormat } from "../../../utils/otherEvents";
-import TextArea from "antd/es/input/TextArea";
-import { ruleRequired } from "../../../common/rules";
 import { openConfirmation } from "../../../utils/showConfirmation";
-import { FoodStatus } from "../../../common/values";
+import { openNotification } from "../../../utils/showNotification";
 
 // Các giá trị chung
+// - Tên đối tượng
+const objectName = "Món ăn"
+// - Tiêu đề modal
+const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
+const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
+const titleModalUpdate = TitleModalCommon.update(objectName.toLowerCase());
+const titleModalLock = TitleModalCommon.lock(objectName.toLowerCase());
+const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 // - Kiểu dữ liệu của tham số khi xử lý bảng công thức
 interface RecipeTableProps {
   recipe?: RecipesFormatType[];
@@ -91,8 +98,102 @@ const units = [
 
 // Admin Foods Page
 const AdminFoodsPage = () => {
-  // Cấu hình cột bảng dữ liệu của Món ăn
-  const [loading, setLoading] = useState<boolean>(false);
+  // Đối tượng query client để thực thi react-query
+  const queryClient = useQueryClient();
+
+  // Các biến giữ dữ liệu về loại món ăn
+  const {
+    data: categoryFoods,
+  } = useQuery({
+    queryKey: [
+      'category-foods',
+    ],
+    queryFn: async () => {
+      const res = await FindAllCategoryFood({ statusValue: [CommonStatus.active] });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+  });
+
+  // Các biến giữ giá trị từ việc lọc thông tin
+  // - Tìm kiếm thông tin
+  const findOptions = [
+    { label: "#", value: "id" },
+    { label: "Tên", value: "name" },
+  ];
+  const [filterFindType, setFilterFindType] = useState<string | null>(
+    findOptions[0].value
+  );
+  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
+  // - Loại món ăn
+  const categoryOptions: SelectProps["options"] = categoryFoods?.map(
+    (categoryFood) => ({
+      label: `#${categoryFood.id} - ${categoryFood.name}`,
+      value: categoryFood.id,
+    })
+  );
+  const [filterCategoryValue, setFilterCategoryValue] = useState<
+    string[] | null
+  >(null);
+  // - Trạng thái
+  const statusOptions: SelectProps["options"] = [
+    { label: FoodStatus["active"], value: FoodStatus["active"] },
+    { label: FoodStatus["inactive"], value: FoodStatus["inactive"] },
+  ];
+  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
+    null
+  );
+
+  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
+  // - Truy vấn dữ liệu
+  const {
+    data: foods,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [
+      'foods',
+      filterFindType,
+      filterFindValue,
+      filterCategoryValue,
+      filterStatusValue,
+    ],
+    queryFn: async () => {
+      const res = await FindAllFood({
+        findType: filterFindType!,
+        findValue: filterFindValue!,
+        categoryValue: filterCategoryValue!,
+        statusValue: filterStatusValue!,
+      });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+    enabled: !!filterFindType,  //
+    retry: ReactQueryGetData.retry,
+    staleTime: ReactQueryGetData.staleTime,
+  });
+  // - Cột thuộc tính
   const columns: ColumnsType<FoodsFormatType> = [
     {
       title: "#",
@@ -171,7 +272,7 @@ const AdminFoodsPage = () => {
             className="action info"
             onClick={() =>
               updatePropertiesModal(
-                "Chi tiết món ăn",
+                titleModalDetail,
                 true,
                 "89%",
                 "info foods",
@@ -185,7 +286,7 @@ const AdminFoodsPage = () => {
             className="action update margin-lr"
             onClick={() =>
               updatePropertiesModal(
-                "Cập nhật món ăn",
+                titleModalUpdate,
                 true,
                 "89%",
                 "update foods",
@@ -199,8 +300,7 @@ const AdminFoodsPage = () => {
             className="action lock"
             onClick={() =>
               updatePropertiesModal(
-                (record.status == FoodStatus["active"] ? "Khoá" : "Mở khoá") +
-                " món ăn",
+                (record.status == FoodStatus["active"] ? titleModalLock : titleModalUnlock),
                 true,
                 "30%",
                 "lock foods",
@@ -216,46 +316,14 @@ const AdminFoodsPage = () => {
       ),
     },
   ];
-  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
-  const [categoryFoods, setCategoryFoods] = useState<CategoryFoodsType[]>([]);
-  const [foods, setFoods] = useState<FoodsFormatType[]>([]);
+  // - Các thành phần
   const {
     currentItems,
     handleTableChange,
     paginationProps,
     sortField,
     sortOrder,
-  } = CustomPaginationProps(foods, 4, [1, 2, 3, 4, 5]);
-
-  // Các biến giữ giá trị từ việc lọc thông tin
-  // - Tìm kiếm thông tin
-  // - Filter Find (Tìm kiếm thông tin)
-  const findOptions = [
-    { label: "#", value: "id" },
-    { label: "Tên", value: "name" },
-  ];
-  const [filterFindType, setFilterFindType] = useState<string | null>(
-    findOptions[0].value
-  );
-  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
-  // - Loại món ăn
-  const categoryOptions: SelectProps["options"] = categoryFoods!.map(
-    (categoryFood) => ({
-      label: `#${categoryFood.id} - ${categoryFood.name}`,
-      value: categoryFood.id,
-    })
-  );
-  const [filterCategoryValue, setFilterCategoryValue] = useState<
-    string[] | null
-  >(null);
-  // - Trạng thái
-  const statusOptions: SelectProps["options"] = [
-    { label: FoodStatus["active"], value: FoodStatus["active"] },
-    { label: FoodStatus["inactive"], value: FoodStatus["inactive"] },
-  ];
-  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
-    null
-  );
+  } = CustomPaginationProps(foods || [], 4, [1, 2, 3, 4, 5]);
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -306,6 +374,68 @@ const AdminFoodsPage = () => {
     status: "Chọn Trạng thái",
     recipe: "",
   };
+  // - Mutation cho việc thêm, cập nhật và khoá dữ liệu
+  const handleSubmitMutation = useMutation({
+    mutationFn: async ({ type, values, objectId, imageFile, details }: ReactQueryMutationProps<FoodsType>) => {
+      if (openModal) {
+        if (type === "create" && titleModal === titleModalCreate) {
+          return await HandleCreateFood({
+            name: values!.name || undefined,
+            image: imageFile! || undefined,
+            categoryFoodId: values!.categoryFoodId || undefined,
+            unit: values!.unit || undefined,
+            price: values!.price || undefined,
+            description: values!.description || undefined,
+            status: values!.status || undefined,
+            recipe: details || [],
+          })
+        } else if (type === "update" && titleModal === titleModalUpdate) {
+          return await HandleUpdateFood({
+            id: values!.id,
+            name: values!.name || undefined,
+            image: imageFile! || undefined,
+            categoryFoodId: values!.categoryFoodId || undefined,
+            unit: values!.unit || undefined,
+            price: values!.price || undefined,
+            description: values!.description || undefined,
+            timeUpdate: new Date().toISOString(),
+            recipe: details! || [],
+          });
+        } else if ((type === "lock" && titleModal === titleModalLock)
+          || (type === "unlock" && titleModal === titleModalUnlock)) {
+          return await HandleLockFood({
+            id: objectId! as number,
+            status: (type === "lock" ? FoodStatus.active : FoodStatus.inactive) || undefined,
+            timeUpdate: new Date().toISOString(),
+          })
+        }
+      }
+    },
+    onSuccess: () => {
+      openNotification({
+        type: "success",
+        message: "Thành công",
+        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thành công!",
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['foods'] });
+        setOpenModal(false);
+      }, 1500);
+    },
+    onError: () => {
+      openNotification({
+        type: "error",
+        message: "Thất bại",
+        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thất bại!",
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+      }, 1500);
+    },
+  });
   // - Các modal tương ứng cho từng chức năng
   const DetailFoods = ({
     id,
@@ -469,42 +599,11 @@ const AdminFoodsPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleCreateFood({
-                name: values!.name || undefined,
-                image: imageFile! || undefined,
-                categoryFoodId: values!.categoryFood || undefined,
-                unit: values!.unit || undefined,
-                price: values!.price || undefined,
-                description: values!.description || undefined,
-                status: values!.status || undefined,
-                recipe: recipe || [],
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Thêm thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "create", values: values, imageFile: imageFile, details: recipe });
 
-                setTimeout(() => {
-                  getAllFood();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Thêm thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -552,7 +651,7 @@ const AdminFoodsPage = () => {
                 <Input id="create-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
               <Form.Item
-                name="categoryFood"
+                name="categoryFoodId"
                 label={defaultLabels["categoryFood"]}
                 htmlFor="create-category"
                 className="modal__form-group-item"
@@ -741,7 +840,7 @@ const AdminFoodsPage = () => {
             //   "/src/assets/images/" +
             //   (image! ? "foods/" + image! : "others/no-image.png"),
             name: name!,
-            categoryFood: categoryFood!.id,
+            categoryFoodId: categoryFood!.id,
             unit: unit!,
             price: price!,
             description: description!,
@@ -766,43 +865,11 @@ const AdminFoodsPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleUpdateFood({
-                id: values!.id,
-                name: values!.name || undefined,
-                image: imageFile! || undefined,
-                categoryFoodId: values!.categoryFood || undefined,
-                unit: values!.unit || undefined,
-                price: values!.price || undefined,
-                description: values!.description || undefined,
-                timeUpdate: new Date().toISOString(),
-                recipe: recipeState! || [],
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Cập nhật thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "update", values: values, imageFile: imageFile, details: recipeState });
 
-                setTimeout(() => {
-                  getAllFood();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Cập nhật thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -848,7 +915,7 @@ const AdminFoodsPage = () => {
                 <Input id="update-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
               <Form.Item
-                name="categoryFood"
+                name="categoryFoodId"
                 label={defaultLabels["categoryFood"]}
                 htmlFor="update-category"
                 className="modal__form-group-item"
@@ -983,7 +1050,7 @@ const AdminFoodsPage = () => {
             </div>
           </div>
           <div className="modal__buttons">
-            <button type="button" className="modal__button btn update">
+            <button type="submit" className="modal__button btn update">
               Xác nhận
             </button>
           </div>
@@ -1022,38 +1089,11 @@ const AdminFoodsPage = () => {
               content: "Hành động này không thể hoàn tác.",
             });
             if (answer) {
-              // Gọi api xử lý
-              const res = await HandleLockFood({
-                id: id!,
-                status: status!,
-                timeUpdate: new Date().toISOString(),
-              });
-              if (res.status == 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: `${statusValue ? "Khoá" : "Mở khoá"
-                    } thành công !`,
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: (statusValue ? "lock" : "unlock"), objectId: id! });
 
-                setTimeout(() => {
-                  getAllFood();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: `${statusValue ? "Khoá" : "Mở khoá"} thất bại !`,
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -1163,27 +1203,29 @@ const AdminFoodsPage = () => {
   const CreateRecipes = ({ recipe, setRecipe }: RecipeTableProps) => {
     const [form] = Form.useForm();
 
-    // Gọi api để truy vấn danh sách nguyên liệu "hoạt động"
-    const [ingredients, setIngredients] = useState<IngredientsFormatType[]>([]);
-    const getAllIngredient = async () => {
-      setLoading(true);
-      const res = await FindAllIngredient({
-        statusValue: ["Hoạt động"],
-      });
-      if (res!.status === 200) {
-        setIngredients(res!.data);
-      } else {
-        openNotification({
-          type: "error",
-          message: "Truy vấn dữ liệu thất bại",
-          description: "Lỗi phát sinh khi truy vấn dữ liệu",
-          duration: 2,
-        });
-      }
-    };
-    useEffect(() => {
-      getAllIngredient();
-    }, []);
+    // Truy vấn dữ liệu nguyên liệu
+    const {
+      data: ingredients,
+    } = useQuery({
+      queryKey: [
+        'ingredients',
+      ],
+      queryFn: async () => {
+        const res = await FindAllIngredient({ statusValue: [FoodStatus.active] });
+        if (res.status === 200) {
+          return res.data;
+        } else {
+          openNotification({
+            type: "error",
+            message: "Truy vấn dữ liệu thất bại",
+            description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+            duration: 2,
+          });
+
+          throw res;
+        }
+      },
+    }); 
 
     return (
       <>
@@ -1462,58 +1504,11 @@ const AdminFoodsPage = () => {
     ),
   };
 
-  // Hàm cập nhật danh sách các nhà cung cấp (gọi API)
-  const getAllCategoryFood = async () => {
-    setLoading(true);
-    const res = await FindAllCategoryFood({ statusValue: ["Hoạt động"] });
-    if (res!.status === 200) {
-      setLoading(false);
-      setCategoryFoods(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-  const getAllFood = async () => {
-    setLoading(true);
-    const res = await FindAllFood({
-      findType: filterFindType!,
-      findValue: filterFindValue!,
-      categoryValue: filterCategoryValue!,
-      statusValue: filterStatusValue!,
-    });
-    if (res!.status === 200) {
-      setLoading(false);
-      setFoods(res!.data);
-    } else {
-      console.log(res);
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-
-  //
-  useEffect(() => {
-    getAllCategoryFood();
-    getAllFood();
-  }, []);
-  useEffect(() => {
-    getAllFood();
-  }, [filterFindType, filterFindValue, filterCategoryValue, filterStatusValue]);
-
   return (
     <>
       <main className="main">
         <div className="main__header">
-          <h1 className="main__title">Quản lý món ăn - Món ăn</h1>
+          <h1 className="main__title">Quản lý món ăn - {objectName}</h1>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -1545,15 +1540,13 @@ const AdminFoodsPage = () => {
           <button
             className={
               "main__filter-button btn create" +
-              (openModal &&
-                String(titleModal).includes("Thêm") &&
-                String(classNameModal).includes("create")
+              (openModal && titleModal === titleModalCreate
                 ? " active"
                 : "")
             }
             onClick={() =>
               updatePropertiesModal(
-                "Thêm món ăn",
+                titleModalCreate,
                 true,
                 "89%",
                 "create foods",
@@ -1570,7 +1563,7 @@ const AdminFoodsPage = () => {
             columns={columns}
             rowKey={(record) => record!.id as number}
             data={currentItems}
-            loading={loading}
+            loading={isLoading}
             pagination={paginationProps}
             className="table-actions foods"
             onChange={handleTableChange}

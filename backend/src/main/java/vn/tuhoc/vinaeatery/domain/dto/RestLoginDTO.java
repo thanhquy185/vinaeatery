@@ -14,13 +14,13 @@ public class RestLoginDTO {
     // Properties
     @JsonProperty("access_token")
     private String accessToken;
-    private UserLogin userLogin;
+    private EmployeeLogin employeeLogin;
 
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class UserLogin {
+    public static class EmployeeLogin {
         private Integer id;
         private String image;
         private String fullname;
@@ -37,7 +37,7 @@ public class RestLoginDTO {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class UserGetAccount {
-        private UserLogin userLogin;
+    public static class EmployeeGetAccount {
+        private EmployeeLogin employeeLogin;
     }
 }

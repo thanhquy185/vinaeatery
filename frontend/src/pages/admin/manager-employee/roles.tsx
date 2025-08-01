@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleInfo,
@@ -9,24 +10,34 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Form, Input, InputNumber, Select, Tag, type SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import type { RoleDetailsType, RolesFormatType } from "../../../common/types";
+import type { ReactQueryMutationProps, RoleDetailsType, RolesFormatType, RolesType } from "../../../common/types";
+import { CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
 import { CustomPaginationProps } from "../../../common/props";
+import { ruleRequired } from "../../../common/rules";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomTableActions from "../../../components/admin/table-actions";
 import CustomTableRoleDetails from "../../../components/admin/table-role-details";
 import CustomModal from "../../../components/admin/modal";
-import { vietnamMoneyFormat } from "../../../utils/otherEvents";
 import {
   FindAllRole,
   HandleCreateRole,
   HandleLockRole,
   HandleUpdateRole,
 } from "../../../services/api";
-import { openNotification } from "../../../utils/showNotification";
-import { CommonStatus } from "../../../common/values";
+import { vietnamMoneyFormat } from "../../../utils/otherEvents";
 import { openConfirmation } from "../../../utils/showConfirmation";
-import { ruleRequired } from "../../../common/rules";
+import { openNotification } from "../../../utils/showNotification";
+
+// Các giá trị chung
+// - Tên đối tượng
+const objectName = "Chức vụ"
+// - Tiêu đề modal
+const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
+const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
+const titleModalUpdate = TitleModalCommon.update(objectName.toLowerCase());
+const titleModalLock = TitleModalCommon.lock(objectName.toLowerCase());
+const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 
 // Admin Roles Page
 const AdminRolesPage = () => {
@@ -34,8 +45,66 @@ const AdminRolesPage = () => {
   // const admin = useRouteLoaderData("admin");
   // console.log(admin);
 
-  // Cấu hình cột bảng dữ liệu của Chức vụ
-  const [loading, setLoading] = useState<boolean>(false);
+  // Đối tượng query client để thực thi react-query
+  const queryClient = useQueryClient();
+
+  // Các biến giữ giá trị từ việc lọc thông tin
+  // - Tìm kiếm thông tin
+  const findOptions = [
+    { label: "#", value: "id" },
+    { label: "Tên", value: "name" },
+  ];
+  const [filterFindType, setFilterFindType] = useState<string | null>(
+    findOptions[0].value
+  );
+  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
+  // - Trạng thái
+  const statusOptions: SelectProps["options"] = [
+    { label: CommonStatus["active"], value: CommonStatus["active"] },
+    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
+  ];
+  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
+    null
+  );
+
+  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
+  // - Truy vấn dữ liệu
+  const {
+    data: roles,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [
+      'roles',
+      filterFindType,
+      filterFindValue,
+      filterStatusValue,
+    ],
+    queryFn: async () => {
+      const res = await FindAllRole({
+        findType: filterFindType!,
+        findValue: filterFindValue!,
+        statusValue: filterStatusValue!,
+      });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+    enabled: !!filterFindType,  //
+    retry: ReactQueryGetData.retry,
+    staleTime: ReactQueryGetData.staleTime,
+  });
+  // - Cột thuộc tính
   const columns: ColumnsType<RolesFormatType> = [
     {
       title: "#",
@@ -81,7 +150,7 @@ const AdminRolesPage = () => {
             className="action info"
             onClick={() =>
               updatePropertiesModal(
-                "Chi tiết chức vụ",
+                titleModalDetail,
                 true,
                 "60%",
                 "info roles",
@@ -95,7 +164,7 @@ const AdminRolesPage = () => {
             className="action update margin-lr"
             onClick={() =>
               updatePropertiesModal(
-                "Cập nhật chức vụ",
+                titleModalUpdate,
                 true,
                 "60%",
                 "update roles",
@@ -109,8 +178,7 @@ const AdminRolesPage = () => {
             className="action lock"
             onClick={() =>
               updatePropertiesModal(
-                (record.status == CommonStatus["active"] ? "Khoá" : "Mở khoá") +
-                " chức vụ",
+                (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
                 true,
                 "30%",
                 "lock roles",
@@ -126,34 +194,14 @@ const AdminRolesPage = () => {
       ),
     },
   ];
-  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
-  const [roles, setRoles] = useState<RolesFormatType[]>([]);
+  // - Các thành phần
   const {
     currentItems,
     handleTableChange,
     paginationProps,
     sortField,
     sortOrder,
-  } = CustomPaginationProps(roles, 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-
-  // Các biến giữ giá trị từ việc lọc thông tin
-  // - Tìm kiếm thông tin
-  const findOptions = [
-    { label: "#", value: "id" },
-    { label: "Tên", value: "name" },
-  ];
-  const [filterFindType, setFilterFindType] = useState<string | null>(
-    findOptions[0].value
-  );
-  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
-  // - Trạng thái
-  const statusOptions: SelectProps["options"] = [
-    { label: CommonStatus["active"], value: CommonStatus["active"] },
-    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
-  ];
-  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
-    null
-  );
+  } = CustomPaginationProps(roles || [], 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -184,7 +232,7 @@ const AdminRolesPage = () => {
     name: "Tên chức vụ",
     salary: "Lương cơ bản (VNĐ)",
     status: "Trạng thái",
-    roleDetails: "Chi tiết chức vụ",
+    roleDetails: 'Chi tiết chức vụ (Hành động "Xem" cần có để 1 chức năng hoạt động)',
   };
   // - Các giá trị mặc định cho nhập liệu
   const defaultInputs = {
@@ -196,6 +244,66 @@ const AdminRolesPage = () => {
     status: "Chọn Trạng thái",
     roleDetails: "",
   };
+  // - Mutation cho việc thêm, cập nhật và khoá dữ liệu
+  const handleSubmitMutation = useMutation({
+    mutationFn: async ({ type, values, objectId, details }: ReactQueryMutationProps<RolesType>) => {
+      if (openModal) {
+        if (type === "create" && titleModal === titleModalCreate) {
+          return await HandleCreateRole({
+            name: values!.name || undefined,
+            salary: values!.salary || 0,
+            status: values!.status || undefined,
+            roleDetails: details || [],
+          })
+        } else if (type === "update" && titleModal === titleModalUpdate) {
+          return await HandleUpdateRole({
+            id: values!.id,
+            name: values!.name || undefined,
+            salary: values!.salary || 0,
+            timeUpdate: new Date().toISOString(),
+            roleDetails: details || [],
+          });
+        } else if ((type === "lock" && titleModal === titleModalLock)
+          || (type === "unlock" && titleModal === titleModalUnlock)) {
+          const res = await HandleLockRole({
+            id: objectId! as number,
+            status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
+            timeUpdate: new Date().toISOString(),
+          })
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
+        }
+      }
+    },
+    onSuccess: () => {
+      openNotification({
+        type: "success",
+        message: "Thành công",
+        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thành công!",
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['roles'] });
+        setOpenModal(false);
+      }, 1500);
+    },
+    onError: (error) => {
+      openNotification({
+        type: "error",
+        message: "Thất bại",
+        description: (error ? error.message : (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thất bại!"),
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+      }, 1500);
+    },
+  });
   // - Các modal tương ứng cho từng chức năng
   const DetailRoles = ({
     id,
@@ -230,11 +338,11 @@ const AdminRolesPage = () => {
                 <Input className="text-center" disabled={true} />
               </Form.Item>
               <Form.Item
-                name="salary"
-                label={defaultLabels["salary"]}
+                name="name"
+                label={defaultLabels["name"]}
                 className="modal__form-group-item"
               >
-                <InputNumber disabled={true} />
+                <Input disabled={true} />
               </Form.Item>
             </div>
             <div className="modal__form-group">
@@ -246,11 +354,11 @@ const AdminRolesPage = () => {
                 <Select disabled={true} />
               </Form.Item>
               <Form.Item
-                name="name"
-                label={defaultLabels["name"]}
+                name="salary"
+                label={defaultLabels["salary"]}
                 className="modal__form-group-item"
               >
-                <Input disabled={true} />
+                <InputNumber disabled={true} />
               </Form.Item>
             </div>
           </div>
@@ -299,39 +407,11 @@ const AdminRolesPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleCreateRole({
-                name: values!.name || undefined,
-                salary: values!.salary || 0,
-                status: values!.status || undefined,
-                roleDetails: roleDetails || [],
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Thêm thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "create", values: values, details: roleDetails });
 
-                setTimeout(() => {
-                  getAllRole();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                console.log(res);
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Thêm thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -353,17 +433,13 @@ const AdminRolesPage = () => {
                 />
               </Form.Item>
               <Form.Item
-                name="salary"
-                label={defaultLabels["salary"]}
-                htmlFor="create-salary"
+                name="name"
+                label={defaultLabels["name"]}
+                htmlFor="create-name"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Lương cơ bản không được để trống !")]}
+                rules={[ruleRequired("Tên chức vụ không được để trống !")]}
               >
-                <InputNumber
-                  min={0}
-                  id="create-salary"
-                  placeholder={defaultInputs["salary"]}
-                />
+                <Input id="create-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
             </div>
             <div className="modal__form-group">
@@ -391,13 +467,17 @@ const AdminRolesPage = () => {
                 />
               </Form.Item>
               <Form.Item
-                name="name"
-                label={defaultLabels["name"]}
-                htmlFor="create-name"
+                name="salary"
+                label={defaultLabels["salary"]}
+                htmlFor="create-salary"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Tên chức vụ không được để trống !")]}
+                rules={[ruleRequired("Lương cơ bản không được để trống !")]}
               >
-                <Input id="create-name" placeholder={defaultInputs["name"]} />
+                <InputNumber
+                  min={0}
+                  id="create-salary"
+                  placeholder={defaultInputs["salary"]}
+                />
               </Form.Item>
             </div>
           </div>
@@ -473,39 +553,11 @@ const AdminRolesPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleUpdateRole({
-                id: values!.id,
-                name: values!.name || undefined,
-                salary: values!.salary || 0,
-                timeUpdate: new Date().toISOString(),
-                roleDetails: roleDetailsUpdate || [],
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Cập nhật thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "update", values: values, details: roleDetailsUpdate });
 
-                setTimeout(() => {
-                  getAllRole();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Cập nhật thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -523,17 +575,13 @@ const AdminRolesPage = () => {
                 <Input className="text-center" disabled={true} />
               </Form.Item>
               <Form.Item
-                name="salary"
-                label={defaultLabels["salary"]}
-                htmlFor="update-salary"
+                name="name"
+                label={defaultLabels["name"]}
+                htmlFor="update-name"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Lương cơ bản không được để trống !")]}
+                rules={[ruleRequired("Tên chức vụ không được để trống !")]}
               >
-                <InputNumber
-                  min={0}
-                  id="update-salary"
-                  placeholder={defaultInputs["salary"]}
-                />
+                <Input id="update-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
             </div>
             <div className="modal__form-group">
@@ -545,13 +593,17 @@ const AdminRolesPage = () => {
                 <Select disabled={true} />
               </Form.Item>
               <Form.Item
-                name="name"
-                label={defaultLabels["name"]}
-                htmlFor="update-name"
+                name="salary"
+                label={defaultLabels["salary"]}
+                htmlFor="update-salary"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Tên chức vụ không được để trống !")]}
+                rules={[ruleRequired("Lương cơ bản không được để trống !")]}
               >
-                <Input id="update-name" placeholder={defaultInputs["name"]} />
+                <InputNumber
+                  min={0}
+                  id="update-salary"
+                  placeholder={defaultInputs["salary"]}
+                />
               </Form.Item>
             </div>
           </div>
@@ -611,38 +663,11 @@ const AdminRolesPage = () => {
               content: "Hành động này không thể hoàn tác.",
             });
             if (answer) {
-              // Gọi api xử lý
-              const res = await HandleLockRole({
-                id: id!,
-                status: status!,
-                timeUpdate: new Date().toISOString(),
-              });
-              if (res.status == 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: `${statusValue ? "Khoá" : "Mở khoá"
-                    } thành công !`,
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: (statusValue ? "lock" : "unlock"), objectId: id! });
 
-                setTimeout(() => {
-                  getAllRole();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: String(res.data) ?? `${statusValue ? "Khoá" : "Mở khoá"} thất bại !`,
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -697,40 +722,11 @@ const AdminRolesPage = () => {
     ),
   };
 
-  // Hàm cập nhật danh sách các chức vụ (gọi API)
-  const getAllRole = async () => {
-    setLoading(true);
-    const res = await FindAllRole({
-      findType: filterFindType!,
-      findValue: filterFindValue!,
-      statusValue: filterStatusValue!,
-    });
-    if (res!.status === 200) {
-      setLoading(false);
-      setRoles(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-
-  //
-  useEffect(() => {
-    getAllRole();
-  }, []);
-  useEffect(() => {
-    getAllRole();
-  }, [filterFindType, filterFindValue, filterStatusValue]);
-
   return (
     <>
       <main className="main">
         <div className="main__header">
-          <h1 className="main__title">Quản lý nhân sự - Chức vụ</h1>
+          <h1 className="main__title">Quản lý nhân sự - {objectName}</h1>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -753,15 +749,13 @@ const AdminRolesPage = () => {
           <button
             className={
               "main__filter-button btn create" +
-              (openModal &&
-                String(titleModal).includes("Thêm") &&
-                String(classNameModal).includes("create")
+              (openModal && titleModal === titleModalCreate
                 ? " active"
                 : "")
             }
             onClick={() =>
               updatePropertiesModal(
-                "Thêm chức vụ",
+                titleModalCreate,
                 true,
                 "60%",
                 "create roles",
@@ -778,7 +772,7 @@ const AdminRolesPage = () => {
             columns={columns}
             rowKey={(record) => record!.id as number}
             data={currentItems}
-            loading={loading}
+            loading={isLoading}
             pagination={paginationProps}
             className="table-actions roles"
             onChange={handleTableChange}

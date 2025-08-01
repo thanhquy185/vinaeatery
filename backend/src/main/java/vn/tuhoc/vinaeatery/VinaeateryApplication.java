@@ -9,8 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 		// org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration.class
 })
 public class VinaeateryApplication {
-	public static void	 main(String[] args) {
+	public static void main(String[] args) {
 		SpringApplication.run(VinaeateryApplication.class, args);
 	}
 }
-	

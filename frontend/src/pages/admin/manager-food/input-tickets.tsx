@@ -1,10 +1,12 @@
 import {
   useEffect,
+  useMemo,
   useState,
   type Dispatch,
   type ReactNode,
   type SetStateAction,
 } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleInfo,
@@ -23,14 +25,12 @@ import {
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import type {
-  IngredientsFormatType,
   InputTicketDetailsFormatType,
   InputTicketsFormatType,
-  SuppliersType,
 } from "../../../common/types";
-import { InputTicketStatus, PayStatus } from "../../../common/values";
-import { ruleRequired } from "../../../common/rules";
 import { CustomPaginationProps } from "../../../common/props";
+import { CommonStatus, InputTicketStatus, PayStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
+import { ruleRequired } from "../../../common/rules";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";
@@ -55,6 +55,13 @@ import { openNotification } from "../../../utils/showNotification";
 import { handlePrintTicket } from "../../../utils/printTicket";
 
 // Các giá trị chung
+// - Tên đối tượng
+const objectName = "Phiếu nhập"
+// - Tiêu đề modal
+const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
+const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
+const titleModalUpdate = TitleModalCommon.update(objectName.toLowerCase());
+const titleModalPrint = TitleModalCommon.print(objectName.toLowerCase());
 // - Chi tiết phiếu nhập
 interface InputTicketDetailsTableProps {
   inputTicketDetails?: InputTicketDetailsFormatType[];
@@ -81,8 +88,73 @@ const IPDetailsFormat = ["", "", "price", "", "price"];
 
 // Admin Input Tickets Page
 const AdminInputTicketsPage = () => {
-  // Cấu hình cột bảng dữ liệu của Phiếu nhập
-  const [loading, setLoading] = useState<boolean>(false);
+  // Đối tượng query client để thực thi react-query
+  const queryClient = useQueryClient();
+
+  // Các biến giữ giá trị từ việc lọc thông tin
+  // - Tìm kiếm thông tin
+  const findOptions = [
+    { label: "#", value: "id" },
+    { label: "NCC", value: "supplier" },
+  ];
+  const [filterFindType, setFilterFindType] = useState<string | null>(
+    findOptions[0].value
+  );
+  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
+  // - Thời gian bắt đầu / Thời gian kết thúc
+  const [filterTimeValue, setFilterTimeValue] = useState<[string, string]>();
+  // - Trạng thái
+  const statusOptions: SelectProps["options"] = [
+    { label: InputTicketStatus.giveback, value: InputTicketStatus.giveback },
+    { label: InputTicketStatus.confirm, value: InputTicketStatus.confirm },
+    { label: InputTicketStatus.canceled, value: InputTicketStatus.canceled },
+    { label: InputTicketStatus.pending, value: InputTicketStatus.pending },
+    { label: PayStatus.pay, value: PayStatus.pay },
+    { label: PayStatus.notPay, value: PayStatus.notPay },
+  ];
+  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
+    null
+  );
+
+  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
+  // - Truy vấn dữ liệu
+  const {
+    data: inputTickets,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [
+      'input-tickets',
+      filterFindType,
+      filterFindValue,
+      filterStatusValue,
+    ],
+    queryFn: async () => {
+      const res = await FindAllInputTicket({
+        findType: filterFindType!,
+        findValue: filterFindValue!,
+        timeValue: filterTimeValue!,
+        statusValue: filterStatusValue!,
+      });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+    enabled: !!filterFindType,  //
+    retry: ReactQueryGetData.retry,
+    staleTime: ReactQueryGetData.staleTime,
+  });
+  // - Cột thuộc tính
   const columns: ColumnsType<InputTicketsFormatType> = [
     {
       title: "#",
@@ -157,7 +229,7 @@ const AdminInputTicketsPage = () => {
             className="info action"
             onClick={() =>
               updatePropertiesModal(
-                "Chi tiết phiếu nhập",
+                titleModalDetail,
                 true,
                 "89%",
                 "info input-tickets",
@@ -171,7 +243,7 @@ const AdminInputTicketsPage = () => {
             className="update action margin-lr"
             onClick={() =>
               updatePropertiesModal(
-                "Cập nhật phiếu nhập",
+                titleModalUpdate,
                 true,
                 "89%",
                 "update input-tickets",
@@ -185,7 +257,7 @@ const AdminInputTicketsPage = () => {
             className="print action"
             onClick={() =>
               updatePropertiesModal(
-                "In phiếu nhập",
+                titleModalPrint,
                 true,
                 "80%",
                 "print input-tickets",
@@ -199,42 +271,14 @@ const AdminInputTicketsPage = () => {
       ),
     },
   ];
-  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
-  const [inputTickets, setInputTickets] = useState<InputTicketsFormatType[]>(
-    []
-  );
+  // - Các thành phần
   const {
     currentItems,
     handleTableChange,
     paginationProps,
     sortField,
     sortOrder,
-  } = CustomPaginationProps(inputTickets, 8, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-
-  // Các biến giữ giá trị từ việc lọc thông tin
-  // - Tìm kiếm thông tin
-  const findOptions = [
-    { label: "#", value: "id" },
-    { label: "NCC", value: "supplier" },
-  ];
-  const [filterFindType, setFilterFindType] = useState<string | null>(
-    findOptions[0].value
-  );
-  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
-  // - Thời gian bắt đầu / Thời gian kết thúc
-  const [filterTimeValue, setFilterTimeValue] = useState<[string, string]>();
-  // - Trạng thái
-  const statusOptions: SelectProps["options"] = [
-    { label: InputTicketStatus.giveback, value: InputTicketStatus.giveback },
-    { label: InputTicketStatus.confirm, value: InputTicketStatus.confirm },
-    { label: InputTicketStatus.canceled, value: InputTicketStatus.canceled },
-    { label: InputTicketStatus.pending, value: InputTicketStatus.pending },
-    { label: PayStatus.pay, value: PayStatus.pay },
-    { label: PayStatus.notPay, value: PayStatus.notPay },
-  ];
-  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
-    null
-  );
+  } = CustomPaginationProps(inputTickets || [], 8, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các biến giữ giá trị cho việc hiển thị thông số trên card
   const [totalPriceCardValue, setTotalPriceCardValue] = useState<number>(0);
@@ -418,6 +462,7 @@ const AdminInputTicketsPage = () => {
     );
   };
   const CreateInputTickets = () => {
+    //
     const [form] = Form.useForm();
     const timeCreateValue = getVietnamCurrentDatetime();
     const [totalPriceValue, setTotalPriceValue] = useState<number>(0);
@@ -425,29 +470,32 @@ const AdminInputTicketsPage = () => {
       InputTicketDetailsFormatType[]
     >([]);
 
-    //
-    const [suppliers, setSuppliers] = useState<SuppliersType[]>([]);
-    const getAllSupplier = async () => {
-      const res = await FindAllSupplier({
-        statusValue: ["Hoạt động"],
-      });
-      if (res!.status === 200) {
-        setSuppliers(res!.data);
-      } else {
-        openNotification({
-          type: "error",
-          message: "Truy vấn dữ liệu thất bại",
-          description: "Lỗi phát sinh khi truy vấn dữ liệu",
-          duration: 2,
-        });
-      }
-    };
-    useEffect(() => {
-      getAllSupplier();
-    }, []);
+    // Truy vấn dữ liệu nhà cung cấp đang "hoạt động"
+    const {
+      data: suppliers,
+    } = useQuery({
+      queryKey: [
+        'suppliers',
+      ],
+      queryFn: async () => {
+        const res = await FindAllSupplier({ statusValue: [CommonStatus.active] });
+        if (res.status === 200) {
+          return res.data;
+        } else {
+          openNotification({
+            type: "error",
+            message: "Truy vấn dữ liệu thất bại",
+            description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+            duration: 2,
+          });
 
-    //
-    useEffect(() => {
+          throw res;
+        }
+      },
+    });
+
+    // Tính toán lại tổng tiền nhập khi thay đổi nguyên liệu
+    useMemo(() => {
       const totalValue = inputTicketDetails.reduce(
         (total, inputTicketDetail) =>
           total + inputTicketDetail.price * inputTicketDetail.quantity,
@@ -506,7 +554,7 @@ const AdminInputTicketsPage = () => {
                 });
 
                 setTimeout(() => {
-                  getAllInputTicket();
+                  queryClient.invalidateQueries({ queryKey: ['input-tickets'] });
                   setOpenModal(false);
                 }, 1500);
               } else {
@@ -610,7 +658,7 @@ const AdminInputTicketsPage = () => {
                   allowClear={true}
                   id="create-supplier"
                   placeholder={defaultInputs["supplier"]}
-                  options={suppliers.map((supplier) => ({
+                  options={suppliers?.map((supplier) => ({
                     label:
                       "#" +
                       supplier!.id +
@@ -1050,7 +1098,7 @@ const AdminInputTicketsPage = () => {
           duration: 1.5,
         });
         setTimeout(() => {
-          getAllInputTicket();
+          queryClient.invalidateQueries({ queryKey: ["input-tickets"], })
           setOpenModal(false);
         }, 1500);
       } else {
@@ -1126,28 +1174,32 @@ const AdminInputTicketsPage = () => {
     inputTicketDetails,
     setInputTicketDetails,
   }: InputTicketDetailsTableProps) => {
+    //
     const [form] = Form.useForm();
 
-    // Gọi api để truy vấn danh sách nguyên liệu "hoạt động"
-    const [ingredients, setIngredients] = useState<IngredientsFormatType[]>([]);
-    const getAllIngredient = async () => {
-      const res = await FindAllIngredient({
-        statusValue: ["Hoạt động"],
-      });
-      if (res!.status === 200) {
-        setIngredients(res!.data);
-      } else {
-        openNotification({
-          type: "error",
-          message: "Truy vấn dữ liệu thất bại",
-          description: "Lỗi phát sinh khi truy vấn dữ liệu",
-          duration: 2,
-        });
-      }
-    };
-    useEffect(() => {
-      getAllIngredient();
-    }, []);
+    // Truy vấn dữ liệu nguyên liệu đang "hoạt động"
+    const {
+      data: ingredients,
+    } = useQuery({
+      queryKey: [
+        'ingredients',
+      ],
+      queryFn: async () => {
+        const res = await FindAllIngredient({ statusValue: [CommonStatus.active] });
+        if (res.status === 200) {
+          return res.data;
+        } else {
+          openNotification({
+            type: "error",
+            message: "Truy vấn dữ liệu thất bại",
+            description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+            duration: 2,
+          });
+
+          throw res;
+        }
+      },
+    });
 
     return (
       <>
@@ -1481,13 +1533,13 @@ const AdminInputTicketsPage = () => {
   };
 
   // Hàm cập nhật số liệu cho các thẻ
-  const updateCards = (inputTickets: InputTicketsFormatType[]) => {
+  const updateCards = () => {
     let totalPrice = 0,
       totalGiveBack = 0,
       totalConfirm = 0,
       totalCancel = 0,
       totalPending = 0;
-    inputTickets.forEach((inputTicket) => {
+    inputTickets?.forEach((inputTicket) => {
       totalPrice += inputTicket.totalPrice!;
       if (inputTicket.status! === InputTicketStatus.giveback) {
         totalGiveBack += 1;
@@ -1509,42 +1561,14 @@ const AdminInputTicketsPage = () => {
     setCancelCardValue(totalCancel);
     setPendingCardValue(totalPending);
   };
-  // Hàm cập nhật danh sách các phiếu nhập (gọi API)
-  const getAllInputTicket = async () => {
-    setLoading(true);
-    const res = await FindAllInputTicket({
-      findType: filterFindType!,
-      findValue: filterFindValue!,
-      timeValue: filterTimeValue!,
-      statusValue: filterStatusValue!,
-    });
-    if (res!.status === 200) {
-      setLoading(false);
-      setInputTickets(res!.data);
-      updateCards(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-
-  //
-  useEffect(() => {
-    getAllInputTicket();
-  }, []);
-  useEffect(() => {
-    getAllInputTicket();
-  }, [filterFindType, filterFindValue, filterTimeValue, filterStatusValue]);
+  // Cập nhật mỗi khi danh sách phiếu nhập thay đổi
+  useEffect(() => { updateCards(); }, [inputTickets])
 
   return (
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Quản lý món ăn - Phiếu nhập</h2>
+          <h2 className="main__title">Quản lý món ăn - {objectName}</h2>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -1573,15 +1597,13 @@ const AdminInputTicketsPage = () => {
           <button
             className={
               "main__filter-button btn create" +
-              (openModal &&
-                String(titleModal).includes("Thêm") &&
-                String(classNameModal).includes("create")
+              (openModal && titleModal === titleModalCreate
                 ? " active"
                 : "")
             }
             onClick={() =>
               updatePropertiesModal(
-                "Thêm phiếu nhập",
+                titleModalCreate,
                 true,
                 "89%",
                 "create input-tickets",
@@ -1631,9 +1653,9 @@ const AdminInputTicketsPage = () => {
             columns={columns}
             rowKey={(record) => record!.id as number}
             data={currentItems}
-            loading={loading}
+            loading={isLoading}
             pagination={paginationProps}
-            className="table-actions inputTickets"
+            className="table-actions input-tickets"
             onChange={handleTableChange}
           />
         </div>

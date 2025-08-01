@@ -136,8 +136,8 @@ const SidebarGroup: React.FC<SidebarGroupProps> = ({ icon, title, items }) => {
 // Phần sidebar
 const AdminSidebar = () => {
   // // Dữ liệu được load ban đầu
-  // const admin = useRouteLoaderData("admin");
-  // console.log(admin);
+  const admin = useRouteLoaderData("admin");
+  console.log(admin);
 
   const dashboardItems: SidebarGroupProps["items"] = [
     {
@@ -270,11 +270,11 @@ const AdminSidebar = () => {
             icon={faChartSimple}
             items={dashboardItems}
           />
-          {/* <SidebarGroup
+          <SidebarGroup
             title="Vận hành quán ăn"
             icon={faPlayCircle}
             items={activeManagerItems}
-          /> */}
+          />
           {/* <SidebarGroup
             title="Quản lý khách hàng"
             icon={faPeopleGroup}

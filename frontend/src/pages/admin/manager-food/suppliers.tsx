@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleInfo,
@@ -8,7 +9,6 @@ import {
   faUnlock,
 } from "@fortawesome/free-solid-svg-icons";
 import {
-  Button,
   Form,
   Input,
   Select,
@@ -17,7 +17,8 @@ import {
   type SelectProps,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import type { SuppliersType } from "../../../common/types";
+import type { ReactQueryMutationProps, SuppliersType } from "../../../common/types";
+import { CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
 import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules";
 import { CustomPaginationProps } from "../../../common/props";
 import CustomFindInput from "../../../components/admin/find-input";
@@ -30,15 +31,84 @@ import {
   HandleLockSupplier,
   HandleUpdateSupplier,
 } from "../../../services/api";
+import { showCreateValidAddress } from "../../../utils/showCreateValidAddress";
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
-import { showCreateValidAddress } from "../../../utils/showCreateValidAddress";
-import { CommonStatus } from "../../../common/values";
+
+// Các giá trị chung
+// - Tên đối tượng
+const objectName = "Nhà cung cấp"
+// - Tiêu đề modal
+const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
+const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
+const titleModalUpdate = TitleModalCommon.update(objectName.toLowerCase());
+const titleModalLock = TitleModalCommon.lock(objectName.toLowerCase());
+const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 
 // Admin Suppliers Page
 const AdminSuppliersPage = () => {
-  // Cấu hình cột bảng dữ liệu của Nhà cung cấp
-  const [loading, setLoading] = useState<boolean>(false);
+  // Đối tượng query client để thực thi react-query
+  const queryClient = useQueryClient();
+
+  // Các biến giữ giá trị từ việc lọc thông tin
+  // - Tìm kiếm thông tin
+  const findOptions = [
+    { label: "#", value: "id" },
+    { label: "Tên", value: "name" },
+    { label: "SĐT", value: "phone" },
+    { label: "Email", value: "email" },
+  ];
+  const [filterFindType, setFilterFindType] = useState<string | null>(
+    findOptions[0].value
+  );
+  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
+  // - Trạng thái
+  const statusOptions: SelectProps["options"] = [
+    { label: CommonStatus["active"], value: CommonStatus["active"] },
+    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
+  ];
+  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
+    null
+  );
+
+  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
+  // - Truy vấn dữ liệu
+  const {
+    data: suppliers,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [
+      'suppliers',
+      filterFindType,
+      filterFindValue,
+      filterStatusValue,
+    ],
+    queryFn: async () => {
+      const res = await FindAllSupplier({
+        findType: filterFindType!,
+        findValue: filterFindValue!,
+        statusValue: filterStatusValue!,
+      });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+    enabled: !!filterFindType,  //
+    retry: ReactQueryGetData.retry,
+    staleTime: ReactQueryGetData.staleTime,
+  });
+  // - Cột thuộc tính
   const columns: ColumnsType<SuppliersType> = [
     {
       title: "#",
@@ -91,7 +161,7 @@ const AdminSuppliersPage = () => {
             className=" info action"
             onClick={() =>
               updatePropertiesModal(
-                "Chi tiết nhà cung cấp",
+                titleModalDetail,
                 true,
                 "60%",
                 "info suppliers",
@@ -105,7 +175,7 @@ const AdminSuppliersPage = () => {
             className=" update action margin-lr"
             onClick={() =>
               updatePropertiesModal(
-                "Cập nhật nhà cung cấp",
+                titleModalUpdate,
                 true,
                 "60%",
                 "update suppliers",
@@ -119,8 +189,7 @@ const AdminSuppliersPage = () => {
             className=" lock action"
             onClick={() =>
               updatePropertiesModal(
-                (record.status == CommonStatus["active"] ? "Khoá" : "Mở khoá") +
-                " nhà cung cấp",
+                (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
                 true,
                 "30%",
                 "lock suppliers",
@@ -136,36 +205,14 @@ const AdminSuppliersPage = () => {
       ),
     },
   ];
-  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
-  const [suppliers, setSuppliers] = useState<SuppliersType[]>([]);
+  // Các thành phần
   const {
     currentItems,
     handleTableChange,
     paginationProps,
     sortField,
     sortOrder,
-  } = CustomPaginationProps(suppliers, 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-
-  // Các biến giữ giá trị từ việc lọc thông tin
-  // - Tìm kiếm thông tin
-  const findOptions = [
-    { label: "#", value: "id" },
-    { label: "Tên", value: "name" },
-    { label: "SĐT", value: "phone" },
-    { label: "Email", value: "email" },
-  ];
-  const [filterFindType, setFilterFindType] = useState<string | null>(
-    findOptions[0].value
-  );
-  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
-  // - Trạng thái
-  const statusOptions: SelectProps["options"] = [
-    { label: CommonStatus["active"], value: CommonStatus["active"] },
-    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
-  ];
-  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
-    null
-  );
+  } = CustomPaginationProps(suppliers || [], 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -208,6 +255,62 @@ const AdminSuppliersPage = () => {
     address: "Nhập Địa chỉ",
     status: "Chọn Trạng thái",
   };
+  // - Mutation cho việc thêm, cập nhật và khoá dữ liệu
+  const handleSubmitMutation = useMutation({
+    mutationFn: async ({ type, values, objectId }: ReactQueryMutationProps<SuppliersType>) => {
+      if (openModal) {
+        if (type === "create" && titleModal === titleModalCreate) {
+          return await HandleCreateSupplier({
+            name: values!.name || undefined,
+            phone: values!.phone || undefined,
+            email: values!.email || undefined,
+            address: values!.address || undefined,
+            status: values!.status || undefined,
+          })
+        } else if (type === "update" && titleModal === titleModalUpdate) {
+          return await HandleUpdateSupplier({
+            id: values!.id,
+            name: values!.name || undefined,
+            phone: values!.phone || undefined,
+            email: values!.email || undefined,
+            address: values!.address || undefined,
+            timeUpdate: new Date().toISOString(),
+          });
+        } else if ((type === "lock" && titleModal === titleModalLock)
+          || (type === "unlock" && titleModal === titleModalUnlock)) {
+          return await HandleLockSupplier({
+            id: objectId! as number,
+            status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
+            timeUpdate: new Date().toISOString(),
+          })
+        }
+      }
+    },
+    onSuccess: () => {
+      openNotification({
+        type: "success",
+        message: "Thành công",
+        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thành công!",
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['suppliers'] });
+        setOpenModal(false);
+      }, 1500);
+    },
+    onError: () => {
+      openNotification({
+        type: "error",
+        message: "Thất bại",
+        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thất bại!",
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+      }, 1500);
+    },
+  });
   // - Các modal tương ứng cho từng chức năng
   const DetailSuppliers = ({
     id,
@@ -319,39 +422,11 @@ const AdminSuppliersPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleCreateSupplier({
-                name: values!.name || undefined,
-                phone: values!.phone || undefined,
-                email: values!.email || undefined,
-                address: values!.address || undefined,
-                status: values!.status || undefined,
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Thêm thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "create", values: values });
 
-                setTimeout(() => {
-                  getAllSupplier();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Thêm thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -510,40 +585,11 @@ const AdminSuppliersPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleUpdateSupplier({
-                id: values!.id,
-                name: values!.name || undefined,
-                phone: values!.phone || undefined,
-                email: values!.email || undefined,
-                address: values!.address || undefined,
-                timeUpdate: new Date().toISOString(),
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Cập nhật thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "update", values: values });
 
-                setTimeout(() => {
-                  getAllSupplier();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Cập nhật thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -671,38 +717,11 @@ const AdminSuppliersPage = () => {
               content: "Hành động này không thể hoàn tác.",
             });
             if (answer) {
-              // Gọi api xử lý
-              const res = await HandleLockSupplier({
-                id: id!,
-                status: status!,
-                timeUpdate: new Date().toISOString(),
-              });
-              if (res.status == 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: `${statusValue ? "Khoá" : "Mở khoá"
-                    } thành công !`,
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: (statusValue ? "lock" : "unlock"), objectId: id! });
 
-                setTimeout(() => {
-                  getAllSupplier();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: `${statusValue ? "Khoá" : "Mở khoá"} thất bại !`,
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -761,40 +780,11 @@ const AdminSuppliersPage = () => {
     ),
   };
 
-  // Hàm cập nhật danh sách các nhà cung cấp (gọi API)
-  const getAllSupplier = async () => {
-    setLoading(true);
-    const res = await FindAllSupplier({
-      findType: filterFindType!,
-      findValue: filterFindValue!,
-      statusValue: filterStatusValue!,
-    });
-    if (res!.status === 200) {
-      setLoading(false);
-      setSuppliers(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-
-  //
-  useEffect(() => {
-    getAllSupplier();
-  }, []);
-  useEffect(() => {
-    getAllSupplier();
-  }, [filterFindType, filterFindValue, filterStatusValue]);
-
   return (
     <>
       <main className="main">
         <div className="main__header">
-          <h1 className="main__title">Quản lý món ăn - Nhà cung cấp</h1>
+          <h1 className="main__title">Quản lý món ăn - {objectName}</h1>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -817,15 +807,13 @@ const AdminSuppliersPage = () => {
           <button
             className={
               "main__filter-button btn create" +
-              (openModal &&
-                String(titleModal).includes("Thêm") &&
-                String(classNameModal).includes("create")
+              (openModal && titleModal === titleModalCreate
                 ? " active"
                 : "")
             }
             onClick={() =>
               updatePropertiesModal(
-                "Thêm nhà cung cấp",
+                titleModalCreate,
                 true,
                 "60%",
                 "create suppliers",
@@ -843,7 +831,7 @@ const AdminSuppliersPage = () => {
             rowKey={(record) => record!.id as number}
             data={currentItems}
             pagination={paginationProps}
-            loading={loading}
+            loading={isLoading}
             className="table-actions suppliers"
             onChange={handleTableChange}
           />

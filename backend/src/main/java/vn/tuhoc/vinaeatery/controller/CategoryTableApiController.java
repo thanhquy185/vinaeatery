@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,11 +18,13 @@ import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.CategoryTable;
 import vn.tuhoc.vinaeatery.domain.criteria.CategoryTableCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
 import vn.tuhoc.vinaeatery.domain.dto.CategoryTableUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.service.CategoryTableService;
 import vn.tuhoc.vinaeatery.service.TableService;
 import vn.tuhoc.vinaeatery.service.TimeService;
+import vn.tuhoc.vinaeatery.util.HandleFormGetData;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
@@ -36,15 +37,27 @@ public class CategoryTableApiController {
     private final TimeService timeService;
 
     // Methods
-    @GetMapping("/list")
-    public ResponseEntity<List<?>> listCategoryTable(CategoryTableCriteria categoryTableCriteria) {
+    @PostMapping("/list")
+    public ResponseEntity<?> listCategoryTable(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            CategoryTableCriteria categoryTableCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<CategoryTable> listCategoryTable = this.categoryTableService
                 .getAll(categoryTableCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listCategoryTable);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<?> handleDetailCategoryTable(@PathVariable("id") Integer id) {
+    @PostMapping("/detail/{id}")
+    public ResponseEntity<?> detailCategoryTable(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            @PathVariable("id") Integer id) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         CategoryTable categoryTableSelected = this.categoryTableService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(categoryTableSelected);
     }
@@ -94,7 +107,7 @@ public class CategoryTableApiController {
         if (tableService.getAllByCategoryTableId(id) != null
                 && !tableService.getAllByCategoryTableId(id).isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr("Loại bàn này đang được sử dụng !"));
+                    .body(ValidationUtil.buildRestResponseWithStr("Loại bàn này đang được ít nhất 1 bàn sử dụng sử dụng !"));
         }
 
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE

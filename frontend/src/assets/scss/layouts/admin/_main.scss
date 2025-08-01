@@ -40,6 +40,7 @@
 
   &__chart {
     display: flex;
+    align-items: center;
     gap: calc($admin-space / 2);
     // background: #fff;
     // padding: 14px 16px;
@@ -52,6 +53,8 @@
 
   &__chart.split-2>* {
     width: 50%;
+    height: 100%;
+    // @include size(50%, 200px);
     // background: #fff;
     // border-radius: $main-border-radius;
   }
@@ -65,12 +68,25 @@
 
   &__chart-card>* {
     width: calc(100% / 2 - calc($admin-space / 4));
+    height: auto;
     border: none;
+  }
+
+  &__chart-card .ant-card-body {
+    height: 100%;
+  }
+
+  &__chart-card .ant-statistic-title {
+    font-size: 1.6rem;
+  }
+
+  &__chart-card .ant-statistic-content {
+    font-size: 2.4rem;
   }
 
   &__chart-card .card-1 .ant-card-body,
   &__cards.dashboard-revenue .card-1 .ant-card-body {
-    background-color: #fff3e0;
+    background-color: #ffeccf;
   }
 
   &__chart-card .card-1 .ant-statistic-content span,
@@ -185,8 +201,9 @@
     @include size(1.6rem !important);
   }
 
-  &__filter.call-foods &__filter-select.filter-time,
-  &__filter.use-tables &__filter-select.filter-time {
+  &__filter.table-histories &__filter-select.filter-time,
+  &__filter.use-tables &__filter-select.filter-time,
+  &__filter.call-foods &__filter-select.filter-time {
     width: calc($filter-find-width - calc($admin-space / 2));
   }
 
@@ -194,6 +211,7 @@
   //   width: calc(calc(calc(100% - $filter-find-width - $filter-button-width) / 2) - calc($admin-space / 2));
   // }
 
+  &__table-histories,
   &__use-tables,
   &__segmented+&__filter,
   &__chart,

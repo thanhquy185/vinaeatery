@@ -18,8 +18,8 @@ import {
 } from "../../pages/admin/dashboard/dashboard-profit";
 import { openNotification } from "../../utils/showNotification";
 import { handlePrintTicket } from "../../utils/printTicket";
-import { tableDataQueryDashboardOrders } from "../../pages/admin/dashboard/dashboard-orders";
-import { tableDataQueryDashboardInputTickets } from "../../pages/admin/dashboard/dashboard-input-tickets";
+import { cardsQueryDashboardOrders, chartQueryDashboardOrders, tableDataQueryDashboardOrders } from "../../pages/admin/dashboard/dashboard-orders";
+import { cardsQueryDashboardInputTickets, chartQueryDashboardInputTickets, tableDataQueryDashboardInputTickets } from "../../pages/admin/dashboard/dashboard-input-tickets";
 
 // Kiểu dữ liệu cho các tham số truyền vào
 type FilterDashboardProps = {
@@ -114,10 +114,22 @@ const FilterDashboard: React.FC<FilterDashboardProps> = ({
       tableDataQueryDashboardProfit
     );
     // - Thống kê Đơn món ăn
+    const cardsDashboardOrders = document.querySelector(
+      cardsQueryDashboardOrders
+    );
+    const chartDashboardOrders = document.querySelector(
+      chartQueryDashboardOrders
+    );
     const tableDataDashboardOrders = document.querySelector(
       tableDataQueryDashboardOrders
     );
     // - Thống kê Phiếu nhập
+    const cardsDashboardInputTickets = document.querySelector(
+      cardsQueryDashboardInputTickets
+    );
+    const chartDashboardInputTickets = document.querySelector(
+      chartQueryDashboardInputTickets
+    );
     const tableDataDashboardInputTickets = document.querySelector(
       tableDataQueryDashboardInputTickets
     );
@@ -143,9 +155,10 @@ const FilterDashboard: React.FC<FilterDashboardProps> = ({
             <p className="ticket__date">
               Ngày thống kê: {dateDashboardStart} - {dateDashboardEnd}
             </p>
-            {titleDashboard === "THỐNG KÊ LỢI NHUẬN" &&
+            {
+              titleDashboard === "THỐNG KÊ LỢI NHUẬN" &&
               typeDashboard === "dashboard-profit" &&
-              lineChartDashboardProfit && (
+              lineChartDashboardProfit && tableDataDashboardProfit && (
                 <>
                   <p className="ticket__info">
                     <b>Biểu đồ đường:</b>
@@ -156,12 +169,6 @@ const FilterDashboard: React.FC<FilterDashboardProps> = ({
                       __html: lineChartDashboardProfit?.outerHTML ?? "",
                     }}
                   ></div>
-                </>
-              )}
-            {titleDashboard === "THỐNG KÊ LỢI NHUẬN" &&
-              typeDashboard === "dashboard-profit" &&
-              tableDataDashboardProfit && (
-                <>
                   <p className="ticket__info">
                     <b>Bảng dữ liệu:</b>
                   </p>
@@ -172,11 +179,22 @@ const FilterDashboard: React.FC<FilterDashboardProps> = ({
                     }}
                   ></div>
                 </>
-              )}
-            {titleDashboard === "THỐNG KÊ ĐƠN MÓN ĂN" &&
+              )
+            }
+            {
+              titleDashboard === "THỐNG KÊ ĐƠN MÓN ĂN" &&
               typeDashboard === "dashboard-orders" &&
-              tableDataDashboardOrders && (
+              cardsDashboardOrders && chartDashboardOrders && tableDataDashboardOrders && (
                 <>
+                  <p className="ticket__info">
+                    <b>Tóm tắt:</b>
+                  </p>
+                  <div
+                    className="ticket__chart split-2"
+                    dangerouslySetInnerHTML={{
+                      __html: (cardsDashboardOrders?.outerHTML ?? "") + (chartDashboardOrders?.outerHTML ?? "")
+                    }}
+                  ></div>
                   <p className="ticket__info">
                     <b>Bảng dữ liệu:</b>
                   </p>
@@ -187,11 +205,22 @@ const FilterDashboard: React.FC<FilterDashboardProps> = ({
                     }}
                   ></div>
                 </>
-              )}
-            {titleDashboard === "THỐNG KÊ PHIẾU NHẬP" &&
+              )
+            }
+            {
+              titleDashboard === "THỐNG KÊ PHIẾU NHẬP" &&
               typeDashboard === "dashboard-input-tickets" &&
-              tableDataDashboardInputTickets && (
+              cardsDashboardInputTickets && chartDashboardInputTickets && tableDataDashboardInputTickets && (
                 <>
+                  <p className="ticket__info">
+                    <b>Tóm tắt:</b>
+                  </p>
+                  <div
+                    className="ticket__chart split-2"
+                    dangerouslySetInnerHTML={{
+                      __html: (cardsDashboardInputTickets?.outerHTML ?? "") + (chartDashboardInputTickets?.outerHTML ?? "")
+                    }}
+                  ></div>
                   <p className="ticket__info">
                     <b>Bảng dữ liệu:</b>
                   </p>
@@ -202,7 +231,8 @@ const FilterDashboard: React.FC<FilterDashboardProps> = ({
                     }}
                   ></div>
                 </>
-              )}
+              )
+            }
           </main>
           <footer className="ticket__footer input_ticket">
             <p className="ticket__customer">

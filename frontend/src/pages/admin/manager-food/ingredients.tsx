@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleInfo,
@@ -11,17 +12,18 @@ import { DatePicker, Form, Input, InputNumber, Select, Tag } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import type { SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import type {
-  CategoryIngredientsType,
-  IngredientsFormatType,
-} from "../../../common/types";
-import { ruleRequired } from "../../../common/rules";
 import { CustomPaginationProps } from "../../../common/props";
+import type {
+  IngredientsFormatType,
+  IngredientsType,
+  ReactQueryMutationProps,
+} from "../../../common/types";
+import { CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
+import { ruleRequired } from "../../../common/rules";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomTableActions from "../../../components/admin/table-actions";
 import CustomModal from "../../../components/admin/modal";
-import CustomInput from "../../../components/admin/input";
 import {
   FindAllCategoryIngredient,
   FindAllIngredient,
@@ -32,9 +34,16 @@ import {
 import { openNotification } from "../../../utils/showNotification";
 import { openConfirmation } from "../../../utils/showConfirmation";
 import dayjs from "dayjs";
-import { CommonStatus } from "../../../common/values";
 
 // Các giá trị chung
+// - Tên đối tượng
+const objectName = "Nguyên liệu"
+// - Tiêu đề modal
+const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
+const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
+const titleModalUpdate = TitleModalCommon.update(objectName.toLowerCase());
+const titleModalLock = TitleModalCommon.lock(objectName.toLowerCase());
+const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 // - Đơn vị
 const units = [
   "mg",
@@ -62,8 +71,102 @@ const units = [
 
 // Admin Ingredients Page
 const AdminIngredientsPage = () => {
-  // Cấu hình cột bảng dữ liệu của Nguyên liệu
-  const [loading, setLoading] = useState<boolean>(false);
+  // Đối tượng query client để thực thi react-query
+  const queryClient = useQueryClient();
+
+  // Các biến giữ dữ liệu về loại nguyên liệu
+  const {
+    data: categoryIngredients,
+  } = useQuery({
+    queryKey: [
+      'category-ingredients',
+    ],
+    queryFn: async () => {
+      const res = await FindAllCategoryIngredient({ statusValue: [CommonStatus.active] });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+  });
+
+  // Các biến giữ giá trị từ việc lọc thông tin
+  // - Tìm kiếm thông tin
+  const findOptions = [
+    { label: "#", value: "id" },
+    { label: "Tên", value: "name" },
+  ];
+  const [filterFindType, setFilterFindType] = useState<string | null>(
+    findOptions[0].value
+  );
+  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
+  // - Loại món ăn
+  const categoryOptions: SelectProps["options"] = categoryIngredients?.map(
+    (categoryIngredient) => ({
+      label: `#${categoryIngredient.id} - ${categoryIngredient.name}`,
+      value: categoryIngredient.id,
+    })
+  );
+  const [filterCategoryValue, setFilterCategoryValue] = useState<
+    string[] | null
+  >(null);
+  // - Trạng thái
+  const statusOptions: SelectProps["options"] = [
+    { label: CommonStatus["active"], value: CommonStatus["active"] },
+    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
+  ];
+  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
+    null
+  );
+
+  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
+  // - Truy vấn dữ liệu
+  const {
+    data: ingredients,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [
+      'ingredients',
+      filterFindType,
+      filterFindValue,
+      filterCategoryValue,
+      filterStatusValue,
+    ],
+    queryFn: async () => {
+      const res = await FindAllIngredient({
+        findType: filterFindType!,
+        findValue: filterFindValue!,
+        categoryValue: filterCategoryValue!,
+        statusValue: filterStatusValue!,
+      });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+    enabled: !!filterFindType,  //
+    retry: ReactQueryGetData.retry,
+    staleTime: ReactQueryGetData.staleTime,
+  });
+  // - Cột thuộc tính
   const columns: ColumnsType<IngredientsFormatType> = [
     {
       title: "#",
@@ -129,7 +232,7 @@ const AdminIngredientsPage = () => {
             className="action info"
             onClick={() =>
               updatePropertiesModal(
-                "Chi tiết nguyên liệu",
+                titleModalDetail,
                 true,
                 "60%",
                 "info ingredients",
@@ -143,7 +246,7 @@ const AdminIngredientsPage = () => {
             className="action update margin-lr"
             onClick={() =>
               updatePropertiesModal(
-                "Cập nhật nguyên liệu",
+                titleModalUpdate,
                 true,
                 "60%",
                 "update ingredients",
@@ -157,7 +260,7 @@ const AdminIngredientsPage = () => {
             className="action lock"
             onClick={() =>
               updatePropertiesModal(
-                (record.status == CommonStatus["active"] ? "Khoá" : "Mở khoá") + " nguyên liệu",
+                (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
                 true,
                 "30%",
                 "lock ingredients",
@@ -173,48 +276,14 @@ const AdminIngredientsPage = () => {
       ),
     },
   ];
-  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
-  const [categoryIngredients, setCategoryIngredients] = useState<
-    CategoryIngredientsType[]
-  >([]);
-  const [ingredients, setIngredients] = useState<IngredientsFormatType[]>([]);
+  // - Các thành phần
   const {
     currentItems,
     handleTableChange,
     paginationProps,
     sortField,
     sortOrder,
-  } = CustomPaginationProps(ingredients, 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-
-  // Các biến giữ giá trị từ việc lọc thông tin
-  // - Tìm kiếm thông tin
-  // - Filter Find (Tìm kiếm thông tin)
-  const findOptions = [
-    { label: "#", value: "id" },
-    { label: "Tên", value: "name" },
-  ];
-  const [filterFindType, setFilterFindType] = useState<string | null>(
-    findOptions[0].value
-  );
-  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
-  // - Loại món ăn
-  const categoryOptions: SelectProps["options"] = categoryIngredients!.map(
-    (categoryIngredient) => ({
-      label: `#${categoryIngredient.id} - ${categoryIngredient.name}`,
-      value: categoryIngredient.id,
-    })
-  );
-  const [filterCategoryValue, setFilterCategoryValue] = useState<
-    string[] | null
-  >(null);
-  // - Trạng thái
-  const statusOptions: SelectProps["options"] = [
-    { label: CommonStatus["active"], value: CommonStatus["active"] },
-    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
-  ];
-  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
-    null
-  );
+  } = CustomPaginationProps(ingredients || [], 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -267,6 +336,83 @@ const AdminIngredientsPage = () => {
     note: "Nhập Ghi chú",
     status: "Chọn Trạng thái",
   };
+  // - Mutation cho việc thêm, cập nhật và khoá dữ liệu
+  const handleSubmitMutation = useMutation({
+    mutationFn: async ({ type, values, objectId }: ReactQueryMutationProps<IngredientsType>) => {
+      if (openModal) {
+        if (type === "create" && titleModal === titleModalCreate) {
+          return await HandleCreateIngredient({
+            name: values!.name || undefined,
+            categoryIngredientId: values!.categoryIngredientId || undefined,
+            unit: values!.unit || undefined,
+            capacity: values!.capacity || undefined,
+            dateCreate:
+              values!.dateCreate && dayjs(values!.dateCreate).isValid()
+                ? dayjs(values!.dateCreate).format("YYYY-MM-DD")
+                : undefined,
+            dateRemove:
+              values!.dateRemove && dayjs(values!.dateRemove).isValid()
+                ? dayjs(values!.dateRemove).format("YYYY-MM-DD")
+                : undefined,
+            inputPrice: values!.inputPrice || undefined,
+            inventory: values!.inventory || 0,
+            note: values!.note || undefined,
+            status: values!.status || undefined,
+          })
+        } else if (type === "update" && titleModal === titleModalUpdate) {
+          return await HandleUpdateIngredient({
+            id: values!.id,
+            name: values!.name || undefined,
+            categoryIngredientId: values!.categoryIngredientId || undefined,
+            unit: values!.unit || undefined,
+            capacity: values!.capacity || undefined,
+            dateCreate:
+              values!.dateCreate && dayjs(values!.dateCreate).isValid()
+                ? dayjs(values!.dateCreate).format("YYYY-MM-DD")
+                : undefined,
+            dateRemove:
+              values!.dateRemove && dayjs(values!.dateRemove).isValid()
+                ? dayjs(values!.dateRemove).format("YYYY-MM-DD")
+                : undefined,
+            inputPrice: values!.inputPrice || undefined,
+            note: values!.note || undefined,
+            timeUpdate: new Date().toISOString(),
+          });
+        } else if ((type === "lock" && titleModal === titleModalLock)
+          || (type === "unlock" && titleModal === titleModalUnlock)) {
+          return await HandleLockIngredient({
+            id: objectId! as number,
+            status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
+            timeUpdate: new Date().toISOString(),
+          })
+        }
+      }
+    },
+    onSuccess: () => {
+      openNotification({
+        type: "success",
+        message: "Thành công",
+        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thành công!",
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['ingredients'] });
+        setOpenModal(false);
+      }, 1500);
+    },
+    onError: () => {
+      openNotification({
+        type: "error",
+        message: "Thất bại",
+        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thất bại!",
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+      }, 1500);
+    },
+  });
   // - Các modal tương ứng cho từng chức năng
   const DetailIngredients = ({
     id,
@@ -373,7 +519,7 @@ const AdminIngredientsPage = () => {
                 <Select disabled={true} />
               </Form.Item>
               <Form.Item label="." className="modal__form-group-item hidden">
-                <CustomInput />
+                <Input />
               </Form.Item>
               <div className="modal__form-group-item-warper split-2">
                 <Form.Item
@@ -444,50 +590,11 @@ const AdminIngredientsPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleCreateIngredient({
-                name: values!.name || undefined,
-                categoryIngredientId: values!.categoryIngredient || undefined,
-                unit: values!.unit || undefined,
-                capacity: values!.capacity || undefined,
-                dateCreate:
-                  values!.dateCreate && dayjs(values!.dateCreate).isValid()
-                    ? dayjs(values!.dateCreate).format("YYYY-MM-DD")
-                    : undefined,
-                dateRemove:
-                  values!.dateRemove && dayjs(values!.dateRemove).isValid()
-                    ? dayjs(values!.dateRemove).format("YYYY-MM-DD")
-                    : undefined,
-                inputPrice: values!.inputPrice || undefined,
-                inventory: values!.inventory || 0,
-                note: values!.note || undefined,
-                status: values!.status || undefined,
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Thêm thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "create", values: values });
 
-                setTimeout(() => {
-                  getAllIngredient();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Thêm thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -517,7 +624,7 @@ const AdminIngredientsPage = () => {
                 <Input id="create-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
               <Form.Item
-                name="categoryIngredient"
+                name="categoryIngredientId"
                 label={defaultLabels["categoryIngredient"]}
                 htmlFor="create-categoryIngredient"
                 className="modal__form-group-item"
@@ -591,7 +698,7 @@ const AdminIngredientsPage = () => {
                 />
               </Form.Item>
               <Form.Item label="." className="modal__form-group-item hidden">
-                <CustomInput />
+                <Input />
               </Form.Item>
               <div className="modal__form-group-item-warper split-2">
                 <Form.Item
@@ -682,7 +789,7 @@ const AdminIngredientsPage = () => {
           initialValues={{
             id: id!,
             name: name!,
-            categoryIngredient: categoryIngredient!.id,
+            categoryIngredientId: categoryIngredient!.id,
             unit: unit!,
             capacity: capacity!,
             dateCreate: dayjs(dateCreate!),
@@ -711,50 +818,11 @@ const AdminIngredientsPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleUpdateIngredient({
-                id: values!.id,
-                name: values!.name || undefined,
-                categoryIngredientId: values!.categoryIngredient || undefined,
-                unit: values!.unit || undefined,
-                capacity: values!.capacity || undefined,
-                dateCreate:
-                  values!.dateCreate && dayjs(values!.dateCreate).isValid()
-                    ? dayjs(values!.dateCreate).format("YYYY-MM-DD")
-                    : undefined,
-                dateRemove:
-                  values!.dateRemove && dayjs(values!.dateRemove).isValid()
-                    ? dayjs(values!.dateRemove).format("YYYY-MM-DD")
-                    : undefined,
-                inputPrice: values!.inputPrice || undefined,
-                note: values!.note || undefined,
-                timeUpdate: new Date().toISOString(),
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Cập nhật thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "update", values: values });
 
-                setTimeout(() => {
-                  getAllIngredient();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Cập nhật thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -776,11 +844,12 @@ const AdminIngredientsPage = () => {
                 label={defaultLabels["name"]}
                 htmlFor="update-name"
                 className="modal__form-group-item multiple-2"
+                rules={[ruleRequired("Tên nguyên liệu không được để trống !")]}
               >
                 <Input id="update-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
               <Form.Item
-                name="categoryIngredient"
+                name="categoryIngredientId"
                 label={defaultLabels["categoryIngredient"]}
                 htmlFor="update-categoryIngredient"
                 className="modal__form-group-item"
@@ -844,7 +913,7 @@ const AdminIngredientsPage = () => {
                 <Select disabled={true} />
               </Form.Item>
               <Form.Item label="." className="modal__form-group-item hidden">
-                <CustomInput />
+                <Input />
               </Form.Item>
               <div className="modal__form-group-item-warper split-2">
                 <Form.Item
@@ -942,38 +1011,11 @@ const AdminIngredientsPage = () => {
               content: "Hành động này không thể hoàn tác.",
             });
             if (answer) {
-              // Gọi api xử lý
-              const res = await HandleLockIngredient({
-                id: id!,
-                status: status!,
-                timeUpdate: new Date().toISOString(),
-              });
-              if (res.status == 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: `${statusValue ? "Khoá" : "Mở khoá"
-                    } thành công !`,
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: (statusValue ? "lock" : "unlock"), objectId: id! });
 
-                setTimeout(() => {
-                  getAllIngredient();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: `${statusValue ? "Khoá" : "Mở khoá"} thất bại !`,
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -1042,55 +1084,11 @@ const AdminIngredientsPage = () => {
     ),
   };
 
-  // Hàm cập nhật danh sách các nhà cung cấp (gọi API)
-  const getAllCategoryIngredient = async () => {
-    const res = await FindAllCategoryIngredient({ statusValue: ["Hoạt động"] });
-    if (res!.status === 200) {
-      setCategoryIngredients(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-  const getAllIngredient = async () => {
-    setLoading(true);
-    const res = await FindAllIngredient({
-      findType: filterFindType!,
-      findValue: filterFindValue!,
-      categoryValue: filterCategoryValue!,
-      statusValue: filterStatusValue!,
-    });
-    if (res!.status === 200) {
-      setLoading(false);
-      setIngredients(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-
-  //
-  useEffect(() => {
-    getAllCategoryIngredient();
-    getAllIngredient();
-  }, []);
-  useEffect(() => {
-    getAllIngredient();
-  }, [filterFindType, filterFindValue, filterCategoryValue, filterStatusValue]);
-
   return (
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Quản lý món ăn - Nguyên liệu</h2>
+          <h2 className="main__title">Quản lý món ăn - {objectName}</h2>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -1122,15 +1120,13 @@ const AdminIngredientsPage = () => {
           <button
             className={
               "main__filter-button btn create" +
-              (openModal &&
-                String(titleModal).includes("Thêm") &&
-                String(classNameModal).includes("create")
+              (openModal && titleModal === titleModalCreate
                 ? " active"
                 : "")
             }
             onClick={() =>
               updatePropertiesModal(
-                "Thêm nguyên liệu",
+                titleModalCreate,
                 true,
                 "60%",
                 "create ingredients",
@@ -1147,7 +1143,7 @@ const AdminIngredientsPage = () => {
             columns={columns}
             rowKey={(record) => record!.id as number}
             data={currentItems}
-            loading={loading}
+            loading={isLoading}
             pagination={paginationProps}
             className="table-actions ingredients"
             onChange={handleTableChange}

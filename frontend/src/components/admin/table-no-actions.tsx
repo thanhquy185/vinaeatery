@@ -39,14 +39,14 @@ const CustomTableNoActions: React.FC<CustomTableNoActionsProps> = ({
     <>
       <table id={id} className={"table-no-actions " + className}>
         <colgroup>
-          {columnWidths!.map((columnWidth) => (
-            <col style={{ width: columnWidth }} />
+          {columnWidths!.map((columnWidth, index) => (
+            <col key={index} style={{ width: columnWidth }} />
           ))}
         </colgroup>
         <thead>
           <tr>
-            {columnTitles!.map((columnTitle) => (
-              <th>{columnTitle}</th>
+            {columnTitles!.map((columnTitle, index) => (
+              <th key={index}>{columnTitle}</th>
             ))}
           </tr>
         </thead>

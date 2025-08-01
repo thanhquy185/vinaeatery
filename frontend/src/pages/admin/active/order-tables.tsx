@@ -19,9 +19,9 @@ import {
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import type { ColumnsType } from "antd/es/table";
-import type { OrderTablesFormatType } from "../../../common/types";
+import type { OrderTablesFormatType, OrderTablesType, ReactQueryMutationProps } from "../../../common/types";
 import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules";
-import { CommonStatus } from "../../../common/values";
+import { CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
 import { CustomPaginationProps } from "../../../common/props";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";
@@ -37,11 +37,85 @@ import {
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
 import { showCreateValidAddress } from "../../../utils/showCreateValidAddress";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+// Các giá trị chung
+// - Tên đối tượng
+const objectName = "Đơn đặt bàn"
+// - Tiêu đề modal
+const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
+const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
+const titleModalUpdate = TitleModalCommon.update(objectName.toLowerCase());
+const titleModalLock = TitleModalCommon.lock(objectName.toLowerCase());
+const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 
 // Admin Order Tables Page
 const AdminOrderTablesPage = () => {
-  // Cấu hình cột bảng dữ liệu của Đơn đặt bàn
-  const [loading, setLoading] = useState<boolean>(false);
+  // Đối tượng query client để thực thi react-query
+  const queryClient = useQueryClient();
+
+  // Các biến giữ giá trị từ việc lọc thông tin
+  // - Tìm kiếm thông tin
+  const findOptions = [
+    { label: "#", value: "id" },
+    { label: "Tên", value: "fullname" },
+    { label: "SĐT", value: "phone" },
+  ];
+  const [filterFindType, setFilterFindType] = useState<string | null>(
+    findOptions[0].value
+  );
+  const [filterFindValue, setFilterFindValue] = useState<string | null>("");
+  // - Thời gian đặt bàn
+  const [filterTimeValue, setFilterTimeValue] = useState<[string, string]>();
+  /// - Trạng thái
+  const statusOptions: SelectProps["options"] = [
+    { label: CommonStatus["active"], value: CommonStatus["active"] },
+    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
+  ];
+  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
+    null
+  );
+
+  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
+  // - Truy vấn dữ liệu
+  const {
+    data: orderTables,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [
+      'order-tables',
+      filterFindType,
+      filterFindValue,
+      filterTimeValue,
+      filterStatusValue,
+    ],
+    queryFn: async () => {
+      const res = await FindAllOrderTable({
+        findType: filterFindType!,
+        findValue: filterFindValue!,
+        timeValue: filterTimeValue!,
+        statusValue: filterStatusValue!,
+      });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+    enabled: !!filterFindType,  //
+    retry: ReactQueryGetData.retry,
+    staleTime: ReactQueryGetData.staleTime,
+  });
+  // - Cột thuộc tính
   const columns: ColumnsType<OrderTablesFormatType> = [
     {
       title: "#",
@@ -100,7 +174,7 @@ const AdminOrderTablesPage = () => {
             className="action info"
             onClick={() =>
               updatePropertiesModal(
-                "Chi tiết đơn đặt bàn",
+                titleModalDetail,
                 true,
                 "89%",
                 "info order-tables",
@@ -114,7 +188,7 @@ const AdminOrderTablesPage = () => {
             className="action update margin-lr"
             onClick={() =>
               updatePropertiesModal(
-                "Cập nhật đơn đặt bàn",
+                titleModalUpdate,
                 true,
                 "89%",
                 "update order-tables",
@@ -128,8 +202,7 @@ const AdminOrderTablesPage = () => {
             className="action lock"
             onClick={() =>
               updatePropertiesModal(
-                (record.status == CommonStatus["active"] ? "Khoá" : "Mở khoá") +
-                " đơn đặt ăn",
+                (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
                 true,
                 "30%",
                 "lock order-tables",
@@ -145,37 +218,14 @@ const AdminOrderTablesPage = () => {
       ),
     },
   ];
-  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
-  const [orderTables, setOrderTables] = useState<OrderTablesFormatType[]>([]);
+  // - Các thành phần
   const {
     currentItems,
     handleTableChange,
     paginationProps,
     sortField,
     sortOrder,
-  } = CustomPaginationProps(orderTables, 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-
-  // Các biến giữ giá trị từ việc lọc thông tin
-  // - Tìm kiếm thông tin
-  const findOptions = [
-    { label: "#", value: "id" },
-    { label: "Tên", value: "fullname" },
-    { label: "SĐT", value: "phone" },
-  ];
-  const [filterFindType, setFilterFindType] = useState<string | null>(
-    findOptions[0].value
-  );
-  const [filterFindValue, setFilterFindValue] = useState<string | null>("");
-  // - Thời gian đặt bàn
-  const [filterTimeValue, setFilterTimeValue] = useState<[string, string]>();
-  /// - Trạng thái
-  const statusOptions: SelectProps["options"] = [
-    { label: CommonStatus["active"], value: CommonStatus["active"] },
-    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
-  ];
-  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
-    null
-  );
+  } = CustomPaginationProps(orderTables || [], 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -229,6 +279,87 @@ const AdminOrderTablesPage = () => {
     note: "Nhập Ghi chú",
     status: "Chọn Trạng thái",
   };
+  // - Mutation cho việc thêm, cập nhật và khoá dữ liệu
+  const handleSubmitMutation = useMutation({
+    mutationFn: async ({ type, values, objectId }: ReactQueryMutationProps<OrderTablesType>) => {
+      if (openModal) {
+        if (type === "create" && titleModal === titleModalCreate) {
+          return await HandleCreateOrderTable({
+            timeOrder:
+              values!.timeOrder && dayjs(values!.timeOrder).isValid()
+                ? dayjs(values!.timeOrder).format("YYYY-MM-DD HH:mm:ss")
+                : undefined,
+            timeArrive:
+              values!.timeArrive && dayjs(values!.timeArrive).isValid()
+                ? dayjs(values!.timeArrive).format("YYYY-MM-DD HH:mm:ss")
+                : undefined,
+            employeeId: 2,
+            note: values!.note || undefined,
+            fullname: values!.fullname || undefined,
+            phone: values!.phone || undefined,
+            email: values!.email || undefined,
+            address: values!.address || undefined,
+            status: values!.status || undefined,
+          })
+        } else if (type === "update" && titleModal === titleModalUpdate) {
+          return await HandleUpdateOrderTable({
+            id: values!.id,
+            timeOrder:
+              values!.timeOrder && dayjs(values!.timeOrder).isValid()
+                ? dayjs(values!.timeOrder).format("YYYY-MM-DD HH:mm:ss")
+                : undefined,
+            timeArrive:
+              values!.timeArrive && dayjs(values!.timeArrive).isValid()
+                ? dayjs(values!.timeArrive).format("YYYY-MM-DD HH:mm:ss")
+                : undefined,
+            note: values!.note || undefined,
+            fullname: values!.fullname || undefined,
+            phone: values!.phone || undefined,
+            email: values!.email || undefined,
+            address: values!.address || undefined,
+            timeUpdate: new Date().toISOString(),
+          });
+        } else if ((type === "lock" && titleModal === titleModalLock)
+          || (type === "unlock" && titleModal === titleModalUnlock)) {
+          const res = await HandleLockOrderTable({
+            id: objectId! as number,
+            status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
+            timeUpdate: new Date().toISOString(),
+          })
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
+        }
+      }
+    },
+    onSuccess: () => {
+      openNotification({
+        type: "success",
+        message: "Thành công",
+        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thành công!",
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['order-tables'] });
+        setOpenModal(false);
+      }, 1500);
+    },
+    onError: (error) => {
+      openNotification({
+        type: "error",
+        message: "Thất bại",
+        description: (error ? error.message : (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thất bại!"),
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+      }, 1500);
+    },
+  });
   // - Các modal tương ứng cho từng chức năng
   const DetailOrderTables = ({
     id,
@@ -392,49 +523,11 @@ const AdminOrderTablesPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleCreateOrderTable({
-                timeOrder:
-                  values!.timeOrder && dayjs(values!.timeOrder).isValid()
-                    ? dayjs(values!.timeOrder).format("YYYY-MM-DD HH:mm:ss")
-                    : undefined,
-                timeArrive:
-                  values!.timeArrive && dayjs(values!.timeArrive).isValid()
-                    ? dayjs(values!.timeArrive).format("YYYY-MM-DD HH:mm:ss")
-                    : undefined,
-                employeeId: 2,
-                note: values!.note || undefined,
-                fullname: values!.fullname || undefined,
-                phone: values!.phone || undefined,
-                email: values!.email || undefined,
-                address: values!.address || undefined,
-                status: values!.status || undefined,
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Thêm thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "create", values: values });
 
-                setTimeout(() => {
-                  getAllOrderTable();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Thêm thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -673,49 +766,11 @@ const AdminOrderTablesPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleUpdateOrderTable({
-                id: id!,
-                timeOrder:
-                  values!.timeOrder && dayjs(values!.timeOrder).isValid()
-                    ? dayjs(values!.timeOrder).format("YYYY-MM-DD HH:mm:ss")
-                    : undefined,
-                timeArrive:
-                  values!.timeArrive && dayjs(values!.timeArrive).isValid()
-                    ? dayjs(values!.timeArrive).format("YYYY-MM-DD HH:mm:ss")
-                    : undefined,
-                note: values!.note || undefined,
-                fullname: values!.fullname || undefined,
-                phone: values!.phone || undefined,
-                email: values!.email || undefined,
-                address: values!.address || undefined,
-                timeUpdate: new Date().toISOString(),
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Cập nhật thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "update", values: values });
 
-                setTimeout(() => {
-                  getAllOrderTable();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Cập nhật thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -903,40 +958,11 @@ const AdminOrderTablesPage = () => {
               content: "Hành động này không thể hoàn tác.",
             });
             if (answer) {
-              // Gọi api xử lý
-              const res = await HandleLockOrderTable({
-                id: id!,
-                status: status!,
-                timeUpdate: new Date().toISOString(),
-              });
-              if (res.status == 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: `${statusValue ? "Khoá" : "Mở khoá"
-                    } thành công !`,
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: (statusValue ? "lock" : "unlock"), objectId: id! });
 
-                setTimeout(() => {
-                  getAllOrderTable();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description:
-                    String(res.data) ??
-                    `${statusValue ? "Khoá" : "Mở khoá"} thất bại !`,
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -1003,41 +1029,11 @@ const AdminOrderTablesPage = () => {
     ),
   };
 
-  // Hàm cập nhật danh sách các đơn đặt bàn (gọi API)
-  const getAllOrderTable = async () => {
-    setLoading(true);
-    const res = await FindAllOrderTable({
-      findType: filterFindType!,
-      findValue: filterFindValue!,
-      timeValue: filterTimeValue!,
-      statusValue: filterStatusValue!,
-    });
-    if (res!.status === 200) {
-      setLoading(false);
-      setOrderTables(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-
-  //
-  useEffect(() => {
-    getAllOrderTable();
-  }, []);
-  useEffect(() => {
-    getAllOrderTable();
-  }, [filterFindType, filterFindValue, filterTimeValue, filterStatusValue]);
-
   return (
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Vận hành quán ăn - Đơn đặt bàn</h2>
+          <h2 className="main__title">Vận hành quán ăn - {objectName}</h2>
         </div>
         <div className="main__filter order-tables">
           <CustomFindInput
@@ -1066,15 +1062,13 @@ const AdminOrderTablesPage = () => {
           <button
             className={
               "main__filter-button btn create" +
-              (openModal &&
-                String(titleModal).includes("Thêm") &&
-                String(classNameModal).includes("create")
+              (openModal && titleModal === titleModalCreate
                 ? " active"
                 : "")
             }
             onClick={() =>
               updatePropertiesModal(
-                "Thêm đơn đặt bàn",
+                titleModalCreate,
                 true,
                 "89%",
                 "create order-tables",
@@ -1091,7 +1085,7 @@ const AdminOrderTablesPage = () => {
             columns={columns}
             rowKey={(record) => record!.id as number}
             data={currentItems}
-            loading={loading}
+            loading={isLoading}
             pagination={paginationProps}
             className="table-actions order-tables"
             onChange={handleTableChange}

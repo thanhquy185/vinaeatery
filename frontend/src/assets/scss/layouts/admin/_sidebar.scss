@@ -25,7 +25,7 @@
     top: 0;
     left: 0;
     z-index: 999;
-    @include flex(stretch, center);
+    @include flex(center, center);
     @include size(100%, $admin-header-height);
     // background: $body-color;
     background: #fff;
@@ -34,6 +34,7 @@
     font-size: 2.6rem;
     font-weight: 700;
     box-sizing: content-box;
+    transition: 0.3s ease;
   }
 
   &__brand::after {
@@ -54,7 +55,11 @@
     margin-right: 10px;
   }
 
-  &__group + &__group {
+  &.hide &__brand {
+    justify-content: stretch;
+  }
+
+  &__group+&__group {
     margin-top: 24px;
   }
 
@@ -147,7 +152,7 @@
     width: 60%;
   }
 
-  &__employee-info > *,
+  &__employee-info>*,
   &__employee-btn {
     color: #fff;
     font-size: 1.8rem;

@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleInfo,
@@ -12,9 +13,10 @@ import TextArea from "antd/es/input/TextArea";
 import type { RcFile } from "antd/es/upload";
 import type { SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import type { CategoryFoodsType } from "../../../common/types";
-import { ruleRequired } from "../../../common/rules";
+import type { CategoryFoodsType, ReactQueryMutationProps } from "../../../common/types";
+import { CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
 import { CustomPaginationProps } from "../../../common/props";
+import { ruleRequired } from "../../../common/rules";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomTableActions from "../../../components/admin/table-actions";
@@ -28,12 +30,79 @@ import {
 } from "../../../services/api";
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
-import { CommonStatus } from "../../../common/values";
+
+// Các giá trị chung
+// - Tên đối tượng
+const objectName = "Loại món ăn"
+// - Tiêu đề modal
+const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
+const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
+const titleModalUpdate = TitleModalCommon.update(objectName.toLowerCase());
+const titleModalLock = TitleModalCommon.lock(objectName.toLowerCase());
+const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 
 // Admin Category Foods Page
 const AdminCategoryFoodsPage = () => {
-  // Cấu hình cột bảng dữ liệu của Loại món ăn
-  const [loading, setLoading] = useState<boolean>(false);
+  // Đối tượng query client để thực thi react-query
+  const queryClient = useQueryClient();
+
+  // Các biến giữ giá trị từ việc lọc thông tin
+  // - Tìm kiếm thông tin
+  const findOptions = [
+    { label: "#", value: "id" },
+    { label: "Tên", value: "name" },
+  ];
+  const [filterFindType, setFilterFindType] = useState<string | null>(
+    findOptions[0].value
+  );
+  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
+  // - Trạng thái
+  const statusOptions: SelectProps["options"] = [
+    { label: CommonStatus["active"], value: CommonStatus["active"] },
+    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
+  ];
+  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
+    null
+  );
+
+  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
+  // - Truy vấn dữ liệu
+  const {
+    data: categoryFoods,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [
+      'category-foods',
+      filterFindType,
+      filterFindValue,
+      filterStatusValue,
+    ],
+    queryFn: async () => {
+      const res = await FindAllCategoryFood({
+        findType: filterFindType!,
+        findValue: filterFindValue!,
+        statusValue: filterStatusValue!,
+      });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+    enabled: !!filterFindType,  //
+    retry: ReactQueryGetData.retry,
+    staleTime: ReactQueryGetData.staleTime,
+  });
+  // - Cột thuộc tính
   const columns: ColumnsType<CategoryFoodsType> = [
     {
       title: "#",
@@ -87,7 +156,7 @@ const AdminCategoryFoodsPage = () => {
             className="action info"
             onClick={() =>
               updatePropertiesModal(
-                "Chi tiết loại món ăn",
+                titleModalDetail,
                 true,
                 "60%",
                 "info category-foods",
@@ -101,7 +170,7 @@ const AdminCategoryFoodsPage = () => {
             className="action update margin-lr"
             onClick={() =>
               updatePropertiesModal(
-                "Cập nhật loại món ăn",
+                titleModalUpdate,
                 true,
                 "60%",
                 "update category-foods",
@@ -115,8 +184,7 @@ const AdminCategoryFoodsPage = () => {
             className="action lock"
             onClick={() =>
               updatePropertiesModal(
-                (record.status == CommonStatus["active"] ? "Khoá" : "Mở khoá") +
-                " loại món ăn",
+                (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
                 true,
                 "30%",
                 "lock category-foods",
@@ -135,34 +203,14 @@ const AdminCategoryFoodsPage = () => {
       ),
     },
   ];
-  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
-  const [categoryFoods, setCategoryFoods] = useState<CategoryFoodsType[]>([]);
+  // - Các thành phần
   const {
     currentItems,
     handleTableChange,
     paginationProps,
     sortField,
     sortOrder,
-  } = CustomPaginationProps(categoryFoods, 4, [1, 2, 3, 4, 5]);
-
-  // Các biến giữ giá trị từ việc lọc thông tin
-  // - Tìm kiếm thông tin
-  const findOptions = [
-    { label: "#", value: "id" },
-    { label: "Tên", value: "name" },
-  ];
-  const [filterFindType, setFilterFindType] = useState<string | null>(
-    findOptions[0].value
-  );
-  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
-  // - Trạng thái
-  const statusOptions: SelectProps["options"] = [
-    { label: CommonStatus["active"], value: CommonStatus["active"] },
-    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
-  ];
-  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
-    null
-  );
+  } = CustomPaginationProps(categoryFoods || [], 4, [1, 2, 3, 4, 5]);
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -203,6 +251,66 @@ const AdminCategoryFoodsPage = () => {
     description: "Nhập Mô tả",
     status: "Chọn Trạng thái",
   };
+  // - Mutation cho việc thêm, cập nhật và khoá dữ liệu
+  const handleSubmitMutation = useMutation({
+    mutationFn: async ({ type, values, objectId, imageFile }: ReactQueryMutationProps<CategoryFoodsType>) => {
+      if (openModal) {
+        if (type === "create" && titleModal === titleModalCreate) {
+          return await HandleCreateCategoryFood({
+            name: values!.name || undefined,
+            image: imageFile! || undefined,
+            description: values!.description || undefined,
+            status: values!.status || undefined,
+          })
+        } else if (type === "update" && titleModal === titleModalUpdate) {
+          return await HandleUpdateCategoryFood({
+            id: values!.id,
+            name: values!.name || undefined,
+            image: imageFile! || undefined,
+            description: values!.description || undefined,
+            timeUpdate: new Date().toISOString(),
+          });
+        } else if ((type === "lock" && titleModal === titleModalLock)
+          || (type === "unlock" && titleModal === titleModalUnlock)) {
+          const res = await HandleLockCategoryFood({
+            id: objectId! as number,
+            status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
+            timeUpdate: new Date().toISOString(),
+          })
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
+        }
+      }
+    },
+    onSuccess: () => {
+      openNotification({
+        type: "success",
+        message: "Thành công",
+        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thành công!",
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['category-foods'] });
+        setOpenModal(false);
+      }, 1500);
+    },
+    onError: (error) => {
+      openNotification({
+        type: "error",
+        message: "Thất bại",
+        description: (error ? error.message : (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thất bại!"),
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+      }, 1500);
+    },
+  });
   // - Các modal tương ứng cho từng chức năng
   const DetailCategoryFoods = ({
     id,
@@ -264,18 +372,18 @@ const AdminCategoryFoodsPage = () => {
                 <Input className="text-center" disabled={true} />
               </Form.Item>
               <Form.Item
-                name="name"
-                label={defaultLabels["name"]}
-                className="modal__form-group-item"
-              >
-                <Input disabled={true} />
-              </Form.Item>
-              <Form.Item
                 name="status"
                 label={defaultLabels["status"]}
                 className="modal__form-group-item"
               >
                 <Select disabled={true} />
+              </Form.Item>
+              <Form.Item
+                name="name"
+                label={defaultLabels["name"]}
+                className="modal__form-group-item"
+              >
+                <Input disabled={true} />
               </Form.Item>
             </div>
           </div>
@@ -312,39 +420,11 @@ const AdminCategoryFoodsPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleCreateCategoryFood({
-                name: values!.name || undefined,
-                image: imageFile! || undefined,
-                description: values!.description || undefined,
-                status: values!.status || undefined,
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Thêm thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "create", values: values, imageFile: imageFile });
 
-                setTimeout(() => {
-                  getAllCategoryFood();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                console.log(res);
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Thêm thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -395,15 +475,6 @@ const AdminCategoryFoodsPage = () => {
                 />
               </Form.Item>
               <Form.Item
-                name="name"
-                label={defaultLabels["name"]}
-                htmlFor="create-name"
-                className="modal__form-group-item"
-                rules={[ruleRequired("Tên nguyên liệu không được để trống !")]}
-              >
-                <Input id="create-name" placeholder={defaultInputs["name"]} />
-              </Form.Item>
-              <Form.Item
                 name="status"
                 label={defaultLabels["status"]}
                 htmlFor="create-status"
@@ -425,10 +496,19 @@ const AdminCategoryFoodsPage = () => {
                   ]}
                 />
               </Form.Item>
+              <Form.Item
+                name="name"
+                label={defaultLabels["name"]}
+                htmlFor="create-name"
+                className="modal__form-group-item"
+                rules={[ruleRequired("Tên nguyên liệu không được để trống !")]}
+              >
+                <Input id="create-name" placeholder={defaultInputs["name"]} />
+              </Form.Item>
             </div>
           </div>
           <div className="modal__buttons">
-            <button className="modal__button btn create">Xác nhận</button>
+            <button type='submit' className="modal__button btn create">Xác nhận</button>
           </div>
         </Form>
       </>
@@ -478,39 +558,11 @@ const AdminCategoryFoodsPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleUpdateCategoryFood({
-                id: values!.id,
-                name: values!.name || undefined,
-                image: imageFile! || undefined,
-                description: values!.description || undefined,
-                timeUpdate: new Date().toISOString(),
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Cập nhật thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "update", values: values, imageFile: imageFile });
 
-                setTimeout(() => {
-                  getAllCategoryFood();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Cập nhật thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -559,6 +611,13 @@ const AdminCategoryFoodsPage = () => {
                 <Input className="text-center" disabled={true} />
               </Form.Item>
               <Form.Item
+                name="status"
+                label={defaultLabels["status"]}
+                className="modal__form-group-item"
+              >
+                <Select disabled={true} />
+              </Form.Item>
+              <Form.Item
                 name="name"
                 label={defaultLabels["name"]}
                 htmlFor="update-name"
@@ -567,17 +626,10 @@ const AdminCategoryFoodsPage = () => {
               >
                 <Input id="update-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
-              <Form.Item
-                name="status"
-                label={defaultLabels["status"]}
-                className="modal__form-group-item"
-              >
-                <Select disabled={true} />
-              </Form.Item>
             </div>
           </div>
           <div className="modal__buttons">
-            <button className="modal__button btn update">Xác nhận</button>
+            <button type='submit' className="modal__button btn update">Xác nhận</button>
           </div>
         </Form>
       </>
@@ -614,40 +666,11 @@ const AdminCategoryFoodsPage = () => {
               content: "Hành động này không thể hoàn tác.",
             });
             if (answer) {
-              // Gọi api xử lý
-              const res = await HandleLockCategoryFood({
-                id: id!,
-                status: status!,
-                timeUpdate: new Date().toISOString(),
-              });
-              if (res.status == 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: `${statusValue ? "Khoá" : "Mở khoá"
-                    } thành công !`,
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: (statusValue ? "lock" : "unlock"), objectId: id! });
 
-                setTimeout(() => {
-                  getAllCategoryFood();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description:
-                    String(res.data) ??
-                    `${statusValue ? "Khoá" : "Mở khoá"} thất bại !`,
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -704,40 +727,11 @@ const AdminCategoryFoodsPage = () => {
     ),
   };
 
-  // Hàm cập nhật danh sách các nhà cung cấp (gọi API)
-  const getAllCategoryFood = async () => {
-    setLoading(true);
-    const res = await FindAllCategoryFood({
-      findType: filterFindType!,
-      findValue: filterFindValue!,
-      statusValue: filterStatusValue!,
-    });
-    if (res!.status === 200) {
-      setLoading(false);
-      setCategoryFoods(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-
-  //
-  useEffect(() => {
-    getAllCategoryFood();
-  }, []);
-  useEffect(() => {
-    getAllCategoryFood();
-  }, [filterFindType, filterFindValue, filterStatusValue]);
-
   return (
     <>
       <main className="main">
         <div className="main__header">
-          <h1 className="main__title">Quản lý món ăn - Loại món ăn</h1>
+          <h1 className="main__title">Quản lý món ăn - {objectName}</h1>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -760,15 +754,13 @@ const AdminCategoryFoodsPage = () => {
           <button
             className={
               "main__filter-button btn create" +
-              (openModal &&
-                String(titleModal).includes("Thêm") &&
-                String(classNameModal).includes("create")
+              (openModal && titleModal === titleModalCreate
                 ? " active"
                 : "")
             }
             onClick={() =>
               updatePropertiesModal(
-                "Thêm loại món ăn",
+                titleModalCreate,
                 true,
                 "60%",
                 "create category-foods",
@@ -785,7 +777,7 @@ const AdminCategoryFoodsPage = () => {
             columns={columns}
             rowKey={(record) => record!.id as number}
             data={currentItems}
-            loading={loading}
+            loading={isLoading}
             pagination={paginationProps}
             className="table-actions category-foods"
             onChange={handleTableChange}

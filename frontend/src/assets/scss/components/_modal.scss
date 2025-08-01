@@ -84,13 +84,14 @@
     color: $red-secondary-btn-color;
   }
 
-  &:where(.use-tables, .order-sheets) .ant-modal-content {
+  &:where(.table-histories, .use-tables, .order-sheets) .ant-modal-content {
     padding-top: 20px !important;
     border: 3px dashed #c14400;
     background: #fffcf7;
   }
 
-  &.use-tables .ant-modal-content {
+  &.table-histories,
+  .use-tables .ant-modal-content {
     padding-top: 12px !important;
   }
 
@@ -124,7 +125,7 @@
     box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
   }
 
-  // &.use-tables .ant-modal-title,
+  // &.table-histories, .use-tables .ant-modal-title,
   // &.order-sheets .ant-modal-title {
   //   margin-bottom: 16px;
   //   // color: $primary-color;
@@ -132,22 +133,22 @@
   //   font-size: 2.8rem;
   // }
 
-  &:where(.use-tables, .order-sheets) .ant-modal-title {
+  &:where(.table-histories, .use-tables, .order-sheets) .ant-modal-title {
     margin-bottom: 16px;
     // color: $primary-color;
     color: #b30000;
     font-size: 2.8rem;
   }
 
-  &:where(.use-tables, .order-sheets) .ant-modal-close {
+  &:where(.table-histories, .use-tables, .order-sheets) .ant-modal-close {
     color: #000;
   }
 
-  &:where(.use-tables, .order-sheets) .ant-modal-close:hover {
+  &:where(.table-histories, .use-tables, .order-sheets) .ant-modal-close:hover {
     color: $red-secondary-btn-color;
   }
 
-  &:where(.use-tables, .order-sheets) .info {
+  &:where(.table-histories, .use-tables, .order-sheets) .info {
     font-size: 1.8rem;
     margin-top: 4px;
   }
@@ -162,72 +163,117 @@
   }
 
 
-  &:where(.use-tables, .order-sheets) .info b {
+  &:where(.table-histories, .use-tables, .order-sheets) .info>b {
     width: 25%;
     display: inline-block;
     font-weight: 600;
   }
 
-  &:where(.use-tables, .order-sheets) table {
+  &.table-histories .sub-info {
+    // background: #fdeaea;
+    background: rgba(211, 47, 47, 0.05);
+    padding: 14px 16px;
+    border: 1px solid #ccc;
+    margin-top: 24px;
+    border-radius: 8px;
+    color: #555;
+    font-size: 1.6rem;
+  }
+
+  &.table-histories .sub-info:first-of-type {
+    margin-top: 4px;
+  }
+
+  &.table-histories .sub-info b {
+    display: inline-block;
+    width: 15%;
+    color: #000;
+  }
+
+  &.table-histories .sub-info .status {
+    padding: 4px 6px;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 1.3rem;
+  }
+
+  &.table-histories .sub-info .status.purple {
+    background: $purple-secondary-btn-color;
+  }
+
+  &.table-histories .sub-info .status.red {
+    background: $red-secondary-btn-color;
+  }
+
+  &.table-histories .sub-info .status.green {
+    background: $green-secondary-btn-color;
+  }
+
+  &.table-histories .sub-info .status.gray {
+    background: #bbb;
+  }
+
+  &:where(.table-histories, .use-tables, .order-sheets) table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 4px;
   }
 
-  &:where(.use-tables, .order-sheets) table th,
-  &:where(.use-tables, .order-sheets) table td {
+  &:where(.table-histories, .use-tables, .order-sheets) table th,
+  &:where(.table-histories, .use-tables, .order-sheets) table td {
     border: 1px solid #ccc;
     padding: 10px;
     font-size: 1.4rem;
     text-align: center;
   }
 
-  &:where(.use-tables, .order-sheets) table th {
+  &:where(.table-histories, .use-tables, .order-sheets) table th {
     background-color: #ffe0cc;
     font-weight: 600;
   }
 
-  &:where(.use-tables, .order-sheets) table td {
+  &:where(.table-histories, .use-tables, .order-sheets) table td {
     background-color: #fff;
   }
 
-  &:where(.use-tables, .order-sheets) table td.left {
+  &:where(.table-histories, .use-tables, .order-sheets) table td.left {
     text-align: left;
   }
 
-  &:where(.use-tables, .order-sheets) .note {
+  &:where(.table-histories, .use-tables, .order-sheets) .note {
     margin-top: 20px;
     color: #444;
     font-size: 1.8rem;
     font-style: italic;
   }
 
-  &:where(.use-tables, .order-sheets) .status.purple {
+  &:where(.table-histories, .use-tables, .order-sheets) .status.purple {
     font-weight: 600;
     color: purple;
   }
 
-  &:where(.use-tables, .order-sheets) .status.green {
+  &:where(.table-histories, .use-tables, .order-sheets) .status.green {
     font-weight: 600;
     color: green;
   }
 
-  &:where(.use-tables, .order-sheets) .status.yellow {
+  &:where(.table-histories, .use-tables, .order-sheets) .status.yellow {
     font-weight: 600;
     color: orange;
   }
 
-  &:where(.use-tables, .order-sheets) .status.red {
+  &:where(.table-histories, .use-tables, .order-sheets) .status.red {
     font-weight: 600;
     color: red;
   }
 
-  &:where(.use-tables, .order-sheets) .status.gray {
+  &:where(.table-histories, .use-tables, .order-sheets) .status.gray {
     font-weight: 600;
     color: gray;
   }
 
-  &.use-tables .buttons {
+  &.table-histories,
+  .use-tables .buttons {
     margin-top: 30px;
   }
 

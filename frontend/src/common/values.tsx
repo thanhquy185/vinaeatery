@@ -1,3 +1,26 @@
+// Các giá trị cho việc sử dụng react query để truy vấn dữ liệu
+export const ReactQueryGetData = {
+  retry: 2, // cho phép retry dữ liệu 2 lần
+  staleTime: 1000 * 60, // cache dữ liệu sau mỗi 1 phút
+}
+
+// Các tiêu đề chung của modal
+export const TitleModalCommon = {
+  detail: (objectName: string) => "Chi tiết " + objectName,
+  create: (objectName: string) => "Thêm " + objectName,
+  update: (objectName: string) => "Cập nhật " + objectName,
+  lock: (objectName: string) => "Khoá " + objectName,
+  unlock: (objectName: string) => "Mở khoá " + objectName,
+  print: (objectName: string) => "In " + objectName,
+  changePassword: (objectName: string) => "Thay đổi mật khẩu" + objectName,
+}
+
+// Giới tính chung
+export const CommonGender = {
+  male: "Nam",
+  female: "Nữ",
+}
+
 // Trạng thái chung cho các đối tượng
 export const CommonStatus = {
   active: "Hoạt động",

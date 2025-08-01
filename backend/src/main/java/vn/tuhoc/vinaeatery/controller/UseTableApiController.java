@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,9 +18,9 @@ import vn.tuhoc.vinaeatery.domain.Customer;
 import vn.tuhoc.vinaeatery.domain.Order;
 import vn.tuhoc.vinaeatery.domain.OrderDetail;
 import vn.tuhoc.vinaeatery.domain.OrderDetailId;
-import vn.tuhoc.vinaeatery.domain.OrderSheet;
 import vn.tuhoc.vinaeatery.domain.UseTable;
 import vn.tuhoc.vinaeatery.domain.criteria.UseTableCriteria;
+import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderSheetDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderSheetDetailDTO;
 import vn.tuhoc.vinaeatery.domain.dto.UseTableDTO;
@@ -35,8 +34,9 @@ import vn.tuhoc.vinaeatery.service.UseTableService;
 import vn.tuhoc.vinaeatery.service.CustomerService;
 import vn.tuhoc.vinaeatery.service.OrderDetailService;
 import vn.tuhoc.vinaeatery.service.OrderService;
-import vn.tuhoc.vinaeatery.service.OrderSheetService;
+// import vn.tuhoc.vinaeatery.service.OrderSheetService;
 import vn.tuhoc.vinaeatery.service.TimeService;
+import vn.tuhoc.vinaeatery.util.HandleFormGetData;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,26 +54,50 @@ public class UseTableApiController {
     private final TimeService timeService;
 
     // Methods
-    @GetMapping("/{tableId}")
-    public ResponseEntity<?> handleNewUseTableByTableId(@PathVariable("tableId") Integer tableId) {
+    @PostMapping("/{tableId}")
+    public ResponseEntity<?> newUseTableByTableId(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            @PathVariable("tableId") Integer tableId) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         UseTableDTO useTableDTO = useTableService.getNewOneFormatByTableId(tableId);
         return ResponseEntity.status(HttpStatus.OK).body(useTableDTO);
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<List<?>> listUseTable(UseTableCriteria useTableCriteria) {
+    @PostMapping("/list")
+    public ResponseEntity<?> listUseTable(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            UseTableCriteria useTableCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<UseTable> listUseTable = this.useTableService.getAll(useTableCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listUseTable);
     }
 
-    @GetMapping("/list-format")
-    public ResponseEntity<List<?>> listUseTableFormat(UseTableCriteria useTableCriteria) {
+    @PostMapping("/list-format")
+    public ResponseEntity<?> listUseTableFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            UseTableCriteria useTableCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<UseTableDTO> listUseTableFormat = this.useTableService.getAllFormat(useTableCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listUseTableFormat);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<?> handleDetailUseTable(@PathVariable("id") Long id) {
+    @PostMapping("/detail/{id}")
+    public ResponseEntity<?> detailUseTable(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            @PathVariable("id") Long id) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         UseTable useTableSelected = this.useTableService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(useTableSelected);
     }

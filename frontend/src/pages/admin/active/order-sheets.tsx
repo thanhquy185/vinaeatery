@@ -1,28 +1,56 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { type SelectProps } from "antd";
-import type { FloorsType, OrderSheetsFormatType } from "../../../common/types";
-import CustomFindSelect from "../../../components/admin/find-select";
-import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";
-import CustomModal from "../../../components/admin/modal";
-import { getElapsedTimeText, useElapsedTime } from "../../../hook/time";
-import { openNotification } from "../../../utils/showNotification";
-import { FindAllFloor, FindAllOrderSheetCurrentDate, HandleUpdateOrderSheet } from "../../../services/api";
-import OrderSheetCard from "../../../components/admin/order-sheet-card";
 import TextArea from "antd/es/input/TextArea";
+import type { OrderSheetsFormatType } from "../../../common/types";
+import { CommonStatus, OrderSheetStatus, ReactQueryGetData } from "../../../common/values";
+import { getElapsedTimeText, useElapsedTime } from "../../../hook/time";
+import CustomFindSelect from "../../../components/admin/find-select";
+import OrderSheetCard from "../../../components/admin/order-sheet-card";
+import CustomModal from "../../../components/admin/modal";
+import { FindAllFloor, FindAllOrderSheetCurrentDate, HandleUpdateOrderSheet } from "../../../services/api";
+import { vietnamMoneyFormat } from "../../../utils/otherEvents";
 import { openConfirmation } from "../../../utils/showConfirmation";
-import { OrderSheetStatus } from "../../../common/values";
+import { openNotification } from "../../../utils/showNotification";
+
+// Các giá trị chung
+// - Tên đối tượng
+const objectName = "Phiếu gọi món"
 
 // Admin Order Sheets Page
 const AdminOrderSheetsPage = () => {
-  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
-  const [floors, setFloors] = useState<FloorsType[]>([]);
-  const [orderSheets, setOrderSheets] = useState<OrderSheetsFormatType[]>([]);
+  // Đối tượng query client để thực thi react-query
+  const queryClient = useQueryClient();
+
+  // Các biến giữ dữ liệu về tầng
+  const {
+    data: floors,
+  } = useQuery({
+    queryKey: [
+      'floors',
+    ],
+    queryFn: async () => {
+      const res = await FindAllFloor({ statusValue: [CommonStatus.active] });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+  });
 
   // Các biến giữ giá trị từ việc lọc thông tin
   // - Thời gian gọi món bắt đầu / Thời gian gọi món kết thúc
   const [filterTimeValue, setFilterTimeValue] = useState<[string, string]>();
   // - Tầng
-  const floorOptions: SelectProps["options"] = floors.map((floor) => ({ label: floor.name, value: floor.id }));
+  const floorOptions: SelectProps["options"] = floors?.map((floor) => ({ label: floor.name, value: floor.id }));
   const [filterFloorValue, setFilterFloorValue] = useState<string[] | null>([]);
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
@@ -34,6 +62,34 @@ const AdminOrderSheetsPage = () => {
   const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
     []
   );
+
+  // Truy vấn dữ liệu phiếu gọi món (hôm nay)
+  const {
+    data: orderSheets,
+  } = useQuery({
+    queryKey: [
+      'order-sheets',
+      filterFloorValue!,
+      filterStatusValue!
+    ],
+    queryFn: async () => {
+      const res = await FindAllOrderSheetCurrentDate({ floorValue: filterFloorValue!, statusValue: filterStatusValue! });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+    retry: ReactQueryGetData.retry,
+    staleTime: ReactQueryGetData.staleTime,
+  });
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -65,6 +121,7 @@ const AdminOrderSheetsPage = () => {
     table,
     note,
     message,
+    totalPrice,
     status,
     orderSheetDetails,
   }: OrderSheetsFormatType) => {
@@ -116,6 +173,9 @@ const AdminOrderSheetsPage = () => {
           )
         }
         <div className="info">
+          <b>Tổng tiền món ăn:</b> {vietnamMoneyFormat(totalPrice!)}
+        </div>
+        <div className="info">
           <b>Trạng thái:</b>{" "}
           <span
             className={
@@ -136,16 +196,18 @@ const AdminOrderSheetsPage = () => {
           <b>Chi tiết gọi món:</b>
           <table>
             <colgroup>
-              <col width="14%" />
-              <col width="40%" />
-              <col width="23%" />
-              <col width="23%" />
+              <col width="12%" />
+              <col width="36%" />
+              <col width="12%" />
+              <col width="20%" />
+              <col width="20%" />
             </colgroup>
             <thead>
               <tr>
                 <th>Mã món ăn</th>
                 <th>Tên món ăn</th>
                 <th>Đơn vị</th>
+                <th>Giá bán</th>
                 <th>Số lượng</th>
               </tr>
             </thead>
@@ -155,6 +217,7 @@ const AdminOrderSheetsPage = () => {
                   <td>{orderSheetDetail!.food!.id}</td>
                   <td className="left">{orderSheetDetail!.food!.name}</td>
                   <td>{orderSheetDetail!.food!.unit}</td>
+                  <td>{vietnamMoneyFormat(orderSheetDetail!.price!)}</td>
                   <td>{orderSheetDetail!.quantity}</td>
                 </tr>
               ))}
@@ -225,6 +288,7 @@ const AdminOrderSheetsPage = () => {
         table={orderSheet!.table}
         note={orderSheet!.note}
         message={orderSheet!.message}
+        totalPrice={orderSheet!.totalPrice}
         status={orderSheet!.status}
         orderSheetDetails={orderSheet!.orderSheetDetails}
       />
@@ -268,7 +332,7 @@ const AdminOrderSheetsPage = () => {
           duration: 1.5,
         });
         setTimeout(() => {
-          getAllOrderSheet();
+          queryClient.invalidateQueries({ queryKey: ["order-sheets"] });
           setOpenModal(false);
         }, 1500);
       } else {
@@ -298,54 +362,11 @@ const AdminOrderSheetsPage = () => {
     }
   };
 
-  // Hàm cập nhật danh sách các sử dụng bàn ăn (gọi API)
-  const getAllFloor = async () => {
-    const res = await FindAllFloor({
-      statusValue: ["Hoạt động"],
-    });
-    if (res!.status === 200) {
-      setFloors(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-  const getAllOrderSheet = async () => {
-    const res = await FindAllOrderSheetCurrentDate({
-      floorValue: filterFloorValue!,
-      statusValue: filterStatusValue!,
-    });
-    if (res!.status === 200) {
-      res!.data.sort((a, b) => b.id! - a.id!);
-      setOrderSheets(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-
-  //
-  useEffect(() => {
-    getAllFloor();
-    getAllOrderSheet();
-  }, []);
-  useEffect(() => {
-    getAllOrderSheet();
-  }, [filterFloorValue, filterStatusValue]);
-
   return (
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Vận hành quán ăn - Gọi món ăn</h2>
+          <h2 className="main__title">Vận hành quán ăn - {objectName}</h2>
         </div>
         <div className="main__filter call-foods">
           {/* <CustomDateRangePicker
@@ -377,7 +398,7 @@ const AdminOrderSheetsPage = () => {
           />
         </div>
         <div className="main__order-sheets call-foods">
-          {orderSheets.map((orderSheet, index) => (
+          {orderSheets?.map((orderSheet, index) => (
             <OrderSheetCard
               key={index}
               orderSheet={orderSheet}

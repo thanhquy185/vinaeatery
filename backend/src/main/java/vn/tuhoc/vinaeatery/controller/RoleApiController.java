@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,14 +21,16 @@ import vn.tuhoc.vinaeatery.domain.RoleDetailForCrud;
 import vn.tuhoc.vinaeatery.domain.RoleDetailId;
 import vn.tuhoc.vinaeatery.domain.criteria.RoleCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
 import vn.tuhoc.vinaeatery.domain.dto.RoleDTO;
 import vn.tuhoc.vinaeatery.domain.dto.RoleUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
-import vn.tuhoc.vinaeatery.service.EmployeeService;
+// import vn.tuhoc.vinaeatery.service.EmployeeService;
 import vn.tuhoc.vinaeatery.service.RoleDetailService;
 import vn.tuhoc.vinaeatery.service.RoleHistoryService;
 import vn.tuhoc.vinaeatery.service.RoleService;
 import vn.tuhoc.vinaeatery.service.TimeService;
+import vn.tuhoc.vinaeatery.util.HandleFormGetData;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
@@ -40,24 +41,41 @@ public class RoleApiController {
     private final RoleService roleService;
     private final RoleDetailService roleDetailService;
     private final RoleHistoryService roleHistoryService;
-    private final EmployeeService employeeService;
+    // private final EmployeeService employeeService;
     private final TimeService timeService;
 
     // Methods
-    @GetMapping("/list")
-    public ResponseEntity<List<?>> listRole(RoleCriteria roleCriteria) {
+    @PostMapping("/list")
+    public ResponseEntity<?> listRole(@RequestBody @Valid FormGetDataDTO formGetDataDTO, RoleCriteria roleCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<Role> listRole = this.roleService.getAll(roleCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listRole);
     }
 
-    @GetMapping("/list-format")
-    public ResponseEntity<List<?>> listRoleFormat(RoleCriteria roleCriteria) {
+    @PostMapping("/list-format")
+    public ResponseEntity<?> listRoleFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            RoleCriteria roleCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<RoleDTO> listRole = this.roleService.getAllFormat(roleCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listRole);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<?> detailRole(@PathVariable("id") Integer id) {
+    @PostMapping("/detail/{id}")
+    public ResponseEntity<?> detailRole(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            @PathVariable("id") Integer id) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         Role roleSelected = this.roleService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(roleSelected);
     }
@@ -101,12 +119,13 @@ public class RoleApiController {
             roleUpdated.setTimeUpdate(this.timeService.getDateTimeVN(role.getTimeUpdate()));
             this.roleService.upsert(roleUpdated);
 
-            roleDetailService.clearAllByRoleId(id);
+            roleDetailService.clearAllByRoleId(roleUpdated.getId());
             List<RoleDetailForCrud> roleDetails = role.getRoleDetails();
             if (roleDetails != null && !roleDetails.isEmpty()) {
                 for (RoleDetailForCrud roleDetailForCrud : roleDetails) {
-                    RoleDetail newRoleDetail = new RoleDetail(new RoleDetailId(id, roleDetailForCrud.getFunctionId(),
-                            roleDetailForCrud.getAction()));
+                    RoleDetail newRoleDetail = new RoleDetail(
+                            new RoleDetailId(roleUpdated.getId(), roleDetailForCrud.getFunctionId(),
+                                    roleDetailForCrud.getAction()));
                     roleDetailService.upsert(newRoleDetail);
                 }
             }
@@ -125,7 +144,7 @@ public class RoleApiController {
 
         if (roleHistoryService.getAllByRoleId(id) != null && !roleHistoryService.getAllByRoleId(id).isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr("Chức vụ này đang được sử dụng !"));
+                    .body(ValidationUtil.buildRestResponseWithStr("Chức vụ này đang được ít nhất 1 nhân viên sử dụng !"));
         }
 
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE

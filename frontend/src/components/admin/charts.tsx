@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { PieChart } from "@mui/x-charts/PieChart";
-import type { HighlightItemData } from "@mui/x-charts";
+import { BarChart, type HighlightItemData } from "@mui/x-charts";
+import type { PieChartProps } from "../../common/props";
+
+// Các giá trị chung
+const heightChart = 200;
 
 // Biểu đồ đường
 const CustomLineChart = (
@@ -68,25 +72,49 @@ const CustomLineChart = (
 };
 
 // Biểu đồ tròn
-const CustomPieChart = () => {
-  const data = [
-    { id: 0, value: 400, label: "Lương nhân viên" },
-    { id: 1, value: 300, label: "Tiền nguyên liệu" },
-    { id: 2, value: 300, label: "Phí khác" },
-  ];
-
+const CustomPieChart = ({
+  id,
+  dataValue,
+  maxItemsToShow = 5,
+}: {
+  id: string;
+  dataValue: PieChartProps[];
+  maxItemsToShow?: number;
+}) => {
   const [highlightedItem, setHighlightedItem] =
     useState<HighlightItemData | null>(null);
 
-  // Tính tổng để tính phần trăm
-  const total = data.reduce((sum, item) => sum + item.value, 0);
+  // Sắp xếp giảm dần theo value
+  const sortedData = Array.isArray(dataValue) && dataValue.length > 0
+    ? [...dataValue].sort((a, b) => b.value - a.value)
+    : [{ id: 0, value: 1, label: "Không có dữ liệu" }];
+
+  // Chia thành các mục chính và phần còn lại
+  const mainItems = sortedData.slice(0, maxItemsToShow);
+  const otherItems = sortedData.slice(maxItemsToShow);
+
+  // Tổng giá trị của các mục "khác"
+  const otherTotal = otherItems.reduce((sum, item) => sum + item.value, 0);
+
+  // Gộp thành mảng mới để vẽ
+  const chartData = [...mainItems];
+  if (otherTotal > 0) {
+    chartData.push({
+      id: 9999,
+      value: otherTotal,
+      label: "Khác",
+    });
+  }
+
+  const total = chartData.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <PieChart
+      id={id}
       series={[
         {
           id: "pie",
-          data: data,
+          data: chartData,
           innerRadius: 60,
           outerRadius: 100,
           paddingAngle: 5,
@@ -95,7 +123,7 @@ const CustomPieChart = () => {
             const percent = ((item.value / total) * 100).toFixed(1);
             return `${percent}%`;
           },
-          arcLabelMinAngle: 10, // chỉ hiện label nếu lát đủ lớn
+          arcLabelMinAngle: 10,
         },
       ]}
       sx={{
@@ -107,10 +135,64 @@ const CustomPieChart = () => {
       }}
       highlightedItem={highlightedItem}
       onHighlightChange={setHighlightedItem}
-      height={200}
+      height={heightChart}
       width={300}
     />
   );
 };
 
-export { CustomLineChart, CustomPieChart };
+// Biểu đồ cột
+const CustomBarChart = ({
+  id,
+  xAxisLabelValue,
+  xAxisDataValue,
+  seriesLabelValue,
+  seriesDataValue,
+}: {
+  id?: string;
+  xAxisLabelValue?: string;
+  xAxisDataValue?: string[];
+  seriesLabelValue?: string;
+  seriesDataValue?: number[];
+}) => {
+  const margin = { left: 0, bottom: 0 };
+  const xAxisLabel = xAxisLabelValue || "";
+  const xAxisData = Array.isArray(xAxisDataValue) && xAxisDataValue.length > 0 ? xAxisDataValue : [""];
+  const seriesLabel = seriesLabelValue || "Không có dữ liệu";
+  const seriesData = Array.isArray(seriesDataValue) && seriesDataValue.length > 0 ? seriesDataValue : [0];
+
+
+  const [highlightedItem, setHighlightedItem] =
+    useState<HighlightItemData | null>(null);
+
+  return (
+    <BarChart
+      id={id}
+      height={heightChart}
+      margin={margin}
+      grid={{ horizontal: true }}
+      xAxis={[{ label: xAxisLabel, data: xAxisData as string[] }]}
+      series={[
+        {
+          label: seriesLabel,
+          data: seriesData,
+          highlightScope: {
+            highlight: "item", // khi hover sẽ tô sáng cột
+            fade: "global",     // làm mờ các cột khác
+          },
+        },
+      ]}
+      highlightedItem={highlightedItem}
+      onHighlightChange={setHighlightedItem}
+      sx={{
+        "& text": {
+          fill: "white",
+          fontSize: 14,
+          fontWeight: 600,
+        },
+      }}
+    />
+  );
+};
+
+export { CustomLineChart, CustomPieChart, CustomBarChart };

@@ -52,9 +52,22 @@
     margin-top: 4px;
     font-size: 1.8rem;
   }
+  
+  &__info b {
+    display: inline-block;
+    width: 25%;
+  }
 
   &__chart {
     margin-top: 6px;
+  }
+
+  &__chart.split-2 {
+    display: flex;
+  }
+
+  &__chart.split-2 > * {
+    width: 50%;
   }
 
   // &__charts {

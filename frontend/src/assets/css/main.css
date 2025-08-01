@@ -499,12 +499,13 @@ table td.right {
 .modal .ant-modal-close:hover {
   color: #f44336;
 }
-.modal:where(.use-tables, .order-sheets) .ant-modal-content {
+.modal:where(.table-histories, .use-tables, .order-sheets) .ant-modal-content {
   padding-top: 20px !important;
   border: 3px dashed #c14400;
   background: #fffcf7;
 }
-.modal.use-tables .ant-modal-content {
+.modal.table-histories,
+.modal .use-tables .ant-modal-content {
   padding-top: 12px !important;
 }
 .modal.order-sheets .ant-modal-content::before {
@@ -534,18 +535,18 @@ table td.right {
   border-radius: 50%;
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
 }
-.modal:where(.use-tables, .order-sheets) .ant-modal-title {
+.modal:where(.table-histories, .use-tables, .order-sheets) .ant-modal-title {
   margin-bottom: 16px;
   color: #b30000;
   font-size: 2.8rem;
 }
-.modal:where(.use-tables, .order-sheets) .ant-modal-close {
+.modal:where(.table-histories, .use-tables, .order-sheets) .ant-modal-close {
   color: #000;
 }
-.modal:where(.use-tables, .order-sheets) .ant-modal-close:hover {
+.modal:where(.table-histories, .use-tables, .order-sheets) .ant-modal-close:hover {
   color: #f44336;
 }
-.modal:where(.use-tables, .order-sheets) .info {
+.modal:where(.table-histories, .use-tables, .order-sheets) .info {
   font-size: 1.8rem;
   margin-top: 4px;
 }
@@ -556,59 +557,95 @@ table td.right {
   height: 80px;
   font-size: 1.6rem;
 }
-.modal:where(.use-tables, .order-sheets) .info b {
+.modal:where(.table-histories, .use-tables, .order-sheets) .info > b {
   width: 25%;
   display: inline-block;
   font-weight: 600;
 }
-.modal:where(.use-tables, .order-sheets) table {
+.modal.table-histories .sub-info {
+  background: rgba(211, 47, 47, 0.05);
+  padding: 14px 16px;
+  border: 1px solid #ccc;
+  margin-top: 24px;
+  border-radius: 8px;
+  color: #555;
+  font-size: 1.6rem;
+}
+.modal.table-histories .sub-info:first-of-type {
+  margin-top: 4px;
+}
+.modal.table-histories .sub-info b {
+  display: inline-block;
+  width: 15%;
+  color: #000;
+}
+.modal.table-histories .sub-info .status {
+  padding: 4px 6px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 1.3rem;
+}
+.modal.table-histories .sub-info .status.purple {
+  background: #5d3fd3;
+}
+.modal.table-histories .sub-info .status.red {
+  background: #f44336;
+}
+.modal.table-histories .sub-info .status.green {
+  background: #3dc55d;
+}
+.modal.table-histories .sub-info .status.gray {
+  background: #bbb;
+}
+.modal:where(.table-histories, .use-tables, .order-sheets) table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 4px;
 }
-.modal:where(.use-tables, .order-sheets) table th, .modal:where(.use-tables, .order-sheets) table td {
+.modal:where(.table-histories, .use-tables, .order-sheets) table th, .modal:where(.table-histories, .use-tables, .order-sheets) table td {
   border: 1px solid #ccc;
   padding: 10px;
   font-size: 1.4rem;
   text-align: center;
 }
-.modal:where(.use-tables, .order-sheets) table th {
+.modal:where(.table-histories, .use-tables, .order-sheets) table th {
   background-color: #ffe0cc;
   font-weight: 600;
 }
-.modal:where(.use-tables, .order-sheets) table td {
+.modal:where(.table-histories, .use-tables, .order-sheets) table td {
   background-color: #fff;
 }
-.modal:where(.use-tables, .order-sheets) table td.left {
+.modal:where(.table-histories, .use-tables, .order-sheets) table td.left {
   text-align: left;
 }
-.modal:where(.use-tables, .order-sheets) .note {
+.modal:where(.table-histories, .use-tables, .order-sheets) .note {
   margin-top: 20px;
   color: #444;
   font-size: 1.8rem;
   font-style: italic;
 }
-.modal:where(.use-tables, .order-sheets) .status.purple {
+.modal:where(.table-histories, .use-tables, .order-sheets) .status.purple {
   font-weight: 600;
   color: purple;
 }
-.modal:where(.use-tables, .order-sheets) .status.green {
+.modal:where(.table-histories, .use-tables, .order-sheets) .status.green {
   font-weight: 600;
   color: green;
 }
-.modal:where(.use-tables, .order-sheets) .status.yellow {
+.modal:where(.table-histories, .use-tables, .order-sheets) .status.yellow {
   font-weight: 600;
   color: orange;
 }
-.modal:where(.use-tables, .order-sheets) .status.red {
+.modal:where(.table-histories, .use-tables, .order-sheets) .status.red {
   font-weight: 600;
   color: red;
 }
-.modal:where(.use-tables, .order-sheets) .status.gray {
+.modal:where(.table-histories, .use-tables, .order-sheets) .status.gray {
   font-weight: 600;
   color: gray;
 }
-.modal.use-tables .buttons {
+.modal.table-histories,
+.modal .use-tables .buttons {
   margin-top: 30px;
 }
 .modal__form.ant-form, .modal__form.ant-form .modal__form-group-warper {
@@ -1215,8 +1252,18 @@ table td.right {
   margin-top: 4px;
   font-size: 1.8rem;
 }
+.ticket__info b {
+  display: inline-block;
+  width: 25%;
+}
 .ticket__chart {
   margin-top: 6px;
+}
+.ticket__chart.split-2 {
+  display: flex;
+}
+.ticket__chart.split-2 > * {
+  width: 50%;
 }
 .ticket__table {
   table-layout: fixed;
@@ -2428,7 +2475,7 @@ table td.right {
   left: 0;
   z-index: 999;
   display: flex;
-  justify-content: stretch;
+  justify-content: center;
   align-items: center;
   width: 100%;
   height: 80px;
@@ -2438,6 +2485,7 @@ table td.right {
   font-size: 2.6rem;
   font-weight: 700;
   box-sizing: content-box;
+  transition: 0.3s ease;
 }
 .sidebar__brand::after {
   content: "";
@@ -2456,6 +2504,9 @@ table td.right {
   height: 40px;
   margin-left: 12px;
   margin-right: 10px;
+}
+.sidebar.hide .sidebar__brand {
+  justify-content: stretch;
 }
 .sidebar__group + .sidebar__group {
   margin-top: 24px;
@@ -2635,6 +2686,7 @@ body:has(.sidebar.hide) .main {
 }
 .main__chart {
   display: flex;
+  align-items: center;
   gap: 15px;
 }
 .main__chart text {
@@ -2642,6 +2694,7 @@ body:has(.sidebar.hide) .main {
 }
 .main__chart.split-2 > * {
   width: 50%;
+  height: 100%;
 }
 .main__chart-card {
   display: flex;
@@ -2650,10 +2703,20 @@ body:has(.sidebar.hide) .main {
 }
 .main__chart-card > * {
   width: calc(50% - 7.5px);
+  height: auto;
   border: none;
 }
+.main__chart-card .ant-card-body {
+  height: 100%;
+}
+.main__chart-card .ant-statistic-title {
+  font-size: 1.6rem;
+}
+.main__chart-card .ant-statistic-content {
+  font-size: 2.4rem;
+}
 .main__chart-card .card-1 .ant-card-body, .main__cards.dashboard-revenue .card-1 .ant-card-body {
-  background-color: #fff3e0;
+  background-color: #ffeccf;
 }
 .main__chart-card .card-1 .ant-statistic-content span, .main__cards.dashboard-revenue .card-1 .ant-statistic-content span {
   color: #f57c00;
@@ -2735,10 +2798,10 @@ body:has(.sidebar.hide) .main {
   width: 1.6rem !important;
   height: 1.6rem !important;
 }
-.main__filter.call-foods .main__filter-select.filter-time, .main__filter.use-tables .main__filter-select.filter-time {
+.main__filter.table-histories .main__filter-select.filter-time, .main__filter.use-tables .main__filter-select.filter-time, .main__filter.call-foods .main__filter-select.filter-time {
   width: calc(40% - 15px);
 }
-.main__use-tables, .main__segmented + .main__filter, .main__chart, .main__cards, .main__table, .main__info, .main__calendar {
+.main__table-histories, .main__use-tables, .main__segmented + .main__filter, .main__chart, .main__cards, .main__table, .main__info, .main__calendar {
   margin-top: 15px;
 }
 .main__order-sheets {
@@ -3234,16 +3297,24 @@ body:has(.sidebar.hide) .main {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .form__title {
-  border-radius: 20px 20px 0 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.form__title-image {
+  width: 40px;
+  height: 40px;
+}
+.form__title-text {
   color: #d32f2f;
-  font-size: 2.8rem;
-  font-weight: bold;
-  text-align: center;
+  font-size: 2.6rem;
+  font-weight: 700;
 }
 .form__line {
   width: 100%;
-  height: 5px;
-  margin: 20px 0 24px;
+  height: 4px;
+  margin: 14px 0 24px;
   background: #d32f2f;
   border-radius: 8px;
 }
@@ -3253,85 +3324,37 @@ body:has(.sidebar.hide) .main {
 .form__form-group + .form__form-group {
   margin-top: 32px;
 }
-.form__form-group label, .form__form-group input, .form__form-group .icon {
-  font-size: 1.8rem;
-  transition: 0.2s ease-in-out;
+.form__form-group .ant-input-affix-wrapper {
+  height: 40px !important;
 }
-.form__form-group label, .form__form-group input {
+.form__form-group label.ant-form-item-required, .form__form-group .ant-input-prefix, .form__form-group .ant-input-suffix, .form__form-group input.ant-input {
+  font-size: 1.6rem;
+}
+.form__form-group label.ant-form-item-required {
+  padding-left: 0;
+}
+.form__form-group label.ant-form-item-required::before {
+  display: none !important;
+}
+.form__button {
   width: 100%;
   height: 40px;
-}
-.form__form-group input {
-  padding: 0 37px 0 10px;
-  border: 1px solid #dedede;
-  margin-top: 8px;
-  border-radius: 4px;
-}
-.form__form-group input::placeholder {
-  color: #dedede;
-}
-.form__form-group:has(.icon:hover) input, .form__form-group input:where(:hover, :focus, :not(:placeholder-shown)) {
-  border-color: #000;
-  box-shadow: 0px 0px 2px 2px rgba(231, 134, 33, 0.1);
-}
-.form__form-group .icon:hover, .form__form-group input:not(:placeholder-shown), .form__form-group:has(input:where(:hover, :focus, :not(:placeholder-shown))) .icon {
-  color: #000;
-}
-.form__form-group :where(.icon, .error-icon) {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  width: 20px;
-  height: 20px;
-  padding-left: 10px;
-  line-height: 20px;
-  transition: 0.2s ease-in-out;
-  cursor: pointer;
-}
-.form__form-group .icon {
-  color: #dedede;
-}
-.form__form-group .error-icon {
-  right: 12px;
-  bottom: 12px;
-  width: 16px;
-  height: 16px;
-  padding-left: 12px;
-  line-height: 16px;
-}
-.form__form-group .icon:hover {
-  color: #d32f2f;
-}
-.form__form-group button {
-  width: 100%;
-  height: 40px;
-  border-radius: 4px;
+  border-radius: 8px;
   margin-top: 10px;
-  font-size: 1.8rem;
+  font-size: 1.6rem;
 }
-.form__form-group button:hover {
+.form__button:hover {
   background: #fff;
   color: #d32f2f;
 }
 .form__action {
-  margin-top: 28px;
-  color: #777;
-  text-align: center;
-}
-.form__action.left {
-  margin-top: 12px;
-  font-size: 1.4rem;
-  text-align: left;
-}
-.form__action a {
   display: inline-block;
-  color: #0048ff;
+  margin-top: 6px;
+  color: #0057b4;
+  font-size: 1.4rem;
+  text-align: center;
   transition: 0.2s ease-in-out;
 }
-.form__action a:hover {
-  color: #0057b4;
-}
-
 #comeback-home-btn {
   position: absolute;
   top: 4%;

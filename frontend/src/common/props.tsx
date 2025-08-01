@@ -1,14 +1,17 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import type { TablePaginationConfig } from "antd/es/table";
 import type { SorterResult } from "antd/es/table/interface";
 
 // Dashboard Filter Time Props
 export type DashboardFilterTimeProps = { timeline: string, timeDetail: string }
 
+// Pie Chart Props
+export type PieChartProps = { id: number, value: number, label: string }
+
 // Custom Pagination Props
 export function CustomPaginationProps<T>(
   data: T[],
-  pageSize: number = 4,
+  pageSize: number = 10,
   pageSizeOptions: number[] = [1, 10, 20, 30, 40, 50],
   sortThreshold: number = 1000 // ngưỡng chuyển sang gọi API
 ) {
@@ -61,6 +64,10 @@ export function CustomPaginationProps<T>(
       setCurrentPage(1);
     }
   };
+
+  // useEffect(() => {
+  //   setCurrentPage(1);
+  // }, [data]);
 
   return {
     currentItems,

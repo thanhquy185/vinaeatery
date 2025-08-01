@@ -124,6 +124,7 @@ public class UseTableService {
         if (useTableCriteria.getId() == null && useTableCriteria.getTimeStart() == null
                 && useTableCriteria.getTimeEnd() == null
                 && useTableCriteria.getTableId() == null
+                && useTableCriteria.getTableName() == null
                 && useTableCriteria.getFloorId() == null
                 && useTableCriteria.getEmployeeId() == null
                 && useTableCriteria.getCustomerId() == null
@@ -165,6 +166,11 @@ public class UseTableService {
                         .tableIdEqual(useTableCriteria.getTableId().get());
                 combinedSpec = combinedSpec.and(currentSpec);
             }
+        }
+        if (useTableCriteria.getTableName() != null && useTableCriteria.getTableName().isPresent()) {
+            Specification<UseTable> currentSpec = UseTableSpecification
+                    .tableNameLike(useTableCriteria.getTableName().get());
+            combinedSpec = combinedSpec.and(currentSpec);
         }
         if (useTableCriteria.getFloorId() != null && useTableCriteria.getFloorId().isPresent()) {
             if (useTableCriteria.getFloorId().get().matches("\\d+")) {

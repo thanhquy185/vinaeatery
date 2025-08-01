@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import {
   AppleOutlined,
+  DollarCircleOutlined,
   FileDoneOutlined,
+  FrownOutlined,
+  PercentageOutlined,
+  SmileOutlined,
   TableOutlined,
 } from "@ant-design/icons";
 import type {
@@ -10,6 +14,7 @@ import type {
   TablesFormatType,
   UseTablesFormatType,
 } from "../../../common/types";
+import type { PieChartProps } from "../../../common/props";
 import {
   FoodStatus,
   OrderStatus,
@@ -18,6 +23,8 @@ import {
 } from "../../../common/values";
 import CustomSegmented from "../../../components/admin/segmented";
 import FilterDashboard from "../../../components/admin/filter-dashboard";
+import CustomCardStatic from "../../../components/admin/card-static";
+import { CustomBarChart, CustomPieChart } from "../../../components/admin/charts";
 import CustomTableDashboard from "../../../components/admin/table-dashboard";
 import {
   FindAllFood,
@@ -29,9 +36,13 @@ import { getFilterTimesForDashboard } from "../../../utils/otherEvents";
 import { openNotification } from "../../../utils/showNotification";
 
 // Các giá trị chung
+const cardsId = "cards-dashboard-orders";
+const chartId = "chart-dashboard-orders";
 const tableDataId = "table-data-dashboard-orders";
 
 // Các chuỗi để lấy được biểu đồ, bảng dữ liệu thông qua css selector
+export const cardsQueryDashboardOrders = `#${cardsId}`;
+export const chartQueryDashboardOrders = `div[class*='MuiChartsWrapper-root']:has(#${chartId})`;
 export const tableDataQueryDashboardOrders = `#${tableDataId}`;
 
 // Cấu hình chung
@@ -101,13 +112,49 @@ const AdminDashboardOrdersPage = () => {
     string | null
   >(null);
 
+  // Các biến giữ giá trị cho việc hiển thị thông số trên card
+  const [totalCardValue, setTotalCardValue] = useState<number>(0);
+  const [averageCardValue, setAverageCardValue] = useState<number>(0);
+  const [maxCardValue, setMaxCardValue] = useState<number>(0);
+  const [minCardValue, setMinCardValue] = useState<number>(0);
+
+  // Các biến giữ giá trị cho việc thống kê theo biểu đồ cột
+  const [xAxisLabelValue, setXAxisLabelValue] = useState<string>("");
+  const [xAxisDataValue, setXAxisDataValue] = useState<string[]>([]);
+  const [seriesLabelValue, setSeriesLabelValue] = useState<string>("");
+  const [seriesDataValue, setSeriesDataValue] = useState<number[]>([]);
+
+  // Các biến giữ giá trị cho việc thống kê theo biểu đồ tròn
+  const [dataValue, setDataValue] = useState<PieChartProps[]>([]);
+
   // Các biến giữ giá trị cho việc thống kê theo bảng dữ liệu
   const [dateDashboardStart, setDateDashboardStart] = useState<string>();
   const [dateDashboardEnd, setDateDashboardEnd] = useState<string>();
   const [tbodyValue, setTbodyValue] = useState<(string | number)[][]>([]);
   const [tfootValue, setTfootValue] = useState<(string | number)[]>([]);
 
-  // Hàm cập nhật danh sách các đơn món ăn, món ăn, bàn ăn (gọi API)
+  // Hàm cập nhật lại các biến giữ giá trị cho việc thống kê
+  const restDataDashboard = () => {
+    // - Card tóm tắt
+    setTotalCardValue(0);
+    setAverageCardValue(0);
+    setMaxCardValue(0);
+    setMinCardValue(0);
+
+    // - Biểu đồ cột
+    setXAxisLabelValue("");
+    setXAxisDataValue([]);
+    setSeriesLabelValue("");
+    setSeriesDataValue([]);
+
+    // Biểu đồ tròn
+    setDataValue([]);
+
+    // Bảng dữ liệu
+    setTbodyValue([]);
+    setTfootValue([]);
+  }
+  // Hàm cập nhật danh sách các đơn món ăn, món ăn, bàn ăn và sử dụng bàn ăn (gọi API)
   const getAllOrder = async () => {
     const res = await FindAllOrder({
       statusValue: [OrderStatus.confirm, PayStatus.pay],
@@ -190,9 +237,13 @@ const AdminDashboardOrdersPage = () => {
 
         // Bảng dữ liệu thống kê theo đơn món ăn
         if (segmentedValue === segmentedOptions[0].label) {
-          let newTbodyValue: (string | number)[][] = [],
+          let newXAxisDataValue: string[] = [],
+            newSeriesDataValue: number[] = [],
+            newTbodyValue: (string | number)[][] = [],
             newTotalOrderValue: number = 0,
             newTotalQuantityValue: number = 0,
+            newMaxRevenueValue: number = 0,
+            newMinRevenueValue: number = 0,
             newTotalRevenueValue: number = 0;
           times?.forEach((time, index) => {
             // - Tổng đơn món ăn
@@ -232,7 +283,16 @@ const AdminDashboardOrdersPage = () => {
               return total;
             }, 0);
 
-            // -
+            // - Cập nhất giá trị lớn nhất / nhỏ nhất
+            if (totalRevenueValue > newMaxRevenueValue) {
+              newMaxRevenueValue = totalRevenueValue;
+            } else if (totalRevenueValue < newMinRevenueValue) {
+              newMinRevenueValue = totalRevenueValue;
+            }
+            // - Cập nhật giá trị mới cho các biến của biểu đồ cột
+            newXAxisDataValue.push((filterTimelineValue.toLowerCase().includes("năm") ? "Th" : "Tu") + (index + 1));
+            newSeriesDataValue.push(totalRevenueValue);
+            // - Cập nhật giá trị mới cho các biến của bảng dữ liệu
             newTbodyValue.push([
               index + 1,
               time.start,
@@ -246,6 +306,16 @@ const AdminDashboardOrdersPage = () => {
             newTotalRevenueValue += totalRevenueValue;
           });
 
+          // Gán các dữ liệu mới cho các card
+          setTotalCardValue(newTotalRevenueValue);
+          setAverageCardValue(newTotalRevenueValue / times.length);
+          setMaxCardValue(newMaxRevenueValue);
+          setMinCardValue(newMinRevenueValue);
+          // Gán các dữ liệu mới cho biểu đồ cột
+          setXAxisDataValue(newXAxisDataValue);
+          setSeriesLabelValue("Doanh thu");
+          setSeriesDataValue(newSeriesDataValue);
+          // Gán các dữ liệu mới cho bảng dữ liệu
           setTbodyValue(newTbodyValue);
           setTfootValue([
             newTotalOrderValue,
@@ -255,9 +325,12 @@ const AdminDashboardOrdersPage = () => {
         }
         // Bảng dữ liệu thống kê theo món ăn
         if (segmentedValue === segmentedOptions[1].label) {
-          let newTbodyValue: (string | number)[][] = [],
+          let categoryFoodIds = "", newDataValue: PieChartProps[] = [],
+            newTbodyValue: (string | number)[][] = [],
             newTotalFoodPriceValue: number = 0,
             newTotalFoodQuantityValue: number = 0,
+            newMaxRevenueValue: number = 0,
+            newMinRevenueValue: number = 0,
             newTotalRevenueValue: number = 0;
           if (dateDashboardStartTemp && dateDashboardEndTemp) {
             foods?.forEach((food) => {
@@ -302,7 +375,32 @@ const AdminDashboardOrdersPage = () => {
               // - Doanh thu
               const totalRevenueValue = foodPrice * quantityValue;
 
-              //
+              // - Cập nhất giá trị lớn nhất / nhỏ nhất
+              if (totalRevenueValue > newMaxRevenueValue) {
+                newMaxRevenueValue = totalRevenueValue;
+              } else if (totalRevenueValue < newMinRevenueValue) {
+                newMinRevenueValue = totalRevenueValue;
+              }
+              // - Cập nhật các biến chứa dữ liệu mới của biểu đồ tròn
+              if (totalRevenueValue > 0) {
+                if (categoryFoodIds.includes(food!.categoryFood!.id + "")) {
+                  for (let i = 0; i < newDataValue.length; i++) {
+                    if (newDataValue[i].id === food!.categoryFood!.id) {
+                      newDataValue[i].value += totalRevenueValue;
+                    }
+                  }
+                } else {
+                  categoryFoodIds += food!.categoryFood!.id;
+                  newDataValue.push(
+                    {
+                      id: food!.categoryFood!.id!,
+                      value: totalRevenueValue,
+                      label: food!.categoryFood!.name!
+                    }
+                  );
+                }
+              }
+              // - Cập nhật các biến chứa dữ liệu mới của bảng dữ liệu
               newTbodyValue.push([
                 foodInfo,
                 foodPrice,
@@ -315,6 +413,14 @@ const AdminDashboardOrdersPage = () => {
             });
           }
 
+          // Gán các dữ liệu mới cho các card
+          setTotalCardValue(newTotalRevenueValue);
+          setAverageCardValue(newTotalRevenueValue / foods.length);
+          setMaxCardValue(newMaxRevenueValue);
+          setMinCardValue(newMinRevenueValue);
+          // Gán dữ liệu mới cho biểu đồ tròn
+          setDataValue(newDataValue);
+          // Gán dữ liệu mới cho bảng dữ liệu
           setTbodyValue(newTbodyValue);
           setTfootValue([
             newTotalFoodPriceValue,
@@ -324,9 +430,12 @@ const AdminDashboardOrdersPage = () => {
         }
         // Bảng dữ liệu thống kê theo bàn ăn
         if (segmentedValue === segmentedOptions[2].label) {
-          let newTbodyValue: (string | number)[][] = [],
+          let categoryTableIds = "", newDataValue: PieChartProps[] = [],
+            newTbodyValue: (string | number)[][] = [],
             newTotalOrderValue: number = 0,
             newTotalQuantityValue: number = 0,
+            newMaxRevenueValue: number = 0,
+            newMinRevenueValue: number = 0,
             newTotalRevenueValue: number = 0;
           tables?.forEach((table) => {
             // - Thông tin cơ bản
@@ -400,7 +509,32 @@ const AdminDashboardOrdersPage = () => {
               return total;
             }, 0);
 
-            //
+            // - Cập nhất giá trị lớn nhất / nhỏ nhất
+            if (totalRevenueValue > newMaxRevenueValue) {
+              newMaxRevenueValue = totalRevenueValue;
+            } else if (totalRevenueValue < newMinRevenueValue) {
+              newMinRevenueValue = totalRevenueValue;
+            }
+            // - Cập nhật các biến chứa dữ liệu mới của biểu đồ tròn
+            if (totalRevenueValue > 0) {
+              if (categoryTableIds.includes(table!.categoryTable!.id + "")) {
+                for (let i = 0; i < newDataValue.length; i++) {
+                  if (newDataValue[i].id === table!.categoryTable!.id) {
+                    newDataValue[i].value += totalRevenueValue;
+                  }
+                }
+              } else {
+                categoryTableIds += table!.categoryTable!.id;
+                newDataValue.push(
+                  {
+                    id: table!.categoryTable!.id!,
+                    value: totalRevenueValue,
+                    label: table!.categoryTable!.name!
+                  }
+                );
+              }
+            }
+            // - Cập nhật các biến chứa dữ liệu mới của bảng dữ liệu
             newTbodyValue.push([
               tableInfo,
               totalOrderValue,
@@ -412,17 +546,26 @@ const AdminDashboardOrdersPage = () => {
             newTotalRevenueValue += totalRevenueValue;
           });
 
+          // Gán các dữ liệu mới cho các card
+          setTotalCardValue(newTotalRevenueValue);
+          setAverageCardValue(newTotalRevenueValue / tables.length);
+          setMaxCardValue(newMaxRevenueValue);
+          setMinCardValue(newMinRevenueValue);
+          // Gán dữ liệu mới cho biểu đồ tròn
+          setDataValue(newDataValue);
+          // Gán các dữ liệu mới cho bảng dữ liệu
           setTbodyValue(newTbodyValue);
           setTfootValue([
             newTotalOrderValue,
             newTotalQuantityValue,
             newTotalRevenueValue,
           ]);
+
+          console.log(newDataValue);
         }
       }
     } else {
-      setTbodyValue([]);
-      setTfootValue([]);
+      restDataDashboard();
     }
   }, [segmentedValue, filterTimelineValue, filterTimeDetailValue]);
 
@@ -452,6 +595,51 @@ const AdminDashboardOrdersPage = () => {
             dateDashboardEnd={tbodyValue.length > 0 ? dateDashboardEnd : ""}
             titlePrint="TKDONMONAN"
           />
+        </div>
+        <div className="main__chart split-2">
+          <div id={cardsId} className="main__chart-card">
+            <CustomCardStatic
+              className="card-1"
+              title={"Tổng doanh thu"}
+              value={totalCardValue}
+              prefix={<DollarCircleOutlined />}
+              separator="."
+            />
+            <CustomCardStatic
+              className="card-2"
+              title={"Doanh thu trung bình"}
+              value={averageCardValue}
+              prefix={<PercentageOutlined />}
+              separator="."
+            />
+            <CustomCardStatic
+              className="card-3"
+              title={"Doanh thu cao nhất"}
+              value={maxCardValue}
+              prefix={<SmileOutlined />}
+              separator="."
+            />
+            <CustomCardStatic
+              className="card-4"
+              title={"Doanh thu thấp nhất"}
+              value={minCardValue}
+              prefix={<FrownOutlined />}
+              separator="."
+            />
+          </div>
+          {
+            segmentedValue === segmentedOptions[0].label ? (
+              <CustomBarChart
+                id={chartId}
+                xAxisLabelValue={xAxisLabelValue}
+                xAxisDataValue={xAxisDataValue}
+                seriesLabelValue={seriesLabelValue}
+                seriesDataValue={seriesDataValue}
+              />
+            ) : (
+              <CustomPieChart id={chartId} dataValue={dataValue} />
+            )
+          }
         </div>
         <div className="main__table dashboard">
           <CustomTableDashboard

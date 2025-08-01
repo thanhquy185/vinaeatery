@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleInfo,
@@ -11,9 +12,10 @@ import type { SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { Form, Input, Select, Tag } from "antd";
 import TextArea from "antd/es/input/TextArea";
+import type { CategoryIngredientsType, ReactQueryMutationProps } from "../../../common/types";
 import { ruleRequired } from "../../../common/rules";
-import type { CategoryIngredientsType } from "../../../common/types";
 import { CustomPaginationProps } from "../../../common/props";
+import { CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomTableActions from "../../../components/admin/table-actions";
@@ -26,12 +28,79 @@ import {
 } from "../../../services/api";
 import { openNotification } from "../../../utils/showNotification";
 import { openConfirmation } from "../../../utils/showConfirmation";
-import { CommonStatus } from "../../../common/values";
+
+// Các giá trị chung
+// - Tên đối tượng
+const objectName = "Loại nguyên liệu"
+// - Tiêu đề modal
+const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
+const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
+const titleModalUpdate = TitleModalCommon.update(objectName.toLowerCase());
+const titleModalLock = TitleModalCommon.lock(objectName.toLowerCase());
+const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 
 // Admin Category Ingredients Page
 const AdminCategoryIngredientsPage = () => {
-  // Cấu hình cột bảng dữ liệu của Loại nguyên liệu
-  const [loading, setLoading] = useState<boolean>(false);
+  // Đối tượng query client để thực thi react-query
+  const queryClient = useQueryClient();
+
+  // Các biến giữ giá trị từ việc lọc thông tin
+  // - Tìm kiếm thông tin
+  const findOptions = [
+    { label: "#", value: "id" },
+    { label: "Tên", value: "name" },
+  ];
+  const [filterFindType, setFilterFindType] = useState<string | null>(
+    findOptions[0].value
+  );
+  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
+  // - Trạng thái
+  const statusOptions: SelectProps["options"] = [
+    { label: CommonStatus["active"], value: CommonStatus["active"] },
+    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
+  ];
+  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
+    null
+  );
+
+  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
+  // - Truy vấn dữ liệu
+  const {
+    data: categoryIngredients,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [
+      'category-ingredients',
+      filterFindType,
+      filterFindValue,
+      filterStatusValue,
+    ],
+    queryFn: async () => {
+      const res = await FindAllCategoryIngredient({
+        findType: filterFindType!,
+        findValue: filterFindValue!,
+        statusValue: filterStatusValue!,
+      });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+    enabled: !!filterFindType,  //
+    retry: ReactQueryGetData.retry,
+    staleTime: ReactQueryGetData.staleTime,
+  });
+  // - Các thuộc tính
   const columns: ColumnsType<CategoryIngredientsType> = [
     {
       title: "#",
@@ -69,7 +138,7 @@ const AdminCategoryIngredientsPage = () => {
             className="action info"
             onClick={() =>
               updatePropertiesModal(
-                "Chi tiết loại nguyên liệu",
+                titleModalDetail,
                 true,
                 "60%",
                 "info category-ingredients",
@@ -83,7 +152,7 @@ const AdminCategoryIngredientsPage = () => {
             className="action update margin-lr"
             onClick={() =>
               updatePropertiesModal(
-                "Cập nhật loại nguyên liệu",
+                titleModalUpdate,
                 true,
                 "60%",
                 "update category-ingredients",
@@ -97,8 +166,7 @@ const AdminCategoryIngredientsPage = () => {
             className="action lock"
             onClick={() =>
               updatePropertiesModal(
-                (record.status == CommonStatus["active"] ? "Khoá" : "Mở khoá") +
-                " loại nguyên liệu",
+                (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
                 true,
                 "30%",
                 "lock category-ingredients",
@@ -117,10 +185,7 @@ const AdminCategoryIngredientsPage = () => {
       ),
     },
   ];
-  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
-  const [categoryIngredients, setCategoryIngredients] = useState<
-    CategoryIngredientsType[]
-  >([]);
+  // - Các thành phần
   const {
     currentItems,
     handleTableChange,
@@ -128,28 +193,9 @@ const AdminCategoryIngredientsPage = () => {
     sortField,
     sortOrder,
   } = CustomPaginationProps(
-    categoryIngredients,
+    categoryIngredients || [],
     10,
     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-  );
-
-  // Các biến giữ giá trị từ việc lọc thông tin
-  // - Tìm kiếm thông tin
-  const findOptions = [
-    { label: "#", value: "id" },
-    { label: "Tên", value: "name" },
-  ];
-  const [filterFindType, setFilterFindType] = useState<string | null>(
-    findOptions[0].value
-  );
-  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
-  // - Trạng thái
-  const statusOptions: SelectProps["options"] = [
-    { label: CommonStatus["active"], value: CommonStatus["active"] },
-    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
-  ];
-  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
-    null
   );
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
@@ -189,6 +235,64 @@ const AdminCategoryIngredientsPage = () => {
     description: "Nhập Mô tả",
     status: "Chọn Trạng thái",
   };
+  // - Mutation cho việc thêm, cập nhật và khoá dữ liệu
+  const handleSubmitMutation = useMutation({
+    mutationFn: async ({ type, values, objectId }: ReactQueryMutationProps<CategoryIngredientsType>) => {
+      if (openModal) {
+        if (type === "create" && titleModal === titleModalCreate) {
+          return await HandleCreateCategoryIngredient({
+            name: values!.name || undefined,
+            description: values!.description || undefined,
+            status: values!.status || undefined,
+          })
+        } else if (type === "update" && titleModal === titleModalUpdate) {
+          return await HandleUpdateCategoryIngredient({
+            id: values!.id,
+            name: values!.name || undefined,
+            description: values!.description || undefined,
+            timeUpdate: new Date().toISOString(),
+          });
+        } else if ((type === "lock" && titleModal === titleModalLock)
+          || (type === "unlock" && titleModal === titleModalUnlock)) {
+          const res = await HandleLockCategoryIngredient({
+            id: objectId! as number,
+            status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
+            timeUpdate: new Date().toISOString(),
+          })
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
+        }
+      }
+    },
+    onSuccess: () => {
+      openNotification({
+        type: "success",
+        message: "Thành công",
+        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thành công!",
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['category-ingredients'] });
+        setOpenModal(false);
+      }, 1500);
+    },
+    onError: (error) => {
+      openNotification({
+        type: "error",
+        message: "Thất bại",
+        description: (error ? error.message : (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thất bại!"),
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+      }, 1500);
+    },
+  });
   // - Các modal tương ứng cho từng chức năng
   const DetailCategoryIngredients = ({
     id,
@@ -278,37 +382,11 @@ const AdminCategoryIngredientsPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleCreateCategoryIngredient({
-                name: values!.name || undefined,
-                description: values!.description || undefined,
-                status: values!.status || undefined,
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Thêm thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "create", values: values });
 
-                setTimeout(() => {
-                  getAllCategoryIngredient();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Thêm thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -427,38 +505,11 @@ const AdminCategoryIngredientsPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleUpdateCategoryIngredient({
-                id: values!.id,
-                name: values!.name || undefined,
-                description: values!.description || undefined,
-                timeUpdate: new Date().toISOString(),
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Cập nhật thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "update", values: values });
 
-                setTimeout(() => {
-                  getAllCategoryIngredient();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Cập nhật thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -549,38 +600,11 @@ const AdminCategoryIngredientsPage = () => {
               content: "Hành động này không thể hoàn tác.",
             });
             if (answer) {
-              // Gọi api xử lý
-              const res = await HandleLockCategoryIngredient({
-                id: id!,
-                status: status! || undefined,
-                timeUpdate: new Date().toISOString(),
-              });
-              if (res.status == 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: `${statusValue ? "Khoá" : "Mở khoá"
-                    } thành công !`,
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: (statusValue ? "lock" : "unlock"), objectId: id! });
 
-                setTimeout(() => {
-                  getAllCategoryIngredient();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: String(res.data),
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -635,41 +659,12 @@ const AdminCategoryIngredientsPage = () => {
     ),
   };
 
-  // Hàm cập nhật danh sách các loại nguyên liệu (gọi API)
-  const getAllCategoryIngredient = async () => {
-    setLoading(true);
-    const res = await FindAllCategoryIngredient({
-      findType: filterFindType!,
-      findValue: filterFindValue!,
-      statusValue: filterStatusValue!,
-    });
-    if (res!.status === 200) {
-      setLoading(false);
-      setCategoryIngredients(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-
-  //
-  useEffect(() => {
-    getAllCategoryIngredient();
-  }, []);
-  useEffect(() => {
-    getAllCategoryIngredient();
-  }, [filterFindType, filterFindValue, filterStatusValue]);
-
   return (
     <>
       <main className="main">
         <div className="main__header">
           <h1 className="main__title">
-            Quản lý nguyên liệu - Loại nguyên liệu
+            Quản lý nguyên liệu - {objectName}
           </h1>
         </div>
         <div className="main__filter">
@@ -693,15 +688,13 @@ const AdminCategoryIngredientsPage = () => {
           <button
             className={
               "main__filter-button btn create" +
-              (openModal &&
-                String(titleModal).includes("Thêm") &&
-                String(classNameModal).includes("create")
+              (openModal && titleModal === titleModalCreate
                 ? " active"
                 : "")
             }
             onClick={() =>
               updatePropertiesModal(
-                "Thêm loại nguyên liệu",
+                titleModalCreate,
                 true,
                 "60%",
                 "create category-ingredients",
@@ -719,7 +712,7 @@ const AdminCategoryIngredientsPage = () => {
             rowKey={(record) => record!.id as number}
             data={currentItems}
             pagination={paginationProps}
-            loading={loading}
+            loading={isLoading}
             className="table-actions category-ingredients"
             onChange={handleTableChange}
           />

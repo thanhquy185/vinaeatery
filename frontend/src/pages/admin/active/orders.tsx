@@ -52,9 +52,17 @@ import {
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
 import { handlePrintTicket } from "../../../utils/printTicket";
-import { OrderStatus, PayStatus } from "../../../common/values";
+import { OrderStatus, PayStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Các giá trị chung
+// - Tên đối tượng
+const objectName = "Đơn món ăn"
+// - Tiêu đề modal
+const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
+const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
+const titleModalUpdate = TitleModalCommon.update(objectName.toLowerCase());
+const titleModalPrint = TitleModalCommon.print(objectName.toLowerCase());
 // - Chi tiết phiếu nhập
 interface OrderDetailsTableProps {
   orderDetails?: OrderDetailsFormatType[];
@@ -79,8 +87,73 @@ const OrDetailsFormat = ["", "", "price", "", "price"];
 
 // Admin Orders Page
 const AdminOrdersPage = () => {
-  // Cấu hình cột bảng dữ liệu của Đơn món ăn
-  const [loading, setLoading] = useState<boolean>(false);
+  // Đối tượng query client để thực thi react-query
+  const queryClient = useQueryClient();
+
+  // Các biến giữ giá trị từ việc lọc thông tin
+  // - Tìm kiếm thông tin
+  const findOptions = [
+    { label: "#", value: "id" },
+    { label: "Khách", value: "customer" },
+  ];
+  const [filterFindType, setFilterFindType] = useState<string | null>(
+    findOptions[0].value
+  );
+  const [filterFindValue, setFilterFindValue] = useState<string | null>("");
+  // - Thời gian bắt đầu / Thời gian kết thúc
+  const [filterTimeValue, setFilterTimeValue] = useState<[string, string]>();
+  // - Trạng thái
+  const statusOptions: SelectProps["options"] = [
+    { label: OrderStatus.confirm, value: OrderStatus.confirm },
+    { label: OrderStatus.canceled, value: OrderStatus.canceled },
+    { label: OrderStatus.pending, value: OrderStatus.pending },
+    { label: PayStatus.pay, value: PayStatus.pay },
+    { label: PayStatus.notPay, value: PayStatus.notPay },
+  ];
+  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
+    []
+  );
+
+  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
+  // - Truy vấn dữ liệu
+  const {
+    data: orders,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [
+      'orders',
+      filterFindType,
+      filterFindValue,
+      filterTimeValue,
+      filterStatusValue,
+    ],
+    queryFn: async () => {
+      const res = await FindAllOrder({
+        findType: filterFindType!,
+        findValue: filterFindValue!,
+        timeValue: filterTimeValue!,
+        statusValue: filterStatusValue!,
+      });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+    enabled: !!filterFindType,  //
+    retry: ReactQueryGetData.retry,
+    staleTime: ReactQueryGetData.staleTime,
+  });
+  // - Cột thuộc tính
   const columns: ColumnsType<OrdersFormatType> = [
     {
       title: "#",
@@ -150,7 +223,7 @@ const AdminOrdersPage = () => {
             className="info action"
             onClick={() =>
               updatePropertiesModal(
-                "Chi tiết đơn món ăn",
+                titleModalDetail,
                 true,
                 "89%",
                 "info orders",
@@ -164,7 +237,7 @@ const AdminOrdersPage = () => {
             className="update action margin-lr"
             onClick={() =>
               updatePropertiesModal(
-                "Cập nhật đơn món ăn",
+                titleModalUpdate,
                 true,
                 "89%",
                 "update orders",
@@ -178,7 +251,7 @@ const AdminOrdersPage = () => {
             className="print action"
             onClick={() =>
               updatePropertiesModal(
-                "In đơn hàng",
+                titleModalPrint,
                 true,
                 "80%",
                 "print orders",
@@ -192,39 +265,14 @@ const AdminOrdersPage = () => {
       ),
     },
   ];
-  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
-  const [orders, setOrders] = useState<OrdersFormatType[]>([]);
+  // - Các thành phần
   const {
     currentItems,
     handleTableChange,
     paginationProps,
     sortField,
     sortOrder,
-  } = CustomPaginationProps(orders, 8, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-
-  // Các biến giữ giá trị từ việc lọc thông tin
-  // - Tìm kiếm thông tin
-  const findOptions = [
-    { label: "#", value: "id" },
-    { label: "Khách", value: "customer" },
-  ];
-  const [filterFindType, setFilterFindType] = useState<string | null>(
-    findOptions[0].value
-  );
-  const [filterFindValue, setFilterFindValue] = useState<string | null>("");
-  // - Thời gian bắt đầu / Thời gian kết thúc
-  const [filterTimeValue, setFilterTimeValue] = useState<[string, string]>();
-  // - Trạng thái
-  const statusOptions: SelectProps["options"] = [
-    { label: OrderStatus.confirm, value: OrderStatus.confirm },
-    { label: OrderStatus.canceled, value: OrderStatus.canceled },
-    { label: OrderStatus.pending, value: OrderStatus.pending },
-    { label: PayStatus.pay, value: PayStatus.pay },
-    { label: PayStatus.notPay, value: PayStatus.notPay },
-  ];
-  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
-    []
-  );
+  } = CustomPaginationProps(orders || [], 8, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các biến giữ giá trị cho việc hiển thị thông số trên card
   const [totalPriceCardValue, setTotalPriceCardValue] = useState<number>(0);
@@ -495,7 +543,7 @@ const AdminOrdersPage = () => {
                 });
 
                 setTimeout(() => {
-                  getAllOrder();
+                  queryClient.invalidateQueries({ queryKey: ["orders"] });
                   setOpenModal(false);
                 }, 1500);
               } else {
@@ -1010,7 +1058,7 @@ const AdminOrdersPage = () => {
           duration: 1.5,
         });
         setTimeout(() => {
-          getAllOrder();
+          queryClient.invalidateQueries({ queryKey: ["orders"] });
           setOpenModal(false);
         }, 1500);
       } else {
@@ -1417,13 +1465,13 @@ const AdminOrdersPage = () => {
   };
 
   // Hàm cập nhật số liệu cho các thẻ
-  const updateCards = (orders: OrdersFormatType[]) => {
+  const updateCards = () => {
     let totalPrice = 0,
       totalOrder = 0,
       totalConfirm = 0,
       totalCancel = 0,
       totalPending = 0;
-    orders.forEach((order) => {
+    orders?.forEach((order) => {
       totalPrice += order.totalPrice!;
       totalOrder += 1;
       if (order.status! === OrderStatus.confirm) {
@@ -1443,42 +1491,14 @@ const AdminOrdersPage = () => {
     setCancelCardValue(totalCancel);
     setPendingCardValue(totalPending);
   };
-  // Hàm cập nhật danh sách các đơn món ăn (gọi API)
-  const getAllOrder = async () => {
-    setLoading(true);
-    const res = await FindAllOrder({
-      findType: filterFindType!,
-      findValue: filterFindValue!,
-      timeValue: filterTimeValue!,
-      statusValue: filterStatusValue!,
-    });
-    if (res!.status === 200) {
-      setLoading(false);
-      setOrders(res!.data);
-      updateCards(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-
-  //
-  useEffect(() => {
-    getAllOrder();
-  }, []);
-  useEffect(() => {
-    getAllOrder();
-  }, [filterFindType, filterFindValue, filterTimeValue, filterStatusValue]);
+  // ...
+  useEffect(() => { updateCards(); }, [orders])
 
   return (
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Vận hành quán ăn - Đơn món ăn</h2>
+          <h2 className="main__title">Vận hành quán ăn - {objectName}</h2>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -1507,15 +1527,13 @@ const AdminOrdersPage = () => {
           <button
             className={
               "main__filter-button btn create" +
-              (openModal &&
-                String(titleModal).includes("Thêm") &&
-                String(classNameModal).includes("create")
+              (openModal && titleModal === titleModalCreate
                 ? " active"
                 : "")
             }
             onClick={() =>
               updatePropertiesModal(
-                "Thêm đơn món ăn",
+                titleModalCreate,
                 true,
                 "89%",
                 "create orders",
@@ -1565,7 +1583,7 @@ const AdminOrdersPage = () => {
             columns={columns}
             rowKey={(record) => record!.id as number}
             data={currentItems}
-            loading={loading}
+            loading={isLoading}
             pagination={paginationProps}
             className="table-actions orders"
             onChange={handleTableChange}

@@ -19,6 +19,7 @@ public class UseTableCriteria {
     private Optional<String> employeeId;
     private Optional<String> customerId;
     private Optional<String> tableId;
+    private Optional<String> tableName;
     private Optional<String> floorId;
     private Optional<String> orderId;
     private Optional<String> orderTableId;

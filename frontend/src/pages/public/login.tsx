@@ -1,68 +1,98 @@
-import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCircleInfo,
-  faEye,
-  faEyeSlash,
-} from "@fortawesome/free-solid-svg-icons";
-import ComebackHomeButton from "../../components/common/comeback-home-button";
+import { Form, Input } from 'antd';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { ruleRequired } from "../../common/rules";
+import { openNotification } from '../../utils/showNotification';
+import { HandleLogin } from '../../services/api';
 
 const LoginPage = () => {
-  // Biến chứa giá trị cho việc hiển thị hay ẩn mật khẩu
-  const [showPassword, setShowPassword] = useState<Boolean>(false);
+  //
+  const [form] = Form.useForm();
 
   return (
     <>
       {/* <ComebackHomeButton /> */}
       <div className="form">
-        <h1 className="form__title">Đăng nhập</h1>
+        <h1 className="form__title">
+          <img src="src/assets/images/others/brand-image.png" alt="brand-image" className="form__title-image" />
+          <p className="form__title-text">Đăng nhập</p>
+        </h1>
         <div className="form__line"></div>
-        <form id="login-form" autoComplete="on">
-          <div className="form__form-group">
-            <label htmlFor="login-username">Tên tài khoản</label>
-            <input
-              name="username"
-              type="text"
-              id="login-username"
-              placeholder="Nhập tên tài khoản"
-            />
-            <FontAwesomeIcon icon={faCircleInfo} className="error-icon" />
-            <p id="error-username" className="error-text"></p>
-          </div>
-          <div className="form__form-group">
-            <label htmlFor="login-password">Mật khẩu</label>
-            <input
-              name="password"
-              type={!showPassword ? "password" : "text"}
-              id="login-password"
-              placeholder="Nhập mật khẩu"
-            />
-            <FontAwesomeIcon icon={faCircleInfo} className="error-icon" />
-            <p id="error-password" className="error-text"></p>
-            {!showPassword ? (
-              <FontAwesomeIcon
-                icon={faEye}
-                className="icon"
-                onClick={() => setShowPassword(true)}
-              />
-            ) : (
-              <FontAwesomeIcon
-                icon={faEyeSlash}
-                className="icon"
-                onClick={() => setShowPassword(false)}
-              />
-            )}
-          </div>
-          <div className="form__form-group">
-            <button type="submit" className="btn">
-              Xác nhận
-            </button>
-          </div>
-          <p className="form__action left">
-            <a href="#!">Quên mật khẩu</a>
-          </p>
-        </form>
-      </div>
+        <Form
+          layout="vertical"
+          form={form}
+          className="form__form"
+          autoComplete='off'
+          onFinish={async () => {
+            // Nút để submit form
+            const submitButton = document.querySelector(
+              ".modal__form button[type='submit']"
+            );
+
+            // Thêm class 'active' thể hiện nút đang được nhấn
+            submitButton?.classList.add("active");
+
+            // Danh sách dữ liệu
+            const values = form.getFieldsValue();
+
+            // Gọi api xử lý
+            const res = await HandleLogin({
+              username: values!.username || undefined,
+              password: values!.password || undefined,
+            });
+            if (res.status === 200) {
+              console.log(res);
+              openNotification({
+                type: "success",
+                message: "Thành công",
+                description: "Đăng nhập thành công !",
+                duration: 1.5,
+              });
+
+              setTimeout(() => {
+
+              }, 1500);
+            } else {
+              openNotification({
+                type: "error",
+                message: "Thất bại",
+                description: "Đăng nhập thất bại !",
+                duration: 1.5,
+              });
+
+              setTimeout(() => {
+                // Xoá class 'active' thể hiện nút không còn được nhấn
+                submitButton?.classList.remove("active");
+              }, 1500);
+            }
+
+            // Xoá class 'active' thể hiện nút không còn được nhấn
+            submitButton?.classList.remove("active");
+          }}
+        >
+          <Form.Item
+            name="username"
+            label="Tên tài khoản"
+            htmlFor="username"
+            className="form__form-group"
+            rules={[ruleRequired("Tên tài khoản không được để trống !")]}
+          >
+            <Input id="username" prefix={<UserOutlined />} placeholder="Nhập Tên tài khoản" />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            label="Mật khẩu"
+            htmlFor="password"
+            className="form__form-group"
+            rules={[ruleRequired("Mật khẩu không được để trống !")]}
+          >
+            <Input.Password id="password" prefix={<LockOutlined />} placeholder="Nhập Mật khẩu" />
+          </Form.Item>
+          <button type="submit" className="btn form__button">
+            Xác nhận
+          </button>
+          <a href="" className="form__action">Quên mật khẩu ?</a>
+        </Form>
+      </div >
     </>
   );
 };

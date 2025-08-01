@@ -8,10 +8,16 @@ import { openNotification } from "../../../utils/showNotification";
 import type { CustomersFormatType, FloorsType, OrderSheetsFormatType, OrderTablesFormatType, UseTablesFormatType } from "../../../common/types";
 import { FindAllCustomer, FindAllFloor, FindAllOrderTable, FindAllUseTableTimeEndIsNull, HandleUpdateUseTable } from "../../../services/api";
 import CustomFindInput from "../../../components/admin/find-input";
-import { CommonStatus, UseTableStatus } from "../../../common/values";
+import { CommonStatus, ReactQueryGetData, UseTableStatus } from "../../../common/values";
 import { showCreateValidAddress } from "../../../utils/showCreateValidAddress";
 import { vietnamMoneyFormat } from "../../../utils/otherEvents";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
+// Các giá trị chung
+// - Tên đối tượng
+const objectName = "Sử dụng bàn ăn"
+
+// Kiểu dữ liệu các tham số truyền vào của 1 đối tượng sử dụng bàn ăn
 type HandleUseTableProps = {
   id?: number;
   tableId?: number;
@@ -25,9 +31,32 @@ type HandleUseTableProps = {
 
 // Admin Status Tables Page
 const AdminUseTablesPage = () => {
-  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
-  const [floors, setFloors] = useState<FloorsType[]>([]);
-  const [useTables, setUseTables] = useState<UseTablesFormatType[]>([]);
+  // Đối tượng query client để thực thi react-query
+  const queryClient = useQueryClient();
+
+  // Các biến giữ dữ liệu về tầng
+  const {
+    data: floors,
+  } = useQuery({
+    queryKey: [
+      'floors',
+    ],
+    queryFn: async () => {
+      const res = await FindAllFloor({ statusValue: [CommonStatus.active] });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+  });
 
   // Các biến giữ giá trị từ việc lọc thông tin
   // - Tìm kiếm thông tin
@@ -39,7 +68,7 @@ const AdminUseTablesPage = () => {
   );
   const [filterFindValue, setFilterFindValue] = useState<string | null>("");
   // - Tầng
-  const floorOptions: SelectProps["options"] = floors.map((floor) => ({ label: floor.name, value: floor.id }));
+  const floorOptions: SelectProps["options"] = floors?.map((floor) => ({ label: floor.name, value: floor.id }));
   const [filterFloorValue, setFilterFloorValue] = useState<string[] | null>([]);
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
@@ -51,6 +80,36 @@ const AdminUseTablesPage = () => {
   const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
     []
   );
+
+  // Truy vấn dữ liệu sử dụng (mới nhất)
+  const {
+    data: useTables,
+  } = useQuery({
+    queryKey: [
+      'use-tables',
+      filterFindType!,
+      filterFindValue!,
+      filterFloorValue!,
+      filterStatusValue!
+    ],
+    queryFn: async () => {
+      const res = await FindAllUseTableTimeEndIsNull({ findType: filterFindType!, findValue: filterFindValue!, floorValue: filterFloorValue!, statusValue: filterStatusValue! });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+    retry: ReactQueryGetData.retry,
+    staleTime: ReactQueryGetData.staleTime,
+  });
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -769,7 +828,7 @@ const AdminUseTablesPage = () => {
           duration: 1.5,
         });
         setTimeout(() => {
-          getAllUseTable();
+          queryClient.invalidateQueries({ queryKey: ["use-tables"] });
           setOpenModal(false);
           setOpenSecondModal(false);
         }, 1500);
@@ -799,55 +858,12 @@ const AdminUseTablesPage = () => {
       button.classList.remove("active");
     }
   };
-  // Hàm cập nhật danh sách các sử dụng bàn ăn (gọi API)
-  const getAllFloor = async () => {
-    const res = await FindAllFloor({
-      statusValue: ["Hoạt động"],
-    });
-    if (res!.status === 200) {
-      setFloors(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-  const getAllUseTable = async () => {
-    const res = await FindAllUseTableTimeEndIsNull({
-      findType: filterFindType!,
-      findValue: filterFindValue!,
-      floorValue: filterFloorValue!,
-      statusValue: filterStatusValue!,
-    });
-    if (res!.status === 200) {
-      setUseTables(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-
-  //
-  useEffect(() => {
-    getAllFloor();
-    getAllUseTable();
-  }, []);
-  useEffect(() => {
-    getAllUseTable();
-  }, [filterFindType, filterFindValue, filterFloorValue, filterStatusValue]);
 
   return (
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Vận hành quán ăn - Sử dụng bàn ăn</h2>
+          <h2 className="main__title">Vận hành quán ăn - {objectName}</h2>
         </div>
         <div className="main__filter use-tables">
           <CustomFindInput
@@ -878,7 +894,7 @@ const AdminUseTablesPage = () => {
           />
         </div>
         <div className="main__use-tables">
-          {useTables.map((useTable) => {
+          {useTables?.map((useTable) => {
             if (useTable!.table!.status !== CommonStatus.active) return null;
 
             return (
@@ -925,16 +941,17 @@ const AdminUseTablesPage = () => {
           })}
         </div>
       </main >
-      {openModal && (
-        <CustomModal
-          title={titleModal}
-          openModal={openModal}
-          setOpenModal={() => setOpenModal(false)}
-          width={widthModal}
-          className={classNameModal}
-          children={SecondModal}
-        />
-      )
+      {
+        openModal && (
+          <CustomModal
+            title={titleModal}
+            openModal={openModal}
+            setOpenModal={() => setOpenModal(false)}
+            width={widthModal}
+            className={classNameModal}
+            children={SecondModal}
+          />
+        )
       }
       {
         openSecondModal && (

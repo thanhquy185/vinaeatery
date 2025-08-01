@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleInfo,
@@ -8,18 +9,21 @@ import {
   faUnlock,
 } from "@fortawesome/free-solid-svg-icons";
 import { DatePicker, Form, Input, InputNumber, Select, Space, Tag } from "antd";
+import TextArea from "antd/es/input/TextArea";
 import type { SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type {
-  CustomerCardsType,
   CustomersFormatType,
+  CustomersType,
+  ReactQueryMutationProps,
 } from "../../../common/types";
+import { CommonGender, CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
 import { CustomPaginationProps } from "../../../common/props";
+import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomTableActions from "../../../components/admin/table-actions";
 import CustomModal from "../../../components/admin/modal";
-import { vietnamMoneyFormat } from "../../../utils/otherEvents";
 import {
   FindAllCustomer,
   FindAllCustomerCard,
@@ -27,23 +31,121 @@ import {
   HandleLockCustomer,
   HandleUpdateCustomer,
 } from "../../../services/api";
-import { openNotification } from "../../../utils/showNotification";
-import TextArea from "antd/es/input/TextArea";
-import dayjs from "dayjs";
+import { vietnamMoneyFormat } from "../../../utils/otherEvents";
 import { showCreateValidAddress } from "../../../utils/showCreateValidAddress";
-import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules";
 import { openConfirmation } from "../../../utils/showConfirmation";
-import { CommonStatus } from "../../../common/values";
+import { openNotification } from "../../../utils/showNotification";
+import dayjs from "dayjs";
 
 // Các giá trị chung
-// - Giới tính
-const male = "Nam";
-const female = "Nữ";
+// - Tên đối tượng
+const objectName = "Khách hàng"
+// - Tiêu đề modal
+const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
+const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
+const titleModalUpdate = TitleModalCommon.update(objectName.toLowerCase());
+const titleModalLock = TitleModalCommon.lock(objectName.toLowerCase());
+const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 
 // Admin Customers Page
 const AdminCustomersPage = () => {
-  // Cấu hình cột bảng dữ liệu của khách hàng
-  const [loading, setLoading] = useState<boolean>(false);
+  // Đối tượng query client để thực thi react-query
+  const queryClient = useQueryClient();
+
+  // Các biến giữ dữ liệu về thẻ khách hàng
+  const {
+    data: customerCards,
+  } = useQuery({
+    queryKey: [
+      'customer-cards',
+    ],
+    queryFn: async () => {
+      const res = await FindAllCustomerCard({ statusValue: [CommonStatus.active] });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+  });
+
+  // Các biến giữ giá trị từ việc lọc thông tin
+  // - Tìm kiếm thông tin
+  const findOptions = [
+    { label: "#", value: "id" },
+    { label: "Tên", value: "fullname" },
+    { label: "SĐT", value: "phone" },
+  ];
+  const [filterFindType, setFilterFindType] = useState<string | null>(
+    findOptions[0].value
+  );
+  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
+  // - Thẻ khách hàng
+  const customerCardOptions: SelectProps["options"] = customerCards?.map(
+    (customerCard) => ({
+      label: "#" + customerCard.id + " - " + customerCard.name,
+      value: customerCard.id,
+    })
+  );
+  const [filterCustomerCardValue, setFilterCustomerCardValue] = useState<
+    string[] | null
+  >(null);
+  // - Trạng thái
+  const statusOptions: SelectProps["options"] = [
+    { label: CommonStatus["active"], value: CommonStatus["active"] },
+    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
+  ];
+  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
+    null
+  );
+
+  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
+  // - Truy vấn dữ liệu
+  const {
+    data: customers,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [
+      'customers',
+      filterFindType,
+      filterFindValue,
+      filterCustomerCardValue,
+      filterStatusValue,
+    ],
+    queryFn: async () => {
+      const res = await FindAllCustomer({
+        findType: filterFindType!,
+        findValue: filterFindValue!,
+        customerCardValue: filterCustomerCardValue!,
+        statusValue: filterStatusValue!,
+      });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+    enabled: !!filterFindType,  //
+    retry: ReactQueryGetData.retry,
+    staleTime: ReactQueryGetData.staleTime,
+  });
+  // - Cột thuộc tính
   const columns: ColumnsType<CustomersFormatType> = [
     {
       title: "#",
@@ -103,7 +205,7 @@ const AdminCustomersPage = () => {
             className="action info"
             onClick={() =>
               updatePropertiesModal(
-                "Chi tiết khách hàng",
+                titleModalDetail,
                 true,
                 "60%",
                 "info customers",
@@ -117,7 +219,7 @@ const AdminCustomersPage = () => {
             className="action update margin-lr"
             onClick={() =>
               updatePropertiesModal(
-                "Cập nhật khách hàng",
+                titleModalUpdate,
                 true,
                 "60%",
                 "update customers",
@@ -131,8 +233,7 @@ const AdminCustomersPage = () => {
             className="action lock"
             onClick={() =>
               updatePropertiesModal(
-                (record.status == CommonStatus["active"] ? "Khoá" : "Mở khoá") +
-                " khách hàng",
+                (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
                 true,
                 "30%",
                 "lock customers",
@@ -148,46 +249,14 @@ const AdminCustomersPage = () => {
       ),
     },
   ];
-  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
-  const [customers, setCustomers] = useState<CustomersFormatType[]>([]);
+  // - Các thành phần
   const {
     currentItems,
     handleTableChange,
     paginationProps,
     sortField,
     sortOrder,
-  } = CustomPaginationProps(customers, 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-
-  // Các biến giữ giá trị từ việc lọc thông tin
-  // - Tìm kiếm thông tin
-  const findOptions = [
-    { label: "#", value: "id" },
-    { label: "Tên", value: "fullname" },
-    { label: "SĐT", value: "phone" },
-  ];
-  const [filterFindType, setFilterFindType] = useState<string | null>(
-    findOptions[0].value
-  );
-  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
-  // - Thẻ khách hàng
-  const [customerCards, setCustomerCards] = useState<CustomerCardsType[]>([]);
-  const customerCardOptions: SelectProps["options"] = customerCards?.map(
-    (customerCard) => ({
-      label: "#" + customerCard.id + " - " + customerCard.name,
-      value: customerCard.id,
-    })
-  );
-  const [filterCustomerCardValue, setFilterCustomerCardValue] = useState<
-    string[] | null
-  >(null);
-  // - Trạng thái
-  const statusOptions: SelectProps["options"] = [
-    { label: CommonStatus["active"], value: CommonStatus["active"] },
-    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
-  ];
-  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
-    null
-  );
+  } = CustomPaginationProps(customers || [], 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -240,6 +309,83 @@ const AdminCustomersPage = () => {
     description: "Nhập Mô tả",
     status: "Chọn Trạng thái",
   };
+  // - Mutation cho việc thêm, cập nhật và khoá dữ liệu
+  const handleSubmitMutation = useMutation({
+    mutationFn: async ({ type, values, objectId }: ReactQueryMutationProps<CustomersType>) => {
+      if (openModal) {
+        if (type === "create" && titleModal === titleModalCreate) {
+          return await HandleCreateCustomer({
+            customerCardId: 1,
+            totalThreshold: 0,
+            fullname: values!.fullname || undefined,
+            birthday:
+              values!.birthday && dayjs(values!.birthday).isValid()
+                ? dayjs(values!.birthday).format("YYYY-MM-DD")
+                : undefined,
+            gender: values!.gender || undefined,
+            phone: values!.phone || undefined,
+            email: values!.email || undefined,
+            address: values!.address || undefined,
+            description: values!.description || undefined,
+            status: values!.status || undefined,
+          })
+        } else if (type === "update" && titleModal === titleModalUpdate) {
+          return await HandleUpdateCustomer({
+            id: values!.id!,
+            customerCardId: values!.customerCardId || undefined,
+            fullname: values!.fullname || undefined,
+            birthday:
+              values!.birthday && dayjs(values!.birthday).isValid()
+                ? dayjs(values!.birthday).format("YYYY-MM-DD")
+                : undefined,
+            gender: values!.gender || undefined,
+            phone: values!.phone || undefined,
+            email: values!.email || undefined,
+            address: values!.address || undefined,
+            description: values!.description || undefined,
+            timeUpdate: new Date().toISOString(),
+          });
+        } else if ((type === "lock" && titleModal === titleModalLock)
+          || (type === "unlock" && titleModal === titleModalUnlock)) {
+          const res = await HandleLockCustomer({
+            id: objectId! as number,
+            status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
+            timeUpdate: new Date().toISOString(),
+          })
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
+        }
+      }
+    },
+    onSuccess: () => {
+      openNotification({
+        type: "success",
+        message: "Thành công",
+        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thành công!",
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['customers'] });
+        setOpenModal(false);
+      }, 1500);
+    },
+    onError: (error) => {
+      openNotification({
+        type: "error",
+        message: "Thất bại",
+        description: (error ? error.message : (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thất bại!"),
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+      }, 1500);
+    },
+  });
   // - Các modal tương ứng cho từng chức năng
   const DetailCustomers = ({
     id,
@@ -399,47 +545,11 @@ const AdminCustomersPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleCreateCustomer({
-                customerCardId: 1,
-                totalThreshold: 0,
-                fullname: values!.fullname || undefined,
-                birthday:
-                  values!.birthday && dayjs(values!.birthday).isValid()
-                    ? dayjs(values!.birthday).format("YYYY-MM-DD")
-                    : undefined,
-                gender: values!.gender || undefined,
-                phone: values!.phone || undefined,
-                email: values!.email || undefined,
-                address: values!.address || undefined,
-                description: values!.description || undefined,
-                status: values!.status || undefined,
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Thêm thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "create", values: values });
 
-                setTimeout(() => {
-                  getAllCustomer();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Thêm thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -576,8 +686,8 @@ const AdminCustomersPage = () => {
                     id="create-gender"
                     placeholder={defaultInputs["gender"]}
                     options={[
-                      { label: male, value: male },
-                      { label: female, value: female },
+                      { label: CommonGender["male"], value: CommonGender["male"] },
+                      { label: CommonGender["female"], value: CommonGender["female"] },
                     ]}
                   />
                 </Form.Item>
@@ -639,7 +749,7 @@ const AdminCustomersPage = () => {
           form={form}
           initialValues={{
             id: id!,
-            customerCard: customerCard!.id,
+            customerCardId: customerCard!.id,
             totalThreshold: totalThreshold!,
             fullname: fullname!,
             birthday: dayjs(birthday!),
@@ -670,47 +780,11 @@ const AdminCustomersPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleUpdateCustomer({
-                id: id!,
-                customerCardId: values!.customerCard || undefined,
-                fullname: values!.fullname || undefined,
-                birthday:
-                  values!.birthday && dayjs(values!.birthday).isValid()
-                    ? dayjs(values!.birthday).format("YYYY-MM-DD")
-                    : undefined,
-                gender: values!.gender || undefined,
-                phone: values!.phone || undefined,
-                email: values!.email || undefined,
-                address: values!.address || undefined,
-                description: values!.description || undefined,
-                timeUpdate: new Date().toISOString(),
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Cập nhật thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "update", values: values });
 
-                setTimeout(() => {
-                  getAllCustomer();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Cập nhật thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -782,7 +856,7 @@ const AdminCustomersPage = () => {
                 </Space.Compact>
               </Form.Item>
               <Form.Item
-                name="customerCard"
+                name="customerCardId"
                 label={defaultLabels["customerCard"]}
                 htmlFor="update-customerCard"
                 className="modal__form-group-item"
@@ -839,8 +913,8 @@ const AdminCustomersPage = () => {
                     id="update-gender"
                     placeholder={defaultInputs["gender"]}
                     options={[
-                      { label: male, value: male },
-                      { label: female, value: female },
+                      { label: CommonGender["male"], value: CommonGender["male"] },
+                      { label: CommonGender["female"], value: CommonGender["female"] },
                     ]}
                   />
                 </Form.Item>
@@ -911,40 +985,11 @@ const AdminCustomersPage = () => {
               content: "Hành động này không thể hoàn tác.",
             });
             if (answer) {
-              // Gọi api xử lý
-              const res = await HandleLockCustomer({
-                id: id!,
-                status: status!,
-                timeUpdate: new Date().toISOString(),
-              });
-              if (res.status == 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: `${statusValue ? "Khoá" : "Mở khoá"
-                    } thành công !`,
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: (statusValue ? "lock" : "unlock"), objectId: id! });
 
-                setTimeout(() => {
-                  getAllCustomer();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description:
-                    String(res.data) ??
-                    `${statusValue ? "Khoá" : "Mở khoá"} thất bại !`,
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -1011,62 +1056,11 @@ const AdminCustomersPage = () => {
     ),
   };
 
-  // Hàm cập nhật danh sách các thẻ khách hàng và khách hàng (gọi API)
-  const getAllCustomerCard = async () => {
-    const res = await FindAllCustomerCard({
-      statusValue: ["Hoạt động"],
-    });
-    if (res!.status === 200) {
-      setCustomerCards(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-  const getAllCustomer = async () => {
-    setLoading(true);
-    const res = await FindAllCustomer({
-      findType: filterFindType!,
-      findValue: filterFindValue!,
-      customerCardValue: filterCustomerCardValue!,
-      statusValue: filterStatusValue!,
-    });
-    if (res!.status === 200) {
-      setLoading(false);
-      setCustomers(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-
-  //
-  useEffect(() => {
-    getAllCustomerCard();
-    getAllCustomer();
-  }, []);
-  useEffect(() => {
-    getAllCustomer();
-  }, [
-    filterFindType,
-    filterFindValue,
-    filterCustomerCardValue,
-    filterStatusValue,
-  ]);
-
   return (
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Vận hành quán ăn - Khách hàng</h2>
+          <h2 className="main__title">Vận hành quán ăn - {objectName}</h2>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -1098,15 +1092,13 @@ const AdminCustomersPage = () => {
           <button
             className={
               "main__filter-button btn create" +
-              (openModal &&
-                String(titleModal).includes("Thêm") &&
-                String(classNameModal).includes("create")
+              (openModal && titleModal === titleModalCreate
                 ? " active"
                 : "")
             }
             onClick={() =>
               updatePropertiesModal(
-                "Thêm khách hàng",
+                titleModalCreate,
                 true,
                 "60%",
                 "create customers",
@@ -1123,7 +1115,7 @@ const AdminCustomersPage = () => {
             columns={columns}
             rowKey={(record) => record!.id as number}
             data={currentItems}
-            loading={loading}
+            loading={isLoading}
             pagination={paginationProps}
             className="table-actions customers"
             onChange={handleTableChange}

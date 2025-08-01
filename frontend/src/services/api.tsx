@@ -34,32 +34,81 @@ import type {
   UseTablesType,
 } from "../common/types";
 
+// Form chung để truy vấn dữ liệu (bảo mật)
+const formGetDataValue = {
+  project: {
+    name: "vinaeatery",
+    dateCreate: "2025-06-01",
+    frontend: "react.js",
+    backend: "spring-boot",
+  },
+  developer: {
+    fullname: "tranthanhquy",
+    phone: "0923073724",
+    email: "thanhquyfu@gmail.com"
+  }
+}
+
+const formGetDataTempValue = {
+  project: {
+    name: "vinaeater",
+    dateCreate: "2025-06-01",
+    frontend: "react.js",
+    backend: "spring-boot",
+  },
+  developer: {
+    fullname: "tranthanhquy",
+    phone: "0923073724",
+    email: "thanhquyfu@gmail.com"
+  }
+}
+
+
+// Các API đăng nhập và đăng xuất
+export const HandleLogin = (
+  { username, password }: { username: string, password: string }
+): Promise<AxiosResponse<RestResponseType, any>> => {
+  return instance.post("/api/auth/login", {
+    username: username,
+    password: password,
+  });
+};
+export const HandleLogout = (): Promise<AxiosResponse<RestResponseType, any>> => {
+  return instance.post("/api/auth/logout");
+}
+
 // Các api của đối tượng Sử dụng bàn ăn (Use Table)
 export const FindOneNewUseTableByTableId = ({
   tableId,
 }: {
   tableId: string;
 }): Promise<AxiosResponse<UseTablesFormatType, any>> => {
-  return instance.get(`/api/use-tables/${tableId}`);
+  return instance.post(`/api/use-tables/${tableId}`, formGetDataValue);
 };
 export const FindAllUseTable = ({
   findType,
   findValue,
+  timeValue,
   floorValue,
   statusValue,
 }: FilterDataProps): Promise<AxiosResponse<UseTablesFormatType[], any>> => {
   const params: Record<string, string> = {};
 
   if (findValue! !== "") {
-    if (findType! === "table") params.tableId = findValue!;
+    if (findType! === "table") params.tableName = findValue!;
+  }
+  if (timeValue! && timeValue!.length > 0) {
+    if (timeValue![0] !== "") params.timeStart = timeValue![0];
+    if (timeValue![1] !== "") params.timeEnd = timeValue![1];
   }
   if (floorValue! && floorValue!.length > 0)
     params.floorId = floorValue![0];
   if (statusValue! && statusValue!.length > 0)
     params.status = statusValue![0];
 
-  return instance.get<UseTablesFormatType[]>(
+  return instance.post<UseTablesFormatType[]>(
     "/api/use-tables/list-format",
+    formGetDataValue,
     {
       params,
     }
@@ -74,15 +123,16 @@ export const FindAllUseTableTimeEndIsNull = ({
   const params: Record<string, string> = {};
 
   if (findValue! !== "") {
-    if (findType! === "table") params.tableId = findValue!;
+    if (findType! === "table") params.tableName = findValue!;
   }
   if (floorValue! && floorValue!.length > 0)
     params.floorId = floorValue![0];
   if (statusValue! && statusValue!.length > 0)
     params.status = statusValue![0];
 
-  return instance.get<UseTablesFormatType[]>(
+  return instance.post<UseTablesFormatType[]>(
     "/api/use-tables/list-format?timeEnd=null",
+    formGetDataValue,
     {
       params,
     }
@@ -139,8 +189,9 @@ export const FindAllOrderSheet = ({
   if (statusValue! && statusValue!.length > 0)
     params.status = statusValue![0];
 
-  return instance.get<OrderSheetsFormatType[]>(
+  return instance.post<OrderSheetsFormatType[]>(
     "/api/order-sheets/list-format",
+    formGetDataValue,
     {
       params,
     }
@@ -159,8 +210,9 @@ export const FindAllOrderSheetCurrentDate = ({
   if (statusValue! && statusValue!.length > 0)
     params.status = statusValue![0];
 
-  return instance.get<OrderSheetsFormatType[]>(
-    "/api/order-sheets/list-format?currentDay",
+  return instance.post<OrderSheetsFormatType[]>(
+    "/api/order-sheets/list-format?currentDate",
+    formGetDataValue,
     {
       params,
     }
@@ -169,7 +221,7 @@ export const FindAllOrderSheetCurrentDate = ({
 export const FindOneOrderSheet = (
   id: string
 ): Promise<AxiosResponse<OrderSheetsFormatType, any>> => {
-  return instance.get(`/api/order-sheets/detail/${id}`);
+  return instance.post(`/api/order-sheets/detail/${id}`, formGetDataValue);
 };
 export const HandleCreateOrderSheet = ({
   timeCreate,
@@ -247,8 +299,9 @@ export const FindAllOrder = ({
   if (statusValue! && statusValue!.length > 0)
     params.statusMerge = statusValue!.join(",");
 
-  return instance.get<OrdersFormatType[]>(
+  return instance.post<OrdersFormatType[]>(
     "/api/orders/list-format",
+    formGetDataValue,
     {
       params,
     }
@@ -257,7 +310,7 @@ export const FindAllOrder = ({
 export const FindOneOrder = (
   id: string
 ): Promise<AxiosResponse<OrdersFormatType, any>> => {
-  return instance.get(`/api/orders/detail/${id}`);
+  return instance.post(`/api/orders/detail/${id}`, formGetDataValue);
 };
 export const HandleCreateOrder = ({
   timeCreate,
@@ -331,8 +384,9 @@ export const FindAllOrderTable = ({
   }
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
-  return instance.get<OrderTablesFormatType[]>(
+  return instance.post<OrderTablesFormatType[]>(
     "/api/order-tables/list-format",
+    formGetDataValue,
     {
       params,
     }
@@ -341,7 +395,7 @@ export const FindAllOrderTable = ({
 export const FindOneOrderTable = (
   id: string
 ): Promise<AxiosResponse<OrderTablesFormatType, any>> => {
-  return instance.get(`/api/order-tables/detail/${id}`);
+  return instance.post(`/api/order-tables/detail/${id}`, formGetDataValue);
 };
 export const HandleCreateOrderTable = ({
   timeOrder,
@@ -413,14 +467,14 @@ export const FindAllCustomerCard = ({
   }
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
-  return instance.get<CustomerCardsType[]>("/api/customer-cards/list", {
+  return instance.post<CustomerCardsType[]>("/api/customer-cards/list", formGetDataValue, {
     params,
   });
 };
 export const FindOneCustomerCard = (
   id: string
 ): Promise<AxiosResponse<CustomerCardsType, any>> => {
-  return instance.get(`/api/customer-cards/detail/${id}`);
+  return instance.post(`/api/customer-cards/detail/${id}`, formGetDataValue);
 };
 export const HandleCreateCustomerCard = ({
   image,
@@ -519,14 +573,14 @@ export const FindAllCustomer = ({
     params.customerCardId = customerCardValue!.join(",");
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
-  return instance.get<CustomersFormatType[]>("/api/customers/list-format", {
+  return instance.post<CustomersFormatType[]>("/api/customers/list-format", formGetDataValue, {
     params,
   });
 };
 export const FindOneCustomer = (
   id: string
 ): Promise<AxiosResponse<CustomersFormatType, any>> => {
-  return instance.get(`/api/customers/detail/${id}`);
+  return instance.post(`/api/customers/detail/${id}`, formGetDataValue);
 };
 export const HandleCreateCustomer = ({
   customerCardId,
@@ -602,14 +656,14 @@ export const FindAllFloor = ({
   }
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
-  return instance.get<FloorsType[]>("/api/floors/list", {
+  return instance.post<FloorsType[]>("/api/floors/list", formGetDataValue, {
     params,
   });
 };
 export const FindOneFloor = (
   id: string
 ): Promise<AxiosResponse<FloorsType, any>> => {
-  return instance.get(`/api/floors/detail/${id}`);
+  return instance.post(`/api/floors/detail/${id}`, formGetDataValue);
 };
 export const HandleCreateFloor = ({
   name,
@@ -662,14 +716,17 @@ export const FindAllCategoryTable = ({
     params.surchargeType = surchargeTypeValue![0];
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
-  return instance.get<CategoryTablesType[]>("/api/category-tables/list", {
+  return instance.post<CategoryTablesType[]>(
+    "/api/category-tables/list",
+    formGetDataValue, {
     params,
-  });
+  }
+  );
 };
 export const FindOneCategoryTable = (
   id: string
 ): Promise<AxiosResponse<CategoryTablesType, any>> => {
-  return instance.get(`/api/category-tables/detail/${id}`);
+  return instance.post(`/api/category-tables/detail/${id}`, formGetDataValue);
 };
 export const HandleCreateCategoryTable = ({
   name,
@@ -707,6 +764,8 @@ export const HandleLockCategoryTable = ({
   status,
   timeUpdate,
 }: CategoryTablesType): Promise<AxiosResponse<RestResponseType, any>> => {
+  console.log(status);
+
   return instance.put(`/api/category-tables/lock/${id}`, {
     status,
     timeUpdate,
@@ -730,14 +789,14 @@ export const FindAllTable = ({
     params.categoryTableId = categoryValue!.join(",");
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
-  return instance.get<TablesFormatType[]>("/api/tables/list-format", {
+  return instance.post<TablesFormatType[]>("/api/tables/list-format", formGetDataValue, {
     params,
   });
 };
 export const FindOneTable = (
   id: string
 ): Promise<AxiosResponse<TablesFormatType, any>> => {
-  return instance.get(`/api/tables/detail/${id}`);
+  return instance.post(`/api/tables/detail/${id}`, formGetDataValue);
 };
 export const HandleCreateTable = ({
   name,
@@ -805,8 +864,9 @@ export const FindAllInputTicket = ({
   if (statusValue! && statusValue!.length > 0)
     params.statusMerge = statusValue!.join(",");
 
-  return instance.get<InputTicketsFormatType[]>(
+  return instance.post<InputTicketsFormatType[]>(
     "/api/input-tickets/list-format",
+    formGetDataValue,
     {
       params,
     }
@@ -815,7 +875,7 @@ export const FindAllInputTicket = ({
 export const FindOneInputTicket = (
   id: string
 ): Promise<AxiosResponse<InputTicketsFormatType, any>> => {
-  return instance.get(`/api/input-tickets/detail/${id}`);
+  return instance.post(`/api/input-tickets/detail/${id}`, formGetDataValue);
 };
 export const HandleCreateInputTicket = ({
   timeCreate,
@@ -885,14 +945,14 @@ export const FindAllSupplier = ({
   }
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
-  return instance.get<SuppliersType[]>("/api/suppliers/list", {
+  return instance.post<SuppliersType[]>("/api/suppliers/list", formGetDataValue, {
     params,
   });
 };
 export const FindOneSupplier = (
   id: string
 ): Promise<AxiosResponse<SuppliersType, any>> => {
-  return instance.get(`/api/suppliers/detail/${id}`);
+  return instance.post(`/api/suppliers/detail/${id}`, formGetDataValue);
 };
 export const HandleCreateSupplier = ({
   name,
@@ -950,8 +1010,8 @@ export const FindAllCategoryIngredient = ({
   }
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
-  return instance.get<CategoryIngredientsType[]>(
-    "/api/category-ingredients/list",
+  return instance.post<CategoryIngredientsType[]>(
+    "/api/category-ingredients/list", formGetDataValue,
     {
       params,
     }
@@ -960,7 +1020,7 @@ export const FindAllCategoryIngredient = ({
 export const FindOneCategoryIngredient = (
   id: string
 ): Promise<AxiosResponse<CategoryIngredientsType, any>> => {
-  return instance.get(`/api/category-ingredients/detail/${id}`);
+  return instance.post(`/api/category-ingredients/detail/${id}`, formGetDataValue);
 };
 export const HandleCreateCategoryIngredient = ({
   name,
@@ -1013,14 +1073,14 @@ export const FindAllIngredient = ({
     params.categoryIngredientId = categoryValue!.join(",");
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
-  return instance.get<IngredientsFormatType[]>("/api/ingredients/list-format", {
+  return instance.post<IngredientsFormatType[]>("/api/ingredients/list-format", formGetDataValue, {
     params,
   });
 };
 export const FindOneIngredient = (
   id: string
 ): Promise<AxiosResponse<IngredientsFormatType, any>> => {
-  return instance.get(`/api/ingredients/detail/${id}`);
+  return instance.post(`/api/ingredients/detail/${id}`, formGetDataValue);
 };
 export const HandleCreateIngredient = ({
   name,
@@ -1096,14 +1156,14 @@ export const FindAllCategoryFood = ({
   }
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
-  return instance.get<CategoryFoodsType[]>("/api/category-foods/list", {
+  return instance.post<CategoryFoodsType[]>("/api/category-foods/list", formGetDataValue, {
     params,
   });
 };
 export const FindOneCategoryFood = (
   id: string
 ): Promise<AxiosResponse<CategoryFoodsType, any>> => {
-  return instance.get(`/api/category-foods/detail/${id}`);
+  return instance.post(`/api/category-foods/detail/${id}`, formGetDataValue);
 };
 export const HandleCreateCategoryFood = ({
   name,
@@ -1192,14 +1252,14 @@ export const FindAllFood = ({
     params.categoryFoodId = categoryValue!.join(",");
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
-  return instance.get<FoodsFormatType[]>("/api/foods/list-format", {
+  return instance.post<FoodsFormatType[]>("/api/foods/list-format", formGetDataValue, {
     params,
   });
 };
 export const FindOneFood = (
   id: string
 ): Promise<AxiosResponse<FoodsFormatType, any>> => {
-  return instance.get(`/api/foods/detail/${id}`);
+  return instance.post(`/api/foods/detail/${id}`, formGetDataValue);
 };
 export const HandleCreateFood = ({
   name,
@@ -1309,14 +1369,14 @@ export const FindAllRole = ({
   }
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
-  return instance.get<RolesFormatType[]>("/api/roles/list-format", {
+  return instance.post<RolesFormatType[]>("/api/roles/list-format", formGetDataValue, {
     params,
   });
 };
 export const FindOneRole = (
   id: string
 ): Promise<AxiosResponse<RolesFormatType, any>> => {
-  return instance.get(`/api/roles/detail/${id}`);
+  return instance.post(`/api/roles/detail/${id}`, formGetDataValue);
 };
 export const HandleCreateRole = ({
   name,
@@ -1374,14 +1434,14 @@ export const FindAllEmployee = ({
   if (roleValue! && roleValue!.length > 0) params.roleId = roleValue!.join(",");
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
-  return instance.get<EmployeesFormatType[]>("/api/employees/list-format", {
+  return instance.post<EmployeesFormatType[]>("/api/employees/list-format", formGetDataValue, {
     params,
   });
 };
 export const FindOneEmployee = (
   id: string
 ): Promise<AxiosResponse<EmployeesType, any>> => {
-  return instance.get(`/api/employees/detail/${id}`);
+  return instance.post(`/api/employees/detail/${id}`, formGetDataValue);
 };
 export const HandleCreateEmployee = ({
   image,
@@ -1509,5 +1569,5 @@ export const HandleChangePasswordEmployee = ({
 export const FindAllFunction = (): Promise<
   AxiosResponse<FunctionsType[], any>
 > => {
-  return instance.get<FunctionsType[]>("/api/functions/list");
+  return instance.post<FunctionsType[]>("/api/functions/list", formGetDataValue);
 };

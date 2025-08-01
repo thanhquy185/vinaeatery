@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,12 +25,14 @@ import vn.tuhoc.vinaeatery.domain.criteria.FoodCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.FoodDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FoodStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FoodUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
 import vn.tuhoc.vinaeatery.domain.dto.RecipeDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.FoodStatusEnum;
 import vn.tuhoc.vinaeatery.service.FoodService;
 import vn.tuhoc.vinaeatery.service.RecipeService;
 import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.UploadService;
+import vn.tuhoc.vinaeatery.util.HandleFormGetData;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
@@ -45,22 +46,39 @@ public class FoodApiController {
     private final TimeService timeService;
 
     // Methods
-    @GetMapping("/list")
-    public ResponseEntity<List<?>> listFood(FoodCriteria foodCriteria) {
+    @PostMapping("/list")
+    public ResponseEntity<?> listFood(@RequestBody @Valid FormGetDataDTO formGetDataDTO, FoodCriteria foodCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<Food> listFood = this.foodService
                 .getAll(foodCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listFood);
     }
 
-    @GetMapping("/list-format")
-    public ResponseEntity<List<?>> listFoodFormat(FoodCriteria foodCriteria) {
+    @PostMapping("/list-format")
+    public ResponseEntity<?> listFoodFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            FoodCriteria foodCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<FoodDTO> listFood = this.foodService
                 .getAllFormat(foodCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listFood);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<?> handleDetailFood(@PathVariable("id") Integer id) {
+    @PostMapping("/detail/{id}")
+    public ResponseEntity<?> detailFood(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            @PathVariable("id") Integer id) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         Food foodSelected = this.foodService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(foodSelected);
     }

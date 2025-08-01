@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +18,7 @@ import vn.tuhoc.vinaeatery.domain.TableE;
 import vn.tuhoc.vinaeatery.domain.UseTable;
 import vn.tuhoc.vinaeatery.domain.criteria.TableCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
 import vn.tuhoc.vinaeatery.domain.dto.TableDTO;
 import vn.tuhoc.vinaeatery.domain.dto.TableUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
@@ -26,6 +26,7 @@ import vn.tuhoc.vinaeatery.domain.enumm.UseTableStatusEnum;
 import vn.tuhoc.vinaeatery.service.TableService;
 import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.UseTableService;
+import vn.tuhoc.vinaeatery.util.HandleFormGetData;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,20 +41,37 @@ public class TableApiController {
     private final TimeService timeService;
 
     // Methods
-    @GetMapping("/list")
-    public ResponseEntity<List<?>> listTable(TableCriteria tableCriteria) {
+    @PostMapping("/list")
+    public ResponseEntity<?> listTable(@RequestBody @Valid FormGetDataDTO formGetDataDTO, TableCriteria tableCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<TableE> listTable = this.tableService.getAll(tableCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listTable);
     }
 
-    @GetMapping("/list-format")
-    public ResponseEntity<List<?>> listTableFormat(TableCriteria tableCriteria) {
+    @PostMapping("/list-format")
+    public ResponseEntity<?> listTableFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            TableCriteria tableCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<TableDTO> listTableFormat = this.tableService.getAllFormat(tableCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listTableFormat);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<?> handleDetailTable(@PathVariable("id") Integer id) {
+    @PostMapping("/detail/{id}")
+    public ResponseEntity<?> detailTable(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            @PathVariable("id") Integer id) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         TableE tableSelected = this.tableService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(tableSelected);
     }
@@ -67,7 +85,7 @@ public class TableApiController {
         }
 
         TableE tableCreate = this.tableService.upsert(table);
-        if(tableCreate != null) {
+        if (tableCreate != null) {
             UseTable newUseTable = new UseTable();
             newUseTable.setTimeStart(LocalDateTime.now());
             newUseTable.setTableId(tableCreate.getId());

@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-// import vn.tuhoc.vinaeatery.domain.RestResponse;
+import vn.tuhoc.vinaeatery.domain.RestResponse;
 
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
@@ -31,19 +31,19 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException, ServletException {
-        // this.delegate.commence(request, response, authException);
-        // response.setContentType("application/json;charset=UTF-8");
+        this.delegate.commence(request, response, authException);
+        response.setContentType("application/json;charset=UTF-8");
 
-        // RestResponse<Object> restResponse = new RestResponse<>();
-        // restResponse.setStatusCode(HttpStatus.UNAUTHORIZED.value());
-        // // -
-        // String errorMessage = Optional.ofNullable(authException.getCause())
-        //         .map(Throwable::getMessage)
-        //         .orElse(authException.getMessage());
-        // restResponse.setError(errorMessage);
-        // restResponse
-        //         .setMessage("Token không hợp lệ (hết hạn, không đúng định dạng hoặc không truyền Jwt ở header...) !");
+        RestResponse<Object> restResponse = new RestResponse<>();
+        restResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+        // -
+        String errorMessage = Optional.ofNullable(authException.getCause())
+                .map(Throwable::getMessage)
+                .orElse(authException.getMessage());
+        restResponse.setError(errorMessage);
+        restResponse
+                .setMessage("Token không hợp lệ (hết hạn, không đúng định dạng hoặc không truyền Jwt ở header...) !");
 
-        // mapper.writeValue(response.getWriter(), restResponse);
+        mapper.writeValue(response.getWriter(), restResponse);
     }
 }

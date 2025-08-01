@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,12 +21,14 @@ import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.CategoryFood;
 import vn.tuhoc.vinaeatery.domain.criteria.CategoryFoodCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
 import vn.tuhoc.vinaeatery.domain.dto.CategoryFoodUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.service.CategoryFoodService;
 import vn.tuhoc.vinaeatery.service.FoodService;
 import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.UploadService;
+import vn.tuhoc.vinaeatery.util.HandleFormGetData;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
@@ -41,15 +42,27 @@ public class CategoryFoodApiController {
     private final TimeService timeService;
 
     // Methods
-    @GetMapping("/list")
-    public ResponseEntity<List<?>> listCategoryFood(CategoryFoodCriteria categoryFoodCriteria) {
+    @PostMapping("/list")
+    public ResponseEntity<?> listCategoryFood(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            CategoryFoodCriteria categoryFoodCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<CategoryFood> listCategoryFood = this.categoryFoodService
                 .getAll(categoryFoodCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listCategoryFood);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<?> handleDetailCategoryFood(@PathVariable("id") Integer id) {
+    @PostMapping("/detail/{id}")
+    public ResponseEntity<?> detailCategoryFood(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            @PathVariable("id") Integer id) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         CategoryFood categoryFoodSelected = this.categoryFoodService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(categoryFoodSelected);
     }
@@ -58,7 +71,8 @@ public class CategoryFoodApiController {
     public ResponseEntity<?> handleCreateCategoryFood(@RequestPart("category-food") @Valid CategoryFood categoryFood,
             @RequestPart(value = "image-file", required = false) MultipartFile imageFile, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ValidationUtil.buildRestResponseWithBR(bindingResult));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
         }
 
         // Cập nhật file ảnh vào source code và lấy ra tên file để lưu vào csdl
@@ -78,7 +92,8 @@ public class CategoryFoodApiController {
             @RequestPart("category-food") @Valid CategoryFoodUpdateDTO categoryFood,
             @RequestPart(value = "image-file", required = false) MultipartFile imageFile, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ValidationUtil.buildRestResponseWithBR(bindingResult));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
         }
 
         // Cập nhật file ảnh vào source code và lấy ra tên file để lưu vào csdl
@@ -106,13 +121,14 @@ public class CategoryFoodApiController {
     public ResponseEntity<?> handleLockCategoryFood(@PathVariable("id") Integer id,
             @RequestBody @Valid CommonStatusUpdateDTO commonStatusUpdate, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ValidationUtil.buildRestResponseWithBR(bindingResult));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
         }
 
         if (foodService.getAllByCategoryFoodId(id) != null
                 && !foodService.getAllByCategoryFoodId(id).isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr("Loại món ăn này đang được sử dụng !"));
+                    .body(ValidationUtil.buildRestResponseWithStr("Loại món ăn này đang được ít nhất 1 món ăn sử dụng !"));
         }
 
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
@@ -121,7 +137,7 @@ public class CategoryFoodApiController {
         LocalDateTime handleTimeUpdate = this.timeService.getDateTimeVN(commonStatusUpdate.getTimeUpdate());
 
         CategoryFood categoryFoodLocked = this.categoryFoodService.getOneById(id);
-        if(categoryFoodLocked != null) {
+        if (categoryFoodLocked != null) {
             categoryFoodLocked.setStatus(handleStatus);
             categoryFoodLocked.setTimeUpdate(handleTimeUpdate);
             this.categoryFoodService.lock(categoryFoodLocked);

@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Food;
+// import vn.tuhoc.vinaeatery.domain.Food;
 import vn.tuhoc.vinaeatery.domain.Ingredient;
 import vn.tuhoc.vinaeatery.domain.Order;
 import vn.tuhoc.vinaeatery.domain.OrderDetail;
@@ -25,6 +24,7 @@ import vn.tuhoc.vinaeatery.domain.OrderDetailForCrud;
 import vn.tuhoc.vinaeatery.domain.OrderDetailId;
 import vn.tuhoc.vinaeatery.domain.Recipe;
 import vn.tuhoc.vinaeatery.domain.criteria.OrderCriteria;
+import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.OrderStatusEnum;
@@ -36,6 +36,7 @@ import vn.tuhoc.vinaeatery.service.OrderDetailService;
 import vn.tuhoc.vinaeatery.service.OrderService;
 import vn.tuhoc.vinaeatery.service.RecipeService;
 import vn.tuhoc.vinaeatery.service.TimeService;
+import vn.tuhoc.vinaeatery.util.HandleFormGetData;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
@@ -52,20 +53,38 @@ public class OrderApiController {
     private final TimeService timeService;
 
     // Methods
-    @GetMapping("/list")
-    public ResponseEntity<List<?>> listOrder(OrderCriteria orderCriteria) {
+    @PostMapping("/list")
+    public ResponseEntity<?> listOrder(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            OrderCriteria orderCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<Order> listOrder = this.orderService.getAll(orderCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listOrder);
     }
 
-    @GetMapping("/list-format")
-    public ResponseEntity<List<?>> listOrderFormat(OrderCriteria orderCriteria) {
+    @PostMapping("/list-format")
+    public ResponseEntity<?> listOrderFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            OrderCriteria orderCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<OrderDTO> listOrder = this.orderService.getAllFormat(orderCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listOrder);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<?> detailOrder(@PathVariable("id") Integer id) {
+    @PostMapping("/detail/{id}")
+    public ResponseEntity<?> detailOrder(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            @PathVariable("id") Integer id) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         Order orderSelected = this.orderService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(orderSelected);
     }

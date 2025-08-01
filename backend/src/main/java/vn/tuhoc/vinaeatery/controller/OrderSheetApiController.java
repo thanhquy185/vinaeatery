@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,6 +24,7 @@ import vn.tuhoc.vinaeatery.domain.OrderSheetDetailForCrud;
 import vn.tuhoc.vinaeatery.domain.OrderSheetDetailId;
 import vn.tuhoc.vinaeatery.domain.Recipe;
 import vn.tuhoc.vinaeatery.domain.criteria.OrderSheetCriteria;
+import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderSheetDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderSheetUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.OrderSheetStatusEnum;
@@ -36,6 +36,7 @@ import vn.tuhoc.vinaeatery.service.OrderSheetDetailService;
 import vn.tuhoc.vinaeatery.service.OrderSheetService;
 import vn.tuhoc.vinaeatery.service.RecipeService;
 import vn.tuhoc.vinaeatery.service.TimeService;
+import vn.tuhoc.vinaeatery.util.HandleFormGetData;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
@@ -52,20 +53,38 @@ public class OrderSheetApiController {
     private final TimeService timeService;
 
     // Methods
-    @GetMapping("/list")
-    public ResponseEntity<List<?>> listOrderSheet(OrderSheetCriteria orderSheetCriteria) {
+    @PostMapping("/list")
+    public ResponseEntity<?> listOrderSheet(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            OrderSheetCriteria orderSheetCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<OrderSheet> listOrderSheet = this.orderSheetService.getAll(orderSheetCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listOrderSheet);
     }
 
-    @GetMapping("/list-format")
-    public ResponseEntity<List<?>> listOrderSheetFormat(OrderSheetCriteria orderSheetCriteria) {
+    @PostMapping("/list-format")
+    public ResponseEntity<?> listOrderSheetFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            OrderSheetCriteria orderSheetCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<OrderSheetDTO> listOrderSheet = this.orderSheetService.getAllFormat(orderSheetCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listOrderSheet);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<?> detailOrderSheet(@PathVariable("id") Integer id) {
+    @PostMapping("/detail/{id}")
+    public ResponseEntity<?> detailOrderSheet(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            @PathVariable("id") Integer id) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         OrderSheet orderSheetSelected = this.orderSheetService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(orderSheetSelected);
     }

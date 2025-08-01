@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,11 +17,13 @@ import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Ingredient;
 import vn.tuhoc.vinaeatery.domain.criteria.IngredientCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
 import vn.tuhoc.vinaeatery.domain.dto.IngredientDTO;
 import vn.tuhoc.vinaeatery.domain.dto.IngredientUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.service.IngredientService;
 import vn.tuhoc.vinaeatery.service.TimeService;
+import vn.tuhoc.vinaeatery.util.HandleFormGetData;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,20 +37,38 @@ public class IngredientApiController {
     private final TimeService timeService;
 
     // Methods
-    @GetMapping("/list")
-    public ResponseEntity<List<?>> listIngredient(IngredientCriteria ingredientCriteria) {
+    @PostMapping("/list")
+    public ResponseEntity<?> listIngredient(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            IngredientCriteria ingredientCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<Ingredient> listIngredient = this.ingredientService.getAll(ingredientCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listIngredient);
     }
 
-    @GetMapping("/list-format")
-    public ResponseEntity<List<?>> listIngredientFormat(IngredientCriteria ingredientCriteria) {
+    @PostMapping("/list-format")
+    public ResponseEntity<?> listIngredientFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            IngredientCriteria ingredientCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<IngredientDTO> listIngredientFormat = this.ingredientService.getAllFormat(ingredientCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listIngredientFormat);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<?> handleDetailIngredient(@PathVariable("id") Integer id) {
+    @PostMapping("/detail/{id}")
+    public ResponseEntity<?> detailIngredient(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            @PathVariable("id") Integer id) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         Ingredient ingredientSelected = this.ingredientService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(ingredientSelected);
     }
@@ -58,7 +77,8 @@ public class IngredientApiController {
     public ResponseEntity<?> handleCreateIngredient(@RequestBody @Valid Ingredient ingredient,
             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ValidationUtil.buildRestResponseWithBR(bindingResult));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
         }
 
         Ingredient ingredientCreate = this.ingredientService.upsert(ingredient);
@@ -70,11 +90,12 @@ public class IngredientApiController {
             @RequestBody @Valid IngredientUpdateDTO ingredient,
             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ValidationUtil.buildRestResponseWithBR(bindingResult));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
         }
 
         Ingredient ingredientUpdated = this.ingredientService.getOneById(id);
-        if(ingredientUpdated != null) {
+        if (ingredientUpdated != null) {
             ingredientUpdated.setName(ingredient.getName());
             ingredientUpdated.setCategoryIngredientId(ingredient.getCategoryIngredientId());
             ingredientUpdated.setUnit(ingredient.getUnit());
@@ -94,7 +115,8 @@ public class IngredientApiController {
     public ResponseEntity<?> handleLockIngredient(@PathVariable("id") Integer id,
             @RequestBody @Valid CommonStatusUpdateDTO commonStatusUpdate, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ValidationUtil.buildRestResponseWithBR(bindingResult));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
         }
 
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
@@ -103,7 +125,7 @@ public class IngredientApiController {
         LocalDateTime handleTimeUpdate = this.timeService.getDateTimeVN(commonStatusUpdate.getTimeUpdate());
 
         Ingredient ingredientLocked = this.ingredientService.getOneById(id);
-        if(ingredientLocked != null) {
+        if (ingredientLocked != null) {
             ingredientLocked.setStatus(handleStatus);
             ingredientLocked.setTimeUpdate(handleTimeUpdate);
             this.ingredientService.lock(ingredientLocked);

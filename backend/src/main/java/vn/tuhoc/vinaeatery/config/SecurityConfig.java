@@ -3,14 +3,19 @@ package vn.tuhoc.vinaeatery.config;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -20,6 +25,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
@@ -32,8 +38,21 @@ import vn.tuhoc.vinaeatery.util.SecurityUtil;
 // @EnableMethodSecurity(securedEnabled = true)
 @EnableWebSecurity
 public class SecurityConfig {
+    // Properties
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     @Value("${jwt.base64-secret}")
     private String jwtKey;
+
+    // Controllers
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
+
+    // Methods
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -65,53 +84,52 @@ public class SecurityConfig {
         };
     }
 
-    // @Bean
-    // public JwtAuthenticationConverter jwtAuthenticationConverter() {
-    // JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new
-    // JwtGrantedAuthoritiesConverter();
-    // grantedAuthoritiesConverter.setAuthorityPrefix("");
-    // grantedAuthoritiesConverter.setAuthoritiesClaimName("jwt");
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        grantedAuthoritiesConverter.setAuthorityPrefix("");
+        grantedAuthoritiesConverter.setAuthoritiesClaimName("jwt");
 
-    // JwtAuthenticationConverter jwtAuthenticationConverter = new
-    // JwtAuthenticationConverter();
-    // jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
-    // return jwtAuthenticationConverter;
-    // }
-
-    // @Bean
-    // public SecurityFilterChain filterChain(HttpSecurity http,
-    // CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws
-    // Exception {
-    // http
-    // .csrf(c -> c.disable())
-    // .cors(Customizer.withDefaults())
-    // .authorizeHttpRequests(authz -> authz
-    // .requestMatchers("/", "/api/auth/**", "/api/functions/list",
-    // "/api/categories/list",
-    // "/api/foods/list", "/client/**",
-    // "/assets/**", "/js/**")
-    // .permitAll()
-    // .anyRequest().authenticated())
-    // .requestMatchers("/**").permitAll()
-    // .anyRequest().permitAll());
-    // .oauth2ResourceServer((oauth2) -> oauth2
-    // .jwt(Customizer.withDefaults())
-    // .authenticationEntryPoint(customAuthenticationEntryPoint))
-    // .formLogin(f -> f.disable())
-    // .sessionManagement(session ->
-    // session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-    // return http.build();
-    // }
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+        return jwtAuthenticationConverter;
+    }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http,
+            CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
         http
-                .cors() // Kích hoạt CORS
-                .and()
-                .csrf().disable() // Nếu bạn dùng API REST
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+                .csrf(c -> c.disable())
+                // .cors(Customizer.withDefaults())
+                .authorizeHttpRequests(authz -> authz
+                        // .requestMatchers("/", "/api/auth/**", "/api/functions/list",
+                        // "/api/category-foods/list",
+                        // "/api/foods/list", "/client/**",
+                        // "/assets/**", "/js/**")
+                        // .permitAll()
+                        // .anyRequest().authenticated())
+                        .requestMatchers("/**").permitAll()
+                        .anyRequest().permitAll());
+        // .oauth2ResourceServer((oauth2) -> oauth2
+        // .jwt(Customizer.withDefaults())
+        // .authenticationEntryPoint(customAuthenticationEntryPoint))
+        // .formLogin(f -> f.disable())
+        // .addFilterBefore(jwtAuthenticationFilter,
+        // UsernamePasswordAuthenticationFilter.class)
+        // .sessionManagement(session ->
+        // session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
+
+    // @Bean
+    // public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    // http
+    // .cors() // Kích hoạt CORS
+    // .and()
+    // .csrf().disable() // Nếu bạn dùng API REST
+    // .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+
+    // return http.build();
+    // }
 }

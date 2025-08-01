@@ -39,6 +39,19 @@ public class UseTableSpecification {
                 tableId);
     }
 
+    public static Specification<UseTable> tableNameLike(String tableName) {
+        return (root, query, cb) -> {
+            // Tạo subquery Table
+            Subquery<Integer> subquery = query.subquery(Integer.class);
+            Root<TableE> tableRoot = subquery.from(TableE.class);
+            subquery.select(tableRoot.get("id"))
+                    .where(cb.like(tableRoot.get("name"), "%" + tableName + "%"));
+
+            // So sánh tableId của UseTable nằm trong danh sách tableId từ Table
+            return root.get("tableId").in(subquery);
+        };
+    }
+
     public static Specification<UseTable> floorIdEqual(String floorId) {
         return (root, query, cb) -> {
             // subquery trả về Integer vì tableId là Integer

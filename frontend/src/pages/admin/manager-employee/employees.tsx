@@ -22,19 +22,18 @@ import type { ColumnsType } from "antd/es/table";
 import type { RcFile } from "antd/es/upload/interface";
 import type {
   EmployeesFormatType,
+  EmployeesType,
+  ReactQueryMutationProps,
   RoleHistoriesFormatType,
   RolesFormatType,
 } from "../../../common/types.tsx";
-import { CommonStatus } from "../../../common/values.tsx";
+import { CommonGender, CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values.tsx";
 import { CustomPaginationProps } from "../../../common/props.tsx";
 import CustomFindInput from "../../../components/admin/find-input.tsx";
 import CustomFindSelect from "../../../components/admin/find-select.tsx";
-import CustomDatePicker from "../../../components/admin/date-picker.tsx";
 import CustomTableActions from "../../../components/admin/table-actions.tsx";
-import CustomModal from "../../../components/admin/modal.tsx";
 import CustomUpload from "../../../components/admin/upload.tsx";
-import CustomInput from "../../../components/admin/input.tsx";
-import CustomSelect from "../../../components/admin/select.tsx";
+import CustomModal from "../../../components/admin/modal.tsx";
 import { openNotification } from "../../../utils/showNotification.ts";
 import {
   FindAllEmployee,
@@ -49,16 +48,114 @@ import CustomTableNoActions from "../../../components/admin/table-no-actions.tsx
 import { showCreateValidAddress } from "../../../utils/showCreateValidAddress.tsx";
 import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules.tsx";
 import { openConfirmation } from "../../../utils/showConfirmation.ts";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Các giá trị chung
-// - Giới tính
-const male = "Nam";
-const female = "Nữ";
+// - Tên đối tượng
+const objectName = "Nhân viên"
+// - Tiêu đề modal
+const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
+const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
+const titleModalUpdate = TitleModalCommon.update(objectName.toLowerCase());
+const titleModalLock = TitleModalCommon.lock(objectName.toLowerCase());
+const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
+const titleModalChangePassword = TitleModalCommon.changePassword(objectName.toLowerCase());
 
 // Admin Employees Page
 const AdminEmployeesPage = () => {
-  // Cấu hình cột bảng dữ liệu của Nhân viên
-  const [loading, setLoading] = useState<boolean>(false);
+  // Đối tượng query client để thực thi react-query
+  const queryClient = useQueryClient();
+
+  // Các biến giữ dữ liệu về chức vụ
+  const {
+    data: roles,
+  } = useQuery({
+    queryKey: [
+      'roles',
+    ],
+    queryFn: async () => {
+      const res = await FindAllRole({ statusValue: [CommonStatus.active] });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+  });
+
+  // Các biến giữ giá trị từ việc lọc thông tin
+  // - Tìm kiếm thông tin
+  const findOptions = [
+    { label: "#", value: "id" },
+    { label: "Tên", value: "fullname" },
+    { label: "SĐT", value: "phone" },
+  ];
+  const [filterFindType, setFilterFindType] = useState<string | null>(
+    findOptions[0].value
+  );
+  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
+  // - Chức vụ
+  const roleOptions: SelectProps["options"] = roles?.map((role) => ({
+    label: "#" + role!.id + " - " + role!.name,
+    value: role!.id,
+  }));
+  const [filterRoleValue, setFilterRoleValue] = useState<string[] | null>(null);
+  // - Trạng thái
+  const statusOptions: SelectProps["options"] = [
+    { label: CommonStatus["active"], value: CommonStatus["active"] },
+    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
+  ];
+  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
+    null
+  );
+
+  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
+  // - Truy vấn dữ liệu
+  const {
+    data: employees,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [
+      'employees',
+      filterFindType,
+      filterFindValue,
+      filterRoleValue,
+      filterStatusValue,
+    ],
+    queryFn: async () => {
+      const res = await FindAllEmployee({
+        findType: filterFindType!,
+        findValue: filterFindValue!,
+        roleValue: filterRoleValue!,
+        statusValue: filterStatusValue!,
+      });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+    enabled: !!filterFindType,  //
+    retry: ReactQueryGetData.retry,
+    staleTime: ReactQueryGetData.staleTime,
+  });
+  // - Cột thuộc tính
   const columns: ColumnsType<EmployeesFormatType> = [
     {
       title: "#",
@@ -134,7 +231,7 @@ const AdminEmployeesPage = () => {
             className="action info"
             onClick={() =>
               updatePropertiesModal(
-                "Chi tiết nhân viên",
+                titleModalDetail,
                 true,
                 "89%",
                 "info employees",
@@ -148,7 +245,7 @@ const AdminEmployeesPage = () => {
             className="action update margin-lr"
             onClick={() =>
               updatePropertiesModal(
-                "Cập nhật nhân viên",
+                titleModalUpdate,
                 true,
                 "89%",
                 "update employees",
@@ -162,8 +259,7 @@ const AdminEmployeesPage = () => {
             className="action lock  margin-r"
             onClick={() =>
               updatePropertiesModal(
-                (record.status == CommonStatus["active"] ? "Khoá" : "Mở khoá") +
-                " nhân viên",
+                (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
                 true,
                 "30%",
                 "lock employees",
@@ -179,7 +275,7 @@ const AdminEmployeesPage = () => {
             className="action print"
             onClick={() =>
               updatePropertiesModal(
-                "Thay đổi mật khẩu nhân viên",
+                titleModalChangePassword,
                 true,
                 "31%",
                 "print employees",
@@ -193,42 +289,14 @@ const AdminEmployeesPage = () => {
       ),
     },
   ];
-  // Các thành phần giữ giá trị cho việc hiển thị bảng dữ liệu
-  const [roles, setRoles] = useState<RolesFormatType[]>([]);
-  const [employees, setEmployees] = useState<EmployeesFormatType[]>([]);
+  // - Các thành phần
   const {
     currentItems,
     handleTableChange,
     paginationProps,
     sortField,
     sortOrder,
-  } = CustomPaginationProps(employees, 7, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-
-  // Các biến giữ giá trị từ việc lọc thông tin
-  // - Tìm kiếm thông tin
-  const findOptions = [
-    { label: "#", value: "id" },
-    { label: "Tên", value: "fullname" },
-    { label: "SĐT", value: "phone" },
-  ];
-  const [filterFindType, setFilterFindType] = useState<string | null>(
-    findOptions[0].value
-  );
-  const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
-  // - Chức vụ
-  const roleOptions: SelectProps["options"] = roles?.map((role) => ({
-    label: "#" + role!.id + " - " + role!.name,
-    value: role!.id,
-  }));
-  const [filterRoleValue, setFilterRoleValue] = useState<string[] | null>(null);
-  // - Trạng thái
-  const statusOptions: SelectProps["options"] = [
-    { label: CommonStatus["active"], value: CommonStatus["active"] },
-    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
-  ];
-  const [filterStatusValue, setFilterStatusValue] = useState<string[] | null>(
-    null
-  );
+  } = CustomPaginationProps(employees || [], 7, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -293,6 +361,106 @@ const AdminEmployeesPage = () => {
     setClassNameModal(classNameModal);
     setChildrenModal(childrenModal);
   };
+  // - Mutation cho việc thêm, cập nhật và khoá dữ liệu
+  const handleSubmitMutation = useMutation({
+    mutationFn: async ({ type, values, objectId, imageFile }: ReactQueryMutationProps<EmployeesType>) => {
+      if (openModal) {
+        if (type === "create" && titleModal === titleModalCreate) {
+          return await HandleCreateEmployee({
+            image: imageFile! || undefined,
+            fullname: values!.fullname || undefined,
+            birthday:
+              values!.birthday && dayjs(values!.birthday).isValid()
+                ? dayjs(values!.birthday).format("YYYY-MM-DD")
+                : undefined,
+            gender: values!.gender || undefined,
+            phone: values!.phone || undefined,
+            email: values!.email || undefined,
+            address: values!.address || undefined,
+            dateBegin:
+              values!.dateBegin && dayjs(values!.dateBegin).isValid()
+                ? dayjs(values!.dateBegin).format("YYYY-MM-DD")
+                : undefined,
+            dateEnd:
+              values!.dateEnd && dayjs(values!.dateEnd).isValid()
+                ? dayjs(values!.dateEnd).format("YYYY-MM-DD")
+                : undefined,
+            roleId: values!.roleId || undefined,
+            username: values!.username || undefined,
+            password: values!.password || undefined,
+            status: values!.status || undefined,
+          })
+        } else if (type === "update" && titleModal === titleModalUpdate) {
+          return await HandleUpdateEmployee({
+            id: values!.id,
+            image: imageFile! || undefined,
+            fullname: values!.fullname || undefined,
+            birthday:
+              values!.birthday && dayjs(values!.birthday).isValid()
+                ? dayjs(values!.birthday).format("YYYY-MM-DD")
+                : undefined,
+            gender: values!.gender || undefined,
+            phone: values!.phone || undefined,
+            email: values!.email || undefined,
+            address: values!.address || undefined,
+            dateBegin:
+              values!.dateBegin && dayjs(values!.dateBegin).isValid()
+                ? dayjs(values!.dateBegin).format("YYYY-MM-DD")
+                : undefined,
+            dateEnd:
+              values!.dateEnd && dayjs(values!.dateEnd).isValid()
+                ? dayjs(values!.dateEnd).format("YYYY-MM-DD")
+                : undefined,
+            roleId: values!.roleId || undefined,
+            timeUpdate: new Date().toISOString(),
+          });
+        } else if ((type === "lock" && titleModal === titleModalLock)
+          || (type === "unlock" && titleModal === titleModalUnlock)) {
+          return await HandleLockEmployee({
+            id: objectId! as number,
+            status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
+            timeUpdate: new Date().toISOString(),
+          })
+        } else if (type === "change-password" && titleModal === titleModalChangePassword) {
+          const res = await HandleChangePasswordEmployee({
+            id: objectId! as number,
+            currentPassword: values!.currentPassword || undefined,
+            newPassword: values!.newPassword || undefined,
+            authNewPassword: values!.authNewPassword || undefined,
+            timeUpdate: new Date().toISOString(),
+          })
+
+          if (res.status !== 200) {
+            throw new Error(String(res?.data));
+          }
+        }
+      }
+    },
+    onSuccess: () => {
+      openNotification({
+        type: "success",
+        message: "Thành công",
+        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalChangePassword ? "Thay đổi mật khẩu" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thành công!",
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['employees'] });
+        setOpenModal(false);
+      }, 1500);
+    },
+    onError: (error) => {
+      openNotification({
+        type: "error",
+        message: "Thất bại",
+        description: (error ? error.message : (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalChangePassword ? "Thay đổi mật khẩu" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thất bại!"),
+        duration: 1.5,
+      });
+
+      setTimeout(() => {
+      }, 1500);
+    },
+  });
   // - Các modal tương ứng cho từng chức năng
   const DetailEmployees = ({
     image,
@@ -515,56 +683,11 @@ const AdminEmployeesPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleCreateEmployee({
-                image: imageFile! || undefined,
-                fullname: values!.fullname || undefined,
-                birthday:
-                  values!.birthday && dayjs(values!.birthday).isValid()
-                    ? dayjs(values!.birthday).format("YYYY-MM-DD")
-                    : undefined,
-                gender: values!.gender || undefined,
-                phone: values!.phone || undefined,
-                email: values!.email || undefined,
-                address: values!.address || undefined,
-                dateBegin:
-                  values!.dateBegin && dayjs(values!.dateBegin).isValid()
-                    ? dayjs(values!.dateBegin).format("YYYY-MM-DD")
-                    : undefined,
-                dateEnd:
-                  values!.dateEnd && dayjs(values!.dateEnd).isValid()
-                    ? dayjs(values!.dateEnd).format("YYYY-MM-DD")
-                    : undefined,
-                roleId: values!.currentRole || undefined,
-                username: values!.username || undefined,
-                password: values!.password || undefined,
-                status: values!.status || undefined,
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Thêm thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "create", values: values, imageFile: imageFile });
 
-                setTimeout(() => {
-                  getAllEmployee();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: "Thêm thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -637,7 +760,7 @@ const AdminEmployeesPage = () => {
             </div>
             <div className="modal__form-group">
               <Form.Item
-                name="currentRole"
+                name="roleId"
                 label={defaultLabels["currentRole"]}
                 htmlFor="create-currentRole"
                 className="modal__form-group-item"
@@ -778,8 +901,8 @@ const AdminEmployeesPage = () => {
                     id="create-gender"
                     placeholder={defaultInputs["gender"]}
                     options={[
-                      { label: male, value: male },
-                      { label: female, value: female },
+                      { label: CommonGender.male, value: CommonGender.male },
+                      { label: CommonGender.female, value: CommonGender.female },
                     ]}
                   />
                 </Form.Item>
@@ -839,7 +962,7 @@ const AdminEmployeesPage = () => {
             address: address!,
             dateBegin: dayjs(dateBegin!),
             dateEnd: dayjs(dateEnd!),
-            currentRole: currentRole!.id,
+            roleId: currentRole!.id,
             username: username!,
             status: status!,
           }}
@@ -863,55 +986,11 @@ const AdminEmployeesPage = () => {
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
-              // Gọi api xử lý
-              const res = await HandleUpdateEmployee({
-                id: id!,
-                image: imageFile! || undefined,
-                fullname: values!.fullname || undefined,
-                birthday:
-                  values!.birthday && dayjs(values!.birthday).isValid()
-                    ? dayjs(values!.birthday).format("YYYY-MM-DD")
-                    : undefined,
-                gender: values!.gender || undefined,
-                phone: values!.phone || undefined,
-                email: values!.email || undefined,
-                address: values!.address || undefined,
-                dateBegin:
-                  values!.dateBegin && dayjs(values!.dateBegin).isValid()
-                    ? dayjs(values!.dateBegin).format("YYYY-MM-DD")
-                    : undefined,
-                dateEnd:
-                  values!.dateEnd && dayjs(values!.dateEnd).isValid()
-                    ? dayjs(values!.dateEnd).format("YYYY-MM-DD")
-                    : undefined,
-                roleId: values!.currentRole || undefined,
-                timeUpdate: new Date().toISOString(),
-              });
-              if (res.status === 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Cập nhật thành công !",
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: "update", values: values, imageFile: imageFile });
 
-                setTimeout(() => {
-                  getAllEmployee();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: String(res.data) ?? "Cập nhật thất bại !",
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -980,13 +1059,13 @@ const AdminEmployeesPage = () => {
               >
                 <Space.Compact>
                   <Form.Item
-                    name="currentRole"
+                    name="roleId"
                     noStyle
                     rules={[ruleRequired("Chức vụ không được để trống !")]}
                   >
                     <Select
                       showSearch={true}
-                      // allowClear={true}
+                      allowClear={true}
                       id="update-currentRole"
                       placeholder={defaultInputs["currentRole"]}
                       options={roles?.map((role) => ({
@@ -1122,8 +1201,8 @@ const AdminEmployeesPage = () => {
                     id="update-gender"
                     placeholder={defaultInputs["gender"]}
                     options={[
-                      { label: male, value: male },
-                      { label: female, value: female },
+                      { label: CommonGender.male, value: CommonGender.male },
+                      { label: CommonGender.female, value: CommonGender.female },
                     ]}
                   />
                 </Form.Item>
@@ -1179,38 +1258,11 @@ const AdminEmployeesPage = () => {
               content: "Hành động này không thể hoàn tác.",
             });
             if (answer) {
-              // Gọi api xử lý
-              const res = await HandleLockEmployee({
-                id: id!,
-                status: status!,
-                timeUpdate: new Date().toISOString(),
-              });
-              if (res.status == 200) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: `${statusValue ? "Khoá" : "Mở khoá"
-                    } thành công !`,
-                  duration: 1.5,
-                });
+              // Thực thi mutation
+              handleSubmitMutation.mutate({ type: (statusValue ? "lock" : "unlock"), objectId: id! });
 
-                setTimeout(() => {
-                  getAllEmployee();
-                  setOpenModal(false);
-                }, 1500);
-              } else {
-                openNotification({
-                  type: "error",
-                  message: "Thất bại",
-                  description: `${statusValue ? "Khoá" : "Mở khoá"} thất bại !`,
-                  duration: 1.5,
-                });
-
-                setTimeout(() => {
-                  // Xoá class 'active' thể hiện nút không còn được nhấn
-                  submitButton?.classList.remove("active");
-                }, 1500);
-              }
+              // Xoá class 'active' thể hiện nút không còn được nhấn
+              submitButton?.classList.remove("active");
             }
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -1271,39 +1323,11 @@ const AdminEmployeesPage = () => {
                 // Danh sách dữ liệu
                 const values = form.getFieldsValue();
 
-                // Gọi api xử lý
-                const res = await HandleChangePasswordEmployee({
-                  id: id!,
-                  currentPassword: values!.currentPassword || null,
-                  newPassword: values!.newPassword || null,
-                  authNewPassword: values!.authNewPassword || null,
-                  timeUpdate: new Date().toISOString(),
-                });
-                if (res.status === 200) {
-                  openNotification({
-                    type: "success",
-                    message: "Thành công",
-                    description: "Cập nhật thành công !",
-                    duration: 1.5,
-                  });
+                // Thực thi mutation
+                handleSubmitMutation.mutate({ type: "change-password", values: values, objectId: id });
 
-                  setTimeout(() => {
-                    getAllEmployee();
-                    setOpenModal(false);
-                  }, 1500);
-                } else {
-                  openNotification({
-                    type: "error",
-                    message: "Thất bại",
-                    description: String(res.data) ?? "Cập nhật thất bại !",
-                    duration: 1.5,
-                  });
-
-                  setTimeout(() => {
-                    // Xoá class 'active' thể hiện nút không còn được nhấn
-                    submitButton?.classList.remove("active");
-                  }, 1500);
-                }
+                // Xoá class 'active' thể hiện nút không còn được nhấn
+                submitButton?.classList.remove("active");
               }
 
               // Xoá class 'active' thể hiện nút không còn được nhấn
@@ -1464,57 +1488,11 @@ const AdminEmployeesPage = () => {
     }) => <DetailRoleHistories roleHistories={roleHistories} />,
   };
 
-  // Hàm cập nhật danh sách các chức vụ, nhân viên (gọi API)
-  const getAllRole = async () => {
-    const res = await FindAllRole({
-      statusValue: ["Hoạt động"],
-    });
-    if (res!.status === 200) {
-      setRoles(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-  const getAllEmployee = async () => {
-    setLoading(true);
-    const res = await FindAllEmployee({
-      findType: filterFindType!,
-      findValue: filterFindValue!,
-      roleValue: filterRoleValue!,
-      statusValue: filterStatusValue!,
-    });
-    if (res!.status === 200) {
-      setLoading(false);
-      setEmployees(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-
-  //
-  useEffect(() => {
-    getAllRole();
-    getAllEmployee();
-  }, []);
-  useEffect(() => {
-    getAllEmployee();
-  }, [filterFindType, filterFindValue, filterRoleValue, filterStatusValue]);
-
   return (
     <>
       <main className="main">
         <div className="main__header">
-          <h1 className="main__title">Quản lý nhân sự - Nhân viên</h1>
+          <h1 className="main__title">Quản lý nhân sự - {objectName}</h1>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -1546,15 +1524,13 @@ const AdminEmployeesPage = () => {
           <button
             className={
               "main__filter-button btn create" +
-              (openModal &&
-                String(titleModal).includes("Thêm") &&
-                String(classNameModal).includes("create")
+              (openModal && titleModal === titleModalCreate
                 ? " active"
                 : "")
             }
             onClick={() =>
               updatePropertiesModal(
-                "Thêm nhân viên",
+                titleModalCreate,
                 true,
                 "89%",
                 "create employees",
@@ -1571,7 +1547,7 @@ const AdminEmployeesPage = () => {
             columns={columns}
             rowKey={(record) => record!.id as number}
             data={currentItems}
-            loading={loading}
+            loading={isLoading}
             pagination={paginationProps}
             className="table-actions employees"
             onChange={handleTableChange}

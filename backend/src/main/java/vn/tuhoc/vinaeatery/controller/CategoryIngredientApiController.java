@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,11 +18,13 @@ import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.CategoryIngredient;
 import vn.tuhoc.vinaeatery.domain.criteria.CategoryIngredientCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
 import vn.tuhoc.vinaeatery.domain.dto.CategoryIngredientUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.service.CategoryIngredientService;
 import vn.tuhoc.vinaeatery.service.IngredientService;
 import vn.tuhoc.vinaeatery.service.TimeService;
+import vn.tuhoc.vinaeatery.util.HandleFormGetData;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
@@ -36,15 +37,27 @@ public class CategoryIngredientApiController {
     private final TimeService timeService;
 
     // Methods
-    @GetMapping("/list")
-    public ResponseEntity<List<?>> listCategoryIngredient(CategoryIngredientCriteria categoryIngredientCriteria) {
+    @PostMapping("/list")
+    public ResponseEntity<?> listCategoryIngredient(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            CategoryIngredientCriteria categoryIngredientCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<CategoryIngredient> listCategoryIngredient = this.categoryIngredientService
                 .getAll(categoryIngredientCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listCategoryIngredient);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<?> handleDetailCategoryIngredient(@PathVariable("id") Integer id) {
+    @PostMapping("/detail/{id}")
+    public ResponseEntity<?> detailCategoryIngredient(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            @PathVariable("id") Integer id) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         CategoryIngredient categoryIngredientSelected = this.categoryIngredientService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(categoryIngredientSelected);
     }
@@ -92,7 +105,7 @@ public class CategoryIngredientApiController {
         if (ingredientService.getAllByCategoryIngredientId(id) != null
                 && !ingredientService.getAllByCategoryIngredientId(id).isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr("Loại nguyên liệu này đang được sử dụng !"));
+                    .body(ValidationUtil.buildRestResponseWithStr("Loại nguyên liệu này đang được ít nhất 1 nguyên liệu sử dụng !"));
         }
 
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE

@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,11 +21,13 @@ import vn.tuhoc.vinaeatery.domain.CustomerCard;
 import vn.tuhoc.vinaeatery.domain.criteria.CustomerCardCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.CustomerCardUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.service.CustomerCardService;
 import vn.tuhoc.vinaeatery.service.CustomerService;
 import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.UploadService;
+import vn.tuhoc.vinaeatery.util.HandleFormGetData;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,14 +43,26 @@ public class CustomerCardApiController {
     private final UploadService uploadService;
 
     // Methods
-    @GetMapping("/list")
-    public ResponseEntity<List<?>> listCustomerCard(CustomerCardCriteria customerCardCriteria) {
+    @PostMapping("/list")
+    public ResponseEntity<?> listCustomerCard(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            CustomerCardCriteria customerCardCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<CustomerCard> listCustomerCard = this.customerCardService.getAll(customerCardCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listCustomerCard);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<?> handleDetailCustomerCard(@PathVariable("id") Integer id) {
+    @PostMapping("/detail/{id}")
+    public ResponseEntity<?> detailCustomerCard(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            @PathVariable("id") Integer id) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         CustomerCard customerCardSelected = this.customerCardService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(customerCardSelected);
     }
@@ -117,7 +130,8 @@ public class CustomerCardApiController {
         if (customerService.getAllByCustomerCardId(id) != null
                 && !customerService.getAllByCustomerCardId(id).isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr("Thẻ khách hàng này đang được ít nhất 1 khách hàng sử dụng !"));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr("Thẻ khách hàng này đang được ít nhất 1 khách hàng sử dụng !"));
         }
 
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE

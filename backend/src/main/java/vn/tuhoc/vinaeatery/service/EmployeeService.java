@@ -90,20 +90,29 @@ public class EmployeeService {
         return this.employeeRepository.findLastOne();
     }
 
-    public RestLoginDTO getUserLogin() {
-        String username = SecurityUtil.getCurrentUserLogin().isPresent()
-                ? SecurityUtil.getCurrentUserLogin().get()
+    public RestLoginDTO getEmployeeLogin() {
+        String username = SecurityUtil.getCurrentEmployeeLogin().isPresent()
+                ? SecurityUtil.getCurrentEmployeeLogin().get()
                 : "";
 
         RestLoginDTO restLogin = new RestLoginDTO();
         Employee currentEmployee = getOneByUsername(username);
         if (currentEmployee != null) {
-            restLogin.setUserLogin(new RestLoginDTO.UserLogin(currentEmployee.getId(), currentEmployee.getImage(),
-                    currentEmployee.getUsername(),
-                    currentEmployee.getBirthday(), currentEmployee.getGender(), currentEmployee.getPhone(),
-                    currentEmployee.getEmail(),
-                    currentEmployee.getAddress(), currentEmployee.getFullname(),
-                    roleRepository.findOneById(currentEmployee.getRoleId())));
+            RestLoginDTO.EmployeeLogin employeeLogin = new RestLoginDTO().getEmployeeLogin();
+            employeeLogin.setId(currentEmployee.getId());
+            employeeLogin.setImage(currentEmployee.getImage());
+            employeeLogin.setFullname(currentEmployee.getFullname());
+            employeeLogin.setBirthday(currentEmployee.getBirthday());
+            employeeLogin.setGender(currentEmployee.getGender());
+            employeeLogin.setPhone(currentEmployee.getPhone());
+            employeeLogin.setEmail(currentEmployee.getEmail());
+            employeeLogin.setAddress(currentEmployee.getAddress());
+            employeeLogin.setUsername(currentEmployee.getUsername());
+            employeeLogin.setRole(roleRepository
+                    .findOneById(
+                            roleHistoryRepository.findNewByEmployeeId(currentEmployee.getId()).getId().getRoleId()));
+
+            restLogin.setEmployeeLogin(employeeLogin);
         }
 
         return restLogin;

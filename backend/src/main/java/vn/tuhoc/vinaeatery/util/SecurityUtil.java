@@ -29,7 +29,7 @@ import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
 
 import vn.tuhoc.vinaeatery.domain.dto.RestLoginDTO;
-import vn.tuhoc.vinaeatery.domain.dto.RestLoginDTO.UserLogin;
+import vn.tuhoc.vinaeatery.domain.dto.RestLoginDTO.EmployeeLogin;
 
 @Service
 public class SecurityUtil {
@@ -49,21 +49,21 @@ public class SecurityUtil {
     }
 
     // Methods
-    private static Map<String, Object> getUserClams(RestLoginDTO restLoginDTO) {
-        Map<String, Object> userClaims = new HashMap<>();
-        userClaims.put("id", restLoginDTO.getUserLogin().getId());
-        userClaims.put("role", restLoginDTO.getUserLogin().getRole().getName());
-        userClaims.put("image", restLoginDTO.getUserLogin().getImage());
-        userClaims.put("username", restLoginDTO.getUserLogin().getUsername());
-        userClaims.put("fullname", restLoginDTO.getUserLogin().getFullname());
-        userClaims.put("birthday", restLoginDTO.getUserLogin().getBirthday());
-        userClaims.put("gender", restLoginDTO.getUserLogin().getGender());
-        userClaims.put("phone", restLoginDTO.getUserLogin().getPhone());
-        userClaims.put("email", restLoginDTO.getUserLogin().getEmail());
-        userClaims.put("address", restLoginDTO.getUserLogin().getAddress());
-        // userClaims.put("orders", restLoginDTO.getUserLogin().getOrders());
+    private static Map<String, Object> getEmployeeClams(RestLoginDTO restLoginDTO) {
+        Map<String, Object> employeeClaims = new HashMap<>();
+        employeeClaims.put("id", restLoginDTO.getEmployeeLogin().getId());
+        employeeClaims.put("role", restLoginDTO.getEmployeeLogin().getRole().getName());
+        employeeClaims.put("image", restLoginDTO.getEmployeeLogin().getImage());
+        employeeClaims.put("username", restLoginDTO.getEmployeeLogin().getUsername());
+        employeeClaims.put("fullname", restLoginDTO.getEmployeeLogin().getFullname());
+        employeeClaims.put("birthday", restLoginDTO.getEmployeeLogin().getBirthday());
+        employeeClaims.put("gender", restLoginDTO.getEmployeeLogin().getGender());
+        employeeClaims.put("phone", restLoginDTO.getEmployeeLogin().getPhone());
+        employeeClaims.put("email", restLoginDTO.getEmployeeLogin().getEmail());
+        employeeClaims.put("address", restLoginDTO.getEmployeeLogin().getAddress());
+        // employeeClaims.put("orders", restLoginDTO.getEmployeeLogin().getOrders());
 
-        return userClaims;
+        return employeeClaims;
     }
 
     private static String extractPrincipal(Authentication authentication) {
@@ -79,12 +79,12 @@ public class SecurityUtil {
         return null;
     }
 
-    public static Optional<String> getCurrentUserLogin() {
+    public static Optional<String> getCurrentEmployeeLogin() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional.ofNullable(extractPrincipal(securityContext.getAuthentication()));
     }
 
-    public static Optional<String> getCurrentUserJWT() {
+    public static Optional<String> getCurrentEmployeeJWT() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional.ofNullable(securityContext.getAuthentication())
                 .filter(authentication -> authentication.getCredentials() instanceof String)
@@ -100,7 +100,7 @@ public class SecurityUtil {
             .issuedAt(now)
             .expiresAt(validity)
             .subject(username)
-            .claim("user", getUserClams(restLoginDTO))
+            .claim("employee", getEmployeeClams(restLoginDTO))
             .build();
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
@@ -116,7 +116,7 @@ public class SecurityUtil {
             .issuedAt(now)
             .expiresAt(validity)
             .subject(username)
-            .claim("user", getUserClams(restLoginDTO))
+            .claim("employee", getEmployeeClams(restLoginDTO))
             .build();
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();

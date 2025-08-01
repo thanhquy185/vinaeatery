@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +18,7 @@ import vn.tuhoc.vinaeatery.domain.OrderTable;
 import vn.tuhoc.vinaeatery.domain.UseTable;
 import vn.tuhoc.vinaeatery.domain.criteria.OrderTableCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderTableDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderTableUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
@@ -26,6 +26,7 @@ import vn.tuhoc.vinaeatery.service.OrderTableService;
 import vn.tuhoc.vinaeatery.service.TableService;
 import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.UseTableService;
+import vn.tuhoc.vinaeatery.util.HandleFormGetData;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,20 +42,38 @@ public class OrderTableApiController {
     private final TimeService timeService;
 
     // Methods
-    @GetMapping("/list")
-    public ResponseEntity<List<?>> listOrderTable(OrderTableCriteria orderTableCriteria) {
+    @PostMapping("/list")
+    public ResponseEntity<?> listOrderTable(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            OrderTableCriteria orderTableCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<OrderTable> listOrderTable = this.orderTableService.getAll(orderTableCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listOrderTable);
     }
 
-    @GetMapping("/list-format")
-    public ResponseEntity<List<?>> listOrderTableFormat(OrderTableCriteria orderTableCriteria) {
+    @PostMapping("/list-format")
+    public ResponseEntity<?> listOrderTableFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            OrderTableCriteria orderTableCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<OrderTableDTO> listOrderTable = this.orderTableService.getAllFormat(orderTableCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listOrderTable);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<?> handleDetailOrderTable(@PathVariable("id") Integer id) {
+    @PostMapping("/detail/{id}")
+    public ResponseEntity<?> detailOrderTable(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            @PathVariable("id") Integer id) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         OrderTable orderTableSelected = this.orderTableService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(orderTableSelected);
     }

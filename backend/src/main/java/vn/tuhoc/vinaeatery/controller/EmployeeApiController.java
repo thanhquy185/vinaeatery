@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,10 +27,12 @@ import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.EmployeeChangePasswordDTO;
 import vn.tuhoc.vinaeatery.domain.dto.EmployeeDTO;
 import vn.tuhoc.vinaeatery.domain.dto.EmployeeUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
 // import vn.tuhoc.vinaeatery.domain.dto.EmployeeUpdateFromClientDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.UploadService;
+import vn.tuhoc.vinaeatery.util.HandleFormGetData;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 import vn.tuhoc.vinaeatery.service.EmployeeService;
 import vn.tuhoc.vinaeatery.service.RoleHistoryService;
@@ -48,20 +49,38 @@ public class EmployeeApiController {
     private final TimeService timeService;
 
     // Methods
-    @GetMapping("/list")
-    public ResponseEntity<List<?>> listEmployee(EmployeeCriteria employeeCriteria) {
+    @PostMapping("/list")
+    public ResponseEntity<?> listEmployee(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            EmployeeCriteria employeeCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<Employee> listEmployee = this.employeeService.getAll(employeeCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listEmployee);
     }
 
-    @GetMapping("/list-format")
-    public ResponseEntity<List<?>> listEmployeeFormat(EmployeeCriteria employeeCriteria) {
+    @PostMapping("/list-format")
+    public ResponseEntity<?> listEmployeeFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            EmployeeCriteria employeeCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<EmployeeDTO> listEmployee = this.employeeService.getAllFormat(employeeCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listEmployee);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<?> detailEmployee(@PathVariable("id") Integer id) {
+    @PostMapping("/detail/{id}")
+    public ResponseEntity<?> detailEmployee(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            @PathVariable("id") Integer id) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         Employee employeeSelected = this.employeeService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(employeeSelected);
     }

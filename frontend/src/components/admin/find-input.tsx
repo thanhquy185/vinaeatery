@@ -30,8 +30,8 @@ const selectBefore = ({
         defaultValue={selectItems?.[0]?.value}
         onChange={handleSelectChange}
       >
-        {selectItems?.map((option) => (
-          <Option value={option?.value}>{option?.label}</Option>
+        {selectItems?.map((option, index) => (
+          <Option key={index} value={option?.value}>{option?.label}</Option>
         ))}
       </Select>
     </>
@@ -60,6 +60,7 @@ const CustomFindInput: React.FC<CustomFindInputProps> = ({
     <>
       <Input
         addonBefore={selectBefore({ selectItems, handleSelectChange })}
+        allowClear={true}
         placeholder={placeholder}
         defaultValue={defaultValue}
         className={className}

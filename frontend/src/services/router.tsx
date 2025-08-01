@@ -103,12 +103,6 @@ export const getRouter = async (): Promise<
       path: "/client/:tableId",
       element: <ClientLayout />,
       errorElement: <ErrorPage />,
-      // children: [
-      //   {
-      //     index: true,
-      //     element: <ClientMainPage />,
-      //   },
-      // ],
     },
     {
       path: "/login",

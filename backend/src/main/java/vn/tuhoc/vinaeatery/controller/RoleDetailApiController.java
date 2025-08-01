@@ -4,15 +4,20 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.RoleDetail;
 import vn.tuhoc.vinaeatery.domain.criteria.RoleDetailCriteria;
+import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
 import vn.tuhoc.vinaeatery.domain.dto.RoleDetailDTO;
 import vn.tuhoc.vinaeatery.service.RoleDetailService;
+import vn.tuhoc.vinaeatery.util.HandleFormGetData;
+import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
 @RequestMapping("/api/role-details")
@@ -22,14 +27,26 @@ public class RoleDetailApiController {
     private final RoleDetailService roleDetailService;
 
     // Methods
-    @GetMapping("/list")
-    public ResponseEntity<List<?>> listRoleDetail(RoleDetailCriteria roleDetailCriteria) {
+    @PostMapping("/list")
+    public ResponseEntity<?> listRoleDetail(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            RoleDetailCriteria roleDetailCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<RoleDetail> listRoleDetail = this.roleDetailService.getAll(roleDetailCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listRoleDetail);
     }
 
-    @GetMapping("/list-format")
-    public ResponseEntity<List<?>> listRoleDetailFormat(RoleDetailCriteria roleDetailCriteria) {
+    @PostMapping("/list-format")
+    public ResponseEntity<?> listRoleDetailFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            RoleDetailCriteria roleDetailCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<RoleDetailDTO> listRoleDetail = this.roleDetailService.getAllFormat(roleDetailCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listRoleDetail);
     }

@@ -8,6 +8,18 @@ export interface RestResponseType {
   data: { field: string; message: string }[];
 }
 
+// Kiểu dữ liệu cho việc thực thi mutation
+export interface ReactQueryMutationProps<T> {
+  type: "create" | "update" | "lock" | "unlock" | "change-password";
+  values?: T;
+  objectId?: string | number;
+  imageFile?: RcFile;
+  details?: any[];
+  // totalPrice?: number;
+  // details?: OrderDetailsFormatType | InputTicketDetailsFormatType;
+}
+
+
 // Kiểu dữ liệu của tham số với việc lọc dữ liệu
 export interface FilterDataProps {
   findType?: string;
@@ -502,6 +514,9 @@ export interface EmployeesType {
   password?: string;
   status?: string;
   timeUpdate?: string;
+  currentPassword?: string;
+  newPassword?: string;
+  authNewPassword?: string;
 }
 // - Đã format
 export interface EmployeesFormatType {

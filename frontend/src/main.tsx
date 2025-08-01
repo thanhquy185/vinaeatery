@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import CustomSpinner from "./components/common/spinner";
 import { getRouter } from "./services/router";
 import "./assets/css/main.css";
+
+// Query Client
+const queryClient = new QueryClient();
 
 // App
 const App = () => {
@@ -28,4 +32,8 @@ const App = () => {
 };
 
 //  Dấu ! sau document.getElementById("root")! trong TypeScript có tên là non-null assertion operator (toán tử khẳng định không null).
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(
+  <QueryClientProvider client={queryClient}>
+    <App />
+  </QueryClientProvider>
+);

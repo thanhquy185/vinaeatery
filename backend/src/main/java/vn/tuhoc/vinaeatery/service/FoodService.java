@@ -140,7 +140,7 @@ public class FoodService {
             for (Recipe recipe : recipeRepository.findAllByFoodId(food.getId())) {
                 Ingredient ingredient = ingredientRepository.findOneById(recipe.getId().getIngredientId());
                 recipeDTO.add(new RecipeDTO(ingredient.getId(), ingredient.getName(), ingredient.getInventory(),
-                        recipe.getQuantity(), ingredient.getNote()));
+                        recipe.getQuantity(), recipe.getNote()));
             }
 
             FoodDTO foodDTO = new FoodDTO();

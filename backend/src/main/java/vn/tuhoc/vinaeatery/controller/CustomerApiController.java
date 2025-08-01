@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,11 +20,13 @@ import vn.tuhoc.vinaeatery.domain.criteria.CustomerCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.CustomerDTO;
 import vn.tuhoc.vinaeatery.domain.dto.CustomerUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.service.CustomerService;
 import vn.tuhoc.vinaeatery.service.TableService;
 import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.UseTableService;
+import vn.tuhoc.vinaeatery.util.HandleFormGetData;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,20 +42,38 @@ public class CustomerApiController {
     private final TimeService timeService;
 
     // Methods
-    @GetMapping("/list")
-    public ResponseEntity<List<?>> listCustomer(CustomerCriteria customerCriteria) {
+    @PostMapping("/list")
+    public ResponseEntity<?> listCustomer(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            CustomerCriteria customerCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<Customer> listCustomer = this.customerService.getAll(customerCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listCustomer);
     }
 
-    @GetMapping("/list-format")
-    public ResponseEntity<List<?>> listCustomerFormat(CustomerCriteria customerCriteria) {
+    @PostMapping("/list-format")
+    public ResponseEntity<?> listCustomerFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            CustomerCriteria customerCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<CustomerDTO> listCustomer = this.customerService.getAllFormat(customerCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listCustomer);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<?> handleDetailCustomer(@PathVariable("id") Integer id) {
+    @PostMapping("/detail/{id}")
+    public ResponseEntity<?> detailCustomer(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            @PathVariable("id") Integer id) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         Customer customerSelected = this.customerService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(customerSelected);
     }

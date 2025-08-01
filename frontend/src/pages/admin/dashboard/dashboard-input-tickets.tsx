@@ -1,44 +1,41 @@
-import { useEffect, useState, type JSX } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPrint } from "@fortawesome/free-solid-svg-icons";
-import type { SelectProps } from "antd";
+import { useEffect, useState } from "react";
 import {
-  AppstoreOutlined,
   DollarCircleOutlined,
   FileDoneOutlined,
   FrownOutlined,
   GoldOutlined,
   PercentageOutlined,
-  ReconciliationOutlined,
-  SmallDashOutlined,
   SmileOutlined,
-  SolutionOutlined,
   TagOutlined,
 } from "@ant-design/icons";
-import CustomFindSelect from "../../../components/admin/find-select";
-import CustomCardStatic from "../../../components/admin/card-static";
-import CustomTableDashboard from "../../../components/admin/table-dashboard";
-import { CustomPieChart } from "../../../components/admin/charts";
-import CustomSegmented from "../../../components/admin/segmented";
-import FilterDashboard from "../../../components/admin/filter-dashboard";
 import type {
   IngredientsFormatType,
   InputTicketsFormatType,
   SuppliersType,
 } from "../../../common/types";
+import type { PieChartProps } from "../../../common/props";
 import { InputTicketStatus, PayStatus } from "../../../common/values";
+import CustomSegmented from "../../../components/admin/segmented";
+import FilterDashboard from "../../../components/admin/filter-dashboard";
+import CustomCardStatic from "../../../components/admin/card-static";
+import { CustomBarChart, CustomPieChart } from "../../../components/admin/charts";
+import CustomTableDashboard from "../../../components/admin/table-dashboard";
 import {
   FindAllIngredient,
   FindAllInputTicket,
   FindAllSupplier,
 } from "../../../services/api";
-import { openNotification } from "../../../utils/showNotification";
 import { getFilterTimesForDashboard } from "../../../utils/otherEvents";
+import { openNotification } from "../../../utils/showNotification";
 
 // Các giá trị chung
+const cardsId = "cards-dashboard-input-tickets";
+const chartId = "chart-dashboard-input-tickets";
 const tableDataId = "table-data-dashboard-input-tickets";
 
 // Các chuỗi để lấy được biểu đồ, bảng dữ liệu thông qua css selector
+export const cardsQueryDashboardInputTickets = `#${cardsId}`;
+export const chartQueryDashboardInputTickets = `div[class*='MuiChartsWrapper-root']:has(#${chartId})`;
 export const tableDataQueryDashboardInputTickets = `#${tableDataId}`;
 
 // Cấu hình chung
@@ -113,12 +110,48 @@ const AdminDashboardInputTicketsPage = () => {
     string | null
   >(null);
 
+  // Các biến giữ giá trị cho việc hiển thị thông số trên card
+  const [totalCardValue, setTotalCardValue] = useState<number>(0);
+  const [averageCardValue, setAverageCardValue] = useState<number>(0);
+  const [maxCardValue, setMaxCardValue] = useState<number>(0);
+  const [minCardValue, setMinCardValue] = useState<number>(0);
+
+  // Các biến giữ giá trị cho việc thống kê theo biểu đồ cột
+  const [xAxisLabelValue, setXAxisLabelValue] = useState<string>("");
+  const [xAxisDataValue, setXAxisDataValue] = useState<string[]>([]);
+  const [seriesLabelValue, setSeriesLabelValue] = useState<string>("");
+  const [seriesDataValue, setSeriesDataValue] = useState<number[]>([]);
+
+  // Các biến giữ giá trị cho việc thống kê theo biểu đồ tròn
+  const [dataValue, setDataValue] = useState<PieChartProps[]>([]);
+
   // Các biến giữ giá trị cho việc thống kê theo bảng dữ liệu
   const [dateDashboardStart, setDateDashboardStart] = useState<string>();
   const [dateDashboardEnd, setDateDashboardEnd] = useState<string>();
   const [tbodyValue, setTbodyValue] = useState<(string | number)[][]>([]);
   const [tfootValue, setTfootValue] = useState<(string | number)[]>([]);
 
+  // Hàm cập nhật lại các biến giữ giá trị cho việc thống kê
+  const restDataDashboard = () => {
+    // - Card tóm tắt
+    setTotalCardValue(0);
+    setAverageCardValue(0);
+    setMaxCardValue(0);
+    setMinCardValue(0);
+
+    // - Biểu đồ cột
+    setXAxisLabelValue("");
+    setXAxisDataValue([]);
+    setSeriesLabelValue("");
+    setSeriesDataValue([]);
+
+    // Biểu đồ tròn
+    setDataValue([]);
+
+    // Bảng dữ liệu
+    setTbodyValue([]);
+    setTfootValue([]);
+  }
   // Hàm cập nhật danh sách các phiếu nhập, nguyên liệu và nhà cung cấp (gọi API)
   const getAllInputTicket = async () => {
     const res = await FindAllInputTicket({
@@ -186,16 +219,19 @@ const AdminDashboardInputTicketsPage = () => {
 
         // Bảng dữ liệu thống kê theo phiếu nhập
         if (segmentedValue === segmentedOptions[0].label) {
-          let newTbodyValue: (string | number)[][] = [],
+          let newXAxisDataValue: string[] = [],
+            newSeriesDataValue: number[] = [],
+            newTbodyValue: (string | number)[][] = [],
             newTotalTicketValue: number = 0,
             newTotalQuantityValue: number = 0,
+            newMaxExpenseValue: number = 0,
+            newMinExpenseValue: number = 0,
             newTotalExpenseValue: number = 0;
           times?.forEach((time, index) => {
             // - Tổng phiếu nhập
             const totalTicketValue = inputTickets.reduce(
               (total, inputTicket) => {
                 const dateCreate = inputTicket.timeCreate?.split(" ")[0]!;
-                console.log(dateCreate);
                 if (dateCreate >= time.start && dateCreate <= time.end) {
                   return total + 1;
                 }
@@ -238,7 +274,16 @@ const AdminDashboardInputTicketsPage = () => {
               0
             );
 
-            // -
+            // - Cập nhất giá trị lớn nhất / nhỏ nhất
+            if (totalExpenseValue > newMaxExpenseValue) {
+              newMaxExpenseValue = totalExpenseValue;
+            } else if (totalExpenseValue < newMinExpenseValue) {
+              newMinExpenseValue = totalExpenseValue;
+            }
+            // - Cập nhật giá trị mới cho các biến của biểu đồ cột
+            newXAxisDataValue.push((filterTimelineValue.toLowerCase().includes("năm") ? "Th" : "Tu") + (index + 1));
+            newSeriesDataValue.push(totalExpenseValue);
+            // - Cập nhật giá trị mới cho các biến của bảng dữ liệu
             newTbodyValue.push([
               index + 1,
               time.start,
@@ -252,6 +297,16 @@ const AdminDashboardInputTicketsPage = () => {
             newTotalExpenseValue += totalExpenseValue;
           });
 
+          // Gán các dữ liệu mới cho các card
+          setTotalCardValue(newTotalExpenseValue);
+          setAverageCardValue(newTotalExpenseValue / times.length);
+          setMaxCardValue(newMaxExpenseValue);
+          setMinCardValue(newMinExpenseValue);
+          // Gán các dữ liệu mới cho biểu đồ cột
+          setXAxisDataValue(newXAxisDataValue);
+          setSeriesLabelValue("Chi tiêu");
+          setSeriesDataValue(newSeriesDataValue);
+          // Gán các dữ liệu mới cho bảng dữ liệu
           setTbodyValue(newTbodyValue);
           setTfootValue([
             newTotalTicketValue,
@@ -261,9 +316,12 @@ const AdminDashboardInputTicketsPage = () => {
         }
         // Bảng dữ liệu thống kê theo nguyên liệu
         if (segmentedValue === segmentedOptions[1].label) {
-          let newTbodyValue: (string | number)[][] = [],
+          let categoryIngredientIds = "", newDataValue: PieChartProps[] = [],
+            newTbodyValue: (string | number)[][] = [],
             newTotalIngredientPriceValue: number = 0,
             newTotalIngredientQuantityValue: number = 0,
+            newMaxExpenseValue: number = 0,
+            newMinExpenseValue: number = 0,
             newTotalExpenseValue: number = 0;
           if (dateDashboardStartTemp && dateDashboardEndTemp) {
             ingredients?.forEach((ingredient) => {
@@ -314,7 +372,32 @@ const AdminDashboardInputTicketsPage = () => {
               // - Chi tiêu
               const totalExpenseValue = ingredientPrice * quantityValue;
 
-              //
+              // - Cập nhất giá trị lớn nhất / nhỏ nhất
+              if (totalExpenseValue > newMaxExpenseValue) {
+                newMaxExpenseValue = totalExpenseValue;
+              } else if (totalExpenseValue < newMinExpenseValue) {
+                newMinExpenseValue = totalExpenseValue;
+              }
+              // - Cập nhật các biến chứa dữ liệu mới của biểu đồ tròn
+              if (totalExpenseValue > 0) {
+                if (categoryIngredientIds.includes(ingredient!.categoryIngredient!.id + "")) {
+                  for (let i = 0; i < newDataValue.length; i++) {
+                    if (newDataValue[i].id === ingredient!.categoryIngredient!.id) {
+                      newDataValue[i].value += totalExpenseValue;
+                    }
+                  }
+                } else {
+                  categoryIngredientIds += ingredient!.categoryIngredient!.id;
+                  newDataValue.push(
+                    {
+                      id: ingredient!.categoryIngredient!.id!,
+                      value: totalExpenseValue,
+                      label: ingredient!.categoryIngredient!.name!
+                    }
+                  );
+                }
+              }
+              // - Cập nhật các biến chứa dữ liệu mới của bảng dữ liệu
               newTbodyValue.push([
                 ingredientInfo,
                 ingredientPrice,
@@ -327,6 +410,14 @@ const AdminDashboardInputTicketsPage = () => {
             });
           }
 
+          // Gán các dữ liệu mới cho các card
+          setTotalCardValue(newTotalExpenseValue);
+          setAverageCardValue(newTotalExpenseValue / ingredients.length);
+          setMaxCardValue(newMaxExpenseValue);
+          setMinCardValue(newMinExpenseValue);
+          // Gán dữ liệu mới cho biểu đồ tròn
+          setDataValue(newDataValue);
+          // Gán dữ liệu mới cho bảng dữ liệu
           setTbodyValue(newTbodyValue);
           setTfootValue([
             newTotalIngredientPriceValue,
@@ -336,9 +427,12 @@ const AdminDashboardInputTicketsPage = () => {
         }
         // Bảng dữ liệu thống kê theo nhà cung cấp
         if (segmentedValue === segmentedOptions[2].label) {
-          let newTbodyValue: (string | number)[][] = [],
+          let supplierIds = "", newDataValue: PieChartProps[] = [],
+            newTbodyValue: (string | number)[][] = [],
             newTotalTicketValue: number = 0,
             newTotalQuantityValue: number = 0,
+            newMaxExpenseValue: number = 0,
+            newMinExpenseValue: number = 0,
             newTotalExpenseValue: number = 0;
           suppliers?.forEach((supplier) => {
             // - Thông tin cơ bản
@@ -387,7 +481,7 @@ const AdminDashboardInputTicketsPage = () => {
                     0
                   );
 
-                  return quantityValue || 0;
+                  return total + (quantityValue || 0);
                 }
 
                 return total;
@@ -404,7 +498,7 @@ const AdminDashboardInputTicketsPage = () => {
                   dateCreate >= dateDashboardStartTemp &&
                   dateCreate <= dateDashboardEndTemp
                 ) {
-                  return inputTicket?.totalPrice || 0;
+                  return total + (inputTicket?.totalPrice || 0);
                 }
 
                 return total;
@@ -412,7 +506,32 @@ const AdminDashboardInputTicketsPage = () => {
               0
             );
 
-            //
+            // - Cập nhất giá trị lớn nhất / nhỏ nhất
+            if (totalExpenseValue > newMaxExpenseValue) {
+              newMaxExpenseValue = totalExpenseValue;
+            } else if (totalExpenseValue < newMinExpenseValue) {
+              newMinExpenseValue = totalExpenseValue;
+            }
+            // - Cập nhật các biến chứa dữ liệu mới của biểu đồ tròn
+            if (totalExpenseValue > 0) {
+              if (supplierIds.includes(supplier!.id + "")) {
+                for (let i = 0; i < newDataValue.length; i++) {
+                  if (newDataValue[i].id === supplier!.id) {
+                    newDataValue[i].value += totalExpenseValue;
+                  }
+                }
+              } else {
+                supplierIds += supplier!.id;
+                newDataValue.push(
+                  {
+                    id: supplier!.id!,
+                    value: totalExpenseValue,
+                    label: "NCC #" + supplier!.id!,
+                  }
+                );
+              }
+            }
+            // - Cập nhật các biến chứa dữ liệu mới của bảng dữ liệu
             newTbodyValue.push([
               supplierInfo,
               totalTicketValue,
@@ -424,6 +543,14 @@ const AdminDashboardInputTicketsPage = () => {
             newTotalExpenseValue += totalExpenseValue;
           });
 
+          // Gán các dữ liệu mới cho các card
+          setTotalCardValue(newTotalExpenseValue);
+          setAverageCardValue(newTotalExpenseValue / suppliers.length);
+          setMaxCardValue(newMaxExpenseValue);
+          setMinCardValue(newMinExpenseValue);
+          // Gán dữ liệu mới cho biểu đồ tròn
+          setDataValue(newDataValue);
+          // Gán dữ liệu mới cho bảng dữ liệu
           setTbodyValue(newTbodyValue);
           setTfootValue([
             newTotalTicketValue,
@@ -433,8 +560,7 @@ const AdminDashboardInputTicketsPage = () => {
         }
       }
     } else {
-      setTbodyValue([]);
-      setTfootValue([]);
+      restDataDashboard();
     }
   }, [segmentedValue, filterTimelineValue, filterTimeDetailValue]);
 
@@ -455,13 +581,58 @@ const AdminDashboardInputTicketsPage = () => {
           <FilterDashboard
             setFilterTimelineValue={setFilterTimelineValue}
             setFilterTimeDetailValue={setFilterTimeDetailValue}
-            successLoadData={inputTicketsReady}
+            successLoadData={inputTicketsReady && ingredientsReady && suppliersReady}
             typeDashboard="dashboard-input-tickets"
             titleDashboard="THỐNG KÊ PHIẾU NHẬP"
             dateDashboardStart={tbodyValue.length > 0 ? dateDashboardStart : ""}
             dateDashboardEnd={tbodyValue.length > 0 ? dateDashboardEnd : ""}
             titlePrint="TKPHIEUNHAP"
           />
+        </div>
+        <div className="main__chart split-2">
+          <div id={cardsId} className="main__chart-card">
+            <CustomCardStatic
+              className="card-1"
+              title={"Tổng chi tiêu"}
+              value={totalCardValue}
+              prefix={<DollarCircleOutlined />}
+              separator="."
+            />
+            <CustomCardStatic
+              className="card-2"
+              title={"Chi tiêu trung bình"}
+              value={averageCardValue}
+              prefix={<PercentageOutlined />}
+              separator="."
+            />
+            <CustomCardStatic
+              className="card-3"
+              title={"Chi tiêu cao nhất"}
+              value={maxCardValue}
+              prefix={<SmileOutlined />}
+              separator="."
+            />
+            <CustomCardStatic
+              className="card-4"
+              title={"Chi tiêu thấp nhất"}
+              value={minCardValue}
+              prefix={<FrownOutlined />}
+              separator="."
+            />
+          </div>
+          {
+            segmentedValue === segmentedOptions[0].label ? (
+              <CustomBarChart
+                id={chartId}
+                xAxisLabelValue={xAxisLabelValue}
+                xAxisDataValue={xAxisDataValue}
+                seriesLabelValue={seriesLabelValue}
+                seriesDataValue={seriesDataValue}
+              />
+            ) : (
+              <CustomPieChart id={chartId} dataValue={dataValue} />
+            )
+          }
         </div>
         <div className="main__table dashboard">
           <CustomTableDashboard

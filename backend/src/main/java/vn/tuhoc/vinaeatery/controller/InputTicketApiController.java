@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,6 +22,7 @@ import vn.tuhoc.vinaeatery.domain.InputTicketDetail;
 import vn.tuhoc.vinaeatery.domain.InputTicketDetailForCrud;
 import vn.tuhoc.vinaeatery.domain.InputTicketDetailId;
 import vn.tuhoc.vinaeatery.domain.criteria.InputTicketCriteria;
+import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
 import vn.tuhoc.vinaeatery.domain.dto.InputTicketDTO;
 import vn.tuhoc.vinaeatery.domain.dto.InputTicketUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.InputTicketStatusEnum;
@@ -32,6 +32,7 @@ import vn.tuhoc.vinaeatery.service.IngredientService;
 import vn.tuhoc.vinaeatery.service.InputTicketDetailService;
 import vn.tuhoc.vinaeatery.service.InputTicketService;
 import vn.tuhoc.vinaeatery.service.TimeService;
+import vn.tuhoc.vinaeatery.util.HandleFormGetData;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
@@ -46,20 +47,38 @@ public class InputTicketApiController {
     private final TimeService timeService;
 
     // Methods
-    @GetMapping("/list")
-    public ResponseEntity<List<?>> listInputTicket(InputTicketCriteria inputTicketCriteria) {
+    @PostMapping("/list")
+    public ResponseEntity<?> listInputTicket(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            InputTicketCriteria inputTicketCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<InputTicket> listInputTicket = this.inputTicketService.getAll(inputTicketCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listInputTicket);
     }
 
-    @GetMapping("/list-format")
-    public ResponseEntity<List<?>> listInputTicketFormat(InputTicketCriteria inputTicketCriteria) {
+    @PostMapping("/list-format")
+    public ResponseEntity<?> listInputTicketFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            InputTicketCriteria inputTicketCriteria) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         List<InputTicketDTO> listInputTicket = this.inputTicketService.getAllFormat(inputTicketCriteria);
         return ResponseEntity.status(HttpStatus.OK).body(listInputTicket);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<?> detailInputTicket(@PathVariable("id") Integer id) {
+    @PostMapping("/detail/{id}")
+    public ResponseEntity<?> detailInputTicket(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+            @PathVariable("id") Integer id) {
+        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+        }
+
         InputTicket inputTicketSelected = this.inputTicketService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(inputTicketSelected);
     }

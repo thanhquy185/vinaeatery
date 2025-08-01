@@ -2,6 +2,9 @@
 @use "../../abstracts/colors" as *;
 @use "../../abstracts/mixins" as *;
 
+$height: 40px;
+$font-size: 1.6rem;
+
 .form {
   position: absolute;
   top: 50%;
@@ -28,17 +31,26 @@
   // }
 
   &__title {
+    @include flexCenter();
+    gap: 8px;
+  }
+
+  &__title-image {
+    @include size(40px);
+  }
+
+  &__title-text {
     // padding-bottom: 32px;
-    border-radius: 20px 20px 0 0;
+    // border-radius: 20px 20px 0 0;
     color: $primary-color;
-    font-size: 2.8rem;
-    font-weight: bold;
-    text-align: center;
+    font-size: 2.6rem;
+    font-weight: 700;
+    // text-align: center;
   }
 
   &__line {
-    @include size(100%, 5px);
-    margin: 20px 0 24px;
+    @include size(100%, 4px);
+    margin: 14px 0 24px;
     background: $primary-color;
     border-radius: 8px;
   }
@@ -47,104 +59,51 @@
     position: relative;
   }
 
-  &__form-group + &__form-group {
+  &__form-group+&__form-group {
     margin-top: 32px;
   }
 
-  &__form-group label,
-  &__form-group input,
-  &__form-group .icon {
-    font-size: 1.8rem;
-    transition: 0.2s ease-in-out;
+  &__form-group .ant-input-affix-wrapper {
+    height: $height !important;
   }
 
-  &__form-group label,
-  &__form-group input {
-    @include size(100%, 40px);
+  &__form-group label.ant-form-item-required,
+  &__form-group .ant-input-prefix,
+  &__form-group .ant-input-suffix,
+  &__form-group input.ant-input {
+    font-size: $font-size;
   }
 
-  &__form-group input {
-    padding: 0 37px 0 10px;
-    border: 1px solid #dedede;
-    margin-top: 8px;
-    border-radius: 4px;
+  &__form-group label.ant-form-item-required {
+    padding-left: 0;
   }
 
-  &__form-group input::placeholder {
-    color: #dedede;
+  &__form-group label.ant-form-item-required::before {
+    display: none !important;
   }
 
-  &__form-group:has(.icon:hover) input,
-  &__form-group input:where(:hover, :focus, :not(:placeholder-shown)) {
-    border-color: #000;
-    box-shadow: $common-box-shadow;
-  }
-
-  &__form-group .icon:hover,
-  &__form-group input:not(:placeholder-shown),
-  &__form-group:has(input:where(:hover, :focus, :not(:placeholder-shown)))
-    .icon {
-    color: #000;
-  }
-
-  &__form-group :where(.icon, .error-icon) {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
-    @include size(20px, 20px);
-    padding-left: 10px;
-    line-height: 20px;
-    transition: 0.2s ease-in-out;
-    cursor: pointer;
-  }
-
-  &__form-group .icon {
-    color: #dedede;
-  }
-
-  &__form-group .error-icon {
-    right: 12px;
-    bottom: 12px;
-    @include size(16px, 16px);
-    padding-left: 12px;
-    line-height: 16px;
-  }
-
-  &__form-group .icon:hover {
-    color: $primary-color;
-  }
-
-  &__form-group button {
-    @include size(100%, 40px);
-    border-radius: 4px;
+  &__button {
+    @include size(100%, $height);
+    border-radius: 8px;
     margin-top: 10px;
-    font-size: 1.8rem;
+    font-size: $font-size;
   }
 
-  &__form-group button:hover {
+  &__button:hover {
     background: #fff;
     color: $primary-color;
   }
 
   &__action {
-    margin-top: 28px;
-    color: #777;
-    text-align: center;
-  }
-
-  &__action.left {
-    margin-top: 12px;
-    font-size: 1.4rem;
-    text-align: left;
-  }
-
-  &__action a {
     display: inline-block;
-    color: $blue-primary-btn-color;
+    margin-top: 6px;
+    color: #0057b4;
+    font-size: calc($font-size - 0.2rem);
+    text-align: center;
     transition: 0.2s ease-in-out;
   }
 
-  &__action a:hover {
-    color: #0057b4;
+  &__action:hover {
+    // color: #ccc;
   }
 }
