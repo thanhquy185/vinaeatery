@@ -1,6 +1,6 @@
-import { useLocation, Navigate } from "react-router-dom";
-// import { getFunctionIdsString, getUserLogin } from "./user-login";
 import type { ReactNode } from "react";
+import { useLocation, Navigate, useRouteLoaderData } from "react-router-dom";
+import { getFunctionIdsString } from "./employee-login";
 
 // Xác thực nguời dùng khi chuyển trang
 const RequireAuth = ({
@@ -13,17 +13,23 @@ const RequireAuth = ({
   //
   const location = useLocation();
 
-  // Người dùng đang đăng nhập
-  //   const userLogin = getUserLogin();
-  //   if (!userLogin) {
-  //     return <Navigate to="/login" state={{ from: location }} replace />;
-  //   }
+  // Nhân viên đang đăng nhập hiện tại
+  const employeeLogin = useRouteLoaderData("admin")!.employeeLogin;
 
-  // Chuỗi chứa mã các chức năng của người dùng
-  //   const functionIdsString = getFunctionIdsString();
-  //   if (requireFunctionId && !functionIdsString.includes(requireFunctionId)) {
-  //     return <Navigate to="/unauthorized" replace />;
-  //   }
+  // Nếu chưa đăng nhập thì đẩy về trang đăng nhập
+  if (!employeeLogin!.id) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Chuỗi chứa mã các chức năng của nhân viên
+  const functionIdsString = getFunctionIdsString({ currentEmployeeLogin: employeeLogin });  
+  if (!requireFunctionId || !functionIdsString || (requireFunctionId && functionIdsString
+    && !functionIdsString.split("|").some(
+      (functionIdString) => functionIdString === String(requireFunctionId)
+    )
+  )) {
+    return <Navigate to="/unauthorized" replace />;
+  }
 
   return children;
 };

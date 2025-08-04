@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -18,7 +20,7 @@ import vn.tuhoc.vinaeatery.domain.OrderTable;
 import vn.tuhoc.vinaeatery.domain.UseTable;
 import vn.tuhoc.vinaeatery.domain.criteria.OrderTableCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
-import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderTableDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderTableUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
@@ -26,7 +28,7 @@ import vn.tuhoc.vinaeatery.service.OrderTableService;
 import vn.tuhoc.vinaeatery.service.TableService;
 import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.UseTableService;
-import vn.tuhoc.vinaeatery.util.HandleFormGetData;
+import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,11 +45,12 @@ public class OrderTableApiController {
 
     // Methods
     @PostMapping("/list")
-    public ResponseEntity<?> listOrderTable(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listOrderTable(@RequestBody FormSecurityDTO formSecurityDTO,
             OrderTableCriteria orderTableCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "order-tables", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<OrderTable> listOrderTable = this.orderTableService.getAll(orderTableCriteria);
@@ -55,11 +58,12 @@ public class OrderTableApiController {
     }
 
     @PostMapping("/list-format")
-    public ResponseEntity<?> listOrderTableFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listOrderTableFormat(@RequestBody FormSecurityDTO formSecurityDTO,
             OrderTableCriteria orderTableCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "order-tables", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<OrderTableDTO> listOrderTable = this.orderTableService.getAllFormat(orderTableCriteria);
@@ -67,20 +71,28 @@ public class OrderTableApiController {
     }
 
     @PostMapping("/detail/{id}")
-    public ResponseEntity<?> detailOrderTable(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> detailOrderTable(@RequestBody FormSecurityDTO formSecurityDTO,
             @PathVariable("id") Integer id) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "order-tables", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         OrderTable orderTableSelected = this.orderTableService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(orderTableSelected);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> handleCreateOrderTable(@RequestBody @Valid OrderTable orderTable,
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleCreateOrderTable(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @RequestPart("order-table") @Valid OrderTable orderTable,
             BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "order-tables", "create")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -90,10 +102,17 @@ public class OrderTableApiController {
         return ResponseEntity.status(HttpStatus.OK).body(orderTableCreate);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> handleUpdateOrderTable(@PathVariable("id") Integer id,
-            @RequestBody @Valid OrderTableUpdateDTO orderTable,
+    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleUpdateOrderTable(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @PathVariable("id") Integer id,
+            @RequestPart("order-table") @Valid OrderTableUpdateDTO orderTable,
             BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "order-tables", "update")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -115,9 +134,17 @@ public class OrderTableApiController {
         return ResponseEntity.status(HttpStatus.OK).body(orderTableUpdated);
     }
 
-    @PutMapping("/lock/{id}")
-    public ResponseEntity<?> handleLockOrderTable(@PathVariable("id") Integer id,
-            @RequestBody @Valid CommonStatusUpdateDTO commonStatusUpdate, BindingResult bindingResult) {
+    @PutMapping(value = "/lock/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleLockOrderTable(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @PathVariable("id") Integer id,
+            @RequestPart("order-table") @Valid CommonStatusUpdateDTO commonStatusUpdate,
+            BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "order-tables", "lock")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));

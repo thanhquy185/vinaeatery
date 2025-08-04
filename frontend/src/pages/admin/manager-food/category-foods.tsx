@@ -28,6 +28,8 @@ import {
   HandleLockCategoryFood,
   HandleUpdateCategoryFood,
 } from "../../../services/api";
+import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import { getActionsString } from "../../../services/employee-login";
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
 
@@ -42,7 +44,10 @@ const titleModalLock = TitleModalCommon.lock(objectName.toLowerCase());
 const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 
 // Admin Category Foods Page
-const AdminCategoryFoodsPage = () => {
+const AdminCategoryFoodsPage = ({ functionId }: { functionId: number }) => {
+  // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
+  const validActions = getActionsString({ currentFunctionId: functionId })
+
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
@@ -150,55 +155,65 @@ const AdminCategoryFoodsPage = () => {
       dataIndex: "",
       key: "actions",
       width: "16%",
+      className: "buttons",
       render: (text: any, record: CategoryFoodsType, index: number) => (
         <>
-          <button
-            className="action info"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalDetail,
-                true,
-                "60%",
-                "info category-foods",
-                AdminCategoryFoodsModal.detail(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faCircleInfo} />
-          </button>
-          <button
-            className="action update margin-lr"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalUpdate,
-                true,
-                "60%",
-                "update category-foods",
-                AdminCategoryFoodsModal.update(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPenToSquare} />
-          </button>
-          <button
-            className="action lock"
-            onClick={() =>
-              updatePropertiesModal(
-                (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
-                true,
-                "30%",
-                "lock category-foods",
-                AdminCategoryFoodsModal.lock(
-                  record!.id as number,
-                  record!.status
-                )
-              )
-            }
-          >
-            <FontAwesomeIcon
-              icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
-            />
-          </button>
+          {
+            validActions?.includes(getActionNameVn(0)) && (
+              <button
+                className={"action " + getActionNameEn(0)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalDetail,
+                    true,
+                    "60%",
+                    getActionNameEn(0) + " category-foods",
+                    AdminCategoryFoodsModal.detail(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faCircleInfo} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(2)) && (
+              <button
+                className={"action " + getActionNameEn(2)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalUpdate,
+                    true,
+                    "60%",
+                    getActionNameEn(2) + " category-foods",
+                    AdminCategoryFoodsModal.update(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPenToSquare} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(3)) && (
+              <button
+                className={"action " + getActionNameEn(3)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
+                    true,
+                    "30%",
+                    getActionNameEn(3) + " category-foods",
+                    AdminCategoryFoodsModal.lock(record!.id as number, record!.status)
+                  )
+                }
+              >
+                <FontAwesomeIcon
+                  icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
+                />
+              </button>
+            )
+          }
         </>
       ),
     },
@@ -256,20 +271,32 @@ const AdminCategoryFoodsPage = () => {
     mutationFn: async ({ type, values, objectId, imageFile }: ReactQueryMutationProps<CategoryFoodsType>) => {
       if (openModal) {
         if (type === "create" && titleModal === titleModalCreate) {
-          return await HandleCreateCategoryFood({
+          const res = await HandleCreateCategoryFood({
             name: values!.name || undefined,
             image: imageFile! || undefined,
             description: values!.description || undefined,
             status: values!.status || undefined,
           })
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if (type === "update" && titleModal === titleModalUpdate) {
-          return await HandleUpdateCategoryFood({
+          const res = await HandleUpdateCategoryFood({
             id: values!.id,
             name: values!.name || undefined,
             image: imageFile! || undefined,
             description: values!.description || undefined,
             timeUpdate: new Date().toISOString(),
           });
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if ((type === "lock" && titleModal === titleModalLock)
           || (type === "unlock" && titleModal === titleModalUnlock)) {
           const res = await HandleLockCategoryFood({
@@ -751,26 +778,30 @@ const AdminCategoryFoodsPage = () => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          <button
-            className={
-              "main__filter-button btn create" +
-              (openModal && titleModal === titleModalCreate
-                ? " active"
-                : "")
-            }
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalCreate,
-                true,
-                "60%",
-                "create category-foods",
-                AdminCategoryFoodsModal.create()
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPlus} className="icon" />
-            &nbsp;Thêm
-          </button>
+          {
+            validActions?.includes(getActionNameVn(1)) && (
+              <button
+                className={
+                  "main__filter-button btn " + getActionNameEn(1) +
+                  (openModal && titleModal === titleModalCreate
+                    ? " active"
+                    : "")
+                }
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalCreate,
+                    true,
+                    "60%",
+                    getActionNameEn(1) + " category-foods",
+                    AdminCategoryFoodsModal.create()
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPlus} className="icon" />
+                &nbsp;Thêm
+              </button>
+            )
+          }
         </div>
         <div className="main__table">
           <CustomTableActions

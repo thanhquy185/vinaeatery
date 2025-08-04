@@ -24,12 +24,12 @@ public class EmployeeSpecification {
                 "%" + fullname + "%");
     }
 
-    public static Specification<Employee> phoneEqual(String phone) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Employee_.PHONE), phone);
+    public static Specification<Employee> phoneLike(String phone) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get(Employee_.PHONE), phone + "%");
     }
 
-    public static Specification<Employee> emailEqual(String email) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Employee_.EMAIL), email);
+    public static Specification<Employee> emailLike(String email) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get(Employee_.EMAIL), email + "%");
     }
 
     public static Specification<Employee> roleIdEqual(String roleId) {

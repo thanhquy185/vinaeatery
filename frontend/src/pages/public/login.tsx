@@ -1,10 +1,15 @@
+import { useNavigate } from 'react-router-dom';
 import { Form, Input } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { ruleRequired } from "../../common/rules";
-import { openNotification } from '../../utils/showNotification';
 import { HandleLogin } from '../../services/api';
+import { openNotification } from '../../utils/showNotification';
 
+// Login Page
 const LoginPage = () => {
+  //
+  const navigate = useNavigate();
+
   //
   const [form] = Form.useForm();
 
@@ -40,7 +45,6 @@ const LoginPage = () => {
               password: values!.password || undefined,
             });
             if (res.status === 200) {
-              console.log(res);
               openNotification({
                 type: "success",
                 message: "Thành công",
@@ -49,13 +53,14 @@ const LoginPage = () => {
               });
 
               setTimeout(() => {
-
+                // navigate("/admin");
+                window.location.href = "/admin";
               }, 1500);
             } else {
               openNotification({
                 type: "error",
                 message: "Thất bại",
-                description: "Đăng nhập thất bại !",
+                description: res!.data ? String(res!.data) : "Đăng nhập thất bại !",
                 duration: 1.5,
               });
 

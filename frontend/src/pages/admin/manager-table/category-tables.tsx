@@ -26,6 +26,8 @@ import {
   HandleLockCategoryTable,
   HandleUpdateCategoryTable,
 } from "../../../services/api";
+import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import { getActionsString } from "../../../services/employee-login";
 import { openNotification } from "../../../utils/showNotification";
 import { openConfirmation } from "../../../utils/showConfirmation";
 
@@ -43,7 +45,10 @@ const percent = "Phần trăm hoá đơn";
 const fixed = "Tiền cố định";
 
 // Admin Category Tables Page
-const AdminCategoryTablesPage = () => {
+const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
+  // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
+  const validActions = getActionsString({ currentFunctionId: functionId })
+
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
@@ -159,55 +164,66 @@ const AdminCategoryTablesPage = () => {
       dataIndex: "",
       key: "actions",
       width: "12%",
+      className: "buttons",
       render: (text: any, record: CategoryTablesType, index: number) => (
         <>
-          <button
-            className="action info"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalDetail,
-                true,
-                "60%",
-                "info category-tables",
-                AdminCategoryTablesModal.detail(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faCircleInfo} />
-          </button>
-          <button
-            className="action update margin-lr"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalUpdate,
-                true,
-                "60%",
-                "update category-tables",
-                AdminCategoryTablesModal.update(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPenToSquare} />
-          </button>
-          <button
-            className="action lock"
-            onClick={() =>
-              updatePropertiesModal(
-                (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
-                true,
-                "30%",
-                "lock category-tables",
-                AdminCategoryTablesModal.lock(
-                  record!.id as number,
-                  record!.status
-                )
-              )
-            }
-          >
-            <FontAwesomeIcon
-              icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
-            />
-          </button>
+          {
+            validActions?.includes(getActionNameVn(0)) && (
+              <button
+                className={"action " + getActionNameEn(0)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalDetail,
+                    true,
+                    "60%",
+                    getActionNameEn(0) + " category-tables",
+                    AdminCategoryTablesModal.detail(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faCircleInfo} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(2)) && (
+
+              <button
+                className={"action " + getActionNameEn(2)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalUpdate,
+                    true,
+                    "60%",
+                    getActionNameEn(2) + " category-tables",
+                    AdminCategoryTablesModal.update(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPenToSquare} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(3)) && (
+              <button
+                className={"action " + getActionNameEn(3)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
+                    true,
+                    "30%",
+                    getActionNameEn(3) + " category-tables",
+                    AdminCategoryTablesModal.lock(record!.id as number, record!.status)
+                  )
+                }
+              >
+                <FontAwesomeIcon
+                  icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
+                />
+              </button>
+            )
+          }
         </>
       ),
     },
@@ -271,15 +287,21 @@ const AdminCategoryTablesPage = () => {
     mutationFn: async ({ type, values, objectId }: ReactQueryMutationProps<CategoryTablesType>) => {
       if (openModal) {
         if (type === "create" && titleModal === titleModalCreate) {
-          return await HandleCreateCategoryTable({
+          const res = await HandleCreateCategoryTable({
             name: values!.name || undefined,
             surchargeType: values!.surchargeType || undefined,
             surchargeValue: values!.surchargeValue || undefined,
             description: values!.description || undefined,
             status: values!.status || undefined,
           })
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if (type === "update" && titleModal === titleModalUpdate) {
-          return await HandleUpdateCategoryTable({
+          const res = await HandleUpdateCategoryTable({
             id: values!.id,
             name: values!.name || undefined,
             surchargeType: values!.surchargeType || undefined,
@@ -287,6 +309,12 @@ const AdminCategoryTablesPage = () => {
             description: values!.description || undefined,
             timeUpdate: new Date().toISOString(),
           });
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if ((type === "lock" && titleModal === titleModalLock)
           || (type === "unlock" && titleModal === titleModalUnlock)) {
           const res = await HandleLockCategoryTable({
@@ -564,6 +592,7 @@ const AdminCategoryTablesPage = () => {
         <Form
           layout="vertical"
           form={form}
+          autoComplete="off"
           initialValues={{
             id: id!,
             name: name!,
@@ -810,24 +839,30 @@ const AdminCategoryTablesPage = () => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          <button
-            className={
-              "main__filter-button btn create" +
-              (openModal && titleModal === titleModalCreate ? " active" : "")
-            }
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalCreate,
-                true,
-                "60%",
-                "create category-tables",
-                AdminCategoryTablesModal.create()
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPlus} className="icon" />
-            &nbsp;Thêm
-          </button>
+          {
+            validActions?.includes(getActionNameVn(1)) && (
+              <button
+                className={
+                  "main__filter-button btn " + getActionNameEn(1) +
+                  (openModal && titleModal === titleModalCreate
+                    ? " active"
+                    : "")
+                }
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalCreate,
+                    true,
+                    "60%",
+                    getActionNameEn(1) + " category-tables",
+                    AdminCategoryTablesModal.create()
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPlus} className="icon" />
+                &nbsp;Thêm
+              </button>
+            )
+          }
         </div>
         <div className="main__table">
           <CustomTableActions

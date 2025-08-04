@@ -32,6 +32,8 @@ import {
   HandleLockTable,
   HandleUpdateTable,
 } from "../../../services/api";
+import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import { getActionsString } from "../../../services/employee-login";
 import { openNotification } from "../../../utils/showNotification";
 import { openConfirmation } from "../../../utils/showConfirmation";
 
@@ -46,7 +48,11 @@ const titleModalLock = TitleModalCommon.lock(objectName.toLowerCase());
 const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 
 // Admin Tables Page
-const AdminTablesPage = () => {
+const AdminTablesPage = ({ functionId }: { functionId: number }) => {
+  // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
+  const validActions = getActionsString({ currentFunctionId: functionId })
+  // const validActions = "Xem|Thêm|Cập nhật|Khóa|In";
+
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
@@ -224,50 +230,62 @@ const AdminTablesPage = () => {
       width: "10%",
       render: (text: any, record: TablesFormatType, index: number) => (
         <>
-          <button
-            className="action info"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalDetail,
-                true,
-                "60%",
-                "info tables",
-                AdminTablesModal.detail(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faCircleInfo} />
-          </button>
-          <button
-            className="action update margin-lr"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalUpdate,
-                true,
-                "60%",
-                "update tables",
-                AdminTablesModal.update(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPenToSquare} />
-          </button>
-          <button
-            className="action lock"
-            onClick={() =>
-              updatePropertiesModal(
-                (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
-                true,
-                "30%",
-                "lock tables",
-                AdminTablesModal.lock(record!.id as number, record!.status)
-              )
-            }
-          >
-            <FontAwesomeIcon
-              icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
-            />
-          </button>
+          {
+            validActions?.includes(getActionNameVn(0)) && (
+              <button
+                className={"action " + getActionNameEn(0)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalDetail,
+                    true,
+                    "60%",
+                    getActionNameEn(0) + " tables",
+                    AdminTablesModal.detail(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faCircleInfo} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(2)) && (
+              <button
+                className={"action " + getActionNameEn(2)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalUpdate,
+                    true,
+                    "60%",
+                    getActionNameEn(2) + " tables",
+                    AdminTablesModal.update(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPenToSquare} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(3)) && (
+              <button
+                className={"action " + getActionNameEn(3)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
+                    true,
+                    "30%",
+                    getActionNameEn(3) + " tables",
+                    AdminTablesModal.lock(record!.id as number, record!.status)
+                  )
+                }
+              >
+                <FontAwesomeIcon
+                  icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
+                />
+              </button>
+            )
+          }
         </>
       ),
     },
@@ -329,7 +347,7 @@ const AdminTablesPage = () => {
     mutationFn: async ({ type, values, objectId }: ReactQueryMutationProps<TablesType>) => {
       if (openModal) {
         if (type === "create" && titleModal === titleModalCreate) {
-          return await HandleCreateTable({
+          const res = await HandleCreateTable({
             name: values!.name || undefined,
             categoryTableId: values!.categoryTableId || undefined,
             floorId: values!.floorId || undefined,
@@ -337,8 +355,14 @@ const AdminTablesPage = () => {
             description: values!.description || undefined,
             status: values!.status || undefined,
           })
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if (type === "update" && titleModal === titleModalUpdate) {
-          return await HandleUpdateTable({
+          const res = await HandleUpdateTable({
             id: values!.id,
             name: values!.name || undefined,
             categoryTableId: values!.categoryTableId || undefined,
@@ -347,6 +371,12 @@ const AdminTablesPage = () => {
             description: values!.description || undefined,
             timeUpdate: new Date().toISOString(),
           });
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if ((type === "lock" && titleModal === titleModalLock)
           || (type === "unlock" && titleModal === titleModalUnlock)) {
           const res = await HandleLockTable({
@@ -920,26 +950,30 @@ const AdminTablesPage = () => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          <button
-            className={
-              "main__filter-button btn create" +
-              (openModal && titleModal === titleModalCreate
-                ? " active"
-                : "")
-            }
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalCreate,
-                true,
-                "60%",
-                "create tables",
-                AdminTablesModal.create()
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPlus} className="icon" />
-            &nbsp;Thêm
-          </button>
+          {
+            validActions?.includes(getActionNameVn(1)) && (
+              <button
+                className={
+                  "main__filter-button btn " + getActionNameEn(1) +
+                  (openModal && titleModal === titleModalCreate
+                    ? " active"
+                    : "")
+                }
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalCreate,
+                    true,
+                    "60%",
+                    getActionNameEn(1) + " tables",
+                    AdminTablesModal.create()
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPlus} className="icon" />
+                &nbsp;Thêm
+              </button>
+            )
+          }
         </div>
         <div className="main__table">
           <CustomTableActions

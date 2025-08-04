@@ -31,6 +31,27 @@ public class RoleService {
         return this.roleRepository.findOneById(id);
     }
 
+    public RoleDTO getOneFormatById(Integer id) {
+        RoleDTO roleDTO = new RoleDTO();
+        Role role = roleRepository.findOneById(id);
+        if (role != null) {
+            List<RoleDetailDTO> listRoleDetail = new ArrayList<>();
+            for (RoleDetail roleDetail : roleDetailRepository.findAllByRoleId(role.getId())) {
+                listRoleDetail.add(new RoleDetailDTO(roleDetail.getId().getRoleId(), roleDetail.getId().getFunctionId(),
+                        roleDetail.getId().getAction()));
+            }
+
+            roleDTO.setId(role.getId());
+            roleDTO.setName(role.getName());
+            roleDTO.setSalary(role.getSalary());
+            roleDTO.setStatus(role.getStatus());
+            roleDTO.setTimeUpdate(role.getTimeUpdate());
+            roleDTO.setRoleDetails(listRoleDetail);
+        }
+
+        return roleDTO;
+    }
+
     public List<Role> getAll() {
         return this.roleRepository.findAll();
     }
@@ -82,7 +103,7 @@ public class RoleService {
     }
 
     public List<RoleDTO> getAllFormat(RoleCriteria roleCriteria) {
-        List<RoleDTO> listRoleFormat = new ArrayList<>();
+        List<RoleDTO> listFormat = new ArrayList<>();
         for (Role role : getAll(roleCriteria)) {
             List<RoleDetailDTO> listRoleDetail = new ArrayList<>();
             for (RoleDetail roleDetail : roleDetailRepository.findAllByRoleId(role.getId())) {
@@ -90,12 +111,18 @@ public class RoleService {
                         roleDetail.getId().getAction()));
             }
 
-            RoleDTO newRoleFormat = new RoleDTO(role.getId(), role.getName(), role.getSalary(), role.getStatus(),
-                    role.getTimeUpdate(), listRoleDetail);
-            listRoleFormat.add(newRoleFormat);
+            RoleDTO roleDTO = new RoleDTO();
+            roleDTO.setId(role.getId());
+            roleDTO.setName(role.getName());
+            roleDTO.setSalary(role.getSalary());
+            roleDTO.setStatus(role.getStatus());
+            roleDTO.setTimeUpdate(role.getTimeUpdate());
+            roleDTO.setRoleDetails(listRoleDetail);
+
+            listFormat.add(roleDTO);
         }
 
-        return listRoleFormat;
+        return listFormat;
     }
 
     public Role upsert(Role Role) {

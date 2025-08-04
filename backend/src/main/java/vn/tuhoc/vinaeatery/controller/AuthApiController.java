@@ -1,6 +1,9 @@
 package vn.tuhoc.vinaeatery.controller;
 
+import javax.swing.text.html.HTML;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties.Http;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -15,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -24,7 +28,10 @@ import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.EmployeeService;
 import vn.tuhoc.vinaeatery.service.RoleHistoryService;
 import vn.tuhoc.vinaeatery.domain.Employee;
+import vn.tuhoc.vinaeatery.domain.dto.EmployeeDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.LoginDTO;
+import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.SecurityUtil;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 import vn.tuhoc.vinaeatery.util.exceptions.IdInvalidException;
@@ -65,7 +72,14 @@ public class AuthApiController {
 
         // Methods
         @PostMapping("/login")
-        public ResponseEntity<?> handleLogin(@RequestBody @Valid LoginDTO loginDTO, BindingResult bindingResult) {
+        public ResponseEntity<?> handleLogin(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+                        @RequestPart("account") @Valid LoginDTO loginDTO, BindingResult bindingResult) {
+                if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "auth", "login")) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(ValidationUtil.buildRestResponseWithStr(
+                                                        HandleFormSecurity.getErrorMessageByHandleFormData()));
+                }
+
                 if (bindingResult.hasErrors()) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                         .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -128,23 +142,36 @@ public class AuthApiController {
                                 responseCookie.toString()).body(restLogin);
         }
 
-        @GetMapping("/account")
-        public ResponseEntity<RestLoginDTO.EmployeeGetAccount> getAccount() {
+        @PostMapping("/account")
+        public ResponseEntity<?> getAccount(@RequestBody FormSecurityDTO formSecurityDTO) {
+                if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "auth", "account")) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(ValidationUtil.buildRestResponseWithStr(
+                                                        HandleFormSecurity.getErrorMessageByHandleFormData()));
+                }
+
                 String username = SecurityUtil.getCurrentEmployeeLogin().isPresent()
                                 ? SecurityUtil.getCurrentEmployeeLogin().get()
                                 : "";
+                System.out.println(username);
                 Employee currentEmployeeDB = this.employeeService.getOneByUsername(username);
-                RestLoginDTO.EmployeeLogin employeeLogin = new RestLoginDTO.EmployeeLogin();
-                RestLoginDTO.EmployeeGetAccount employeeGetAccount = new RestLoginDTO.EmployeeGetAccount();
-                if (currentEmployeeDB != null) {
-                        employeeLogin.setId(currentEmployeeDB.getId());
-                        employeeLogin.setEmail(currentEmployeeDB.getEmail());
-                        employeeLogin.setFullname(currentEmployeeDB.getFullname());
+                // RestLoginDTO.EmployeeLogin employeeLogin = new RestLoginDTO.EmployeeLogin();
+                // RestLoginDTO.EmployeeGetAccount employeeGetAccount = new
+                // RestLoginDTO.EmployeeGetAccount();
+                // if (currentEmployeeDB != null) {
+                // employeeLogin.setId(currentEmployeeDB.getId());
+                // employeeLogin.setEmail(currentEmployeeDB.getEmail());
+                // employeeLogin.setFullname(currentEmployeeDB.getFullname());
 
-                        employeeGetAccount.setEmployeeLogin(employeeLogin);
+                // employeeGetAccount.setEmployeeLogin(employeeLogin);
+                // }
+                // return ResponseEntity.ok().body(employeeGetAccount);
+                EmployeeDTO currentEmployee = new EmployeeDTO();
+                if (currentEmployeeDB != null) {
+                        currentEmployee = this.employeeService.getOneFormatById(currentEmployeeDB.getId());
                 }
 
-                return ResponseEntity.ok().body(employeeGetAccount);
+                return ResponseEntity.status(HttpStatus.OK).body(currentEmployee);
         }
 
         @GetMapping("/refresh")
@@ -195,7 +222,13 @@ public class AuthApiController {
         }
 
         @PostMapping("/logout")
-        public ResponseEntity<Void> logout() throws IdInvalidException {
+        public ResponseEntity<?> logout(@RequestBody FormSecurityDTO formSecurityDTO) throws IdInvalidException {
+                if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "auth", "logout")) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(ValidationUtil.buildRestResponseWithStr(
+                                                        HandleFormSecurity.getErrorMessageByHandleFormData()));
+                }
+
                 String username = SecurityUtil.getCurrentEmployeeLogin().isPresent()
                                 ? SecurityUtil.getCurrentEmployeeLogin().get()
                                 : "";

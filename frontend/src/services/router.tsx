@@ -1,6 +1,6 @@
 import { useEffect, useState, type JSX } from "react";
-import { createBrowserRouter } from "react-router-dom";
-import type { FunctionsType } from "../common/types";
+import { createBrowserRouter, Navigate, useLocation, useNavigate } from "react-router-dom";
+import type { EmployeesFormatType, FunctionsType } from "../common/types";
 import AdminLayout from "../layouts/admin-layout";
 import AdminDashboardProfitPage from "../pages/admin/dashboard/dashboard-profit";
 import AdminDashboardOrdersPage from "../pages/admin/dashboard/dashboard-orders";
@@ -33,8 +33,9 @@ import LoginPage from "../pages/public/login";
 import ErrorPage from "../pages/public/error";
 import UnauthorizedPage from "../pages/public/unauthorized";
 import { openNotification } from "../utils/showNotification";
-import { FindAllFunction } from "./api";
+import { FindAllFunction, HandleAccount } from "./api";
 import AdminTableHistoriesPage from "../pages/admin/active/table-histories";
+import RequireAuth from "./required-auth";
 
 // Router giúp chuyển hướng trang
 // Chú thích
@@ -44,6 +45,14 @@ import AdminTableHistoriesPage from "../pages/admin/active/table-histories";
 export const getRouter = async (): Promise<
   ReturnType<typeof createBrowserRouter>
 > => {
+  // Nhân viên đăng nhập hiện tại
+  const responseAuth = await HandleAccount();
+  if (responseAuth?.status !== 200) {
+    console.error("Truy vấn dữ liệu thất bại");
+    return createBrowserRouter([]); // hoặc route lỗi
+  }
+  const employeeLogin = responseAuth.data as unknown as EmployeesFormatType;
+
   // Danh sách chức năng (truy vấn csdl)
   const responseFunction = await FindAllFunction();
   if (responseFunction?.status !== 200) {
@@ -52,37 +61,43 @@ export const getRouter = async (): Promise<
   }
   const functions = responseFunction.data as Array<FunctionsType>;
 
-  // Hàm trả về element tương ứng với chức năng
-  const elementMap: Record<string, JSX.Element> = {
-    "dashboard-profit": <AdminDashboardProfitPage />,
-    "dashboard-orders": <AdminDashboardOrdersPage />,
-    "dashboard-input-tickets": <AdminDashboardInputTicketsPage />,
-    "table-histories": <AdminTableHistoriesPage />,
-    "use-tables": <AdminUseTablesPage />,
-    "order-sheets": <AdminOrderSheetsPage />,
-    orders: <AdminOrdersPage />,
-    "order-tables": <AdminOrderTablesPage />,
-    "customer-cards": <AdminCustomerCardsPage />,
-    customers: <AdminCustomersPage />,
-    floors: <AdminFloorsPage />,
-    "category-tables": <AdminCategoryTablesPage />,
-    tables: <AdminTablesPage />,
-    "input-tickets": <AdminInputTicketsPage />,
-    suppliers: <AdminSuppliersPage />,
-    "category-ingredients": <AdminCategoryIngredientsPage />,
-    ingredients: <AdminIngredientsPage />,
-    "category-foods": <AdminCategoryFoodsPage />,
-    foods: <AdminFoodsPage />,
-    payslip: <AdminPayslipPage />,
-    "category-reward-punishes": <AdminCategoryRewardPunishesPage />,
-    "reward-punishes": <AdminRewardPunishesPage />,
-    schedules: <AdminSchedulesPage />,
-    shifts: <AdminShiftsPage />,
-    roles: <AdminRolesPage />,
-    employees: <AdminEmployeesPage />,
+  // Hàm trả về page component tương ứng với chức năng
+  const pageComponentMap: Record<string, React.ComponentType<{ functionId: number }>> = {
+    "dashboard-profit": AdminDashboardProfitPage,
+    "dashboard-orders": AdminDashboardOrdersPage,
+    "dashboard-input-tickets": AdminDashboardInputTicketsPage,
+    "table-histories": AdminTableHistoriesPage,
+    "use-tables": AdminUseTablesPage,
+    "order-sheets": AdminOrderSheetsPage,
+    "orders": AdminOrdersPage,
+    "order-tables": AdminOrderTablesPage,
+    "customer-cards": AdminCustomerCardsPage,
+    "customers": AdminCustomersPage,
+    "floors": AdminFloorsPage,
+    "category-tables": AdminCategoryTablesPage,
+    "tables": AdminTablesPage,
+    "input-tickets": AdminInputTicketsPage,
+    "suppliers": AdminSuppliersPage,
+    "category-ingredients": AdminCategoryIngredientsPage,
+    "ingredients": AdminIngredientsPage,
+    "category-foods": AdminCategoryFoodsPage,
+    "foods": AdminFoodsPage,
+    "payslip": AdminPayslipPage,
+    "category-reward-punishes": AdminCategoryRewardPunishesPage,
+    "reward-punishes": AdminRewardPunishesPage,
+    "schedules": AdminSchedulesPage,
+    "shifts": AdminShiftsPage,
+    "roles": AdminRolesPage,
+    "employees": AdminEmployeesPage,
   };
-  const getElementByFunction = (nameEN: string): JSX.Element | null => {
-    return elementMap[nameEN] || null; // hoặc fallback như <NotFoundPage />
+  const getPageByFunctionNameEN = ({ functionId, nameEN }: { functionId: number; nameEN: string }): JSX.Element | null => {
+    const PageComponent = pageComponentMap[nameEN];
+
+    if (PageComponent) {
+      return <PageComponent functionId={functionId} />;
+    }
+
+    return null;
   };
 
   return createBrowserRouter([
@@ -92,11 +107,15 @@ export const getRouter = async (): Promise<
       errorElement: <ErrorPage />,
       id: "admin",
       loader: () => {
-        return { username: "admin", role: "superuser", functions: functions };
+        return { employeeLogin: employeeLogin, functions: functions };
       },
       children: functions?.map((func) => ({
         path: func.nameEN,
-        element: getElementByFunction(func.nameEN!),
+        element: (
+          <RequireAuth requireFunctionId={func.id!}>
+            {getPageByFunctionNameEN({ functionId: func.id!, nameEN: func.nameEN! })}
+          </RequireAuth >
+        )
       })),
     },
     {

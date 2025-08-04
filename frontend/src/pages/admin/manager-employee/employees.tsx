@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleInfo,
@@ -25,16 +26,16 @@ import type {
   EmployeesType,
   ReactQueryMutationProps,
   RoleHistoriesFormatType,
-  RolesFormatType,
 } from "../../../common/types.tsx";
 import { CommonGender, CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values.tsx";
 import { CustomPaginationProps } from "../../../common/props.tsx";
+import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules.tsx";
 import CustomFindInput from "../../../components/admin/find-input.tsx";
 import CustomFindSelect from "../../../components/admin/find-select.tsx";
 import CustomTableActions from "../../../components/admin/table-actions.tsx";
 import CustomUpload from "../../../components/admin/upload.tsx";
+import CustomTableNoActions from "../../../components/admin/table-no-actions.tsx";
 import CustomModal from "../../../components/admin/modal.tsx";
-import { openNotification } from "../../../utils/showNotification.ts";
 import {
   FindAllEmployee,
   FindAllRole,
@@ -43,12 +44,12 @@ import {
   HandleLockEmployee,
   HandleUpdateEmployee,
 } from "../../../services/api.tsx";
-import dayjs from "dayjs";
-import CustomTableNoActions from "../../../components/admin/table-no-actions.tsx";
+import { getActionNameEn, getActionNameVn } from "../../../services/default-actions.tsx";
+import { getActionsString } from "../../../services/employee-login.tsx";
 import { showCreateValidAddress } from "../../../utils/showCreateValidAddress.tsx";
-import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules.tsx";
 import { openConfirmation } from "../../../utils/showConfirmation.ts";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { openNotification } from "../../../utils/showNotification.ts";
+import dayjs from "dayjs";
 
 // Các giá trị chung
 // - Tên đối tượng
@@ -62,7 +63,10 @@ const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 const titleModalChangePassword = TitleModalCommon.changePassword(objectName.toLowerCase());
 
 // Admin Employees Page
-const AdminEmployeesPage = () => {
+const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
+  // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
+  const validActions = getActionsString({ currentFunctionId: functionId })
+
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
@@ -225,66 +229,84 @@ const AdminEmployeesPage = () => {
       dataIndex: "",
       key: "actions",
       width: "14%",
+      className: "buttons",
       render: (text: any, record: EmployeesFormatType, index: number) => (
         <>
-          <button
-            className="action info"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalDetail,
-                true,
-                "89%",
-                "info employees",
-                AdminEmployeesModal.detail(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faCircleInfo} />
-          </button>
-          <button
-            className="action update margin-lr"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalUpdate,
-                true,
-                "89%",
-                "update employees",
-                AdminEmployeesModal.update(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPenToSquare} />
-          </button>
-          <button
-            className="action lock  margin-r"
-            onClick={() =>
-              updatePropertiesModal(
-                (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
-                true,
-                "30%",
-                "lock employees",
-                AdminEmployeesModal.lock(record!.id as number, record!.status)
-              )
-            }
-          >
-            <FontAwesomeIcon
-              icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
-            />
-          </button>
-          <button
-            className="action print"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalChangePassword,
-                true,
-                "31%",
-                "print employees",
-                AdminEmployeesModal.changePassword(record!.id as number)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faKey} />
-          </button>
+          {
+            validActions?.includes(getActionNameVn(0)) && (
+              <button
+                className={"action " + getActionNameEn(0)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalDetail,
+                    true,
+                    "89%",
+                    getActionNameEn(0) + " employees",
+                    AdminEmployeesModal.detail(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faCircleInfo} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(2)) && (
+              <button
+                className={"action " + getActionNameEn(2)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalUpdate,
+                    true,
+                    "89%",
+                    getActionNameEn(2) + " employees",
+                    AdminEmployeesModal.update(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPenToSquare} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(3)) && (
+              <button
+                className={"action " + getActionNameEn(3)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
+                    true,
+                    "30%",
+                    getActionNameEn(3) + " employees",
+                    AdminEmployeesModal.lock(record!.id as number, record!.status)
+                  )
+                }
+              >
+                <FontAwesomeIcon
+                  icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
+                />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(2)) && (
+
+              <button
+                className={"action " + getActionNameEn(4)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalChangePassword,
+                    true,
+                    "31%",
+                    getActionNameEn(4) + " employees",
+                    AdminEmployeesModal.changePassword(record!.id as number)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faKey} />
+              </button>
+            )
+          }
         </>
       ),
     },
@@ -366,7 +388,7 @@ const AdminEmployeesPage = () => {
     mutationFn: async ({ type, values, objectId, imageFile }: ReactQueryMutationProps<EmployeesType>) => {
       if (openModal) {
         if (type === "create" && titleModal === titleModalCreate) {
-          return await HandleCreateEmployee({
+          const res = await HandleCreateEmployee({
             image: imageFile! || undefined,
             fullname: values!.fullname || undefined,
             birthday:
@@ -390,8 +412,14 @@ const AdminEmployeesPage = () => {
             password: values!.password || undefined,
             status: values!.status || undefined,
           })
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if (type === "update" && titleModal === titleModalUpdate) {
-          return await HandleUpdateEmployee({
+          const res = await HandleUpdateEmployee({
             id: values!.id,
             image: imageFile! || undefined,
             fullname: values!.fullname || undefined,
@@ -414,13 +442,25 @@ const AdminEmployeesPage = () => {
             roleId: values!.roleId || undefined,
             timeUpdate: new Date().toISOString(),
           });
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if ((type === "lock" && titleModal === titleModalLock)
           || (type === "unlock" && titleModal === titleModalUnlock)) {
-          return await HandleLockEmployee({
+          const res = await HandleLockEmployee({
             id: objectId! as number,
             status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
             timeUpdate: new Date().toISOString(),
           })
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if (type === "change-password" && titleModal === titleModalChangePassword) {
           const res = await HandleChangePasswordEmployee({
             id: objectId! as number,
@@ -430,8 +470,10 @@ const AdminEmployeesPage = () => {
             timeUpdate: new Date().toISOString(),
           })
 
-          if (res.status !== 200) {
-            throw new Error(String(res?.data));
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
           }
         }
       }
@@ -1521,26 +1563,30 @@ const AdminEmployeesPage = () => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          <button
-            className={
-              "main__filter-button btn create" +
-              (openModal && titleModal === titleModalCreate
-                ? " active"
-                : "")
-            }
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalCreate,
-                true,
-                "89%",
-                "create employees",
-                AdminEmployeesModal.create()
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPlus} className="icon" />
-            &nbsp;Thêm
-          </button>
+          {
+            validActions?.includes(getActionNameVn(1)) && (
+              <button
+                className={
+                  "main__filter-button btn " + getActionNameEn(1) +
+                  (openModal && titleModal === titleModalCreate
+                    ? " active"
+                    : "")
+                }
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalCreate,
+                    true,
+                    "89%",
+                    getActionNameEn(1) + " employees",
+                    AdminEmployeesModal.create()
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPlus} className="icon" />
+                &nbsp;Thêm
+              </button>
+            )
+          }
         </div>
         <div className="main__table">
           <CustomTableActions

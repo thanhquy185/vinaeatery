@@ -31,6 +31,8 @@ import {
   HandleLockCustomer,
   HandleUpdateCustomer,
 } from "../../../services/api";
+import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import { getActionsString } from "../../../services/employee-login";
 import { vietnamMoneyFormat } from "../../../utils/otherEvents";
 import { showCreateValidAddress } from "../../../utils/showCreateValidAddress";
 import { openConfirmation } from "../../../utils/showConfirmation";
@@ -48,7 +50,10 @@ const titleModalLock = TitleModalCommon.lock(objectName.toLowerCase());
 const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 
 // Admin Customers Page
-const AdminCustomersPage = () => {
+const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
+  // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
+  const validActions = getActionsString({ currentFunctionId: functionId })
+
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
@@ -199,52 +204,65 @@ const AdminCustomersPage = () => {
       dataIndex: "",
       key: "actions",
       width: "10%",
+      className: "buttons",
       render: (text: any, record: CustomersFormatType, index: number) => (
         <>
-          <button
-            className="action info"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalDetail,
-                true,
-                "60%",
-                "info customers",
-                AdminCustomersModal.detail(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faCircleInfo} />
-          </button>
-          <button
-            className="action update margin-lr"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalUpdate,
-                true,
-                "60%",
-                "update customers",
-                AdminCustomersModal.update(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPenToSquare} />
-          </button>
-          <button
-            className="action lock"
-            onClick={() =>
-              updatePropertiesModal(
-                (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
-                true,
-                "30%",
-                "lock customers",
-                AdminCustomersModal.lock(record!.id as number, record!.status)
-              )
-            }
-          >
-            <FontAwesomeIcon
-              icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
-            />
-          </button>
+          {
+            validActions?.includes(getActionNameVn(0)) && (
+              <button
+                className={"action " + getActionNameEn(0)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalDetail,
+                    true,
+                    "60%",
+                    getActionNameEn(0) + " customers",
+                    AdminCustomersModal.detail(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faCircleInfo} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(2)) && (
+              <button
+                className={"action " + getActionNameEn(2)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalUpdate,
+                    true,
+                    "60%",
+                    getActionNameEn(2) + " customers",
+                    AdminCustomersModal.update(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPenToSquare} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(3)) && (
+              <button
+                className={"action " + getActionNameEn(3)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
+                    true,
+                    "30%",
+                    getActionNameEn(3) + " customers",
+                    AdminCustomersModal.lock(record!.id as number, record!.status)
+                  )
+                }
+              >
+                <FontAwesomeIcon
+                  icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
+                />
+              </button>
+            )
+          }
         </>
       ),
     },
@@ -314,7 +332,7 @@ const AdminCustomersPage = () => {
     mutationFn: async ({ type, values, objectId }: ReactQueryMutationProps<CustomersType>) => {
       if (openModal) {
         if (type === "create" && titleModal === titleModalCreate) {
-          return await HandleCreateCustomer({
+          const res = await HandleCreateCustomer({
             customerCardId: 1,
             totalThreshold: 0,
             fullname: values!.fullname || undefined,
@@ -328,9 +346,15 @@ const AdminCustomersPage = () => {
             address: values!.address || undefined,
             description: values!.description || undefined,
             status: values!.status || undefined,
-          })
+          });
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if (type === "update" && titleModal === titleModalUpdate) {
-          return await HandleUpdateCustomer({
+          const res = await HandleUpdateCustomer({
             id: values!.id!,
             customerCardId: values!.customerCardId || undefined,
             fullname: values!.fullname || undefined,
@@ -345,6 +369,12 @@ const AdminCustomersPage = () => {
             description: values!.description || undefined,
             timeUpdate: new Date().toISOString(),
           });
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if ((type === "lock" && titleModal === titleModalLock)
           || (type === "unlock" && titleModal === titleModalUnlock)) {
           const res = await HandleLockCustomer({
@@ -1089,26 +1119,30 @@ const AdminCustomersPage = () => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          <button
-            className={
-              "main__filter-button btn create" +
-              (openModal && titleModal === titleModalCreate
-                ? " active"
-                : "")
-            }
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalCreate,
-                true,
-                "60%",
-                "create customers",
-                AdminCustomersModal.create()
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPlus} className="icon" />
-            &nbsp;Thêm
-          </button>
+          {
+            validActions?.includes(getActionNameVn(1)) && (
+              <button
+                className={
+                  "main__filter-button btn " + getActionNameEn(1) +
+                  (openModal && titleModal === titleModalCreate
+                    ? " active"
+                    : "")
+                }
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalCreate,
+                    true,
+                    "60%",
+                    getActionNameEn(1) + " customers",
+                    AdminCustomersModal.create()
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPlus} className="icon" />
+                &nbsp;Thêm
+              </button>
+            )
+          }
         </div>
         <div className="main__table">
           <CustomTableActions

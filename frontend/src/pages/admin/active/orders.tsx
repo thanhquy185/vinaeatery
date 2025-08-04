@@ -5,6 +5,7 @@ import {
   type ReactNode,
   type SetStateAction,
 } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleInfo,
@@ -30,6 +31,7 @@ import type {
 } from "../../../common/types";
 import { ruleRequired } from "../../../common/rules";
 import { CustomPaginationProps } from "../../../common/props";
+import { OrderStatus, PayStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";
@@ -45,6 +47,8 @@ import {
   HandleUpdateOrder,
 } from "../../../services/api";
 import { getVietnamCurrentDatetime } from "../../../services/dayjs";
+import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import { getActionsString } from "../../../services/employee-login";
 import {
   numberToVietnamWords,
   vietnamMoneyFormat,
@@ -52,8 +56,6 @@ import {
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
 import { handlePrintTicket } from "../../../utils/printTicket";
-import { OrderStatus, PayStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Các giá trị chung
 // - Tên đối tượng
@@ -86,7 +88,10 @@ const OrDetailsAttributes = [
 const OrDetailsFormat = ["", "", "price", "", "price"];
 
 // Admin Orders Page
-const AdminOrdersPage = () => {
+const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
+  // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
+  const validActions = getActionsString({ currentFunctionId: functionId })
+
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
@@ -217,50 +222,63 @@ const AdminOrdersPage = () => {
       dataIndex: "",
       key: "actions",
       width: "12%",
+      className: "buttons",
       render: (text: any, record: OrdersFormatType, index: number) => (
         <>
-          <button
-            className="info action"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalDetail,
-                true,
-                "89%",
-                "info orders",
-                AdminOrdersModal.detail(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faCircleInfo} />
-          </button>
-          <button
-            className="update action margin-lr"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalUpdate,
-                true,
-                "89%",
-                "update orders",
-                AdminOrdersModal.update(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPenToSquare} />
-          </button>
-          <button
-            className="print action"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalPrint,
-                true,
-                "80%",
-                "print orders",
-                AdminOrdersModal.print(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPrint} />
-          </button>
+          {
+            validActions?.includes(getActionNameVn(0)) && (
+              <button
+                className={"action " + getActionNameEn(0)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalDetail,
+                    true,
+                    "89%",
+                    getActionNameEn(0) + " orders",
+                    AdminOrdersModal.detail(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faCircleInfo} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(2)) && (
+              <button
+                className={"action " + getActionNameEn(2)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalUpdate,
+                    true,
+                    "89%",
+                    getActionNameEn(2) + " orders",
+                    AdminOrdersModal.update(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPenToSquare} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(0)) && (
+              <button
+                className={"action " + getActionNameEn(4)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalPrint,
+                    true,
+                    "80%",
+                    getActionNameEn(4) + " orders",
+                    AdminOrdersModal.print(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPrint} />
+              </button>
+            )
+          }
         </>
       ),
     },
@@ -1524,26 +1542,30 @@ const AdminOrdersPage = () => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          <button
-            className={
-              "main__filter-button btn create" +
-              (openModal && titleModal === titleModalCreate
-                ? " active"
-                : "")
-            }
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalCreate,
-                true,
-                "89%",
-                "create orders",
-                AdminOrdersModal.create()
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPlus} className="icon" />
-            &nbsp;Thêm
-          </button>
+          {
+            validActions?.includes(getActionNameVn(1)) && (
+              <button
+                className={
+                  "main__filter-button btn " + getActionNameEn(1) +
+                  (openModal && titleModal === titleModalCreate
+                    ? " active"
+                    : "")
+                }
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalCreate,
+                    true,
+                    "89%",
+                    getActionNameEn(1) + " orders",
+                    AdminOrdersModal.create()
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPlus} className="icon" />
+                &nbsp;Thêm
+              </button>
+            )
+          }
         </div>
         <div className="main__cards">
           <CustomCardStatic

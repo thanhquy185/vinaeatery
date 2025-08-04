@@ -17,6 +17,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final EmployeeService employeeService;
     private final RoleRepository roleRepository;
     private final RoleHistoryRepository roleHistoryRepository;
+    
 
     // Methods
     @Override

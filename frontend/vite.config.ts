@@ -12,4 +12,7 @@ export default defineConfig({
       external: ['canvg'],
     },
   },
+  define: {
+    global: {},
+  },
 });

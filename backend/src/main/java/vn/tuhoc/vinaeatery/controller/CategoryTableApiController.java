@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -18,13 +20,13 @@ import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.CategoryTable;
 import vn.tuhoc.vinaeatery.domain.criteria.CategoryTableCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
-import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.CategoryTableUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.service.CategoryTableService;
 import vn.tuhoc.vinaeatery.service.TableService;
 import vn.tuhoc.vinaeatery.service.TimeService;
-import vn.tuhoc.vinaeatery.util.HandleFormGetData;
+import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
@@ -38,11 +40,12 @@ public class CategoryTableApiController {
 
     // Methods
     @PostMapping("/list")
-    public ResponseEntity<?> listCategoryTable(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listCategoryTable(@RequestBody FormSecurityDTO formSecurityDTO,
             CategoryTableCriteria categoryTableCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "category-tables", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<CategoryTable> listCategoryTable = this.categoryTableService
@@ -51,20 +54,28 @@ public class CategoryTableApiController {
     }
 
     @PostMapping("/detail/{id}")
-    public ResponseEntity<?> detailCategoryTable(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> detailCategoryTable(@RequestBody FormSecurityDTO formSecurityDTO,
             @PathVariable("id") Integer id) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "category-tables", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         CategoryTable categoryTableSelected = this.categoryTableService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(categoryTableSelected);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> handleCreateCategoryTable(@RequestBody @Valid CategoryTable categoryTable,
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleCreateCategoryTable(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @RequestPart("category-table") @Valid CategoryTable categoryTable,
             BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "category-tables", "create")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -74,10 +85,17 @@ public class CategoryTableApiController {
         return ResponseEntity.status(HttpStatus.OK).body(categoryTableCreate);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> handleUpdateCategoryTable(@PathVariable("id") Integer id,
-            @RequestBody @Valid CategoryTableUpdateDTO categoryTable,
+    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleUpdateCategoryTable(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @PathVariable("id") Integer id,
+            @RequestPart("category-table") @Valid CategoryTableUpdateDTO categoryTable,
             BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "category-tables", "update")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -96,9 +114,17 @@ public class CategoryTableApiController {
         return ResponseEntity.status(HttpStatus.OK).body(categoryTableUpdated);
     }
 
-    @PutMapping("/lock/{id}")
-    public ResponseEntity<?> handleLockCategoryTable(@PathVariable("id") Integer id,
-            @RequestBody @Valid CommonStatusUpdateDTO commonStatusUpdate, BindingResult bindingResult) {
+    @PutMapping(value = "/lock/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleLockCategoryTable(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @PathVariable("id") Integer id,
+            @RequestPart("category-table") @Valid CommonStatusUpdateDTO commonStatusUpdate,
+            BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "category-tables", "lock")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -107,7 +133,8 @@ public class CategoryTableApiController {
         if (tableService.getAllByCategoryTableId(id) != null
                 && !tableService.getAllByCategoryTableId(id).isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr("Loại bàn này đang được ít nhất 1 bàn sử dụng sử dụng !"));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr("Loại bàn này đang được ít nhất 1 bàn sử dụng sử dụng !"));
         }
 
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE

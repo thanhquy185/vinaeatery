@@ -2,6 +2,7 @@ import type { RcFile } from "antd/es/upload";
 
 // Kiểu dữ liệu của rest response từ backend
 export interface RestResponseType {
+  employeeLogin: EmployeesFormatType;
   status: number;
   error: string;
   message: string;

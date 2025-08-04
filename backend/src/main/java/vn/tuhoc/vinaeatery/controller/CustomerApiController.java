@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -20,13 +22,13 @@ import vn.tuhoc.vinaeatery.domain.criteria.CustomerCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.CustomerDTO;
 import vn.tuhoc.vinaeatery.domain.dto.CustomerUpdateDTO;
-import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.service.CustomerService;
 import vn.tuhoc.vinaeatery.service.TableService;
 import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.UseTableService;
-import vn.tuhoc.vinaeatery.util.HandleFormGetData;
+import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,11 +45,12 @@ public class CustomerApiController {
 
     // Methods
     @PostMapping("/list")
-    public ResponseEntity<?> listCustomer(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listCustomer(@RequestBody FormSecurityDTO formSecurityDTO,
             CustomerCriteria customerCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "customers", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<Customer> listCustomer = this.customerService.getAll(customerCriteria);
@@ -55,11 +58,12 @@ public class CustomerApiController {
     }
 
     @PostMapping("/list-format")
-    public ResponseEntity<?> listCustomerFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listCustomerFormat(@RequestBody FormSecurityDTO formSecurityDTO,
             CustomerCriteria customerCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "customers", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<CustomerDTO> listCustomer = this.customerService.getAllFormat(customerCriteria);
@@ -67,19 +71,27 @@ public class CustomerApiController {
     }
 
     @PostMapping("/detail/{id}")
-    public ResponseEntity<?> detailCustomer(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> detailCustomer(@RequestBody FormSecurityDTO formSecurityDTO,
             @PathVariable("id") Integer id) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "customers", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         Customer customerSelected = this.customerService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(customerSelected);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> handleCreateCustomer(@RequestBody @Valid Customer customer, BindingResult bindingResult) {
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleCreateCustomer(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @RequestPart("customer") @Valid Customer customer, BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "customers", "create")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -89,10 +101,17 @@ public class CustomerApiController {
         return ResponseEntity.status(HttpStatus.OK).body(customerCreate);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> handleUpdateCustomer(@PathVariable("id") Integer id,
-            @RequestBody @Valid CustomerUpdateDTO customer,
+    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleUpdateCustomer(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @PathVariable("id") Integer id,
+            @RequestPart("customer") @Valid CustomerUpdateDTO customer,
             BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "customers", "update")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -115,9 +134,16 @@ public class CustomerApiController {
         return ResponseEntity.status(HttpStatus.OK).body(customerUpdated);
     }
 
-    @PutMapping("/lock/{id}")
-    public ResponseEntity<?> handleLockCustomer(@PathVariable("id") Integer id,
-            @RequestBody @Valid CommonStatusUpdateDTO commonStatusUpdate, BindingResult bindingResult) {
+    @PutMapping(value = "/lock/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleLockCustomer(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @PathVariable("id") Integer id,
+            @RequestPart("customer") @Valid CommonStatusUpdateDTO commonStatusUpdate, BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "customers", "lock")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));

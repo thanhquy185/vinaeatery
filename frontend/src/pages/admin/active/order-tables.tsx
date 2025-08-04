@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleInfo,
@@ -34,10 +35,11 @@ import {
   HandleLockOrderTable,
   HandleUpdateOrderTable,
 } from "../../../services/api";
+import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import { getActionsString } from "../../../services/employee-login";
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
 import { showCreateValidAddress } from "../../../utils/showCreateValidAddress";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Các giá trị chung
 // - Tên đối tượng
@@ -50,7 +52,10 @@ const titleModalLock = TitleModalCommon.lock(objectName.toLowerCase());
 const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 
 // Admin Order Tables Page
-const AdminOrderTablesPage = () => {
+const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
+  // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
+  const validActions = getActionsString({ currentFunctionId: functionId });
+
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
@@ -168,52 +173,65 @@ const AdminOrderTablesPage = () => {
       dataIndex: "",
       key: "actions",
       width: "10%",
+      className: "buttons",
       render: (text: any, record: OrderTablesFormatType, index: number) => (
         <>
-          <button
-            className="action info"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalDetail,
-                true,
-                "89%",
-                "info order-tables",
-                AdminOrderTablesModal.detail(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faCircleInfo} />
-          </button>
-          <button
-            className="action update margin-lr"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalUpdate,
-                true,
-                "89%",
-                "update order-tables",
-                AdminOrderTablesModal.update(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPenToSquare} />
-          </button>
-          <button
-            className="action lock"
-            onClick={() =>
-              updatePropertiesModal(
-                (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
-                true,
-                "30%",
-                "lock order-tables",
-                AdminOrderTablesModal.lock(record!.id as number, record!.status)
-              )
-            }
-          >
-            <FontAwesomeIcon
-              icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
-            />
-          </button>
+          {
+            validActions?.includes(getActionNameVn(0)) && (
+              <button
+                className={"action " + getActionNameEn(0)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalDetail,
+                    true,
+                    "89%",
+                    getActionNameEn(0) + " order-tables",
+                    AdminOrderTablesModal.detail(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faCircleInfo} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(2)) && (
+              <button
+                className={"action " + getActionNameEn(2)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalUpdate,
+                    true,
+                    "89%",
+                    getActionNameEn(2) + " order-tables",
+                    AdminOrderTablesModal.update(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPenToSquare} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(3)) && (
+              <button
+                className={"action " + getActionNameEn(3)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
+                    true,
+                    "30%",
+                    getActionNameEn(3) + " order-tables",
+                    AdminOrderTablesModal.lock(record!.id as number, record!.status)
+                  )
+                }
+              >
+                <FontAwesomeIcon
+                  icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
+                />
+              </button>
+            )
+          }
         </>
       ),
     },
@@ -284,7 +302,7 @@ const AdminOrderTablesPage = () => {
     mutationFn: async ({ type, values, objectId }: ReactQueryMutationProps<OrderTablesType>) => {
       if (openModal) {
         if (type === "create" && titleModal === titleModalCreate) {
-          return await HandleCreateOrderTable({
+          const res = await HandleCreateOrderTable({
             timeOrder:
               values!.timeOrder && dayjs(values!.timeOrder).isValid()
                 ? dayjs(values!.timeOrder).format("YYYY-MM-DD HH:mm:ss")
@@ -301,8 +319,14 @@ const AdminOrderTablesPage = () => {
             address: values!.address || undefined,
             status: values!.status || undefined,
           })
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if (type === "update" && titleModal === titleModalUpdate) {
-          return await HandleUpdateOrderTable({
+          const res = await HandleUpdateOrderTable({
             id: values!.id,
             timeOrder:
               values!.timeOrder && dayjs(values!.timeOrder).isValid()
@@ -319,6 +343,12 @@ const AdminOrderTablesPage = () => {
             address: values!.address || undefined,
             timeUpdate: new Date().toISOString(),
           });
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if ((type === "lock" && titleModal === titleModalLock)
           || (type === "unlock" && titleModal === titleModalUnlock)) {
           const res = await HandleLockOrderTable({
@@ -1059,26 +1089,30 @@ const AdminOrderTablesPage = () => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          <button
-            className={
-              "main__filter-button btn create" +
-              (openModal && titleModal === titleModalCreate
-                ? " active"
-                : "")
-            }
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalCreate,
-                true,
-                "89%",
-                "create order-tables",
-                AdminOrderTablesModal.create()
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPlus} className="icon" />
-            &nbsp;Thêm
-          </button>
+          {
+            validActions?.includes(getActionNameVn(1)) && (
+              <button
+                className={
+                  "main__filter-button btn " + getActionNameEn(1) +
+                  (openModal && titleModal === titleModalCreate
+                    ? " active"
+                    : "")
+                }
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalCreate,
+                    true,
+                    "89%",
+                    getActionNameEn(1) + " order-tables",
+                    AdminOrderTablesModal.create()
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPlus} className="icon" />
+                &nbsp;Thêm
+              </button>
+            )
+          }
         </div>
         <div className="main__table">
           <CustomTableActions

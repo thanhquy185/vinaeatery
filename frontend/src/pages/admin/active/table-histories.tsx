@@ -5,14 +5,16 @@ import { faBars, faFileArrowDown, faPrint } from "@fortawesome/free-solid-svg-ic
 import { Tag, type SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { UseTablesFormatType } from "../../../common/types";
-import { CommonStatus, OrderSheetStatus, ReactQueryGetData, TitleModalCommon, UseTableStatus } from "../../../common/values";
 import { CustomPaginationProps } from "../../../common/props";
+import { CommonStatus, OrderSheetStatus, ReactQueryGetData, TitleModalCommon, UseTableStatus } from "../../../common/values";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";
 import CustomTableActions from "../../../components/admin/table-actions";
 import CustomModal from "../../../components/admin/modal";
 import { FindAllFloor, FindAllUseTable } from "../../../services/api";
+import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import { getActionsString } from "../../../services/employee-login";
 import { vietnamMoneyFormat } from "../../../utils/otherEvents";
 import { openNotification } from "../../../utils/showNotification";
 import { handlePrintTicket } from "../../../utils/printTicket";
@@ -24,7 +26,10 @@ const objectName = "Lịch sử bàn ăn"
 const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
 
 // Admin Status Tables Page
-const AdminTableHistoriesPage = () => {
+const AdminTableHistoriesPage = ({ functionId }: { functionId: number }) => {
+    // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
+    const validActions = getActionsString({ currentFunctionId: functionId })
+
     // Các biến giữ dữ liệu về tầng
     const {
         data: floors,
@@ -169,22 +174,27 @@ const AdminTableHistoriesPage = () => {
             dataIndex: "",
             key: "actions",
             width: "6%",
+            className: "buttons",
             render: (text: any, record: UseTablesFormatType, index: number) => (
                 <>
-                    <button
-                        className="info action"
-                        onClick={() =>
-                            updatePropertiesModal(
-                                titleModalDetail,
-                                true,
-                                "89%",
-                                "table-histories",
-                                AdminTableHistoriesModal.handle(record)
-                            )
-                        }
-                    >
-                        <FontAwesomeIcon icon={faBars} />
-                    </button>
+                    {
+                        validActions!.includes(getActionNameVn(0)) && (
+                            <button
+                                className={"action " + getActionNameEn(0)}
+                                onClick={() =>
+                                    updatePropertiesModal(
+                                        titleModalDetail,
+                                        true,
+                                        "89%",
+                                        "table-histories",
+                                        AdminTableHistoriesModal.handle(record)
+                                    )
+                                }
+                            >
+                                <FontAwesomeIcon icon={faBars} />
+                            </button>
+                        )
+                    }
                 </>
             ),
         },

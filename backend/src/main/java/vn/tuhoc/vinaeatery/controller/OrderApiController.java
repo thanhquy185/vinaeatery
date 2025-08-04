@@ -24,7 +24,7 @@ import vn.tuhoc.vinaeatery.domain.OrderDetailForCrud;
 import vn.tuhoc.vinaeatery.domain.OrderDetailId;
 import vn.tuhoc.vinaeatery.domain.Recipe;
 import vn.tuhoc.vinaeatery.domain.criteria.OrderCriteria;
-import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.OrderStatusEnum;
@@ -36,7 +36,7 @@ import vn.tuhoc.vinaeatery.service.OrderDetailService;
 import vn.tuhoc.vinaeatery.service.OrderService;
 import vn.tuhoc.vinaeatery.service.RecipeService;
 import vn.tuhoc.vinaeatery.service.TimeService;
-import vn.tuhoc.vinaeatery.util.HandleFormGetData;
+import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
@@ -54,11 +54,12 @@ public class OrderApiController {
 
     // Methods
     @PostMapping("/list")
-    public ResponseEntity<?> listOrder(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listOrder(@RequestBody FormSecurityDTO formSecurityDTO,
             OrderCriteria orderCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "orders", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<Order> listOrder = this.orderService.getAll(orderCriteria);
@@ -66,11 +67,12 @@ public class OrderApiController {
     }
 
     @PostMapping("/list-format")
-    public ResponseEntity<?> listOrderFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listOrderFormat(@RequestBody FormSecurityDTO formSecurityDTO,
             OrderCriteria orderCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "orders", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<OrderDTO> listOrder = this.orderService.getAllFormat(orderCriteria);
@@ -78,11 +80,12 @@ public class OrderApiController {
     }
 
     @PostMapping("/detail/{id}")
-    public ResponseEntity<?> detailOrder(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> detailOrder(@RequestBody FormSecurityDTO formSecurityDTO,
             @PathVariable("id") Integer id) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "orders", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         Order orderSelected = this.orderService.getOneById(id);
@@ -90,9 +93,16 @@ public class OrderApiController {
     }
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleCreateOrder(@RequestPart("order") @Valid Order order,
-            @RequestPart("orderDetails") @Valid List<OrderDetailForCrud> orderDetails,
+    public ResponseEntity<?> handleCreateOrder(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @RequestPart("order") @Valid Order order,
+            @RequestPart("order-details") @Valid List<OrderDetailForCrud> orderDetails,
             BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "orders", "create")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -120,9 +130,16 @@ public class OrderApiController {
         return ResponseEntity.status(HttpStatus.OK).body(orderCreated);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> handleUpdateOrder(@PathVariable("id") Integer id,
-            @RequestBody OrderUpdateDTO order) {
+    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleUpdateOrder(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @PathVariable("id") Integer id,
+            @RequestPart("order") OrderUpdateDTO order) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "orders", "update")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         Order orderUpdated = this.orderService.getOneById(id);
         if (order.getPayStatus() != null) {
             orderUpdated.setPayStatus(order.getPayStatus());

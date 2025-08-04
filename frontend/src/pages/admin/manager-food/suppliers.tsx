@@ -31,6 +31,8 @@ import {
   HandleLockSupplier,
   HandleUpdateSupplier,
 } from "../../../services/api";
+import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import { getActionsString } from "../../../services/employee-login";
 import { showCreateValidAddress } from "../../../utils/showCreateValidAddress";
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
@@ -46,7 +48,10 @@ const titleModalLock = TitleModalCommon.lock(objectName.toLowerCase());
 const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 
 // Admin Suppliers Page
-const AdminSuppliersPage = () => {
+const AdminSuppliersPage = ({ functionId }: { functionId: number }) => {
+  // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
+  const validActions = getActionsString({ currentFunctionId: functionId })
+
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
@@ -155,52 +160,65 @@ const AdminSuppliersPage = () => {
       dataIndex: "",
       key: "actions",
       width: "10%",
+      className: "buttons",
       render: (text: any, record: SuppliersType, index: number) => (
         <>
-          <button
-            className=" info action"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalDetail,
-                true,
-                "60%",
-                "info suppliers",
-                AdminSuppliersModal.detail(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faCircleInfo} />
-          </button>
-          <button
-            className=" update action margin-lr"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalUpdate,
-                true,
-                "60%",
-                "update suppliers",
-                AdminSuppliersModal.update(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPenToSquare} />
-          </button>
-          <button
-            className=" lock action"
-            onClick={() =>
-              updatePropertiesModal(
-                (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
-                true,
-                "30%",
-                "lock suppliers",
-                AdminSuppliersModal.lock(record!.id as number, record!.status)
-              )
-            }
-          >
-            <FontAwesomeIcon
-              icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
-            />
-          </button>
+          {
+            validActions?.includes(getActionNameVn(0)) && (
+              <button
+                className={"action " + getActionNameEn(0)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalDetail,
+                    true,
+                    "60%",
+                    getActionNameEn(0) + " suppliers",
+                    AdminSuppliersModal.detail(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faCircleInfo} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(2)) && (
+              <button
+                className={"action " + getActionNameEn(2)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalUpdate,
+                    true,
+                    "60%",
+                    getActionNameEn(2) + " suppliers",
+                    AdminSuppliersModal.update(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPenToSquare} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(3)) && (
+              <button
+                className={"action " + getActionNameEn(3)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
+                    true,
+                    "30%",
+                    getActionNameEn(3) + " suppliers",
+                    AdminSuppliersModal.lock(record!.id as number, record!.status)
+                  )
+                }
+              >
+                <FontAwesomeIcon
+                  icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
+                />
+              </button>
+            )
+          }
         </>
       ),
     },
@@ -260,15 +278,21 @@ const AdminSuppliersPage = () => {
     mutationFn: async ({ type, values, objectId }: ReactQueryMutationProps<SuppliersType>) => {
       if (openModal) {
         if (type === "create" && titleModal === titleModalCreate) {
-          return await HandleCreateSupplier({
+          const res = await HandleCreateSupplier({
             name: values!.name || undefined,
             phone: values!.phone || undefined,
             email: values!.email || undefined,
             address: values!.address || undefined,
             status: values!.status || undefined,
-          })
+          });
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if (type === "update" && titleModal === titleModalUpdate) {
-          return await HandleUpdateSupplier({
+          const res = await HandleUpdateSupplier({
             id: values!.id,
             name: values!.name || undefined,
             phone: values!.phone || undefined,
@@ -276,13 +300,25 @@ const AdminSuppliersPage = () => {
             address: values!.address || undefined,
             timeUpdate: new Date().toISOString(),
           });
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if ((type === "lock" && titleModal === titleModalLock)
           || (type === "unlock" && titleModal === titleModalUnlock)) {
-          return await HandleLockSupplier({
+          const res = await HandleLockSupplier({
             id: objectId! as number,
             status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
             timeUpdate: new Date().toISOString(),
-          })
+          });
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         }
       }
     },
@@ -804,26 +840,30 @@ const AdminSuppliersPage = () => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          <button
-            className={
-              "main__filter-button btn create" +
-              (openModal && titleModal === titleModalCreate
-                ? " active"
-                : "")
-            }
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalCreate,
-                true,
-                "60%",
-                "create suppliers",
-                AdminSuppliersModal.create()
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPlus} className="icon" />
-            &nbsp;Thêm
-          </button>
+          {
+            validActions?.includes(getActionNameVn(1)) && (
+              <button
+                className={
+                  "main__filter-button btn " + getActionNameEn(1) +
+                  (openModal && titleModal === titleModalCreate
+                    ? " active"
+                    : "")
+                }
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalCreate,
+                    true,
+                    "60%",
+                    getActionNameEn(1) + " suppliers",
+                    AdminSuppliersModal.create()
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPlus} className="icon" />
+                &nbsp;Thêm
+              </button>
+            )
+          }
         </div>
         <div className="main__table">
           <CustomTableActions

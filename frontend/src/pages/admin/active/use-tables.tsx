@@ -1,17 +1,19 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Form, Input, Select, Space, type SelectProps } from "antd";
+import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomModal from "../../../components/admin/modal";
 import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules";
-import { openConfirmation } from "../../../utils/showConfirmation";
-import { openNotification } from "../../../utils/showNotification";
+import { CommonStatus, ReactQueryGetData, UseTableStatus } from "../../../common/values";
 import type { CustomersFormatType, FloorsType, OrderSheetsFormatType, OrderTablesFormatType, UseTablesFormatType } from "../../../common/types";
 import { FindAllCustomer, FindAllFloor, FindAllOrderTable, FindAllUseTableTimeEndIsNull, HandleUpdateUseTable } from "../../../services/api";
-import CustomFindInput from "../../../components/admin/find-input";
-import { CommonStatus, ReactQueryGetData, UseTableStatus } from "../../../common/values";
-import { showCreateValidAddress } from "../../../utils/showCreateValidAddress";
+import { getActionNameVn } from "../../../services/default-actions";
+import { getActionsString } from "../../../services/employee-login";
 import { vietnamMoneyFormat } from "../../../utils/otherEvents";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { showCreateValidAddress } from "../../../utils/showCreateValidAddress";
+import { openConfirmation } from "../../../utils/showConfirmation";
+import { openNotification } from "../../../utils/showNotification";
 
 // Các giá trị chung
 // - Tên đối tượng
@@ -30,7 +32,10 @@ type HandleUseTableProps = {
 }
 
 // Admin Status Tables Page
-const AdminUseTablesPage = () => {
+const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
+  // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
+  const validActions = getActionsString({ currentFunctionId: functionId })
+
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
@@ -108,7 +113,7 @@ const AdminUseTablesPage = () => {
       }
     },
     retry: ReactQueryGetData.retry,
-    staleTime: ReactQueryGetData.staleTime,
+    // staleTime: ReactQueryGetData.staleTime,
   });
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
@@ -192,39 +197,43 @@ const AdminUseTablesPage = () => {
           </table>
         </div>
         {/* <div className="note">*Lưu ý: Khi thanh toán, các phiếu gọi món chưa được phục vụ sẽ bị huỷ !</div> */}
-        <div className="modal__buttons mg-top">
-          <button
-            type="button"
-            className="modal__button secondary btn"
-            onClick={(e) =>
-              callApiToUpdateUseTable({
-                id: id!,
-                orderSheets: orderSheets!,
-                button: e.target as HTMLElement,
-                value: UseTableStatus.empty
-              })
-            }
-          >
-            Thanh toán tiền bàn
-          </button>
-          {orderSheets!.length! == 0 &&
-            (
+        {
+          validActions!.includes(getActionNameVn(2)) && (
+            <div className="modal__buttons mg-top">
               <button
                 type="button"
-                className="modal__button secondary btn green-secondary"
+                className="modal__button secondary btn"
                 onClick={(e) =>
                   callApiToUpdateUseTable({
                     id: id!,
+                    orderSheets: orderSheets!,
                     button: e.target as HTMLElement,
                     value: UseTableStatus.empty
                   })
                 }
               >
-                Khách trả bàn
+                Thanh toán tiền bàn
               </button>
-            )
-          }
-        </div>
+              {orderSheets!.length! == 0 &&
+                (
+                  <button
+                    type="button"
+                    className="modal__button secondary btn green-secondary"
+                    onClick={(e) =>
+                      callApiToUpdateUseTable({
+                        id: id!,
+                        button: e.target as HTMLElement,
+                        value: UseTableStatus.empty
+                      })
+                    }
+                  >
+                    Khách trả bàn
+                  </button>
+                )
+              }
+            </div>
+          )
+        }
       </>
     );
   };
@@ -257,36 +266,40 @@ const AdminUseTablesPage = () => {
         <div className="info">
           <b>Trạng thái:</b> <span className="status yellow">{status!}</span>
         </div>
-        <div className="modal__buttons mg-top">
-          <button
-            type="button"
-            className="modal__button secondary btn red-secondary"
-            onClick={() =>
-              updatePropertiesSecondModal(
-                "Khách hàng nhận bàn",
-                true,
-                "60%",
-                "secondary red",
-                AdminHandleUseTablesModal.HandleOccupiedFromReversed(id!, orderTable!)
-              )
-            }
-          >
-            Khách nhận bàn
-          </button>
-          <button
-            type="button"
-            className="modal__button secondary btn green-secondary"
-            onClick={(e) =>
-              callApiToUpdateUseTable({
-                id: id!,
-                button: e.target as HTMLElement,
-                value: UseTableStatus.empty
-              })
-            }
-          >
-            {UseTableStatus.empty}
-          </button>
-        </div>
+        {
+          validActions!.includes(getActionNameVn(2)) && (
+            <div className="modal__buttons mg-top">
+              <button
+                type="button"
+                className="modal__button secondary btn red-secondary"
+                onClick={() =>
+                  updatePropertiesSecondModal(
+                    "Khách hàng nhận bàn",
+                    true,
+                    "60%",
+                    "secondary red",
+                    AdminHandleUseTablesModal.HandleOccupiedFromReversed(id!, orderTable!)
+                  )
+                }
+              >
+                Khách nhận bàn
+              </button>
+              <button
+                type="button"
+                className="modal__button secondary btn green-secondary"
+                onClick={(e) =>
+                  callApiToUpdateUseTable({
+                    id: id!,
+                    button: e.target as HTMLElement,
+                    value: UseTableStatus.empty
+                  })
+                }
+              >
+                {UseTableStatus.empty}
+              </button>
+            </div>
+          )
+        }
       </>
     );
   };
@@ -310,51 +323,55 @@ const AdminUseTablesPage = () => {
         <div className="info">
           <b>Trạng thái:</b> <span className="status green">{status!}</span>
         </div>
-        <div className="modal__buttons mg-top">
-          <button
-            type="button"
-            className="modal__button secondary btn red-secondary"
-            onClick={() =>
-              updatePropertiesSecondModal(
-                "Bàn đang có khách",
-                true,
-                "60%",
-                "secondary red",
-                AdminHandleUseTablesModal.handleOccupied(id!)
-              )
-            }
-          >
-            {UseTableStatus.occupied}
-          </button>
-          <button
-            type="button"
-            className="modal__button secondary btn yellow-secondary"
-            onClick={() =>
-              updatePropertiesSecondModal(
-                "Bàn đã được đặt",
-                true,
-                "60%",
-                "secondary yellow",
-                AdminHandleUseTablesModal.handleReserved(id!)
-              )
-            }
-          >
-            {UseTableStatus.reserved}
-          </button>
-          <button
-            type="button"
-            className="modal__button secondary btn gray-secondary"
-            onClick={(e) =>
-              callApiToUpdateUseTable({
-                id: id!,
-                button: e.target as HTMLElement,
-                value: UseTableStatus.repair
-              })
-            }
-          >
-            {UseTableStatus.repair}
-          </button>
-        </div>
+        {
+          validActions!.includes(getActionNameVn(2)) && (
+            <div className="modal__buttons mg-top">
+              <button
+                type="button"
+                className="modal__button secondary btn red-secondary"
+                onClick={() =>
+                  updatePropertiesSecondModal(
+                    "Bàn đang có khách",
+                    true,
+                    "60%",
+                    "secondary red",
+                    AdminHandleUseTablesModal.handleOccupied(id!)
+                  )
+                }
+              >
+                {UseTableStatus.occupied}
+              </button>
+              <button
+                type="button"
+                className="modal__button secondary btn yellow-secondary"
+                onClick={() =>
+                  updatePropertiesSecondModal(
+                    "Bàn đã được đặt",
+                    true,
+                    "60%",
+                    "secondary yellow",
+                    AdminHandleUseTablesModal.handleReserved(id!)
+                  )
+                }
+              >
+                {UseTableStatus.reserved}
+              </button>
+              <button
+                type="button"
+                className="modal__button secondary btn gray-secondary"
+                onClick={(e) =>
+                  callApiToUpdateUseTable({
+                    id: id!,
+                    button: e.target as HTMLElement,
+                    value: UseTableStatus.repair
+                  })
+                }
+              >
+                {UseTableStatus.repair}
+              </button>
+            </div>
+          )
+        }
       </>
     );
   };
@@ -378,21 +395,25 @@ const AdminUseTablesPage = () => {
         <div className="info">
           <b>Trạng thái:</b> <span className="status gray">{status!}</span>
         </div>
-        <div className="modal__buttons mg-top">
-          <button
-            type="button"
-            className="modal__button secondary btn green-secondary"
-            onClick={(e) =>
-              callApiToUpdateUseTable({
-                id: id!,
-                button: e.target as HTMLElement,
-                value: UseTableStatus.empty
-              })
-            }
-          >
-            {UseTableStatus.empty}
-          </button>
-        </div>
+        {
+          validActions!.includes(getActionNameVn(2)) && (
+            <div className="modal__buttons mg-top">
+              <button
+                type="button"
+                className="modal__button secondary btn green-secondary"
+                onClick={(e) =>
+                  callApiToUpdateUseTable({
+                    id: id!,
+                    button: e.target as HTMLElement,
+                    value: UseTableStatus.empty
+                  })
+                }
+              >
+                {UseTableStatus.empty}
+              </button>
+            </div>
+          )
+        }
       </>
     );
   };

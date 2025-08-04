@@ -9,6 +9,8 @@ import CustomFindSelect from "../../../components/admin/find-select";
 import OrderSheetCard from "../../../components/admin/order-sheet-card";
 import CustomModal from "../../../components/admin/modal";
 import { FindAllFloor, FindAllOrderSheetCurrentDate, HandleUpdateOrderSheet } from "../../../services/api";
+import { getActionNameVn } from "../../../services/default-actions";
+import { getActionsString } from "../../../services/employee-login";
 import { vietnamMoneyFormat } from "../../../utils/otherEvents";
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
@@ -18,7 +20,10 @@ import { openNotification } from "../../../utils/showNotification";
 const objectName = "Phiếu gọi món"
 
 // Admin Order Sheets Page
-const AdminOrderSheetsPage = () => {
+const AdminOrderSheetsPage = ({ functionId }: { functionId: number }) => {
+  // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
+  const validActions = getActionsString({ currentFunctionId: functionId })
+
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
@@ -88,7 +93,7 @@ const AdminOrderSheetsPage = () => {
       }
     },
     retry: ReactQueryGetData.retry,
-    staleTime: ReactQueryGetData.staleTime,
+    // staleTime: ReactQueryGetData.staleTime,
   });
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
@@ -228,53 +233,57 @@ const AdminOrderSheetsPage = () => {
           <b>Lời nhắn:</b> <TextArea placeholder="Nhập Lời nhắn" value={messageValue!} onChange={(e) => setMessageValue(e.target.value)} disabled={isCancel || isService} />
         </div>
         <div className="note">Ghi chú: {note! ? note : "Không"}</div>
-        <div className="modal__buttons">
-          {status! === OrderSheetStatus.confirm && (
-            <button
-              className="modal__button secondary btn purple-secondary"
-              onClick={(e) =>
-                callApiToUpdateOrderSheet(
-                  id!,
-                  e.target as HTMLElement,
-                  OrderSheetStatus.serviced,
-                  messageValue,
-                )
-              }
-            >
-              {OrderSheetStatus.serviced}
-            </button>
-          )}
-          {status! === OrderSheetStatus.pending && (
-            <>
-              <button
-                className="modal__button secondary btn green-secondary"
-                onClick={(e) =>
-                  callApiToUpdateOrderSheet(
-                    id!,
-                    e.target as HTMLElement,
-                    OrderSheetStatus.confirm,
-                    messageValue,
-                  )
-                }
-              >
-                {OrderSheetStatus.confirm}
-              </button>
-              <button
-                className="modal__button secondary btn red-secondary"
-                onClick={(e) =>
-                  callApiToUpdateOrderSheet(
-                    id!,
-                    e.target as HTMLElement,
-                    OrderSheetStatus.canceled,
-                    messageValue,
-                  )
-                }
-              >
-                {OrderSheetStatus.canceled}
-              </button>
-            </>
-          )}
-        </div>
+        {
+          validActions!.includes(getActionNameVn(2)) && (
+            <div className="modal__buttons">
+              {status! === OrderSheetStatus.confirm && (
+                <button
+                  className="modal__button secondary btn purple-secondary"
+                  onClick={(e) =>
+                    callApiToUpdateOrderSheet(
+                      id!,
+                      e.target as HTMLElement,
+                      OrderSheetStatus.serviced,
+                      messageValue,
+                    )
+                  }
+                >
+                  {OrderSheetStatus.serviced}
+                </button>
+              )}
+              {status! === OrderSheetStatus.pending && (
+                <>
+                  <button
+                    className="modal__button secondary btn green-secondary"
+                    onClick={(e) =>
+                      callApiToUpdateOrderSheet(
+                        id!,
+                        e.target as HTMLElement,
+                        OrderSheetStatus.confirm,
+                        messageValue,
+                      )
+                    }
+                  >
+                    {OrderSheetStatus.confirm}
+                  </button>
+                  <button
+                    className="modal__button secondary btn red-secondary"
+                    onClick={(e) =>
+                      callApiToUpdateOrderSheet(
+                        id!,
+                        e.target as HTMLElement,
+                        OrderSheetStatus.canceled,
+                        messageValue,
+                      )
+                    }
+                  >
+                    {OrderSheetStatus.canceled}
+                  </button>
+                </>
+              )}
+            </div>
+          )
+        }
       </>
     );
   };

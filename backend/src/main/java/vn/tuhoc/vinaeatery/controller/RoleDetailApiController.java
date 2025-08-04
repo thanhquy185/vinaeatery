@@ -13,10 +13,10 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.RoleDetail;
 import vn.tuhoc.vinaeatery.domain.criteria.RoleDetailCriteria;
-import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.RoleDetailDTO;
 import vn.tuhoc.vinaeatery.service.RoleDetailService;
-import vn.tuhoc.vinaeatery.util.HandleFormGetData;
+import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
@@ -28,11 +28,12 @@ public class RoleDetailApiController {
 
     // Methods
     @PostMapping("/list")
-    public ResponseEntity<?> listRoleDetail(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listRoleDetail(@RequestBody FormSecurityDTO formSecurityDTO,
             RoleDetailCriteria roleDetailCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "role-details", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<RoleDetail> listRoleDetail = this.roleDetailService.getAll(roleDetailCriteria);
@@ -40,11 +41,12 @@ public class RoleDetailApiController {
     }
 
     @PostMapping("/list-format")
-    public ResponseEntity<?> listRoleDetailFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listRoleDetailFormat(@RequestBody FormSecurityDTO formSecurityDTO,
             RoleDetailCriteria roleDetailCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "role-details", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<RoleDetailDTO> listRoleDetail = this.roleDetailService.getAllFormat(roleDetailCriteria);

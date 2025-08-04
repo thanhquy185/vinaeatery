@@ -30,7 +30,7 @@ public class EmployeeDTO {
     private String address;
     private String dateBegin;
     private String dateEnd;
-    private Role currentRole;
+    private RoleDTO currentRole;
     private List<RoleHistoryDTO> roleHistories;
     private String username;
     @Convert(converter = CommonStatusConverter.class)

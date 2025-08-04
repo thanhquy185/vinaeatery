@@ -26,7 +26,7 @@ import type {
   ShoppingCartsType,
   UseTablesFormatType,
 } from "../common/types";
-import { OrderSheetStatus, UseTableStatus } from "../common/values";
+import { CommonStatus, FoodStatus, OrderSheetStatus, ReactQueryGetData, UseTableStatus } from "../common/values";
 import CustomBrand from "../components/common/brand";
 import CustomTextArea from "../components/admin/text-area";
 import CustomDrawer from "../components/client/drawer";
@@ -36,6 +36,10 @@ import { FindAllCategoryFood, FindAllFood, FindOneNewUseTableByTableId, HandleCr
 import { openNotification } from "../utils/showNotification";
 import { vietnamMoneyFormat } from "../utils/otherEvents";
 import { openConfirmation } from "../utils/showConfirmation";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import useWebSocket from "../hook/websocket";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store";
 
 // Kiểu dữ liệu của các tham số truyền vào
 type ClientLayoutProps = {
@@ -403,8 +407,8 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
           <div className="client__orders">
             {currentUseTable!.orderSheets?.sort((a, b) => new Date(b.timeCreate!).getTime() - new Date(a.timeCreate!).getTime())?.map((orderSheet) => (
               <>
-                <div className="client__order">
-                  <p className="client__order-time">{orderSheet!.timeCreate!.split(" ")[1]}</p>
+                <div key={orderSheet!.id} className="client__order">
+                  <p className="client__order-time">{orderSheet!.timeCreate!}</p>
                   <div className={"client__order-info " + (orderSheet!.status! == OrderSheetStatus.serviced ? "purple" : orderSheet!.status! == OrderSheetStatus.confirm ? "green" : orderSheet!.status! == OrderSheetStatus.canceled ? "red" : "gray")}>
                     <b className="client__order-title">Phiếu: #{orderSheet!.id!}</b>
                     <table className="client__order-details">
@@ -423,11 +427,11 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
                         <td>2x</td>
                         <td className="right">60.000đ</td>
                       </tr> */}
-                      {orderSheet!.orderSheetDetails?.map((orderSheet) => (
-                        <tr>
-                          <td className="left">{orderSheet!.food.name!}</td>
-                          <td>{orderSheet!.quantity!}x</td>
-                          <td className="right">{vietnamMoneyFormat(orderSheet!.price!)}đ</td>
+                      {orderSheet!.orderSheetDetails?.map((orderSheetDetail, index) => (
+                        <tr key={index}>
+                          <td className="left">{orderSheetDetail!.food.name!}</td>
+                          <td>{orderSheetDetail!.quantity!}x</td>
+                          <td className="right">{vietnamMoneyFormat(orderSheetDetail!.price!)}đ</td>
                         </tr>
                       ))}
                     </table>
@@ -458,24 +462,28 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
               <FontAwesomeIcon icon={faGear} className="client__icon" />
             </button> */}
                 <CustomDrawer
+                  key={1}
                   prefixClassName="client__"
                   icon={faQrcode}
                   title="QR Code"
                   children={ClientDrawers.qr()}
                 />
                 <CustomDrawer
+                  key={2}
                   prefixClassName="client__"
                   icon={faBell}
                   title="Gọi nhân viên"
                   children={ClientDrawers.call()}
                 />
                 <CustomDrawer
+                  key={3}
                   prefixClassName="client__"
                   icon={faCommentDots}
                   title="Góp ý nhân viên"
                   children={ClientDrawers.message()}
                 />
                 <CustomDrawer
+                  key={4}
                   prefixClassName="client__"
                   icon={faShoppingCart}
                   title="Giỏ hàng"
@@ -483,6 +491,7 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
                   children={ClientDrawers.shoppingCart()}
                 />
                 <CustomDrawer
+                  key={5}
                   prefixClassName="client__"
                   icon={faReceipt}
                   title="Phiếu gọi món"
@@ -504,55 +513,72 @@ const ClientMain: React.FC<ClientLayoutProps> = ({
   setShoppingCart,
   currentUseTable,
 }) => {
-  //
+  // ...
   const filterListRef = useRef<HTMLDivElement>(null);
 
-  // Hàm cập nhật danh sách các loại món ăn, món ăn (gọi API)
-  const [categoryFoods, setCategoryFoods] = useState<CategoryFoodsType[]>([]);
-  const getAllCategoryFood = async () => {
-    const res = await FindAllCategoryFood({
-      statusValue: ["Hoạt động"],
-    });
-    if (res!.status === 200) {
-      setCategoryFoods(res!.data);
-    } else {
-      console.log(res);
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
-  const [foods, setFoods] = useState<FoodsFormatType[]>([]);
-  const getAllFood = async () => {
-    const res = await FindAllFood({ categoryValue: [String(filterCategory!)] });
-    if (res!.status === 200) {
-      setFoods(res!.data);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
-      });
-    }
-  };
+  // Truy vấn danh sách loại món ăn
+  const {
+    data: categoryFoods,
+  } = useQuery({
+    queryKey: [
+      'category-foods',
+    ],
+    queryFn: async () => {
+      if (currentUseTable!.status === UseTableStatus.occupied) {
+        const res = await FindAllCategoryFood({ statusValue: [CommonStatus.active] });
+        if (res.status === 200) {
+          return res.data;
+        } else {
+          openNotification({
+            type: "error",
+            message: "Truy vấn dữ liệu thất bại",
+            description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+            duration: 2,
+          });
+
+          throw res;
+        }
+      } else {
+        return [];
+      }
+    },
+    retry: ReactQueryGetData.retry,
+    staleTime: ReactQueryGetData.staleTime,
+  });
 
   // Biến giữ giá trị lọc món ăn theo loại món ăn
   const [filterCategory, setFilterCategory] = useState<number | string>();
 
-  //
-  useEffect(() => {
-    if (currentUseTable!.status === UseTableStatus.occupied) {
-      getAllCategoryFood();
-      getAllFood();
-    }
-  }, []);
-  useEffect(() => {
-    getAllFood();
-  }, [filterCategory]);
+  // Hàm cập nhật danh sách các loại món ăn, món ăn (gọi API)
+  const {
+    data: foods,
+  } = useQuery({
+    queryKey: [
+      'foods',
+      filterCategory!
+    ],
+    queryFn: async () => {
+      if (currentUseTable!.status === UseTableStatus.occupied) {
+        const res = await FindAllFood({ categoryValue: [String(filterCategory!)], statusValue: [FoodStatus.active] });
+        if (res.status === 200) {
+          return res.data;
+        } else {
+          openNotification({
+            type: "error",
+            message: "Truy vấn dữ liệu thất bại",
+            description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+            duration: 2,
+          });
+
+          throw res;
+        }
+      } else {
+        return [];
+      }
+    },
+    retry: ReactQueryGetData.retry,
+    staleTime: ReactQueryGetData.staleTime,
+  });
 
   return (
     <>
@@ -565,6 +591,7 @@ const ClientMain: React.FC<ClientLayoutProps> = ({
                   <div ref={filterListRef} className="client__filter-list">
                     {categoryFoods?.map((categoryFood) => (
                       <CustomCardFilter
+                        key={categoryFood!.id!}
                         object={categoryFood}
                         active={filterCategory === categoryFood.id}
                         currentValue={filterCategory}
@@ -577,6 +604,7 @@ const ClientMain: React.FC<ClientLayoutProps> = ({
               <div className="client__foods">
                 {foods?.map((food) => (
                   <CustomCardFood
+                    key={food!.id!}
                     object={food}
                     shoppingCart={shoppingCart}
                     setSelectFood={setShoppingCart}
@@ -603,44 +631,62 @@ const ClientMain: React.FC<ClientLayoutProps> = ({
 
 // Client Layout
 const ClientLayout = () => {
+  // Đối tượng query client để thực thi react-query
+  const queryClient = useQueryClient();
+
   // Id của bàn hiện tại (thông qua url trang)
   const { tableId } = useParams();
-  // - 
-  const [loading, setLoading] = useState(true);
-  const [isExists, setIsExists] = useState<boolean>(false);
-  const [currentUseTable, setCurrentUseTable] = useState<UseTablesFormatType>();
-  const getUseTableById = async () => {
-    const res = await FindOneNewUseTableByTableId({
-      tableId: tableId!,
-    });
-    if (res!.status === 200 && res!.data?.id) {
-      setCurrentUseTable(res!.data);
-      setIsExists(true);
-    } else {
-      openNotification({
-        type: "error",
-        message: "Truy vấn dữ liệu thất bại",
-        description: "Lỗi phát sinh khi truy vấn dữ liệu",
-        duration: 2,
+  // Truy vấn dữ liệu
+  const {
+    data: currentUseTable,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [
+      'current-use-table',
+    ],
+    queryFn: async () => {
+      const res = await FindOneNewUseTableByTableId({
+        tableId: tableId!,
       });
-    }
-    setLoading(false);
-  };
-  // - Dữ liệu về giỏ hàng hiện tại của bàn
+      if (res.status === 200 && res!.data?.id) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+    retry: ReactQueryGetData.retry,
+    staleTime: ReactQueryGetData.staleTime,
+  });
+
+  // //
+  // useWebSocket({
+  //   tableId: !isError ? tableId : undefined,
+  //   onUseTableUpdate: (data) => {
+  //     console.log("Cập nhật mới:", data);
+  //     queryClient.invalidateQueries({ queryKey: ["current-use-table"] })
+  //   }
+  // });
+
+  // Dữ liệu về giỏ hàng hiện tại của bàn
   const [shoppingCart, setShoppingCart] = useState<ShoppingCartsType[]>([]);
-  // // - Dữ liệu về phiếu gọi món hiện tại của bàn
+  // // Dữ liệu về phiếu gọi món hiện tại của bàn
   // const [orderSheets, setOrderSheets] = useState<any>([]);
 
   //
-  useEffect(() => {
-    getUseTableById();
-  }, []);
-
-  if (loading) return null;
+  if (isLoading) return null;
 
   return (
     <>
-      {!isExists ? (
+      {isError ? (
         <Navigate to="/error" replace />
       ) : (
         <>

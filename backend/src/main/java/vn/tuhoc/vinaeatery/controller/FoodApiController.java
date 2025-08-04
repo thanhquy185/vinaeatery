@@ -25,14 +25,14 @@ import vn.tuhoc.vinaeatery.domain.criteria.FoodCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.FoodDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FoodStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FoodUpdateDTO;
-import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.RecipeDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.FoodStatusEnum;
 import vn.tuhoc.vinaeatery.service.FoodService;
 import vn.tuhoc.vinaeatery.service.RecipeService;
 import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.UploadService;
-import vn.tuhoc.vinaeatery.util.HandleFormGetData;
+import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
@@ -47,10 +47,11 @@ public class FoodApiController {
 
     // Methods
     @PostMapping("/list")
-    public ResponseEntity<?> listFood(@RequestBody @Valid FormGetDataDTO formGetDataDTO, FoodCriteria foodCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+    public ResponseEntity<?> listFood(@RequestBody FormSecurityDTO formSecurityDTO, FoodCriteria foodCriteria) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "foods", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<Food> listFood = this.foodService
@@ -59,11 +60,12 @@ public class FoodApiController {
     }
 
     @PostMapping("/list-format")
-    public ResponseEntity<?> listFoodFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listFoodFormat(@RequestBody FormSecurityDTO formSecurityDTO,
             FoodCriteria foodCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "foods", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<FoodDTO> listFood = this.foodService
@@ -72,11 +74,12 @@ public class FoodApiController {
     }
 
     @PostMapping("/detail/{id}")
-    public ResponseEntity<?> detailFood(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> detailFood(@RequestBody FormSecurityDTO formSecurityDTO,
             @PathVariable("id") Integer id) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "foods", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         Food foodSelected = this.foodService.getOneById(id);
@@ -84,10 +87,17 @@ public class FoodApiController {
     }
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleCreateFood(@RequestPart("food") @Valid Food food,
+    public ResponseEntity<?> handleCreateFood(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @RequestPart("food") @Valid Food food,
             @RequestPart("recipe") List<RecipeDTO> recipe,
             @RequestPart(value = "image-file", required = false) MultipartFile imageFile,
             BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "foods", "create")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -115,10 +125,18 @@ public class FoodApiController {
     }
 
     @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleUpdateFood(@PathVariable("id") Integer id,
-            @RequestPart("food") @Valid FoodUpdateDTO food, @RequestPart("recipe") List<RecipeDTO> recipe,
+    public ResponseEntity<?> handleUpdateFood(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @PathVariable("id") Integer id,
+            @RequestPart("food") @Valid FoodUpdateDTO food,
+            @RequestPart("recipe") List<RecipeDTO> recipe,
             @RequestPart(value = "image-file", required = false) MultipartFile imageFile,
             BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "foods", "update")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -157,9 +175,17 @@ public class FoodApiController {
         return ResponseEntity.status(HttpStatus.OK).body(foodUpdated);
     }
 
-    @PutMapping("/lock/{id}")
-    public ResponseEntity<?> handleLockFood(@PathVariable("id") Integer id,
-            @RequestBody @Valid FoodStatusUpdateDTO foodStatusUpdate, BindingResult bindingResult) {
+    @PutMapping(value = "/lock/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleLockFood(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @PathVariable("id") Integer id,
+            @RequestPart("food") @Valid FoodStatusUpdateDTO foodStatusUpdate,
+            BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "foods", "lock")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));

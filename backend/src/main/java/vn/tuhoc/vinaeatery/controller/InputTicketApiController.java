@@ -22,7 +22,7 @@ import vn.tuhoc.vinaeatery.domain.InputTicketDetail;
 import vn.tuhoc.vinaeatery.domain.InputTicketDetailForCrud;
 import vn.tuhoc.vinaeatery.domain.InputTicketDetailId;
 import vn.tuhoc.vinaeatery.domain.criteria.InputTicketCriteria;
-import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.InputTicketDTO;
 import vn.tuhoc.vinaeatery.domain.dto.InputTicketUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.InputTicketStatusEnum;
@@ -32,7 +32,7 @@ import vn.tuhoc.vinaeatery.service.IngredientService;
 import vn.tuhoc.vinaeatery.service.InputTicketDetailService;
 import vn.tuhoc.vinaeatery.service.InputTicketService;
 import vn.tuhoc.vinaeatery.service.TimeService;
-import vn.tuhoc.vinaeatery.util.HandleFormGetData;
+import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
@@ -48,11 +48,12 @@ public class InputTicketApiController {
 
     // Methods
     @PostMapping("/list")
-    public ResponseEntity<?> listInputTicket(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listInputTicket(@RequestBody FormSecurityDTO formSecurityDTO,
             InputTicketCriteria inputTicketCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "input-tickets", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<InputTicket> listInputTicket = this.inputTicketService.getAll(inputTicketCriteria);
@@ -60,11 +61,12 @@ public class InputTicketApiController {
     }
 
     @PostMapping("/list-format")
-    public ResponseEntity<?> listInputTicketFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listInputTicketFormat(@RequestBody FormSecurityDTO formSecurityDTO,
             InputTicketCriteria inputTicketCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "input-tickets", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<InputTicketDTO> listInputTicket = this.inputTicketService.getAllFormat(inputTicketCriteria);
@@ -72,11 +74,12 @@ public class InputTicketApiController {
     }
 
     @PostMapping("/detail/{id}")
-    public ResponseEntity<?> detailInputTicket(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> detailInputTicket(@RequestBody FormSecurityDTO formSecurityDTO,
             @PathVariable("id") Integer id) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "input-tickets", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         InputTicket inputTicketSelected = this.inputTicketService.getOneById(id);
@@ -84,9 +87,16 @@ public class InputTicketApiController {
     }
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleCreateInputTicket(@RequestPart("inputTicket") @Valid InputTicket inputTicket,
-            @RequestPart("inputTicketDetails") @Valid List<InputTicketDetailForCrud> inputTicketDetails,
+    public ResponseEntity<?> handleCreateInputTicket(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @RequestPart("input-ticket") @Valid InputTicket inputTicket,
+            @RequestPart("input-ticket-details") @Valid List<InputTicketDetailForCrud> inputTicketDetails,
             BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "input-tickets", "create")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -114,9 +124,16 @@ public class InputTicketApiController {
         return ResponseEntity.status(HttpStatus.OK).body(inputTicketCreated);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> handleUpdateInputTicket(@PathVariable("id") Integer id,
-            @RequestBody InputTicketUpdateDTO inputTicket) {
+    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleUpdateInputTicket(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @PathVariable("id") Integer id,
+            @RequestPart("input-ticket") InputTicketUpdateDTO inputTicket) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "input-tickets", "update")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         InputTicket inputTicketUpdated = this.inputTicketService.getOneById(id);
         if (inputTicket.getPayStatus() != null) {
             inputTicketUpdated.setPayStatus(inputTicket.getPayStatus());

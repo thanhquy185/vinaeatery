@@ -160,8 +160,9 @@
   }
 
   &__employee-info p {
+    margin-top: 4px;
     color: #efefef;
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     font-weight: 400;
   }
 
@@ -208,11 +209,11 @@
     @include size(16px);
   }
 
-  &__employee-action:hover {
+  &__employee-action:where(:hover, .active) {
     background: $tetrad-color;
   }
 
-  &__employee-action:hover button {
+  &__employee-action:where(:hover, .active) button {
     color: $primary-color;
   }
 

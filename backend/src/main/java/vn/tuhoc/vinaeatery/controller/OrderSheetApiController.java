@@ -24,7 +24,7 @@ import vn.tuhoc.vinaeatery.domain.OrderSheetDetailForCrud;
 import vn.tuhoc.vinaeatery.domain.OrderSheetDetailId;
 import vn.tuhoc.vinaeatery.domain.Recipe;
 import vn.tuhoc.vinaeatery.domain.criteria.OrderSheetCriteria;
-import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderSheetDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderSheetUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.OrderSheetStatusEnum;
@@ -36,7 +36,7 @@ import vn.tuhoc.vinaeatery.service.OrderSheetDetailService;
 import vn.tuhoc.vinaeatery.service.OrderSheetService;
 import vn.tuhoc.vinaeatery.service.RecipeService;
 import vn.tuhoc.vinaeatery.service.TimeService;
-import vn.tuhoc.vinaeatery.util.HandleFormGetData;
+import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
@@ -54,11 +54,12 @@ public class OrderSheetApiController {
 
     // Methods
     @PostMapping("/list")
-    public ResponseEntity<?> listOrderSheet(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listOrderSheet(@RequestBody FormSecurityDTO formSecurityDTO,
             OrderSheetCriteria orderSheetCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "order-sheets", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<OrderSheet> listOrderSheet = this.orderSheetService.getAll(orderSheetCriteria);
@@ -66,11 +67,12 @@ public class OrderSheetApiController {
     }
 
     @PostMapping("/list-format")
-    public ResponseEntity<?> listOrderSheetFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listOrderSheetFormat(@RequestBody FormSecurityDTO formSecurityDTO,
             OrderSheetCriteria orderSheetCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "order-sheets", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<OrderSheetDTO> listOrderSheet = this.orderSheetService.getAllFormat(orderSheetCriteria);
@@ -78,11 +80,12 @@ public class OrderSheetApiController {
     }
 
     @PostMapping("/detail/{id}")
-    public ResponseEntity<?> detailOrderSheet(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> detailOrderSheet(@RequestBody FormSecurityDTO formSecurityDTO,
             @PathVariable("id") Integer id) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "order-sheets", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         OrderSheet orderSheetSelected = this.orderSheetService.getOneById(id);
@@ -90,9 +93,16 @@ public class OrderSheetApiController {
     }
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleCreateOrderSheet(@RequestPart("orderSheet") @Valid OrderSheet orderSheet,
-            @RequestPart("orderSheetDetails") @Valid List<OrderSheetDetailForCrud> orderSheetDetails,
+    public ResponseEntity<?> handleCreateOrderSheet(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @RequestPart("order-sheet") @Valid OrderSheet orderSheet,
+            @RequestPart("order-sheet-details") @Valid List<OrderSheetDetailForCrud> orderSheetDetails,
             BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "order-sheets", "create")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -120,9 +130,16 @@ public class OrderSheetApiController {
         return ResponseEntity.status(HttpStatus.OK).body(orderSheetCreated);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> handleUpdateOrderSheet(@PathVariable("id") Integer id,
-            @RequestBody OrderSheetUpdateDTO orderSheet) {
+    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleUpdateOrderSheet(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @PathVariable("id") Integer id,
+            @RequestPart("order-sheet") OrderSheetUpdateDTO orderSheet) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "order-sheets", "update")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         OrderSheet orderSheetUpdated = this.orderSheetService.getOneById(id);
         if (orderSheet.getStatus() != null) {
             if (orderSheet.getStatus() == OrderSheetStatusEnum.SERVICED) {

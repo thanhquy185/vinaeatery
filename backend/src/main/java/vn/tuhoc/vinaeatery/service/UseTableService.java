@@ -60,7 +60,7 @@ public class UseTableService {
                     orderSheetService.getAllFormatWithUseTable(useTable.getId(), useTable.getTableId()));
         }
 
-        return useTableDTO;
+        return useTableDTO.getId() != null ? useTableDTO : null;
     }
 
     public UseTableDTO getOneFormatById(Long id) {

@@ -10,11 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
 import vn.tuhoc.vinaeatery.domain.Function;
-import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.service.FunctionService;
-import vn.tuhoc.vinaeatery.util.HandleFormGetData;
+import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
@@ -30,10 +29,11 @@ public class FunctionApiController {
 
     // Methods
     @PostMapping("/list")
-    public ResponseEntity<?> listFunction(@RequestBody @Valid FormGetDataDTO formGetDataDTO) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+    public ResponseEntity<?> listFunction(@RequestBody FormSecurityDTO formSecurityDTO) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "functions", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<Function> listFunction = this.functionService.getAll();
@@ -41,11 +41,12 @@ public class FunctionApiController {
     }
 
     @PostMapping("/detail/{id}")
-    public ResponseEntity<?> detailFunction(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> detailFunction(@RequestBody FormSecurityDTO formSecurityDTO,
             @PathVariable("id") Integer id) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "functions", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         Function functionSelected = this.functionService.getOneById(id);

@@ -8,6 +8,7 @@ const { Meta } = Card;
 
 // Kiểu dữ liệu của tham số truyền vào
 type CustomCardFoodProps = {
+  key: number;
   className?: string;
   object?: FoodsFormatType;
   active?: boolean;
@@ -17,6 +18,7 @@ type CustomCardFoodProps = {
 
 // Custom Card
 const CustomCardFood: React.FC<CustomCardFoodProps> = ({
+  key,
   className,
   object,
   active,
@@ -26,6 +28,7 @@ const CustomCardFood: React.FC<CustomCardFoodProps> = ({
   return (
     <>
       <div
+        key={key}
         className={"client__food" + (className ? " " + className : "")}
         onClick={() => {
           let newShoppingCart: ShoppingCartsType[] = [...shoppingCart!];

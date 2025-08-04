@@ -23,9 +23,7 @@
   //   white-space: nowrap;
   // }
 
-  &.ant-table-wrapper
-    table
-    :where(th.ant-table-cell, th .ant-table-column-title, td) {
+  &.ant-table-wrapper table :where(th.ant-table-cell, th .ant-table-column-title, td) {
     text-align: center !important;
   }
 
@@ -91,20 +89,26 @@
     color: $ternary-color;
   }
 
-  &.ant-table-wrapper table td button.action.margin-lr {
-    margin: 0 4%;
+  // &.ant-table-wrapper table td button.action.margin-lr {
+  //   margin: 0 4%;
+  // }
+
+  // &.ant-table-wrapper table td button.action.margin-l {
+  //   margin-left: 4%;
+  // }
+
+  // &.ant-table-wrapper table td button.action.margin-r {
+  //   margin-right: 4%;
+  // }
+
+  &.ant-table-wrapper table td.buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4%;
   }
 
-  &.ant-table-wrapper table td button.action.margin-l {
-    margin-left: 4%;
-  }
-
-  &.ant-table-wrapper table td button.action.margin-r {
-    margin-right: 4%;
-  }
-
-  &.ant-table-wrapper .ant-pagination {
-  }
+  &.ant-table-wrapper .ant-pagination {}
 
   &.customer-cards td,
   &.category-foods td,
@@ -156,10 +160,14 @@
 .table-has-checkboxes {
   $table-height: 40px;
 
-  border-collapse: separate; /* Bắt buộc để bo góc */
-  border-spacing: 0; /* Không có khoảng cách giữa ô */
-  border-radius: 8px 8px 0 0; /* Bo góc */
-  overflow: hidden; /* Ẩn phần dư thừa */
+  border-collapse: separate;
+  /* Bắt buộc để bo góc */
+  border-spacing: 0;
+  /* Không có khoảng cách giữa ô */
+  border-radius: 8px 8px 0 0;
+  /* Bo góc */
+  overflow: hidden;
+  /* Ẩn phần dư thừa */
   width: 100%;
 
   & tr {

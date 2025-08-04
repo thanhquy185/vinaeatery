@@ -21,13 +21,13 @@ import vn.tuhoc.vinaeatery.domain.CustomerCard;
 import vn.tuhoc.vinaeatery.domain.criteria.CustomerCardCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.CustomerCardUpdateDTO;
-import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.service.CustomerCardService;
 import vn.tuhoc.vinaeatery.service.CustomerService;
 import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.UploadService;
-import vn.tuhoc.vinaeatery.util.HandleFormGetData;
+import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,11 +44,12 @@ public class CustomerCardApiController {
 
     // Methods
     @PostMapping("/list")
-    public ResponseEntity<?> listCustomerCard(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listCustomerCard(@RequestBody FormSecurityDTO formSecurityDTO,
             CustomerCardCriteria customerCardCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "customer-cards", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<CustomerCard> listCustomerCard = this.customerCardService.getAll(customerCardCriteria);
@@ -56,11 +57,12 @@ public class CustomerCardApiController {
     }
 
     @PostMapping("/detail/{id}")
-    public ResponseEntity<?> detailCustomerCard(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> detailCustomerCard(@RequestBody FormSecurityDTO formSecurityDTO,
             @PathVariable("id") Integer id) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "customer-cards", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         CustomerCard customerCardSelected = this.customerCardService.getOneById(id);
@@ -68,8 +70,15 @@ public class CustomerCardApiController {
     }
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleCreateCustomerCard(@RequestPart("customer-card") @Valid CustomerCard customerCard,
+    public ResponseEntity<?> handleCreateCustomerCard(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @RequestPart("customer-card") @Valid CustomerCard customerCard,
             @RequestPart(value = "image-file", required = false) MultipartFile imageFile, BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "customer-cards", "create")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -88,9 +97,16 @@ public class CustomerCardApiController {
     }
 
     @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleUpdateCustomerCard(@PathVariable("id") Integer id,
+    public ResponseEntity<?> handleUpdateCustomerCard(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @PathVariable("id") Integer id,
             @RequestPart("customer-card") @Valid CustomerCardUpdateDTO customerCard,
             @RequestPart(value = "image-file", required = false) MultipartFile imageFile, BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "customer-cards", "update")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -119,9 +135,17 @@ public class CustomerCardApiController {
         return ResponseEntity.status(HttpStatus.OK).body(customerCardUpdated);
     }
 
-    @PutMapping("/lock/{id}")
-    public ResponseEntity<?> handleLockCustomerCard(@PathVariable("id") Integer id,
-            @RequestBody @Valid CommonStatusUpdateDTO commonStatusUpdate, BindingResult bindingResult) {
+    @PutMapping(value = "/lock/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleLockCustomerCard(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @PathVariable("id") Integer id,
+            @RequestPart("customer-card") @Valid CommonStatusUpdateDTO commonStatusUpdate,
+            BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "customer-cards", "lock")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));

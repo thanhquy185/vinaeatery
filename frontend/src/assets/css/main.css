@@ -1079,14 +1079,11 @@ table td.right {
 .table-actions.ant-table-wrapper table td button.action.print:where(:hover, .active) {
   color: #a1a1ac;
 }
-.table-actions.ant-table-wrapper table td button.action.margin-lr {
-  margin: 0 4%;
-}
-.table-actions.ant-table-wrapper table td button.action.margin-l {
-  margin-left: 4%;
-}
-.table-actions.ant-table-wrapper table td button.action.margin-r {
-  margin-right: 4%;
+.table-actions.ant-table-wrapper table td.buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4%;
 }
 .table-actions.customer-cards td, .table-actions.category-foods td, .table-actions.foods td {
   line-height: 100px;
@@ -1114,10 +1111,14 @@ table td.right {
 .table-no-actions,
 .table-role-details,
 .table-has-checkboxes {
-  border-collapse: separate; /* Bắt buộc để bo góc */
-  border-spacing: 0; /* Không có khoảng cách giữa ô */
-  border-radius: 8px 8px 0 0; /* Bo góc */
-  overflow: hidden; /* Ẩn phần dư thừa */
+  border-collapse: separate;
+  /* Bắt buộc để bo góc */
+  border-spacing: 0;
+  /* Không có khoảng cách giữa ô */
+  border-radius: 8px 8px 0 0;
+  /* Bo góc */
+  overflow: hidden;
+  /* Ẩn phần dư thừa */
   width: 100%;
 }
 .table-no-actions tr,
@@ -2591,8 +2592,9 @@ table td.right {
   font-weight: 600;
 }
 .sidebar__employee-info p {
+  margin-top: 4px;
   color: #efefef;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 400;
 }
 .sidebar__employee-btn {
@@ -2629,10 +2631,10 @@ table td.right {
   width: 16px;
   height: 16px;
 }
-.sidebar__employee-action:hover {
+.sidebar__employee-action:where(:hover, .active) {
   background: #f7f7f7;
 }
-.sidebar__employee-action:hover button {
+.sidebar__employee-action:where(:hover, .active) button {
   color: #d32f2f;
 }
 .sidebar__show-sidebar {
@@ -3173,7 +3175,9 @@ body:has(.sidebar.hide) .main {
 .client__order-time {
   font-size: 14px;
   color: #999;
-  width: 70px;
+  width: 14%;
+  text-align: center;
+  line-height: 1.2;
   flex-shrink: 0;
 }
 .client__order-info {

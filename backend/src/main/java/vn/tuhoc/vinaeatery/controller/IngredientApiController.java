@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -17,13 +19,13 @@ import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Ingredient;
 import vn.tuhoc.vinaeatery.domain.criteria.IngredientCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
-import vn.tuhoc.vinaeatery.domain.dto.FormGetDataDTO;
+import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.IngredientDTO;
 import vn.tuhoc.vinaeatery.domain.dto.IngredientUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.service.IngredientService;
 import vn.tuhoc.vinaeatery.service.TimeService;
-import vn.tuhoc.vinaeatery.util.HandleFormGetData;
+import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,11 +40,12 @@ public class IngredientApiController {
 
     // Methods
     @PostMapping("/list")
-    public ResponseEntity<?> listIngredient(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listIngredient(@RequestBody FormSecurityDTO formSecurityDTO,
             IngredientCriteria ingredientCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "ingredients", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<Ingredient> listIngredient = this.ingredientService.getAll(ingredientCriteria);
@@ -50,11 +53,12 @@ public class IngredientApiController {
     }
 
     @PostMapping("/list-format")
-    public ResponseEntity<?> listIngredientFormat(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> listIngredientFormat(@RequestBody FormSecurityDTO formSecurityDTO,
             IngredientCriteria ingredientCriteria) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "ingredients", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         List<IngredientDTO> listIngredientFormat = this.ingredientService.getAllFormat(ingredientCriteria);
@@ -62,20 +66,28 @@ public class IngredientApiController {
     }
 
     @PostMapping("/detail/{id}")
-    public ResponseEntity<?> detailIngredient(@RequestBody @Valid FormGetDataDTO formGetDataDTO,
+    public ResponseEntity<?> detailIngredient(@RequestBody FormSecurityDTO formSecurityDTO,
             @PathVariable("id") Integer id) {
-        if (!HandleFormGetData.isValidFormGetData(formGetDataDTO)) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "ingredients", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(HandleFormGetData.getErrorMessageByGetData()));
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         Ingredient ingredientSelected = this.ingredientService.getOneById(id);
         return ResponseEntity.status(HttpStatus.OK).body(ingredientSelected);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> handleCreateIngredient(@RequestBody @Valid Ingredient ingredient,
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleCreateIngredient(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @RequestPart("ingredient") @Valid Ingredient ingredient,
             BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "ingredients", "create")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -85,10 +97,17 @@ public class IngredientApiController {
         return ResponseEntity.status(HttpStatus.OK).body(ingredientCreate);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> handleUpdateIngredient(@PathVariable("id") Integer id,
-            @RequestBody @Valid IngredientUpdateDTO ingredient,
+    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleUpdateIngredient(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @PathVariable("id") Integer id,
+            @RequestPart("ingredient") @Valid IngredientUpdateDTO ingredient,
             BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "ingredients", "update")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -111,9 +130,17 @@ public class IngredientApiController {
         return ResponseEntity.status(HttpStatus.OK).body(ingredientUpdated);
     }
 
-    @PutMapping("/lock/{id}")
-    public ResponseEntity<?> handleLockIngredient(@PathVariable("id") Integer id,
-            @RequestBody @Valid CommonStatusUpdateDTO commonStatusUpdate, BindingResult bindingResult) {
+    @PutMapping(value = "/lock/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleLockIngredient(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @PathVariable("id") Integer id,
+            @RequestPart("ingredient") @Valid CommonStatusUpdateDTO commonStatusUpdate,
+            BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "ingredients", "lock")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));

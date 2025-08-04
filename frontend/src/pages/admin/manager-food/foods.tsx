@@ -41,9 +41,11 @@ import {
   HandleLockFood,
   HandleUpdateFood,
 } from "../../../services/api";
+import { getActionsString } from "../../../services/employee-login";
 import { vietnamMoneyFormat } from "../../../utils/otherEvents";
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
+import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
 
 // Các giá trị chung
 // - Tên đối tượng
@@ -97,7 +99,10 @@ const units = [
 ];
 
 // Admin Foods Page
-const AdminFoodsPage = () => {
+const AdminFoodsPage = ({ functionId }: { functionId: number }) => {
+  // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
+  const validActions = getActionsString({ currentFunctionId: functionId })
+
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
@@ -266,52 +271,65 @@ const AdminFoodsPage = () => {
       dataIndex: "",
       key: "actions",
       width: "10%",
+      className: "buttons",
       render: (text: any, record: FoodsFormatType, index: number) => (
         <>
-          <button
-            className="action info"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalDetail,
-                true,
-                "89%",
-                "info foods",
-                AdminFoodsModal.detail(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faCircleInfo} />
-          </button>
-          <button
-            className="action update margin-lr"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalUpdate,
-                true,
-                "89%",
-                "update foods",
-                AdminFoodsModal.update(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPenToSquare} />
-          </button>
-          <button
-            className="action lock"
-            onClick={() =>
-              updatePropertiesModal(
-                (record.status == FoodStatus["active"] ? titleModalLock : titleModalUnlock),
-                true,
-                "30%",
-                "lock foods",
-                AdminFoodsModal.lock(record!.id as number, record!.status)
-              )
-            }
-          >
-            <FontAwesomeIcon
-              icon={record.status == FoodStatus["active"] ? faLock : faUnlock}
-            />
-          </button>
+          {
+            validActions?.includes(getActionNameVn(0)) && (
+              <button
+                className={"action " + getActionNameEn(0)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalDetail,
+                    true,
+                    "89%",
+                    getActionNameEn(0) + " foods",
+                    AdminFoodsModal.detail(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faCircleInfo} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(2)) && (
+              <button
+                className={"action " + getActionNameEn(2)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalUpdate,
+                    true,
+                    "89%",
+                    getActionNameEn(2) + " foods",
+                    AdminFoodsModal.update(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPenToSquare} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(3)) && (
+              <button
+                className={"action " + getActionNameEn(3)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
+                    true,
+                    "30%",
+                    getActionNameEn(3) + " foods",
+                    AdminFoodsModal.lock(record!.id as number, record!.status)
+                  )
+                }
+              >
+                <FontAwesomeIcon
+                  icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
+                />
+              </button>
+            )
+          }
         </>
       ),
     },
@@ -379,7 +397,7 @@ const AdminFoodsPage = () => {
     mutationFn: async ({ type, values, objectId, imageFile, details }: ReactQueryMutationProps<FoodsType>) => {
       if (openModal) {
         if (type === "create" && titleModal === titleModalCreate) {
-          return await HandleCreateFood({
+          const res = await HandleCreateFood({
             name: values!.name || undefined,
             image: imageFile! || undefined,
             categoryFoodId: values!.categoryFoodId || undefined,
@@ -389,8 +407,14 @@ const AdminFoodsPage = () => {
             status: values!.status || undefined,
             recipe: details || [],
           })
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if (type === "update" && titleModal === titleModalUpdate) {
-          return await HandleUpdateFood({
+          const res = await HandleUpdateFood({
             id: values!.id,
             name: values!.name || undefined,
             image: imageFile! || undefined,
@@ -401,13 +425,25 @@ const AdminFoodsPage = () => {
             timeUpdate: new Date().toISOString(),
             recipe: details! || [],
           });
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         } else if ((type === "lock" && titleModal === titleModalLock)
           || (type === "unlock" && titleModal === titleModalUnlock)) {
-          return await HandleLockFood({
+          const res = await HandleLockFood({
             id: objectId! as number,
             status: (type === "lock" ? FoodStatus.active : FoodStatus.inactive) || undefined,
             timeUpdate: new Date().toISOString(),
           })
+
+          if (res.status === 200) {
+            return res.data;
+          } {
+            throw new Error(String(res.data));
+          }
         }
       }
     },
@@ -862,6 +898,8 @@ const AdminFoodsPage = () => {
               content: "Hành động này không thể hoàn tác.",
             });
             if (answer) {
+              console.log(imageFile);
+              console.log(image);
               // Danh sách dữ liệu
               const values = form.getFieldsValue();
 
@@ -1211,7 +1249,7 @@ const AdminFoodsPage = () => {
         'ingredients',
       ],
       queryFn: async () => {
-        const res = await FindAllIngredient({ statusValue: [FoodStatus.active] });
+        const res = await FindAllIngredient({ statusValue: [CommonStatus.active] });
         if (res.status === 200) {
           return res.data;
         } else {
@@ -1225,7 +1263,7 @@ const AdminFoodsPage = () => {
           throw res;
         }
       },
-    }); 
+    });
 
     return (
       <>
@@ -1537,26 +1575,30 @@ const AdminFoodsPage = () => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          <button
-            className={
-              "main__filter-button btn create" +
-              (openModal && titleModal === titleModalCreate
-                ? " active"
-                : "")
-            }
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalCreate,
-                true,
-                "89%",
-                "create foods",
-                AdminFoodsModal.create()
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPlus} className="icon" />
-            &nbsp;Thêm
-          </button>
+          {
+            validActions?.includes(getActionNameVn(1)) && (
+              <button
+                className={
+                  "main__filter-button btn " + getActionNameEn(1) +
+                  (openModal && titleModal === titleModalCreate
+                    ? " active"
+                    : "")
+                }
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalCreate,
+                    true,
+                    "89%",
+                    getActionNameEn(1) + " foods",
+                    AdminFoodsModal.create()
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPlus} className="icon" />
+                &nbsp;Thêm
+              </button>
+            )
+          }
         </div>
         <div className="main__table">
           <CustomTableActions

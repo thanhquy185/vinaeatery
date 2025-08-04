@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import lombok.AllArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Employee;
 import vn.tuhoc.vinaeatery.domain.Employee_;
-import vn.tuhoc.vinaeatery.domain.Role;
 import vn.tuhoc.vinaeatery.domain.RoleHistory;
 import vn.tuhoc.vinaeatery.domain.criteria.EmployeeCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.EmployeeDTO;
@@ -26,7 +25,9 @@ import vn.tuhoc.vinaeatery.util.SecurityUtil;
 @Service
 @AllArgsConstructor
 public class EmployeeService {
+
     // Properties
+    private final RoleService roleService;
     private final RoleRepository roleRepository;
     private final RoleHistoryRepository roleHistoryRepository;
     private final EmployeeRepository employeeRepository;
@@ -62,8 +63,10 @@ public class EmployeeService {
             employeeDTO.setDateBegin(employee.getDateBegin());
             employeeDTO.setDateEnd(employee.getDateEnd());
             if (roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId() != null) {
-                employeeDTO.setCurrentRole(roleRepository
-                        .findOneById(roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId()));
+                // employeeDTO.setCurrentRole(roleRepository
+                // .findOneById(roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId()));
+                employeeDTO.setCurrentRole(roleService.getOneFormatById(
+                        roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId()));
             }
             employeeDTO.setRoleHistories(roleHistories);
             employeeDTO.setUsername(employee.getUsername());
@@ -165,12 +168,12 @@ public class EmployeeService {
         if (employeeCriteria.getPhone() != null && employeeCriteria.getPhone().isPresent()) {
             if (employeeCriteria.getPhone().get().matches("\\d+")) {
                 Specification<Employee> currentSpec = EmployeeSpecification
-                        .phoneEqual(employeeCriteria.getPhone().get());
+                        .phoneLike(employeeCriteria.getPhone().get());
                 combinedSpec = combinedSpec.or(currentSpec);
             }
         }
         if (employeeCriteria.getEmail() != null && employeeCriteria.getEmail().isPresent()) {
-            Specification<Employee> currentSpec = EmployeeSpecification.emailEqual(employeeCriteria.getEmail().get());
+            Specification<Employee> currentSpec = EmployeeSpecification.emailLike(employeeCriteria.getEmail().get());
             combinedSpec = combinedSpec.or(currentSpec);
         }
         if (employeeCriteria.getRoleId() != null &&
@@ -225,8 +228,10 @@ public class EmployeeService {
             employeeDTO.setDateBegin(employee.getDateBegin());
             employeeDTO.setDateEnd(employee.getDateEnd());
             if (roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId() != null) {
-                employeeDTO.setCurrentRole(roleRepository
-                        .findOneById(roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId()));
+                // employeeDTO.setCurrentRole(roleRepository
+                // .findOneById(roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId()));
+                employeeDTO.setCurrentRole(roleService.getOneFormatById(
+                        roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId()));
             }
             employeeDTO.setRoleHistories(roleHistories);
             employeeDTO.setUsername(employee.getUsername());

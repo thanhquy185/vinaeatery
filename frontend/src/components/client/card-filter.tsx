@@ -6,6 +6,7 @@ const { Meta } = Card;
 
 // Kiểu dữ liệu của tham số truyền vào
 type CustomCardFilterProps = {
+  key: number;
   className?: string;
   object?: CategoryFoodsType;
   active?: boolean;
@@ -15,6 +16,7 @@ type CustomCardFilterProps = {
 
 // Custom Card Filter
 const CustomCardFilter: React.FC<CustomCardFilterProps> = ({
+  key,
   className,
   object,
   active,
@@ -24,6 +26,7 @@ const CustomCardFilter: React.FC<CustomCardFilterProps> = ({
   return (
     <>
       <div
+        key={key}
         className={"client__filter-item" + (className! ? " " + className : "")}
         onClick={() =>
           setSelectValue!(object!.id !== currentValue! ? object!.id : "")

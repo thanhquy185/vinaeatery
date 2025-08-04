@@ -30,6 +30,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
 
+import vn.tuhoc.vinaeatery.service.CustomUserDetailsService;
 import vn.tuhoc.vinaeatery.util.SecurityUtil;
 
 // import vn.tuhoc.vinaeatery.util.SecurityUtil;
@@ -100,24 +101,23 @@ public class SecurityConfig {
             CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
         http
                 .csrf(c -> c.disable())
-                // .cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authz -> authz
-                        // .requestMatchers("/", "/api/auth/**", "/api/functions/list",
-                        // "/api/category-foods/list",
-                        // "/api/foods/list", "/client/**",
-                        // "/assets/**", "/js/**")
-                        // .permitAll()
-                        // .anyRequest().authenticated())
-                        .requestMatchers("/**").permitAll()
-                        .anyRequest().permitAll());
-        // .oauth2ResourceServer((oauth2) -> oauth2
-        // .jwt(Customizer.withDefaults())
-        // .authenticationEntryPoint(customAuthenticationEntryPoint))
-        // .formLogin(f -> f.disable())
-        // .addFilterBefore(jwtAuthenticationFilter,
-        // UsernamePasswordAuthenticationFilter.class)
-        // .sessionManagement(session ->
-        // session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                        .requestMatchers("/", "/api/auth/**", "/api/functions/list",
+                                "/api/category-foods/list",
+                                "/api/foods/list", "/client/**",
+                                "/assets/**", "/js/**")
+                        .permitAll()
+                        .anyRequest().authenticated())
+                // .requestMatchers("/**").permitAll()
+                // .anyRequest().permitAll());
+                .oauth2ResourceServer((oauth2) -> oauth2
+                        .jwt(Customizer.withDefaults())
+                        .authenticationEntryPoint(customAuthenticationEntryPoint))
+                .formLogin(f -> f.disable())
+                .addFilterBefore(jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }

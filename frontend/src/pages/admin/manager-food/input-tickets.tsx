@@ -46,6 +46,8 @@ import {
   HandleUpdateInputTicket,
 } from "../../../services/api";
 import { getVietnamCurrentDatetime } from "../../../services/dayjs";
+import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import { getActionsString } from "../../../services/employee-login";
 import {
   numberToVietnamWords,
   vietnamMoneyFormat,
@@ -87,7 +89,10 @@ const IPDetailsAttributes = [
 const IPDetailsFormat = ["", "", "price", "", "price"];
 
 // Admin Input Tickets Page
-const AdminInputTicketsPage = () => {
+const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
+  // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
+  const validActions = getActionsString({ currentFunctionId: functionId })
+
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
@@ -223,50 +228,63 @@ const AdminInputTicketsPage = () => {
       dataIndex: "",
       key: "actions",
       width: "12%",
+      className: "buttons",
       render: (text: any, record: InputTicketsFormatType, index: number) => (
         <>
-          <button
-            className="info action"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalDetail,
-                true,
-                "89%",
-                "info input-tickets",
-                AdminInputTicketsModal.detail(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faCircleInfo} />
-          </button>
-          <button
-            className="update action margin-lr"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalUpdate,
-                true,
-                "89%",
-                "update input-tickets",
-                AdminInputTicketsModal.update(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPenToSquare} />
-          </button>
-          <button
-            className="print action"
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalPrint,
-                true,
-                "80%",
-                "print input-tickets",
-                AdminInputTicketsModal.print(record)
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPrint} />
-          </button>
+          {
+            validActions?.includes(getActionNameVn(0)) && (
+              <button
+                className={"action " + getActionNameEn(0)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalDetail,
+                    true,
+                    "89%",
+                    getActionNameEn(0) + " input-tickets",
+                    AdminInputTicketsModal.detail(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faCircleInfo} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(2)) && (
+              <button
+                className={"action " + getActionNameEn(2)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalUpdate,
+                    true,
+                    "89%",
+                    getActionNameEn(2) + " input-tickets",
+                    AdminInputTicketsModal.update(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPenToSquare} />
+              </button>
+            )
+          }
+          {
+            validActions?.includes(getActionNameVn(0)) && (
+              <button
+                className={"action " + getActionNameEn(4)}
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalPrint,
+                    true,
+                    "80%",
+                    getActionNameEn(4) + " input-tickets",
+                    AdminInputTicketsModal.print(record)
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPrint} />
+              </button>
+            )
+          }
         </>
       ),
     },
@@ -561,7 +579,7 @@ const AdminInputTicketsPage = () => {
                 openNotification({
                   type: "error",
                   message: "Thất bại",
-                  description: "Thêm thất bại !",
+                  description: String(res.data) || "Thêm thất bại",
                   duration: 1.5,
                 });
 
@@ -1594,26 +1612,30 @@ const AdminInputTicketsPage = () => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          <button
-            className={
-              "main__filter-button btn create" +
-              (openModal && titleModal === titleModalCreate
-                ? " active"
-                : "")
-            }
-            onClick={() =>
-              updatePropertiesModal(
-                titleModalCreate,
-                true,
-                "89%",
-                "create input-tickets",
-                AdminInputTicketsModal.create()
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faPlus} className="icon" />
-            &nbsp;Thêm
-          </button>
+          {
+            validActions?.includes(getActionNameVn(1)) && (
+              <button
+                className={
+                  "main__filter-button btn " + getActionNameEn(1) +
+                  (openModal && titleModal === titleModalCreate
+                    ? " active"
+                    : "")
+                }
+                onClick={() =>
+                  updatePropertiesModal(
+                    titleModalCreate,
+                    true,
+                    "89%",
+                    getActionNameEn(1) + " input-tickets",
+                    AdminInputTicketsModal.create()
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faPlus} className="icon" />
+                &nbsp;Thêm
+              </button>
+            )
+          }
         </div>
         <div className="main__cards">
           <CustomCardStatic
