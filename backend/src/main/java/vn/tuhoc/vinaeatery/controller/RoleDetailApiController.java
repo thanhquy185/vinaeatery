@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.RoleDetail;
 import vn.tuhoc.vinaeatery.domain.criteria.RoleDetailCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
@@ -21,7 +20,7 @@ import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
 @RequestMapping("/api/role-details")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RoleDetailApiController {
     // Properties
     private final RoleDetailService roleDetailService;

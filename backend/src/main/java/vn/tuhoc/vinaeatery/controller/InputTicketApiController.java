@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Ingredient;
 import vn.tuhoc.vinaeatery.domain.InputTicket;
 import vn.tuhoc.vinaeatery.domain.InputTicketDetail;
@@ -37,7 +37,7 @@ import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
 @RequestMapping("/api/input-tickets")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class InputTicketApiController {
     // Properties
     private final InputTicketService inputTicketService;

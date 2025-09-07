@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Recipe;
 import vn.tuhoc.vinaeatery.domain.RecipeId;
 import vn.tuhoc.vinaeatery.repository.RecipeRepository;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RecipeService {
     // Properties
     private final RecipeRepository recipeRepository;

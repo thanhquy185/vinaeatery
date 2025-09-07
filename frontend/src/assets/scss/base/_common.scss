@@ -16,9 +16,10 @@ html {
 }
 
 body {
+  background: $body-color;
   font-family: sans-serif;
   font-size: 1.6rem;
-  background: $body-color;
+  letter-spacing: 0.05rem;
 }
 
 .line-clamp {

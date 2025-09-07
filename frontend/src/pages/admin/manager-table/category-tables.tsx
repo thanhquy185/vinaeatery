@@ -13,7 +13,7 @@ import TextArea from "antd/es/input/TextArea";
 import type { SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { CategoryTablesType, ReactQueryMutationProps } from "../../../common/types";
-import { CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
+import { CommonStatus, ReactQueryGetData, SurchargeCategoryTable, TitleModalCommon } from "../../../common/values";
 import { CustomPaginationProps } from "../../../common/props";
 import { ruleRequired } from "../../../common/rules";
 import CustomFindInput from "../../../components/admin/find-input";
@@ -40,9 +40,6 @@ const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
 const titleModalUpdate = TitleModalCommon.update(objectName.toLowerCase());
 const titleModalLock = TitleModalCommon.lock(objectName.toLowerCase());
 const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
-// - Loại phụ thu
-const percent = "Phần trăm hoá đơn";
-const fixed = "Tiền cố định";
 
 // Admin Category Tables Page
 const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
@@ -64,8 +61,8 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
   const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
   // - Loại phụ thu
   const surchargeTypeOptions: SelectProps["options"] = [
-    { label: percent, value: percent },
-    { label: fixed, value: fixed },
+    { label: SurchargeCategoryTable.percent, value: SurchargeCategoryTable.percent },
+    { label: SurchargeCategoryTable.fixed, value: SurchargeCategoryTable.fixed },
   ];
   const [filterSurchargeTypeValue, setFilterSurchargeTypeValue] = useState<
     string[] | null
@@ -548,8 +545,8 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
                     id="create-surchargeType"
                     placeholder={defaultInputs["surchargeType"]}
                     options={[
-                      { label: percent, value: percent },
-                      { label: fixed, value: fixed },
+                      { label: SurchargeCategoryTable.percent, value: SurchargeCategoryTable.percent },
+                      { label: SurchargeCategoryTable.fixed, value: SurchargeCategoryTable.fixed },
                     ]}
                   />
                 </Form.Item>
@@ -683,8 +680,8 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
                     id="update-surchargeType"
                     placeholder={defaultInputs["surchargeType"]}
                     options={[
-                      { label: percent, value: percent },
-                      { label: fixed, value: fixed },
+                      { label: SurchargeCategoryTable.percent, value: SurchargeCategoryTable.percent },
+                      { label: SurchargeCategoryTable.fixed, value: SurchargeCategoryTable.fixed },
                     ]}
                   />
                 </Form.Item>

@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.OrderSheetDetail;
 import vn.tuhoc.vinaeatery.domain.OrderSheetDetailId;
 import vn.tuhoc.vinaeatery.repository.OrderSheetDetailRepository;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OrderSheetDetailService {
     // Properties
     private final OrderSheetDetailRepository orderSheetDetailRepository;

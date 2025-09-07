@@ -7,7 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Ingredient_;
 import vn.tuhoc.vinaeatery.domain.Ingredient;
 import vn.tuhoc.vinaeatery.domain.criteria.IngredientCriteria;
@@ -18,7 +18,7 @@ import vn.tuhoc.vinaeatery.repository.IngredientRepository;
 import vn.tuhoc.vinaeatery.service.specification.IngredientSpecification;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class IngredientService {
     // Properties
     private final CategoryIngredientRepository categoryIngredientRepository;

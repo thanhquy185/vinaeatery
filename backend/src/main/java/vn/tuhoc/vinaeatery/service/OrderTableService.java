@@ -7,18 +7,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.OrderTable_;
 import vn.tuhoc.vinaeatery.domain.OrderTable;
 import vn.tuhoc.vinaeatery.domain.criteria.OrderTableCriteria;
-import vn.tuhoc.vinaeatery.domain.dto.EmployeeDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderTableDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.OrderTableRepository;
 import vn.tuhoc.vinaeatery.service.specification.OrderTableSpecification;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OrderTableService {
     // Properties
     private final EmployeeService employeeService;

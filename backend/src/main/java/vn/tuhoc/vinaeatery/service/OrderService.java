@@ -7,7 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Order;
 import vn.tuhoc.vinaeatery.domain.OrderDetail;
 import vn.tuhoc.vinaeatery.domain.Order_;
@@ -21,7 +21,7 @@ import vn.tuhoc.vinaeatery.repository.OrderRepository;
 import vn.tuhoc.vinaeatery.service.specification.OrderSpecification;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OrderService {
     // Properties
     private final CustomerService customerService;
@@ -29,6 +29,7 @@ public class OrderService {
     private final EmployeeService employeeService;
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
+    private final PayMethodService payMethodService;
 
     // Methods
     public Order getOneById(Integer id) {
@@ -203,8 +204,12 @@ public class OrderService {
                 orderDTO.setCustomer(customerService.getOneFormatById(order.getCustomerId()));
             }
             orderDTO.setTotalPrice(order.getTotalPrice());
-            orderDTO.setPayStatus(order.getPayStatus());
             orderDTO.setStatus(order.getStatus());
+            orderDTO.setPayId(order.getPayId());
+            orderDTO.setPayMethod(payMethodService.getOneById(order.getPayMethodId()));
+            orderDTO.setPayTime(order.getPayTime());
+            orderDTO.setPayTotalPrice(order.getPayTotalPrice());
+            orderDTO.setPayStatus(order.getPayStatus());
             orderDTO.setOrderDetails(orderDetails);
 
             listFormat.add(orderDTO);

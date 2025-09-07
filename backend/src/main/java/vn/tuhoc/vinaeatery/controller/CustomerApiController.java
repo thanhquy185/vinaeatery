@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Customer;
 import vn.tuhoc.vinaeatery.domain.UseTable;
 import vn.tuhoc.vinaeatery.domain.criteria.CustomerCriteria;
@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
 @RequestMapping("/api/customers")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CustomerApiController {
     // Properties
     private final UseTableService useTableService;

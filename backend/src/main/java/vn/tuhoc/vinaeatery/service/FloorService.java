@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Floor;
 import vn.tuhoc.vinaeatery.domain.Floor_;
 import vn.tuhoc.vinaeatery.domain.criteria.FloorCriteria;
@@ -15,7 +15,7 @@ import vn.tuhoc.vinaeatery.repository.FloorRepository;
 import vn.tuhoc.vinaeatery.service.specification.FloorSpecification;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FloorService {
     // Properties
     private final FloorRepository floorRepository;

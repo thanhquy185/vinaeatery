@@ -4,12 +4,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Function;
 import vn.tuhoc.vinaeatery.repository.FunctionRepository;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FunctionService {
     // Properties
     private final FunctionRepository functionRepository;

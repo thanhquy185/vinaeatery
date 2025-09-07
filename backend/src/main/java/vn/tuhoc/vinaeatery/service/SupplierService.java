@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Supplier_;
 import vn.tuhoc.vinaeatery.domain.Supplier;
 import vn.tuhoc.vinaeatery.domain.criteria.SupplierCriteria;
@@ -15,7 +15,7 @@ import vn.tuhoc.vinaeatery.repository.SupplierRepository;
 import vn.tuhoc.vinaeatery.service.specification.SupplierSpecification;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SupplierService {
     // Properties
     private final SupplierRepository supplierRepository;

@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.CategoryTable_;
 import vn.tuhoc.vinaeatery.domain.CategoryTable;
 import vn.tuhoc.vinaeatery.domain.criteria.CategoryTableCriteria;
@@ -15,7 +15,7 @@ import vn.tuhoc.vinaeatery.repository.CategoryTableRepository;
 import vn.tuhoc.vinaeatery.service.specification.CategoryTableSpecification;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CategoryTableService {
     // Properties
     private final CategoryTableRepository categoryTableRepository;

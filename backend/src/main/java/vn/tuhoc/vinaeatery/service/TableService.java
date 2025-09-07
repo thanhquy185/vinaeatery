@@ -7,7 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.TableE_;
 import vn.tuhoc.vinaeatery.domain.TableE;
 import vn.tuhoc.vinaeatery.domain.criteria.TableCriteria;
@@ -19,7 +19,7 @@ import vn.tuhoc.vinaeatery.repository.TableRepository;
 import vn.tuhoc.vinaeatery.service.specification.TableSpecification;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TableService {
     // Properties
     private final FloorRepository floorRepository;

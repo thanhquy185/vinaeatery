@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Food;
 import vn.tuhoc.vinaeatery.domain.Recipe;
 import vn.tuhoc.vinaeatery.domain.RecipeId;
@@ -37,7 +37,7 @@ import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
 @RequestMapping("/api/foods")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FoodApiController {
     // Properties
     private final FoodService foodService;

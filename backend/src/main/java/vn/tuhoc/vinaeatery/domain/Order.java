@@ -40,11 +40,19 @@ public class Order {
     @NotNull(message = "Mã khách hàng không được để trống !")
     private Integer customerId;
     private Long totalPrice;
-    @Convert(converter = PayStatusConverter.class)
-    @NotNull(message = "Thanh toán không được để trống !")
-    private PayStatusEnum payStatus;
     @Column(columnDefinition = "TINYINT(2)")
     @Convert(converter = OrderStatusConverter.class)
     @NotNull(message = "Trạng thái không được để trống !")
     private OrderStatusEnum status;
+    @NotNull(message = "Mã giao dịch không được để trống !")
+    private String payId;
+    @NotNull(message = "Mã phương thức thanh toán không được để trống !")
+    private Integer payMethodId;
+    @NotNull(message = "Thời gian thanh toán không được để trống !")
+    private LocalDateTime payTime;
+    @NotNull(message = "Số tiền thanh toán không được để trống !")
+    private Long payTotalPrice;
+    @Convert(converter = PayStatusConverter.class)
+    @NotNull(message = "Thanh toán không được để trống !")
+    private PayStatusEnum payStatus;
 }

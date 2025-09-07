@@ -1,23 +1,61 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Form, Input, Select, Space, type SelectProps } from "antd";
+import {
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Space,
+  type SelectProps,
+} from "antd";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomModal from "../../../components/admin/modal";
 import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules";
-import { CommonStatus, ReactQueryGetData, UseTableStatus } from "../../../common/values";
-import type { CustomersFormatType, FloorsType, OrderSheetsFormatType, OrderTablesFormatType, UseTablesFormatType } from "../../../common/types";
-import { FindAllCustomer, FindAllFloor, FindAllOrderTable, FindAllUseTableTimeEndIsNull, HandleUpdateUseTable } from "../../../services/api";
+import {
+  CommonStatus,
+  HandlePaymentStatus,
+  OrderSheetStatus,
+  ReactQueryGetData,
+  SurchargeCategoryTable,
+  UseTableStatus,
+} from "../../../common/values";
+import type {
+  CustomersFormatType,
+  EmployeesFormatType,
+  FloorsType,
+  OrderSheetDetailsFormatType,
+  OrderSheetsFormatType,
+  OrderTablesFormatType,
+  UseTablesFormatType,
+} from "../../../common/types";
+import {
+  FindAllCustomer,
+  FindAllFloor,
+  FindAllOrderTable,
+  FindAllUseTableTimeEndIsNull,
+  GetHandlePaymentFormat,
+  HandleUpdateHandlePayment,
+  HandleUpdateUseTable,
+} from "../../../services/api";
 import { getActionNameVn } from "../../../services/default-actions";
 import { getActionsString } from "../../../services/employee-login";
-import { vietnamMoneyFormat } from "../../../utils/otherEvents";
+import {
+  numberToVietnamWords,
+  vietnamMoneyFormat,
+} from "../../../utils/otherEvents";
 import { showCreateValidAddress } from "../../../utils/showCreateValidAddress";
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
+import CurrentDateTime from "../../../components/admin/current-datetime";
+import { ClipLoader, SyncLoader } from "react-spinners";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import CustomSpinner from "../../../components/common/spinner";
 
 // Các giá trị chung
 // - Tên đối tượng
-const objectName = "Sử dụng bàn ăn"
+const objectName = "Sử dụng bàn ăn";
 
 // Kiểu dữ liệu các tham số truyền vào của 1 đối tượng sử dụng bàn ăn
 type HandleUseTableProps = {
@@ -29,23 +67,25 @@ type HandleUseTableProps = {
   orderTableId?: number;
   orderTable?: OrderTablesFormatType;
   orderSheets?: OrderSheetsFormatType[];
-}
+};
 
 // Admin Status Tables Page
-const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
+const AdminUseTablesPage = ({
+  employeeLogin,
+  functionId,
+}: {
+  employeeLogin: EmployeesFormatType;
+  functionId: number;
+}) => {
   // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
-  const validActions = getActionsString({ currentFunctionId: functionId })
+  const validActions = getActionsString({ currentFunctionId: functionId });
 
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
-  // Các biến giữ dữ liệu về tầng
-  const {
-    data: floors,
-  } = useQuery({
-    queryKey: [
-      'floors',
-    ],
+  // Truy vấn dữ liệu Tầng
+  const { data: floors } = useQuery({
+    queryKey: ["floors"],
     queryFn: async () => {
       const res = await FindAllFloor({ statusValue: [CommonStatus.active] });
       if (res.status === 200) {
@@ -65,15 +105,16 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
 
   // Các biến giữ giá trị từ việc lọc thông tin
   // - Tìm kiếm thông tin
-  const findOptions = [
-    { label: "Bàn", value: "table" },
-  ];
+  const findOptions = [{ label: "Bàn", value: "table" }];
   const [filterFindType, setFilterFindType] = useState<string | null>(
     findOptions[0].value
   );
   const [filterFindValue, setFilterFindValue] = useState<string | null>("");
   // - Tầng
-  const floorOptions: SelectProps["options"] = floors?.map((floor) => ({ label: floor.name, value: floor.id }));
+  const floorOptions: SelectProps["options"] = floors?.map((floor) => ({
+    label: floor.name,
+    value: floor.id,
+  }));
   const [filterFloorValue, setFilterFloorValue] = useState<string[] | null>([]);
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
@@ -86,19 +127,22 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
     []
   );
 
-  // Truy vấn dữ liệu sử dụng (mới nhất)
-  const {
-    data: useTables,
-  } = useQuery({
+  // Truy vấn dữ liệu sử dụng bàn ăn(mới nhất)
+  const { data: useTables } = useQuery({
     queryKey: [
-      'use-tables',
+      "use-tables",
       filterFindType!,
       filterFindValue!,
       filterFloorValue!,
-      filterStatusValue!
+      filterStatusValue!,
     ],
     queryFn: async () => {
-      const res = await FindAllUseTableTimeEndIsNull({ findType: filterFindType!, findValue: filterFindValue!, floorValue: filterFloorValue!, statusValue: filterStatusValue! });
+      const res = await FindAllUseTableTimeEndIsNull({
+        findType: filterFindType!,
+        findValue: filterFindValue!,
+        floorValue: filterFloorValue!,
+        statusValue: filterStatusValue!,
+      });
       if (res.status === 200) {
         return res.data;
       } else {
@@ -114,6 +158,7 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
     },
     retry: ReactQueryGetData.retry,
     // staleTime: ReactQueryGetData.staleTime,
+    refetchInterval: 1000 * 5 * 1,
   });
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
@@ -150,90 +195,539 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
     status,
     orderSheets,
   }: UseTablesFormatType) => {
+    // Truy vấn dữ liệu Xử lý thanh toán
+    const { data: handlePayment } = useQuery({
+      queryKey: ["handle-payment"],
+      queryFn: async () => {
+        const res = await GetHandlePaymentFormat();
+        if (res.status === 200) {
+          return res.data;
+        } else {
+          // openNotification({
+          //   type: "error",
+          //   message: "Truy vấn dữ liệu thất bại",
+          //   description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          //   duration: 2,
+          // });
+          // throw res;
+        }
+      },
+      refetchInterval: 1000 * 3,
+    });
+
+    // ...
+    const [isShowSpinner, setIsShowSpinner] = useState<boolean>(false);
+
+    // Danh sách chi tiết phiếu gọi món
+    const [currentOrderSheetDetails, setCurrentOrderSheetDetails] = useState<
+      OrderSheetDetailsFormatType[]
+    >([]);
+    // Tổng tiền món ăn
+    const [currentTotalFoodPrice, setCurrentTotalFoodPrice] =
+      useState<number>(0);
+    // Phụ thu loại bàn ăn
+    const [currentCategoryTableSurcharge, setCurrentCategoryTableSurcharge] =
+      useState<number>(0);
+    // Giảm giá khách hàng
+    const [currentCustomerDiscount, setCurrentCustomerDiscount] =
+      useState<number>(0);
+    // Số tiền thanh toán
+    const [payTotalPriceValue, setPayTotalPriceValue] = useState<number>(0);
+
+    // Nút "Xác nhận đã nhận tiền"
+    const confirmPaymentButtonRef = useRef<HTMLButtonElement>(null);
+    // Nút "Huỷ thanh toán tiền bàn"
+    const cancelPaymentButtonRef = useRef<HTMLButtonElement>(null);
+
+    //
+    useEffect(() => {
+      if (handlePayment) {
+        let newCurrentOrderSheetDetails: OrderSheetDetailsFormatType[] = [];
+        const tempCurrentOrderSheetDetails: OrderSheetDetailsFormatType[] =
+          handlePayment?.useTable?.orderSheets
+            ?.filter(
+              (orderSheet) => orderSheet!.status! === OrderSheetStatus.serviced
+            )
+            ?.flatMap((orderSheet) => orderSheet.orderSheetDetails || []) || [];
+
+        tempCurrentOrderSheetDetails?.forEach((tempOrderSheetDetail) => {
+          let isExists = false;
+          for (let i = 0; i < newCurrentOrderSheetDetails.length; i++) {
+            if (
+              tempOrderSheetDetail.food.id ===
+              newCurrentOrderSheetDetails[i].food.id
+            ) {
+              newCurrentOrderSheetDetails[i].quantity +=
+                tempOrderSheetDetail.quantity;
+              isExists = true;
+            }
+          }
+
+          if (!isExists) {
+            newCurrentOrderSheetDetails.push({
+              ...tempOrderSheetDetail,
+            });
+          }
+        });
+
+        // Danh sách món ăn (Đã phục vụ)
+        setCurrentOrderSheetDetails(newCurrentOrderSheetDetails);
+        // Tổng tiền món ăn
+        setCurrentTotalFoodPrice(
+          newCurrentOrderSheetDetails?.reduce(
+            (total, detail) => total + detail.price * detail.quantity,
+            0
+          )
+        );
+        // Số tiền thanh toán
+        setPayTotalPriceValue(handlePayment?.payTotalPrice!);
+      } else {
+        setCurrentOrderSheetDetails([]);
+        setCurrentTotalFoodPrice(0);
+        setPayTotalPriceValue(0);
+      }
+    }, [handlePayment]);
+    useEffect(() => {
+      if (currentTotalFoodPrice > 0) {
+        // Phí loại bàn ăn
+        if (
+          handlePayment?.useTable?.table?.categoryTable?.surchargeType ===
+          SurchargeCategoryTable.percent
+        ) {
+          setCurrentCategoryTableSurcharge(
+            (currentTotalFoodPrice *
+              (handlePayment?.useTable?.table?.categoryTable?.surchargeValue ||
+                0)) /
+              100
+          );
+        } else {
+          setCurrentCategoryTableSurcharge(
+            handlePayment?.useTable?.table?.categoryTable?.surchargeValue || 0
+          );
+        }
+
+        // Giảm giá khách hàng
+        setCurrentCustomerDiscount(
+          (currentTotalFoodPrice *
+            (handlePayment?.useTable?.customer?.customerCard?.discount || 0)) /
+            100
+        );
+      } else {
+        setCurrentCategoryTableSurcharge(0);
+        setCurrentCategoryTableSurcharge(0);
+        setCurrentCustomerDiscount(0);
+      }
+    }, [currentTotalFoodPrice]);
+
+    // useEffect(() => {
+    //   console.log(payTotalPriceValue);
+    // }, [payTotalPriceValue]);
+
     return (
       <>
-        <div className="info">
-          <b>Bàn ăn:</b> {table!.name} - {table!.categoryTable!.name} - {table!.floor!.name} - Số chỗ: {table!.seats}
-        </div>
-        <div className="info">
-          <b>Thời gian nhận bàn:</b> {timeStart!}
-        </div>
-        <div className="info">
-          <b>Khách hàng:</b> {customer!.fullname} - {customer!.phone} - {customer!.email! ? customer!.email : "Chưa cung cấp email"} - {customer!.customerCard!.name}
-        </div>
-        <div className="info">
-          <b>Trạng thái:</b> <span className="status red">{status!}</span>
-        </div>
-        <div className="info">
-          <b>Chi tiết phiếu gọi món:</b>
-          <table>
-            <colgroup>
-              <col width="15%" />
-              <col width="20%" />
-              <col width="20%" />
-              <col width="30%" />
-              <col width="15%" />
-            </colgroup>
-            <thead>
-              <tr>
-                <th>Mã phiếu</th>
-                <th>Thời gian gọi món</th>
-                <th>Thời gian phục vụ</th>
-                <th>Tổng tiền món ăn</th>
-                <th>Trạng thái</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orderSheets?.map((orderSheet) => (
-                <tr>
-                  <td>{orderSheet!.id!}</td>
-                  <td>{orderSheet!.timeCreate!}</td>
-                  <td>{orderSheet!.timeService!}</td>
-                  <td>{vietnamMoneyFormat(orderSheet!.totalPrice!)}</td>
-                  <td>{orderSheet!.status}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {/* <div className="note">*Lưu ý: Khi thanh toán, các phiếu gọi món chưa được phục vụ sẽ bị huỷ !</div> */}
-        {
-          validActions!.includes(getActionNameVn(2)) && (
-            <div className="modal__buttons mg-top">
-              <button
-                type="button"
-                className="modal__button secondary btn"
-                onClick={(e) =>
-                  callApiToUpdateUseTable({
-                    id: id!,
-                    orderSheets: orderSheets!,
-                    button: e.target as HTMLElement,
-                    value: UseTableStatus.empty
-                  })
-                }
-              >
-                Thanh toán tiền bàn
-              </button>
-              {orderSheets!.length! == 0 &&
-                (
-                  <button
-                    type="button"
-                    className="modal__button secondary btn green-secondary"
-                    onClick={(e) =>
-                      callApiToUpdateUseTable({
-                        id: id!,
-                        button: e.target as HTMLElement,
-                        value: UseTableStatus.empty
-                      })
-                    }
-                  >
-                    Khách trả bàn
-                  </button>
-                )
-              }
+        {isShowSpinner ? (
+          <CustomSpinner />
+        ) : (
+          <>
+            <div className="info">
+              <b>Bàn ăn:</b> {table!.name} - {table!.categoryTable!.name} -{" "}
+              {table!.floor!.name} - Số chỗ: {table!.seats}
             </div>
-          )
-        }
+            <div className="info">
+              <b>Thời gian nhận bàn:</b> {timeStart!}
+            </div>
+            <div className="info">
+              <b>Khách hàng:</b> {customer!.fullname} - {customer!.phone} -{" "}
+              {customer!.email! ? customer!.email : "Chưa cung cấp email"} -{" "}
+              {customer!.customerCard!.name}
+            </div>
+            <div className="info">
+              <b>Trạng thái:</b> <span className="status red">{status!}</span>
+            </div>
+            <div className="info">
+              <b>Chi tiết phiếu gọi món:</b>
+              <table>
+                <colgroup>
+                  <col width="15%" />
+                  <col width="20%" />
+                  <col width="20%" />
+                  <col width="30%" />
+                  <col width="15%" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>Mã phiếu</th>
+                    <th>Thời gian gọi món</th>
+                    <th>Thời gian phục vụ</th>
+                    <th>Tổng tiền món ăn</th>
+                    <th>Trạng thái</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orderSheets?.map((orderSheet) => (
+                    <tr key={orderSheet?.id}>
+                      <td>{orderSheet!.id!}</td>
+                      <td>{orderSheet!.timeCreate!}</td>
+                      <td>{orderSheet!.timeService!}</td>
+                      <td>{vietnamMoneyFormat(orderSheet!.totalPrice!)}</td>
+                      <td>{orderSheet!.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {/* <div className="note">*Lưu ý: Khi thanh toán, các phiếu gọi món chưa được phục vụ sẽ bị huỷ !</div> */}
+            {handlePayment?.useTable?.id === id &&
+            (handlePayment?.status === HandlePaymentStatus.exists ||
+              handlePayment?.status === HandlePaymentStatus.pending ||
+              handlePayment?.status === HandlePaymentStatus.selected ||
+              handlePayment?.status === HandlePaymentStatus.completed) ? (
+              <>
+                <div className="line"></div>
+                <div className="sub-title">Thanh toán bàn ăn</div>
+                <div className="info">
+                  <b>Nhân viên xác nhận:</b>
+                  {"#" +
+                    employeeLogin!.id +
+                    " - " +
+                    employeeLogin!.fullname +
+                    " - " +
+                    employeeLogin!.phone}
+                </div>
+                <div className="info">
+                  <b>Thời gian thanh toán:</b>
+                  {<CurrentDateTime />}
+                </div>
+                <div className="info">
+                  <b>Tổng tiền thanh toán:</b>
+                  {vietnamMoneyFormat(
+                    Math.round(
+                      currentTotalFoodPrice +
+                        currentCategoryTableSurcharge +
+                        -1 * currentCustomerDiscount
+                    )
+                  )}
+                  <u>đ</u> (
+                  {numberToVietnamWords(
+                    Math.round(
+                      currentTotalFoodPrice +
+                        currentCategoryTableSurcharge +
+                        -1 * currentCustomerDiscount
+                    )
+                  )}
+                  )
+                  <div className="sub-info">
+                    <b>- Tổng tiền món ăn:</b>
+                    {vietnamMoneyFormat(currentTotalFoodPrice)}
+                    <u>đ</u>
+                  </div>
+                  <div className="sub-info">
+                    <b>- Giảm giá khách hàng:</b>
+                    {vietnamMoneyFormat(-1 * currentCustomerDiscount)}
+                    <u>đ</u>
+                  </div>
+                  <div className="sub-info">
+                    <b>- Phụ thu loại bàn:</b>
+                    {vietnamMoneyFormat(currentCategoryTableSurcharge)}
+                    <u>đ</u>
+                  </div>
+                </div>
+                <div className="info">
+                  <b>Chi tiết đã phục vụ:</b>
+                  <table>
+                    <colgroup>
+                      <col width="40%" />
+                      <col width="10%" />
+                      <col width="15%" />
+                      <col width="15%" />
+                      <col width="20%" />
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th>Tên món ăn</th>
+                        <th>Đơn vị</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentOrderSheetDetails?.map((orderSheetDetail) => (
+                        <tr key={orderSheetDetail?.food?.id}>
+                          <td>{orderSheetDetail!.food!.name}</td>
+                          <td>{orderSheetDetail!.food!.unit}</td>
+                          <td>{orderSheetDetail!.quantity}</td>
+                          <td>{vietnamMoneyFormat(orderSheetDetail!.price)}</td>
+                          <td>
+                            {vietnamMoneyFormat(
+                              orderSheetDetail!.quantity *
+                                orderSheetDetail!.price
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="info diff">
+                  <b>Phương thức thanh toán</b>
+                  <span className="content">
+                    {handlePayment?.payMethod ? (
+                      <>
+                        <img
+                          src={
+                            "/src/assets/images/others/" +
+                            handlePayment?.payMethod?.image
+                          }
+                          alt=""
+                        />
+                        <p>{handlePayment?.payMethod?.name}</p>
+                      </>
+                    ) : (
+                      <>
+                        <SyncLoader className="spinner" />
+                        <p>Hãy đợi khách hàng chọn phương thức thanh toán</p>
+                      </>
+                    )}
+                  </span>
+                </div>
+                {(handlePayment?.payMethod?.id === 1 ||
+                  handlePayment?.payMethod?.id === 2) && (
+                  <div className="info diff">
+                    <b>Số tiền thanh toán</b>
+                    <InputNumber
+                      min={0}
+                      placeholder="Nhập Số tiền thanh toán nhận được từ khách hàng"
+                      value={payTotalPriceValue}
+                      onChange={(val) => setPayTotalPriceValue(val || 0)}
+                      disabled={
+                        handlePayment?.status === HandlePaymentStatus.completed
+                      }
+                    />
+                  </div>
+                )}
+                {handlePayment?.status === HandlePaymentStatus.completed && (
+                  <div className="info diff">
+                    <b>Khách hàng đánh giá</b>
+                    <span className="content">
+                      <SyncLoader className="spinner" />
+                      <p>
+                        Khách hàng đã thanh toán hoá đơn thành công. Hãy đợi
+                        khách hàng hoàn tất việc đánh giá.
+                      </p>
+                    </span>
+                  </div>
+                )}
+                <div className="modal__buttons mg-top">
+                  {handlePayment?.status !== HandlePaymentStatus.completed &&
+                    (handlePayment?.payMethod?.id === 1 ||
+                      handlePayment?.payMethod?.id === 2) && (
+                      <button
+                        ref={confirmPaymentButtonRef}
+                        type="button"
+                        className="modal__button secondary btn"
+                        onClick={async () => {
+                          if (!confirmPaymentButtonRef.current) return;
+
+                          confirmPaymentButtonRef.current.classList.add(
+                            "active"
+                          );
+
+                          const answer = await openConfirmation({
+                            title: `Xác nhận đã nhận tiền bàn này ?`,
+                            content:
+                              "Hãy kiểm tra lại kĩ trước khi xác nhận đã nhận tiền.",
+                          });
+                          if (answer) {
+                            // if (payTotalPriceValue) {
+                            //   openNotification({
+                            //     type: "error",
+                            //     message: "Thất bại",
+                            //     description:
+                            //       "Số tiền thanh toán không được để trống !",
+                            //     duration: 1.5,
+                            //   });
+
+                            //   return;
+                            // }
+                            if (
+                              payTotalPriceValue <
+                              currentTotalFoodPrice +
+                                -1 * currentCustomerDiscount +
+                                currentCategoryTableSurcharge
+                            ) {
+                              openNotification({
+                                type: "error",
+                                message: "Thất bại",
+                                description:
+                                  "Số tiền thanh toán phải lớn hơn hoặc bằng tổng thanh toán !",
+                                duration: 1.5,
+                              });
+                              confirmPaymentButtonRef.current.classList.remove(
+                                "active"
+                              );
+
+                              return;
+                            }
+
+                            setIsShowSpinner(true);
+                            const data = await HandleUpdateHandlePayment({
+                              useTableId: handlePayment?.useTable?.id,
+                              employeeId: handlePayment?.employee?.id,
+                              payMethodId: handlePayment?.payMethod?.id,
+                              payTotalPrice: payTotalPriceValue,
+                              status: HandlePaymentStatus.completed,
+                            });
+                            if (data.status === 200) {
+                              setIsShowSpinner(false);
+
+                              openNotification({
+                                type: "success",
+                                message: "Thành công",
+                                description: "Thanh toán hoá đơn thành công !",
+                                duration: 1.5,
+                              });
+
+                              queryClient.invalidateQueries({
+                                queryKey: ["handle-payment"],
+                              });
+                            }
+                          }
+
+                          confirmPaymentButtonRef.current.classList.remove(
+                            "active"
+                          );
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faCheck} className="icon" />
+                        <span>Xác nhận đã nhận tiền</span>
+                      </button>
+                    )}
+                  {handlePayment?.payMethod?.id === 4 && (
+                    <button
+                      type="button"
+                      className="modal__button secondary btn"
+                      disabled
+                    >
+                      <ClipLoader className="spinner" />
+                      <span>Đợi KH thanh toán</span>
+                    </button>
+                  )}
+                  {handlePayment?.status !== HandlePaymentStatus.completed && (
+                    <button
+                      ref={cancelPaymentButtonRef}
+                      type="button"
+                      className="modal__button secondary btn"
+                      onClick={async () => {
+                        if (!cancelPaymentButtonRef.current) return;
+
+                        cancelPaymentButtonRef.current.classList.add("active");
+
+                        const answer = await openConfirmation({
+                          title: `Huỷ thanh toán tiền bàn này ?`,
+                          content:
+                            "Hãy hỏi lại phía khách hàng trước khi xác nhận huỷ thanh toán.",
+                        });
+                        if (answer) {
+                          setIsShowSpinner(true);
+
+                          const data = await HandleUpdateHandlePayment({
+                            useTableId: undefined,
+                            employeeId: undefined,
+                            payMethodId: undefined,
+                            payTotalPrice: undefined,
+                            status: HandlePaymentStatus.nothing,
+                          });
+                          if (data.status === 200) {
+                            setIsShowSpinner(false);
+
+                            openNotification({
+                              type: "success",
+                              message: "Thành công",
+                              description:
+                                "Đã hủy thanh toán hoá đơn thành công !",
+                              duration: 1.5,
+                            });
+
+                            queryClient.invalidateQueries({
+                              queryKey: ["handle-payment"],
+                            });
+                          }
+                        }
+
+                        cancelPaymentButtonRef.current.classList.remove(
+                          "active"
+                        );
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faXmark} className="icon" />
+                      <span>Huỷ thanh toán tiền bàn</span>
+                    </button>
+                  )}
+                </div>
+              </>
+            ) : (
+              validActions!.includes(getActionNameVn(2)) && (
+                <div className="modal__buttons mg-top">
+                  {orderSheets!.length! === 0 && (
+                    <button
+                      type="button"
+                      className="modal__button secondary btn green-secondary"
+                      onClick={(e) =>
+                        callApiToUpdateUseTable({
+                          id: id!,
+                          button: e.target as HTMLElement,
+                          value: UseTableStatus.empty,
+                        })
+                      }
+                    >
+                      Khách trả bàn
+                    </button>
+                  )}
+                  {!handlePayment?.useTable?.id && (
+                    <button
+                      type="button"
+                      className="modal__button secondary btn"
+                      onClick={async (e) => {
+                        e.currentTarget.classList.add("active");
+
+                        const answer = await openConfirmation({
+                          title: `Thanh toán hoá đơn bàn này ?`,
+                          content:
+                            "Hãy hỏi lại phía khách hàng trước khi xác nhận thanh toán.",
+                        });
+                        if (answer) {
+                          const data = await HandleUpdateHandlePayment({
+                            useTableId: id!,
+                            employeeId: employeeLogin?.id,
+                            status: HandlePaymentStatus.exists,
+                          });
+                          if (data.status === 200) {
+                            openNotification({
+                              type: "success",
+                              message: "Thành công",
+                              description:
+                                "Cập nhật giao diện thanh toán hoá đơn thành công !",
+                              duration: 1.5,
+                            });
+
+                            queryClient.invalidateQueries({
+                              queryKey: ["handle-payment"],
+                            });
+                          }
+                        }
+
+                        e.currentTarget.classList.remove("active");
+                      }}
+                    >
+                      Thanh toán tiền bàn
+                    </button>
+                  )}
+                </div>
+              )
+            )}
+          </>
+        )}
       </>
     );
   };
@@ -252,54 +746,61 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
     return (
       <>
         <div className="info">
-          <b>Bàn ăn:</b> {table!.name} - {table!.categoryTable!.name} - {table!.floor!.name} - Số chỗ: {table!.seats}
+          <b>Bàn ăn:</b> {table!.name} - {table!.categoryTable!.name} -{" "}
+          {table!.floor!.name} - Số chỗ: {table!.seats}
         </div>
         <div className="info">
           <b>Thời gian đặt bàn:</b> {orderTable!.timeOrder}
         </div>
         <div className="info">
-          <b>Thời gian đến ăn:</b> {orderTable!.timeArrive! ? orderTable!.timeArrive : "Chưa cung cấp thời gian đến ăn"}
+          <b>Thời gian đến ăn:</b>{" "}
+          {orderTable!.timeArrive!
+            ? orderTable!.timeArrive
+            : "Chưa cung cấp thời gian đến ăn"}
         </div>
         <div className="info">
-          <b>Thông tin người đặt:</b> {orderTable!.fullname!} - {orderTable!.phone!} - {orderTable!.email! ? orderTable!.email : "Chưa cung cấp email"}
+          <b>Thông tin người đặt:</b> {orderTable!.fullname!} -{" "}
+          {orderTable!.phone!} -{" "}
+          {orderTable!.email! ? orderTable!.email : "Chưa cung cấp email"}
         </div>
         <div className="info">
           <b>Trạng thái:</b> <span className="status yellow">{status!}</span>
         </div>
-        {
-          validActions!.includes(getActionNameVn(2)) && (
-            <div className="modal__buttons mg-top">
-              <button
-                type="button"
-                className="modal__button secondary btn red-secondary"
-                onClick={() =>
-                  updatePropertiesSecondModal(
-                    "Khách hàng nhận bàn",
-                    true,
-                    "60%",
-                    "secondary red",
-                    AdminHandleUseTablesModal.HandleOccupiedFromReversed(id!, orderTable!)
+        {validActions!.includes(getActionNameVn(2)) && (
+          <div className="modal__buttons mg-top">
+            <button
+              type="button"
+              className="modal__button secondary btn red-secondary"
+              onClick={() =>
+                updatePropertiesSecondModal(
+                  "Khách hàng nhận bàn",
+                  true,
+                  "60%",
+                  "secondary red",
+                  AdminHandleUseTablesModal.HandleOccupiedFromReversed(
+                    id!,
+                    orderTable!
                   )
-                }
-              >
-                Khách nhận bàn
-              </button>
-              <button
-                type="button"
-                className="modal__button secondary btn green-secondary"
-                onClick={(e) =>
-                  callApiToUpdateUseTable({
-                    id: id!,
-                    button: e.target as HTMLElement,
-                    value: UseTableStatus.empty
-                  })
-                }
-              >
-                {UseTableStatus.empty}
-              </button>
-            </div>
-          )
-        }
+                )
+              }
+            >
+              Khách nhận bàn
+            </button>
+            <button
+              type="button"
+              className="modal__button secondary btn green-secondary"
+              onClick={(e) =>
+                callApiToUpdateUseTable({
+                  id: id!,
+                  button: e.target as HTMLElement,
+                  value: UseTableStatus.empty,
+                })
+              }
+            >
+              {UseTableStatus.empty}
+            </button>
+          </div>
+        )}
       </>
     );
   };
@@ -318,60 +819,59 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
     return (
       <>
         <div className="info">
-          <b>Bàn ăn:</b> {table!.name} - {table!.categoryTable!.name} - {table!.floor!.name} - Số chỗ: {table!.seats}
+          <b>Bàn ăn:</b> {table!.name} - {table!.categoryTable!.name} -{" "}
+          {table!.floor!.name} - Số chỗ: {table!.seats}
         </div>
         <div className="info">
           <b>Trạng thái:</b> <span className="status green">{status!}</span>
         </div>
-        {
-          validActions!.includes(getActionNameVn(2)) && (
-            <div className="modal__buttons mg-top">
-              <button
-                type="button"
-                className="modal__button secondary btn red-secondary"
-                onClick={() =>
-                  updatePropertiesSecondModal(
-                    "Bàn đang có khách",
-                    true,
-                    "60%",
-                    "secondary red",
-                    AdminHandleUseTablesModal.handleOccupied(id!)
-                  )
-                }
-              >
-                {UseTableStatus.occupied}
-              </button>
-              <button
-                type="button"
-                className="modal__button secondary btn yellow-secondary"
-                onClick={() =>
-                  updatePropertiesSecondModal(
-                    "Bàn đã được đặt",
-                    true,
-                    "60%",
-                    "secondary yellow",
-                    AdminHandleUseTablesModal.handleReserved(id!)
-                  )
-                }
-              >
-                {UseTableStatus.reserved}
-              </button>
-              <button
-                type="button"
-                className="modal__button secondary btn gray-secondary"
-                onClick={(e) =>
-                  callApiToUpdateUseTable({
-                    id: id!,
-                    button: e.target as HTMLElement,
-                    value: UseTableStatus.repair
-                  })
-                }
-              >
-                {UseTableStatus.repair}
-              </button>
-            </div>
-          )
-        }
+        {validActions!.includes(getActionNameVn(2)) && (
+          <div className="modal__buttons mg-top-diff">
+            <button
+              type="button"
+              className="modal__button secondary btn red-secondary"
+              onClick={() =>
+                updatePropertiesSecondModal(
+                  "Bàn đang có khách",
+                  true,
+                  "60%",
+                  "secondary red",
+                  AdminHandleUseTablesModal.handleOccupied(id!)
+                )
+              }
+            >
+              {UseTableStatus.occupied}
+            </button>
+            <button
+              type="button"
+              className="modal__button secondary btn yellow-secondary"
+              onClick={() =>
+                updatePropertiesSecondModal(
+                  "Bàn đã được đặt",
+                  true,
+                  "60%",
+                  "secondary yellow",
+                  AdminHandleUseTablesModal.handleReserved(id!)
+                )
+              }
+            >
+              {UseTableStatus.reserved}
+            </button>
+            <button
+              type="button"
+              className="modal__button secondary btn gray-secondary"
+              onClick={(e) =>
+                callApiToUpdateUseTable({
+                  id: id!,
+                  button: e.target as HTMLElement,
+                  value: UseTableStatus.repair,
+                })
+              }
+            >
+              {UseTableStatus.repair}
+            </button>
+          </div>
+        )}
       </>
     );
   };
@@ -390,30 +890,29 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
     return (
       <>
         <div className="info">
-          <b>Bàn ăn:</b> {table!.name} - {table!.categoryTable!.name} - {table!.floor!.name} - Số chỗ: {table!.seats}
+          <b>Bàn ăn:</b> {table!.name} - {table!.categoryTable!.name} -{" "}
+          {table!.floor!.name} - Số chỗ: {table!.seats}
         </div>
         <div className="info">
           <b>Trạng thái:</b> <span className="status gray">{status!}</span>
         </div>
-        {
-          validActions!.includes(getActionNameVn(2)) && (
-            <div className="modal__buttons mg-top">
-              <button
-                type="button"
-                className="modal__button secondary btn green-secondary"
-                onClick={(e) =>
-                  callApiToUpdateUseTable({
-                    id: id!,
-                    button: e.target as HTMLElement,
-                    value: UseTableStatus.empty
-                  })
-                }
-              >
-                {UseTableStatus.empty}
-              </button>
-            </div>
-          )
-        }
+        {validActions!.includes(getActionNameVn(2)) && (
+          <div className="modal__buttons mg-top-diff">
+            <button
+              type="button"
+              className="modal__button secondary btn green-secondary"
+              onClick={(e) =>
+                callApiToUpdateUseTable({
+                  id: id!,
+                  button: e.target as HTMLElement,
+                  value: UseTableStatus.empty,
+                })
+              }
+            >
+              {UseTableStatus.empty}
+            </button>
+          </div>
+        )}
       </>
     );
   };
@@ -430,8 +929,8 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
         orderTable={useTable!.orderTable!}
         status={useTable!.status!}
         orderSheets={useTable!.orderSheets!}
-      />)
-    ,
+      />
+    ),
     reserved: (useTable: UseTablesFormatType) => (
       <ReservedUseTables
         id={useTable!.id!}
@@ -539,10 +1038,9 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
               id: id!,
               customerId: form.getFieldValue("customer"),
               button: submitButton as HTMLElement,
-              value: UseTableStatus.occupied
-            })
-          }
-          }
+              value: UseTableStatus.occupied,
+            });
+          }}
         >
           <div className="modal__form-group-warper">
             <div className="modal__form-group">
@@ -559,7 +1057,17 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
                   id="customer"
                   placeholder="Chọn Khách hàng (Mã khách hàng - Tên khách hàng - Số điện thoại - Email - Thẻ khách hàng)"
                   options={customers?.map((customer) => ({
-                    label: "#" + customer!.id + " - " + customer!.fullname + " - " + customer!.phone + " - " + customer!.email + " - " + customer!.customerCard!.name,
+                    label:
+                      "#" +
+                      customer!.id +
+                      " - " +
+                      customer!.fullname +
+                      " - " +
+                      customer!.phone +
+                      " - " +
+                      customer!.email +
+                      " - " +
+                      customer!.customerCard!.name,
                     value: customer!.id,
                   }))}
                 />
@@ -567,10 +1075,7 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
             </div>
           </div>
           <div className="modal__buttons">
-            <button
-              type="submit"
-              className="modal__button btn red-secondary"
-            >
+            <button type="submit" className="modal__button btn red-secondary">
               Xác nhận
             </button>
           </div>
@@ -578,7 +1083,10 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
       </>
     );
   };
-  const HandleOccupiedFromReversed = ({ id, orderTable }: HandleUseTableProps) => {
+  const HandleOccupiedFromReversed = ({
+    id,
+    orderTable,
+  }: HandleUseTableProps) => {
     const [form] = Form.useForm();
 
     return (
@@ -586,14 +1094,12 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
         <Form
           layout="vertical"
           form={form}
-          initialValues={
-            {
-              fullname: orderTable!.fullname,
-              phone: orderTable!.phone,
-              email: orderTable!.email,
-              address: orderTable!.address,
-            }
-          }
+          initialValues={{
+            fullname: orderTable!.fullname,
+            phone: orderTable!.phone,
+            email: orderTable!.email,
+            address: orderTable!.address,
+          }}
           autoComplete="off"
           className="modal__form split-2"
           onFinish={() => {
@@ -609,10 +1115,9 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
               orderTableNewEmail: form.getFieldValue("email"),
               orderTableNewAddress: form.getFieldValue("address"),
               button: submitButton as HTMLElement,
-              value: UseTableStatus.occupied
-            })
-          }
-          }
+              value: UseTableStatus.occupied,
+            });
+          }}
         >
           <div className="modal__form-group-warper">
             <div className="modal__form-group">
@@ -623,10 +1128,7 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
                 className="modal__form-group-item"
                 rules={[ruleRequired("Tên khách hàng không được để trống !")]}
               >
-                <Input
-                  id="fullname"
-                  placeholder="Nhập Tên khách hàng"
-                />
+                <Input id="fullname" placeholder="Nhập Tên khách hàng" />
               </Form.Item>
               <Form.Item
                 label="Địa chỉ"
@@ -634,10 +1136,7 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
               >
                 <Space.Compact>
                   <Form.Item name="address" noStyle>
-                    <Input
-                      id="address"
-                      placeholder="Nhập địa chỉ"
-                    />
+                    <Input id="address" placeholder="Nhập địa chỉ" />
                   </Form.Item>
                   <button
                     type="button"
@@ -666,12 +1165,12 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
                   label="Số điện thoại"
                   htmlFor="phone"
                   className="modal__form-group-item"
-                  rules={[ruleRequired("Số điện thoại không được để trống !"), rulePhone()]}
+                  rules={[
+                    ruleRequired("Số điện thoại không được để trống !"),
+                    rulePhone(),
+                  ]}
                 >
-                  <Input
-                    id="phone"
-                    placeholder="Nhập Số điện thoại"
-                  />
+                  <Input id="phone" placeholder="Nhập Số điện thoại" />
                 </Form.Item>
                 <Form.Item
                   name="email"
@@ -680,19 +1179,13 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
                   className="modal__form-group-item"
                   rules={[ruleEmail()]}
                 >
-                  <Input
-                    id="email"
-                    placeholder="Nhập Email"
-                  />
+                  <Input id="email" placeholder="Nhập Email" />
                 </Form.Item>
               </div>
             </div>
           </div>
           <div className="modal__buttons">
-            <button
-              type="submit"
-              className="modal__button btn red-secondary"
-            >
+            <button type="submit" className="modal__button btn red-secondary">
               Xác nhận
             </button>
           </div>
@@ -741,10 +1234,9 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
               id: id!,
               orderTableId: form.getFieldValue("orderTable"),
               button: submitButton as HTMLElement,
-              value: UseTableStatus.reserved
-            })
-          }
-          }
+              value: UseTableStatus.reserved,
+            });
+          }}
         >
           <div className="modal__form-group-warper">
             <div className="modal__form-group">
@@ -761,7 +1253,15 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
                   id="orderTable"
                   placeholder="Chọn Đơn đặt bàn (Mã Đơn đặt bàn - Thời gian đặt bàn - Tên khách hàng - Số điện thoại)"
                   options={orderTables?.map((orderTable) => ({
-                    label: "#" + orderTable!.id + " - " + orderTable!.timeOrder + " - " + orderTable!.fullname + " - " + orderTable!.phone,
+                    label:
+                      "#" +
+                      orderTable!.id +
+                      " - " +
+                      orderTable!.timeOrder +
+                      " - " +
+                      orderTable!.fullname +
+                      " - " +
+                      orderTable!.phone,
                     value: orderTable.id,
                   }))}
                 />
@@ -782,36 +1282,37 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
   };
   const AdminHandleUseTablesModal = {
     handleOccupied: (id?: number) => <HandleOccupied id={id} />,
-    HandleOccupiedFromReversed: (id?: number, orderTable?: OrderTablesFormatType) => <HandleOccupiedFromReversed id={id} orderTable={orderTable} />,
+    HandleOccupiedFromReversed: (
+      id?: number,
+      orderTable?: OrderTablesFormatType
+    ) => <HandleOccupiedFromReversed id={id} orderTable={orderTable} />,
     handleReserved: (id?: number) => <HandleReserved id={id} />,
   };
 
   // Hàm gọi API để cập nhật trạng thái sử dụng bàn ăn
-  const callApiToUpdateUseTable = async (
-    {
-      id,
-      customerId,
-      orderTableId,
-      orderTableNewFullname,
-      orderTableNewPhone,
-      orderTableNewEmail,
-      orderTableNewAddress,
-      orderSheets,
-      button,
-      value
-    }: {
-      id: number,
-      customerId?: number;
-      orderTableId?: number;
-      orderTableNewFullname?: string;
-      orderTableNewPhone?: string;
-      orderTableNewEmail?: string;
-      orderTableNewAddress?: string;
-      orderSheets?: OrderSheetsFormatType[];
-      button: HTMLElement,
-      value: string
-    }
-  ) => {
+  const callApiToUpdateUseTable = async ({
+    id,
+    customerId,
+    orderTableId,
+    orderTableNewFullname,
+    orderTableNewPhone,
+    orderTableNewEmail,
+    orderTableNewAddress,
+    orderSheets,
+    button,
+    value,
+  }: {
+    id: number;
+    customerId?: number;
+    orderTableId?: number;
+    orderTableNewFullname?: string;
+    orderTableNewPhone?: string;
+    orderTableNewEmail?: string;
+    orderTableNewAddress?: string;
+    orderSheets?: OrderSheetsFormatType[];
+    button: HTMLElement;
+    value: string;
+  }) => {
     // Thêm class 'active' thể hiện là nút được nhấn
     button.classList.add("active");
 
@@ -823,7 +1324,12 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
     if (answer) {
       // Biến giữ giá trị tương ứng với "trạng thái" cần thay đổi
       let status = null;
-      if (value === UseTableStatus.occupied || value === UseTableStatus.reserved || value === UseTableStatus.empty || value === UseTableStatus.repair) {
+      if (
+        value === UseTableStatus.occupied ||
+        value === UseTableStatus.reserved ||
+        value === UseTableStatus.empty ||
+        value === UseTableStatus.repair
+      ) {
         status = value;
       }
 
@@ -832,14 +1338,37 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
         id: id!,
         timeEnd: new Date().toISOString(),
         employeeId: 2,
-        customerId: value === UseTableStatus.occupied && customerId! ? customerId : undefined,
-        orderTableId: value === UseTableStatus.reserved && orderTableId! ? orderTableId : undefined,
-        orderTableNewFullname: value === UseTableStatus.occupied && orderTableNewFullname! ? orderTableNewFullname : undefined,
-        orderTableNewPhone: value === UseTableStatus.occupied && orderTableNewPhone! ? orderTableNewPhone : undefined,
-        orderTableNewEmail: value === UseTableStatus.occupied && orderTableNewEmail! ? orderTableNewEmail : undefined,
-        orderTableNewAddress: value === UseTableStatus.occupied && orderTableNewAddress! ? orderTableNewAddress : undefined,
+        customerId:
+          value === UseTableStatus.occupied && customerId!
+            ? customerId
+            : undefined,
+        orderTableId:
+          value === UseTableStatus.reserved && orderTableId!
+            ? orderTableId
+            : undefined,
+        orderTableNewFullname:
+          value === UseTableStatus.occupied && orderTableNewFullname!
+            ? orderTableNewFullname
+            : undefined,
+        orderTableNewPhone:
+          value === UseTableStatus.occupied && orderTableNewPhone!
+            ? orderTableNewPhone
+            : undefined,
+        orderTableNewEmail:
+          value === UseTableStatus.occupied && orderTableNewEmail!
+            ? orderTableNewEmail
+            : undefined,
+        orderTableNewAddress:
+          value === UseTableStatus.occupied && orderTableNewAddress!
+            ? orderTableNewAddress
+            : undefined,
         status: status!,
-        orderSheets: value === UseTableStatus.empty && orderSheets && orderSheets.length > 0 ? orderSheets! : undefined,
+        orderSheets:
+          value === UseTableStatus.empty &&
+          orderSheets &&
+          orderSheets.length > 0
+            ? orderSheets!
+            : undefined,
       });
       if (res.status === 200) {
         openNotification({
@@ -860,13 +1389,13 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
           description:
             res.status === 400
               ? String(res.data)
-                .split("|")
-                .map((line, index) => (
-                  <div key={index}>
-                    {line}
-                    <br />
-                  </div>
-                ))
+                  .split("|")
+                  .map((line, index) => (
+                    <div key={index}>
+                      {line}
+                      <br />
+                    </div>
+                  ))
               : "Cập nhật thất bại !",
           duration: 1.5,
         });
@@ -920,15 +1449,16 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
 
             return (
               <div
+                key={useTable?.id}
                 className={
                   "use-table " +
                   (useTable!.status === UseTableStatus.occupied
                     ? "red"
                     : useTable!.status === UseTableStatus.reserved
-                      ? "yellow"
-                      : useTable!.status === UseTableStatus.empty
-                        ? "green"
-                        : "gray")
+                    ? "yellow"
+                    : useTable!.status === UseTableStatus.empty
+                    ? "green"
+                    : "gray")
                 }
                 onClick={() =>
                   updatePropertiesModal(
@@ -939,10 +1469,10 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
                     useTable!.status === UseTableStatus.occupied
                       ? AdminUseTablesModal.occupied(useTable)
                       : useTable!.status === UseTableStatus.reserved
-                        ? AdminUseTablesModal.reserved(useTable)
-                        : useTable!.status === UseTableStatus.empty
-                          ? AdminUseTablesModal.empty(useTable)
-                          : AdminUseTablesModal.repair(useTable)
+                      ? AdminUseTablesModal.reserved(useTable)
+                      : useTable!.status === UseTableStatus.empty
+                      ? AdminUseTablesModal.empty(useTable)
+                      : AdminUseTablesModal.repair(useTable)
                   )
                 }
               >
@@ -961,32 +1491,28 @@ const AdminUseTablesPage = ({ functionId }: { functionId: number }) => {
             );
           })}
         </div>
-      </main >
-      {
-        openModal && (
-          <CustomModal
-            title={titleModal}
-            openModal={openModal}
-            setOpenModal={() => setOpenModal(false)}
-            width={widthModal}
-            className={classNameModal}
-            children={SecondModal}
-          />
-        )
-      }
-      {
-        openSecondModal && (
-          <CustomModal
-            key="second-modal"
-            title={titleSecondModal}
-            openModal={openSecondModal}
-            setOpenModal={() => setOpenSecondModal(false)}
-            width={widthSecondModal}
-            className={classNameSecondModal}
-            children={childrenSecondModal}
-          />
-        )
-      }
+      </main>
+      {openModal && (
+        <CustomModal
+          title={titleModal}
+          openModal={openModal}
+          setOpenModal={() => setOpenModal(false)}
+          width={widthModal}
+          className={classNameModal}
+          children={SecondModal}
+        />
+      )}
+      {openSecondModal && (
+        <CustomModal
+          key="second-modal"
+          title={titleSecondModal}
+          openModal={openSecondModal}
+          setOpenModal={() => setOpenSecondModal(false)}
+          width={widthSecondModal}
+          className={classNameSecondModal}
+          children={childrenSecondModal}
+        />
+      )}
     </>
   );
 };

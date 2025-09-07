@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.CategoryFood_;
 import vn.tuhoc.vinaeatery.domain.CategoryFood;
 import vn.tuhoc.vinaeatery.domain.criteria.CategoryFoodCriteria;
@@ -15,7 +15,7 @@ import vn.tuhoc.vinaeatery.repository.CategoryFoodRepository;
 import vn.tuhoc.vinaeatery.service.specification.CategoryFoodSpecification;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CategoryFoodService {
     // Properties
     private final CategoryFoodRepository categoryFoodRepository;

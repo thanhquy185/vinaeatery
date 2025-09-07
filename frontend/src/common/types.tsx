@@ -40,6 +40,24 @@ export interface ShoppingCartsType {
   quantity?: number;
 }
 
+// Kiểu dữ liệu Xử lý thanh toán
+// - Chưa format
+export interface HandlePaymentsType {
+  useTableId?: number;
+  employeeId?: number;
+  payMethodId?: number;
+  payTotalPrice?: number;
+  status?: string;
+}
+// - Đã format
+export interface HandlePaymentsFormatType {
+  useTable?: UseTablesFormatType;
+  employee?: EmployeesFormatType;
+  payMethod?: PayMethodsType;
+  payTotalPrice?: number;
+  status?: string;
+}
+
 // Kiểu dữ liệu Sử dụng bàn ăn
 // - Chưa format
 export interface UseTablesType {
@@ -114,6 +132,13 @@ export interface OrderSheetDetailsFormatType {
   quantity: number;
 }
 
+// Kiểu dữ liệu Phương thức thanh toán
+export interface PayMethodsType {
+  id?: number;
+  image?: string;
+  name?: string;
+}
+
 // Kiểu dữ liệu Đơn món ăn
 // - Chưa format
 export interface OrdersType {
@@ -122,8 +147,12 @@ export interface OrdersType {
   employeeId?: number;
   customerId?: number;
   totalPrice?: number;
-  payStatus?: string;
   status?: string;
+  payId?: string;
+  payMethodId?: number;
+  payTime?: string;
+  payTotalPrice?: number;
+  payStatus?: string;
   orderDetails?: OrderDetailsType[];
 }
 // - Đã format
@@ -133,8 +162,12 @@ export interface OrdersFormatType {
   employee?: EmployeesFormatType;
   customer?: CustomersFormatType;
   totalPrice?: number;
-  payStatus?: string;
   status?: string;
+  payId?: string;
+  payMethod?: PayMethodsType;
+  payTime?: string;
+  payTotalPrice?: number;
+  payStatus?: string;
   orderDetails?: OrderDetailsFormatType[];
 }
 

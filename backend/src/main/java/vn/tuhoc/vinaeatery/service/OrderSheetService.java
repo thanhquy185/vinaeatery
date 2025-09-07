@@ -1,16 +1,13 @@
 package vn.tuhoc.vinaeatery.service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.format.datetime.DateFormatter;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.OrderSheet;
 import vn.tuhoc.vinaeatery.domain.OrderSheetDetail;
 import vn.tuhoc.vinaeatery.domain.OrderSheet_;
@@ -23,7 +20,7 @@ import vn.tuhoc.vinaeatery.repository.OrderSheetRepository;
 import vn.tuhoc.vinaeatery.service.specification.OrderSheetSpecification;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OrderSheetService {
     // Properties
     private final TableService tableService;

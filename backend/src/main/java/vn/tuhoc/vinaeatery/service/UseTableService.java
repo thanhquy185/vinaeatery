@@ -7,7 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.UseTable;
 import vn.tuhoc.vinaeatery.domain.UseTable_;
 import vn.tuhoc.vinaeatery.domain.criteria.UseTableCriteria;
@@ -17,7 +17,7 @@ import vn.tuhoc.vinaeatery.repository.UseTableRepository;
 import vn.tuhoc.vinaeatery.service.specification.UseTableSpecification;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UseTableService {
     // Properties
     private final OrderSheetService orderSheetService;

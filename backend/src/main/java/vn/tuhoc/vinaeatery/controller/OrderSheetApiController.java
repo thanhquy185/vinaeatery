@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 // import vn.tuhoc.vinaeatery.domain.Food;
 import vn.tuhoc.vinaeatery.domain.Ingredient;
 import vn.tuhoc.vinaeatery.domain.OrderSheet;
@@ -41,7 +41,7 @@ import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
 @RequestMapping("/api/order-sheets")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OrderSheetApiController {
     // Properties
     private final OrderSheetService orderSheetService;

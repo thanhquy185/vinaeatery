@@ -7,7 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Role;
 import vn.tuhoc.vinaeatery.domain.RoleDetail;
 import vn.tuhoc.vinaeatery.domain.Role_;
@@ -20,7 +20,7 @@ import vn.tuhoc.vinaeatery.repository.RoleRepository;
 import vn.tuhoc.vinaeatery.service.specification.RoleSpecification;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RoleService {
     // Properties
     private final RoleRepository roleRepository;

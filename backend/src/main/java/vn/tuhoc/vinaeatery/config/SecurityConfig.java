@@ -50,10 +50,12 @@ public class SecurityConfig {
     }
 
     // Methods
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
-    }
+    // @Bean
+    // public AuthenticationManager
+    // authenticationManager(AuthenticationConfiguration authConfig) throws
+    // Exception {
+    // return authConfig.getAuthenticationManager();
+    // }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -98,26 +100,34 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
-            CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            CustomAuthenticationEntryPoint customEntryPoint) throws Exception {
         http
                 .csrf(c -> c.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/", "/api/auth/**", "/api/functions/list",
-                                "/api/category-foods/list",
-                                "/api/foods/list", "/client/**",
-                                "/assets/**", "/js/**")
-                        .permitAll()
-                        .anyRequest().authenticated())
-                // .requestMatchers("/**").permitAll()
-                // .anyRequest().permitAll());
-                .oauth2ResourceServer((oauth2) -> oauth2
-                        .jwt(Customizer.withDefaults())
-                        .authenticationEntryPoint(customAuthenticationEntryPoint))
-                .formLogin(f -> f.disable())
-                .addFilterBefore(jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                //         .requestMatchers("/", "/api/auth/**", "/api/functions/list",
+                //                 "/api/category-foods/list",
+                //                 "/api/foods/list", "/api/momo/**", "/client/**",
+                //                 "/assets/**", "/js/**")
+                //         .permitAll()
+                //         .anyRequest().authenticated())
+                .requestMatchers("/**").permitAll()
+                .anyRequest().permitAll());
+                // .oauth2ResourceServer((oauth2) -> oauth2
+                // .jwt(Customizer.withDefaults())
+                // .authenticationEntryPoint(customAuthenticationEntryPoint))
+                // .formLogin(f -> f.disable())
+                // .addFilterBefore(jwtAuthenticationFilter,
+                // UsernamePasswordAuthenticationFilter.class)
+                // .sessionManagement(session ->
+                // session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                // .formLogin(login -> login.disable())
+                // // JWT filter custom
+                // .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                // // EntryPoint cho unauthorized
+                // .exceptionHandling(ex -> ex.authenticationEntryPoint(customEntryPoint))
+                // .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }

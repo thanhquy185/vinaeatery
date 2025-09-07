@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Floor;
 import vn.tuhoc.vinaeatery.domain.criteria.FloorCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.FloorUpdateDTO;
@@ -30,7 +30,7 @@ import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
 @RequestMapping("/api/floors")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FloorApiController {
     // Properties
     private final FloorService floorService;

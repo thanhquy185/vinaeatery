@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Ingredient;
 import vn.tuhoc.vinaeatery.domain.criteria.IngredientCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
 @RequestMapping("/api/ingredients")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class IngredientApiController {
     // Properties
     private final IngredientService ingredientService;

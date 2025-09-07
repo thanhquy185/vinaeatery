@@ -7,7 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.InputTicket;
 import vn.tuhoc.vinaeatery.domain.InputTicketDetail;
 import vn.tuhoc.vinaeatery.domain.InputTicket_;
@@ -22,7 +22,7 @@ import vn.tuhoc.vinaeatery.repository.SupplierRepository;
 import vn.tuhoc.vinaeatery.service.specification.InputTicketSpecification;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class InputTicketService {
     // Properties
     private final IngredientService ingredientService;

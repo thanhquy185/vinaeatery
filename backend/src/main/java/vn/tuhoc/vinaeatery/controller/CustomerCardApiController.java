@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.CustomerCard;
 import vn.tuhoc.vinaeatery.domain.criteria.CustomerCardCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
 @RequestMapping("/api/customer-cards")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CustomerCardApiController {
     // Properties
     private final CustomerCardService customerCardService;

@@ -61,12 +61,13 @@
     position: fixed;
     z-index: 1000;
     width: $sidebar-width;
+    height: 100vh;
     background: #fff;
   }
 
   &__filter-list-warper {
     overflow-y: scroll;
-    max-height: 730px;
+    max-height: 100vh;
   }
 
   &__filter-item {
@@ -118,6 +119,7 @@
     @include flex(stretch, center);
     gap: $client-spacing;
     flex-wrap: wrap;
+    padding-bottom: calc($client-spacing * 2);
     margin-top: calc($client-spacing * 2);
     margin-left: calc($sidebar-width + $client-spacing * 2);
   }
@@ -169,6 +171,11 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
+  &__cart {
+    // min-height: calc(100vh - 300px);
+    // height: 300px;
+  }
+
   &__cart-actions,
   &__cart-buttons {
     display: flex;
@@ -215,9 +222,8 @@
   }
 
   &__cart-list-warper {
-    height: 520px;
-    // margin-top: 18px;
-    overflow: auto;
+    height: calc(100vh - 300px);
+    overflow: scroll;
   }
 
   &__cart-item {
@@ -286,7 +292,7 @@
     margin-left: 14px;
   }
 
-  &__cart-item+&__cart-item {
+  &__cart-item + &__cart-item {
     margin-top: 24px;
   }
 
@@ -426,7 +432,6 @@
     color: #616161;
     border-color: #bdbdbd;
   }
-
 
   &__inform {
     position: absolute;

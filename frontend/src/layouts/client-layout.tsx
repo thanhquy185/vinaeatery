@@ -26,23 +26,38 @@ import type {
   ShoppingCartsType,
   UseTablesFormatType,
 } from "../common/types";
-import { CommonStatus, FoodStatus, OrderSheetStatus, ReactQueryGetData, UseTableStatus } from "../common/values";
+import {
+  CommonStatus,
+  FoodStatus,
+  HandlePaymentStatus,
+  OrderSheetStatus,
+  ReactQueryGetData,
+  UseTableStatus,
+} from "../common/values";
 import CustomBrand from "../components/common/brand";
 import CustomTextArea from "../components/admin/text-area";
 import CustomDrawer from "../components/client/drawer";
 import CustomCardFilter from "../components/client/card-filter";
 import CustomCardFood from "../components/client/card-food";
-import { FindAllCategoryFood, FindAllFood, FindOneNewUseTableByTableId, HandleCreateOrderSheet } from "../services/api";
+import {
+  FindAllCategoryFood,
+  FindAllFood,
+  FindOneNewUseTableByTableId,
+  GetHandlePaymentFormat,
+  HandleCreateOrderSheet,
+} from "../services/api";
 import { openNotification } from "../utils/showNotification";
 import { vietnamMoneyFormat } from "../utils/otherEvents";
 import { openConfirmation } from "../utils/showConfirmation";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import useWebSocket from "../hook/websocket";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
+import CustomSpinner from "../components/common/spinner";
 
 // Kiểu dữ liệu của các tham số truyền vào
 type ClientLayoutProps = {
+  queryClient?: QueryClient;
   tableId?: string;
   shoppingCart?: ShoppingCartsType[];
   setShoppingCart?: Dispatch<SetStateAction<ShoppingCartsType[]>>;
@@ -51,6 +66,7 @@ type ClientLayoutProps = {
 
 // Client Header
 const ClientHeader: React.FC<ClientLayoutProps> = ({
+  queryClient,
   tableId,
   shoppingCart,
   setShoppingCart,
@@ -346,7 +362,11 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
                         }
 
                         // Định dạng lại dữ liệu chi tiết phiếu gọi món
-                        const orderSheetDetails = shoppingCart?.map((item) => ({ foodId: item!.food?.id!, price: item!.food?.price!, quantity: item!.quantity! }));
+                        const orderSheetDetails = shoppingCart?.map((item) => ({
+                          foodId: item!.food?.id!,
+                          price: item!.food?.price!,
+                          quantity: item!.quantity!,
+                        }));
 
                         // Gọi api xử lý
                         const res = await HandleCreateOrderSheet({
@@ -355,7 +375,7 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
                           totalPrice: totalPriceValue! || 0,
                           note: noteValue! || undefined,
                           status: "Đang chờ xác nhận",
-                          orderSheetDetails: orderSheetDetails!
+                          orderSheetDetails: orderSheetDetails!,
                         });
                         if (res.status === 200) {
                           openNotification({
@@ -367,6 +387,10 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
 
                           setTimeout(() => {
                             setShoppingCart!([]);
+                            setNoteValue("");
+                            queryClient!.invalidateQueries({
+                              queryKey: ["current-use-table"],
+                            });
                           }, 1500);
                         } else {
                           openNotification({
@@ -385,7 +409,8 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
 
                       // Xoá class 'active' thể hiện nút không còn được nhấn
                       button.classList.remove("active");
-                    }}>
+                    }}
+                  >
                     Gọi món
                   </button>
                 </div>
@@ -405,19 +430,40 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
       return (
         <>
           <div className="client__orders">
-            {currentUseTable!.orderSheets?.sort((a, b) => new Date(b.timeCreate!).getTime() - new Date(a.timeCreate!).getTime())?.map((orderSheet) => (
-              <>
-                <div key={orderSheet!.id} className="client__order">
-                  <p className="client__order-time">{orderSheet!.timeCreate!}</p>
-                  <div className={"client__order-info " + (orderSheet!.status! == OrderSheetStatus.serviced ? "purple" : orderSheet!.status! == OrderSheetStatus.confirm ? "green" : orderSheet!.status! == OrderSheetStatus.canceled ? "red" : "gray")}>
-                    <b className="client__order-title">Phiếu: #{orderSheet!.id!}</b>
-                    <table className="client__order-details">
-                      <colgroup>
-                        <col width="55%" />
-                        <col width="15%" />
-                        <col width="30%" />
-                      </colgroup>
-                      {/* <tr>
+            {currentUseTable!.orderSheets
+              ?.sort(
+                (a, b) =>
+                  new Date(b.timeCreate!).getTime() -
+                  new Date(a.timeCreate!).getTime()
+              )
+              ?.map((orderSheet) => (
+                <>
+                  <div key={orderSheet!.id} className="client__order">
+                    <p className="client__order-time">
+                      {orderSheet!.timeCreate!}
+                    </p>
+                    <div
+                      className={
+                        "client__order-info " +
+                        (orderSheet!.status! == OrderSheetStatus.serviced
+                          ? "purple"
+                          : orderSheet!.status! == OrderSheetStatus.confirm
+                          ? "green"
+                          : orderSheet!.status! == OrderSheetStatus.canceled
+                          ? "red"
+                          : "gray")
+                      }
+                    >
+                      <b className="client__order-title">
+                        Phiếu: #{orderSheet!.id!}
+                      </b>
+                      <table className="client__order-details">
+                        <colgroup>
+                          <col width="55%" />
+                          <col width="15%" />
+                          <col width="30%" />
+                        </colgroup>
+                        {/* <tr>
                         <td className="left">Phở bò</td>
                         <td>1x</td>
                         <td className="right">45.000đ</td>
@@ -427,23 +473,45 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
                         <td>2x</td>
                         <td className="right">60.000đ</td>
                       </tr> */}
-                      {orderSheet!.orderSheetDetails?.map((orderSheetDetail, index) => (
-                        <tr key={index}>
-                          <td className="left">{orderSheetDetail!.food.name!}</td>
-                          <td>{orderSheetDetail!.quantity!}x</td>
-                          <td className="right">{vietnamMoneyFormat(orderSheetDetail!.price!)}đ</td>
-                        </tr>
-                      ))}
-                    </table>
-                    <p className="client__order-total">Tổng cộng: {vietnamMoneyFormat(orderSheet!.totalPrice!)}đ</p>
-                    <p className={"client__order-status " + (orderSheet!.status! == OrderSheetStatus.serviced ? "purple" : orderSheet!.status! == OrderSheetStatus.confirm ? "green" : orderSheet!.status! == OrderSheetStatus.canceled ? "red" : "gray")}>{orderSheet!.status!}</p>
-                    <p className="client__order-message">
-                      Lời nhắn: {orderSheet!.message!}
-                    </p>
+                        {orderSheet!.orderSheetDetails?.map(
+                          (orderSheetDetail, index) => (
+                            <tr key={index}>
+                              <td className="left">
+                                {orderSheetDetail!.food.name!}
+                              </td>
+                              <td>{orderSheetDetail!.quantity!}x</td>
+                              <td className="right">
+                                {vietnamMoneyFormat(orderSheetDetail!.price!)}đ
+                              </td>
+                            </tr>
+                          )
+                        )}
+                      </table>
+                      <p className="client__order-total">
+                        Tổng cộng: {vietnamMoneyFormat(orderSheet!.totalPrice!)}
+                        đ
+                      </p>
+                      <p
+                        className={
+                          "client__order-status " +
+                          (orderSheet!.status! == OrderSheetStatus.serviced
+                            ? "purple"
+                            : orderSheet!.status! == OrderSheetStatus.confirm
+                            ? "green"
+                            : orderSheet!.status! == OrderSheetStatus.canceled
+                            ? "red"
+                            : "gray")
+                        }
+                      >
+                        {orderSheet!.status!}
+                      </p>
+                      <p className="client__order-message">
+                        Lời nhắn: {orderSheet!.message!}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </>
-            ))}
+                </>
+              ))}
           </div>
         </>
       );
@@ -455,52 +523,50 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
       <header className="client__header-warper">
         <div className="client__header container">
           <CustomBrand to="#!" prefixClassName="client__" name="VINAEATERY" />
-          {currentUseTable!.status === UseTableStatus.occupied &&
-            (
-              <div className="client__actions">
-                {/* <button type="button" className="client__action">
+          {currentUseTable!.status === UseTableStatus.occupied && (
+            <div className="client__actions">
+              {/* <button type="button" className="client__action">
               <FontAwesomeIcon icon={faGear} className="client__icon" />
             </button> */}
-                <CustomDrawer
-                  key={1}
-                  prefixClassName="client__"
-                  icon={faQrcode}
-                  title="QR Code"
-                  children={ClientDrawers.qr()}
-                />
-                <CustomDrawer
-                  key={2}
-                  prefixClassName="client__"
-                  icon={faBell}
-                  title="Gọi nhân viên"
-                  children={ClientDrawers.call()}
-                />
-                <CustomDrawer
-                  key={3}
-                  prefixClassName="client__"
-                  icon={faCommentDots}
-                  title="Góp ý nhân viên"
-                  children={ClientDrawers.message()}
-                />
-                <CustomDrawer
-                  key={4}
-                  prefixClassName="client__"
-                  icon={faShoppingCart}
-                  title="Giỏ hàng"
-                  size="large"
-                  children={ClientDrawers.shoppingCart()}
-                />
-                <CustomDrawer
-                  key={5}
-                  prefixClassName="client__"
-                  icon={faReceipt}
-                  title="Phiếu gọi món"
-                  size="large"
-                  children={ClientDrawers.callTickets()}
-                />
-              </div>
-            )
-          }
+              <CustomDrawer
+                key={1}
+                prefixClassName="client__"
+                icon={faQrcode}
+                title="QR Code"
+                children={ClientDrawers.qr()}
+              />
+              <CustomDrawer
+                key={2}
+                prefixClassName="client__"
+                icon={faBell}
+                title="Gọi nhân viên"
+                children={ClientDrawers.call()}
+              />
+              <CustomDrawer
+                key={3}
+                prefixClassName="client__"
+                icon={faCommentDots}
+                title="Góp ý nhân viên"
+                children={ClientDrawers.message()}
+              />
+              <CustomDrawer
+                key={4}
+                prefixClassName="client__"
+                icon={faShoppingCart}
+                title="Giỏ hàng"
+                size="large"
+                children={ClientDrawers.shoppingCart()}
+              />
+              <CustomDrawer
+                key={5}
+                prefixClassName="client__"
+                icon={faReceipt}
+                title="Phiếu gọi món"
+                size="large"
+                children={ClientDrawers.callTickets()}
+              />
+            </div>
+          )}
         </div>
       </header>
     </>
@@ -517,22 +583,21 @@ const ClientMain: React.FC<ClientLayoutProps> = ({
   const filterListRef = useRef<HTMLDivElement>(null);
 
   // Truy vấn danh sách loại món ăn
-  const {
-    data: categoryFoods,
-  } = useQuery({
-    queryKey: [
-      'category-foods',
-    ],
+  const { data: categoryFoods } = useQuery({
+    queryKey: ["category-foods"],
     queryFn: async () => {
       if (currentUseTable!.status === UseTableStatus.occupied) {
-        const res = await FindAllCategoryFood({ statusValue: [CommonStatus.active] });
+        const res = await FindAllCategoryFood({
+          statusValue: [CommonStatus.active],
+        });
         if (res.status === 200) {
           return res.data;
         } else {
           openNotification({
             type: "error",
             message: "Truy vấn dữ liệu thất bại",
-            description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+            description:
+              String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
             duration: 2,
           });
 
@@ -550,23 +615,22 @@ const ClientMain: React.FC<ClientLayoutProps> = ({
   const [filterCategory, setFilterCategory] = useState<number | string>();
 
   // Hàm cập nhật danh sách các loại món ăn, món ăn (gọi API)
-  const {
-    data: foods,
-  } = useQuery({
-    queryKey: [
-      'foods',
-      filterCategory!
-    ],
+  const { data: foods } = useQuery({
+    queryKey: ["foods", filterCategory!],
     queryFn: async () => {
       if (currentUseTable!.status === UseTableStatus.occupied) {
-        const res = await FindAllFood({ categoryValue: [String(filterCategory!)], statusValue: [FoodStatus.active] });
+        const res = await FindAllFood({
+          categoryValue: [String(filterCategory!)],
+          statusValue: [FoodStatus.active],
+        });
         if (res.status === 200) {
           return res.data;
         } else {
           openNotification({
             type: "error",
             message: "Truy vấn dữ liệu thất bại",
-            description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+            description:
+              String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
             duration: 2,
           });
 
@@ -583,47 +647,43 @@ const ClientMain: React.FC<ClientLayoutProps> = ({
   return (
     <>
       <main className="client__main">
-        {currentUseTable!.status === UseTableStatus.occupied ?
-          (
-            <>
-              <aside className="client__filter">
-                <div className="client__filter-list-warper">
-                  <div ref={filterListRef} className="client__filter-list">
-                    {categoryFoods?.map((categoryFood) => (
-                      <CustomCardFilter
-                        key={categoryFood!.id!}
-                        object={categoryFood}
-                        active={filterCategory === categoryFood.id}
-                        currentValue={filterCategory}
-                        setSelectValue={setFilterCategory}
-                      />
-                    ))}
-                  </div>
+        {currentUseTable!.status === UseTableStatus.occupied ? (
+          <>
+            <aside className="client__filter">
+              <div className="client__filter-list-warper">
+                <div ref={filterListRef} className="client__filter-list">
+                  {categoryFoods?.map((categoryFood) => (
+                    <CustomCardFilter
+                      key={categoryFood!.id!}
+                      object={categoryFood}
+                      active={filterCategory === categoryFood.id}
+                      currentValue={filterCategory}
+                      setSelectValue={setFilterCategory}
+                    />
+                  ))}
                 </div>
-              </aside>
-              <div className="client__foods">
-                {foods?.map((food) => (
-                  <CustomCardFood
-                    key={food!.id!}
-                    object={food}
-                    shoppingCart={shoppingCart}
-                    setSelectFood={setShoppingCart}
-                  />
-                ))}
               </div>
-            </>
-          ) : (
-            <p className="client__inform container">
-              {
-                currentUseTable!.status === UseTableStatus.reserved
-                  ? "Rất tiếc, bàn này đã được khách khác đặt trước. Mong quý khách thông cảm!"
-                  : currentUseTable!.status === UseTableStatus.empty
-                    ? "Xin vui lòng chờ trong giây lát để chúng tôi chuẩn bị bàn cho quý khách."
-                    : "Bàn hiện đang được bảo trì. Rất mong quý khách thông cảm vì sự bất tiện này!"
-              }
-            </p>
-          )
-        }
+            </aside>
+            <div className="client__foods">
+              {foods?.map((food) => (
+                <CustomCardFood
+                  key={food!.id!}
+                  object={food}
+                  shoppingCart={shoppingCart}
+                  setSelectFood={setShoppingCart}
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className="client__inform container">
+            {currentUseTable!.status === UseTableStatus.reserved
+              ? "Rất tiếc, bàn này đã được khách khác đặt trước. Mong quý khách thông cảm!"
+              : currentUseTable!.status === UseTableStatus.empty
+              ? "Xin vui lòng chờ trong giây lát để chúng tôi chuẩn bị bàn cho quý khách."
+              : "Bàn hiện đang được bảo trì. Rất mong quý khách thông cảm vì sự bất tiện này!"}
+          </p>
+        )}
       </main>
     </>
   );
@@ -636,16 +696,14 @@ const ClientLayout = () => {
 
   // Id của bàn hiện tại (thông qua url trang)
   const { tableId } = useParams();
-  // Truy vấn dữ liệu
+  // Truy vấn dữ liệu sử dụng bàn ăn (theo mã bàn)
   const {
     data: currentUseTable,
     isLoading,
     isError,
     error,
   } = useQuery({
-    queryKey: [
-      'current-use-table',
-    ],
+    queryKey: ["current-use-table"],
     queryFn: async () => {
       const res = await FindOneNewUseTableByTableId({
         tableId: tableId!,
@@ -664,7 +722,27 @@ const ClientLayout = () => {
       }
     },
     retry: ReactQueryGetData.retry,
-    staleTime: ReactQueryGetData.staleTime,
+    // staleTime: ReactQueryGetData.staleTime,
+    refetchInterval: 1000 * 5 * 1,
+  });
+  // Truy vấn dữ liệu Xử lý thanh toán
+  const { data: handlePayment } = useQuery({
+    queryKey: ["handle-payment"],
+    queryFn: async () => {
+      const res = await GetHandlePaymentFormat();
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        // openNotification({
+        //   type: "error",
+        //   message: "Truy vấn dữ liệu thất bại",
+        //   description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+        //   duration: 2,
+        // });
+        // throw res;
+      }
+    },
+    refetchInterval: 1000 * 3,
   });
 
   // //
@@ -686,11 +764,13 @@ const ClientLayout = () => {
 
   return (
     <>
-      {isError ? (
+      {isError && !handlePayment ? (
         <Navigate to="/error" replace />
-      ) : (
+      ) : handlePayment?.useTable?.id !== currentUseTable?.id ||
+        handlePayment?.status === HandlePaymentStatus.nothing ? (
         <>
           <ClientHeader
+            queryClient={queryClient}
             tableId={tableId}
             shoppingCart={shoppingCart}
             setShoppingCart={setShoppingCart}
@@ -703,6 +783,8 @@ const ClientLayout = () => {
             currentUseTable={currentUseTable}
           />
         </>
+      ) : (
+        <CustomSpinner />
       )}
     </>
   );

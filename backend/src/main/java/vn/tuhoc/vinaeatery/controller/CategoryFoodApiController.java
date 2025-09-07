@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.CategoryFood;
 import vn.tuhoc.vinaeatery.domain.criteria.CategoryFoodCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
@@ -33,7 +33,7 @@ import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
 @RequestMapping("/api/category-foods")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CategoryFoodApiController {
     // Properties
     private final CategoryFoodService categoryFoodService;

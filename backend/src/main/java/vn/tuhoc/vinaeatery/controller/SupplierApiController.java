@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Supplier;
 import vn.tuhoc.vinaeatery.domain.criteria.SupplierCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
 @RequestMapping("/api/suppliers")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SupplierApiController {
     // Properties
     private final SupplierService supplierService;

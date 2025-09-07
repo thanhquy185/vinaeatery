@@ -1,9 +1,6 @@
 package vn.tuhoc.vinaeatery.controller;
 
-import javax.swing.text.html.HTML;
-
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties.Http;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -152,8 +149,8 @@ public class AuthApiController {
 
                 String username = SecurityUtil.getCurrentEmployeeLogin().isPresent()
                                 ? SecurityUtil.getCurrentEmployeeLogin().get()
-                                : "";
-                System.out.println(username);
+                                : null;
+                // System.out.println(username);
                 Employee currentEmployeeDB = this.employeeService.getOneByUsername(username);
                 // RestLoginDTO.EmployeeLogin employeeLogin = new RestLoginDTO.EmployeeLogin();
                 // RestLoginDTO.EmployeeGetAccount employeeGetAccount = new

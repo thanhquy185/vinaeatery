@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Function;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.service.FunctionService;
@@ -18,14 +19,10 @@ import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
 @RequestMapping("/api/functions")
+@RequiredArgsConstructor
 public class FunctionApiController {
     // Properties
     private final FunctionService functionService;
-
-    // Constructors
-    public FunctionApiController(FunctionService functionService) {
-        this.functionService = functionService;
-    }
 
     // Methods
     @PostMapping("/list")

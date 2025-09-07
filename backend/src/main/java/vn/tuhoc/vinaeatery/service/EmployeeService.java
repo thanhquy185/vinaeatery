@@ -7,7 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Employee;
 import vn.tuhoc.vinaeatery.domain.Employee_;
 import vn.tuhoc.vinaeatery.domain.RoleHistory;
@@ -23,9 +23,8 @@ import vn.tuhoc.vinaeatery.service.specification.EmployeeSpecification;
 import vn.tuhoc.vinaeatery.util.SecurityUtil;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class EmployeeService {
-
     // Properties
     private final RoleService roleService;
     private final RoleRepository roleRepository;

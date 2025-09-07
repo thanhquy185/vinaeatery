@@ -149,8 +149,9 @@
   }
 
   &:where(.table-histories, .use-tables, .order-sheets) .info {
-    font-size: 1.8rem;
+    width: 100%;
     margin-top: 4px;
+    font-size: 1.8rem;
   }
 
   &.order-sheets .info:has(textarea) {
@@ -162,8 +163,7 @@
     font-size: 1.6rem;
   }
 
-
-  &:where(.table-histories, .use-tables, .order-sheets) .info>b {
+  &:where(.table-histories, .use-tables, .order-sheets) .info > b {
     width: 25%;
     display: inline-block;
     font-weight: 600;
@@ -410,9 +410,12 @@
     margin-top: -14px;
   }
 
-  & .ant-form-item-control:has(.ant-image-img) .ant-form-item-control-input-content {
+  &
+    .ant-form-item-control:has(.ant-image-img)
+    .ant-form-item-control-input-content {
     @include flexCenter();
-    height: calc($form-item-height * 2) + calc($form-label-height * 2) + calc($margin-bottom * 2);
+    height: calc($form-item-height * 2) + calc($form-label-height * 2) +
+      calc($margin-bottom * 2);
   }
 
   & .ant-form-item-control .ant-upload,
@@ -422,25 +425,42 @@
 
   & .ant-form-item-control .ant-upload #image-button[type="button"] {
     position: absolute;
-    top: calc(calc($form-item-height * 2) + calc($form-label-height * 2) + calc($margin-bottom * 2));
+    top: calc(
+      calc($form-item-height * 2) + calc($form-label-height * 2) +
+        calc($margin-bottom * 2)
+    );
     left: 0;
   }
 
-  &__form.ant-form &__form-group-item:has(.ant-form-item-control .ant-upload #image-button[type="button"])+* {
+  &__form.ant-form
+    &__form-group-item:has(
+      .ant-form-item-control .ant-upload #image-button[type="button"]
+    )
+    + * {
     margin-top: calc($form-item-height + $margin-bottom);
   }
 
-  &.ant-modal.employees .ant-form-item-control :is(.ant-image-img, .ant-image-mask) {
+  &.ant-modal.employees
+    .ant-form-item-control
+    :is(.ant-image-img, .ant-image-mask) {
     width: calc(180px * 3 / 4);
   }
 
-  &.ant-modal.foods .ant-form-item-control :is(.ant-image-img, .ant-image-mask) {
+  &.ant-modal.foods
+    .ant-form-item-control
+    :is(.ant-image-img, .ant-image-mask) {
     @include size(240px, 180px);
     margin-top: 80px;
   }
 
-  &.ant-modal.foods .ant-form-item-control .ant-upload #image-button[type="button"] {
-    top: calc(calc($form-item-height * 3) + calc($form-label-height * 3) + calc($margin-bottom * 3));
+  &.ant-modal.foods
+    .ant-form-item-control
+    .ant-upload
+    #image-button[type="button"] {
+    top: calc(
+      calc($form-item-height * 3) + calc($form-label-height * 3) +
+        calc($margin-bottom * 3)
+    );
   }
 
   &__form.ant-form &__form-group-item button.secondary-btn {
@@ -471,7 +491,95 @@
   }
 
   &__form textarea.multiple-2 {
-    height: calc($form-label-height + calc($form-item-height * 2) + $margin-bottom );
+    height: calc(
+      $form-label-height + calc($form-item-height * 2) + $margin-bottom
+    );
+  }
+
+  & .line {
+    @include size(100%, 4px);
+    background: $primary-color;
+    margin-top: 32px;
+  }
+
+  & .sub-title,
+  & .info.diff {
+    color: #b30000;
+    font-size: 2.8rem;
+    font-weight: 600;
+  }
+
+  & .sub-title {
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+  }
+
+  & .info.diff {
+    @include flexCenter();
+    flex-direction: column;
+    margin-top: 32px;
+    font-size: 2rem;
+  }
+
+  & .info.diff b {
+    align-self: flex-start;
+  }
+
+  & .info.diff .content {
+    display: inline-block;
+    width: 100%;
+    background: #fff;
+    padding: 50px 0;
+    border: 1px solid #dedede;
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  & .info.diff .content :is(img, .spinner) {
+    @include size(150px);
+  }
+
+  & .info.diff .content .spinner {
+    @include flexCenter();
+    gap: 8px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+  }
+
+  & .info.diff .content .spinner > span {
+    @include size(20px !important);
+  }
+
+  & .info.diff .content p {
+    color: #000;
+    font-size: 2rem;
+    margin-top: 14px;
+  }
+
+  & .info.diff .ant-input-number {
+    width: 100% !important;
+  }
+  
+  & .info.diff input {
+    height: 45px;
+    font-size: 1.8rem;
+  }
+
+  & .sub-info {
+    padding-left: 14px;
+    color: #555;
+    font-size: 1.6rem;
+  }
+
+  & .sub-info b {
+    display: inline-block;
+    width: 18%;
+    font-weight: 600;
+  }
+
+  & .sub-info:not(:first-of-type) {
+    margin-top: 4px;
   }
 
   &__buttons {
@@ -480,8 +588,12 @@
     width: 100%;
   }
 
-  &__buttons.mg-top {
+  &__buttons.mg-top:has(button) {
     margin-top: 30px;
+  }
+
+  &.use-tables &__buttons.mg-top-diff:has(button) {
+    margin-top: 200px;
   }
 
   &__button {
@@ -497,6 +609,25 @@
   &__button.secondary:first-of-type {
     margin-left: auto;
   }
+
+  &__button:has(:is(.spinner, .icon)) {
+    @include flexCenter();
+    gap: 4px;
+  }
+
+  // &__button:has(.spinner):hover {
+  //   background: $primary-color;
+  //   color: #fff;
+  // }
+
+  &__button :is(.spinner, .icon) {
+    @include size(16px !important);
+    border-color: #fff !important;
+  }
+
+  // &__button:disabled {
+  //   color: #999;
+  // }
 
   //   &__form.half &__button {
   //     width: calc(50% - calc($padding-horizontal / 2));

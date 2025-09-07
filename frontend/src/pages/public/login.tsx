@@ -1,9 +1,11 @@
-import { useNavigate } from 'react-router-dom';
-import { Form, Input } from 'antd';
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Form, Input } from "antd";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { ruleRequired } from "../../common/rules";
-import { HandleLogin } from '../../services/api';
-import { openNotification } from '../../utils/showNotification';
+import { HandleLogin } from "../../services/api";
+import { openNotification } from "../../utils/showNotification";
+import CustomSpinner from "../../components/common/spinner";
 
 // Login Page
 const LoginPage = () => {
@@ -11,14 +13,22 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   //
+  const [isShowSpinner, setIsShowSpinner] = useState<boolean>(false);
+
+  //
   const [form] = Form.useForm();
 
   return (
     <>
       {/* <ComebackHomeButton /> */}
+      {isShowSpinner && <CustomSpinner />}
       <div className="form">
         <h1 className="form__title">
-          <img src="src/assets/images/others/brand-image.png" alt="brand-image" className="form__title-image" />
+          <img
+            src="src/assets/images/others/brand-image.png"
+            alt="brand-image"
+            className="form__title-image"
+          />
           <p className="form__title-text">Đăng nhập</p>
         </h1>
         <div className="form__line"></div>
@@ -26,7 +36,7 @@ const LoginPage = () => {
           layout="vertical"
           form={form}
           className="form__form"
-          autoComplete='off'
+          autoComplete="off"
           onFinish={async () => {
             // Nút để submit form
             const submitButton = document.querySelector(
@@ -40,6 +50,7 @@ const LoginPage = () => {
             const values = form.getFieldsValue();
 
             // Gọi api xử lý
+            setIsShowSpinner(true);
             const res = await HandleLogin({
               username: values!.username || undefined,
               password: values!.password || undefined,
@@ -60,7 +71,9 @@ const LoginPage = () => {
               openNotification({
                 type: "error",
                 message: "Thất bại",
-                description: res!.data ? String(res!.data) : "Đăng nhập thất bại !",
+                description: res!.data
+                  ? String(res!.data)
+                  : "Đăng nhập thất bại !",
                 duration: 1.5,
               });
 
@@ -69,6 +82,8 @@ const LoginPage = () => {
                 submitButton?.classList.remove("active");
               }, 1500);
             }
+
+            setIsShowSpinner(false);
 
             // Xoá class 'active' thể hiện nút không còn được nhấn
             submitButton?.classList.remove("active");
@@ -81,7 +96,11 @@ const LoginPage = () => {
             className="form__form-group"
             rules={[ruleRequired("Tên tài khoản không được để trống !")]}
           >
-            <Input id="username" prefix={<UserOutlined />} placeholder="Nhập Tên tài khoản" />
+            <Input
+              id="username"
+              prefix={<UserOutlined />}
+              placeholder="Nhập Tên tài khoản"
+            />
           </Form.Item>
           <Form.Item
             name="password"
@@ -90,14 +109,20 @@ const LoginPage = () => {
             className="form__form-group"
             rules={[ruleRequired("Mật khẩu không được để trống !")]}
           >
-            <Input.Password id="password" prefix={<LockOutlined />} placeholder="Nhập Mật khẩu" />
+            <Input.Password
+              id="password"
+              prefix={<LockOutlined />}
+              placeholder="Nhập Mật khẩu"
+            />
           </Form.Item>
           <button type="submit" className="btn form__button">
             Xác nhận
           </button>
-          <a href="" className="form__action">Quên mật khẩu ?</a>
+          <a href="" className="form__action">
+            Quên mật khẩu ?
+          </a>
         </Form>
-      </div >
+      </div>
     </>
   );
 };

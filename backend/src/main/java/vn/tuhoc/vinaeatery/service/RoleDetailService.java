@@ -7,16 +7,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.RoleDetail;
-import vn.tuhoc.vinaeatery.domain.RoleDetailId;
 import vn.tuhoc.vinaeatery.domain.criteria.RoleDetailCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.RoleDetailDTO;
 import vn.tuhoc.vinaeatery.repository.RoleDetailRepository;
 import vn.tuhoc.vinaeatery.service.specification.RoleDetailSpecification;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RoleDetailService {
     // Properties
     private final RoleDetailRepository roleDetailRepository;

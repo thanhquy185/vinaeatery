@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 // import vn.tuhoc.vinaeatery.domain.Food;
 import vn.tuhoc.vinaeatery.domain.Ingredient;
 import vn.tuhoc.vinaeatery.domain.Order;
@@ -26,7 +26,8 @@ import vn.tuhoc.vinaeatery.domain.Recipe;
 import vn.tuhoc.vinaeatery.domain.criteria.OrderCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderDTO;
-import vn.tuhoc.vinaeatery.domain.dto.OrderUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.dto.OrderUpdatePaymentDTO;
+import vn.tuhoc.vinaeatery.domain.dto.OrderUpdateStatusDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.OrderStatusEnum;
 // import vn.tuhoc.vinaeatery.service.FoodService;
 // import vn.tuhoc.vinaeatery.service.EmployeeService;
@@ -41,7 +42,7 @@ import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
 @RequestMapping("/api/orders")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OrderApiController {
     // Properties
     private final OrderService orderService;
@@ -130,10 +131,10 @@ public class OrderApiController {
         return ResponseEntity.status(HttpStatus.OK).body(orderCreated);
     }
 
-    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleUpdateOrder(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+    @PutMapping(value = "/update-status/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleUpdateStatusOrder(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
             @PathVariable("id") Integer id,
-            @RequestPart("order") OrderUpdateDTO order) {
+            @RequestPart("order") OrderUpdateStatusDTO order) {
         if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "orders", "update")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
@@ -141,9 +142,6 @@ public class OrderApiController {
         }
 
         Order orderUpdated = this.orderService.getOneById(id);
-        if (order.getPayStatus() != null) {
-            orderUpdated.setPayStatus(order.getPayStatus());
-        }
         if (order.getStatus() != null) {
             List<OrderDetail> orderDetails = orderDetailService.getAllByOrderId(id);
             if (!orderDetails.isEmpty() && !orderDetails.isEmpty()) {
@@ -184,5 +182,25 @@ public class OrderApiController {
         this.orderService.upsert(orderUpdated);
 
         return ResponseEntity.status(HttpStatus.OK).body(orderUpdated);
+    }
+
+    @PutMapping(value = "/update-payment/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleUpdatePaymentOrder(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+            @PathVariable("id") Integer id,
+            @RequestPart("order") OrderUpdatePaymentDTO order) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "orders", "update")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
+        Order orderUpdated = this.orderService.getOneById(id);
+        if(!orderUpdated.getStatus().equals(OrderStatusEnum.CONFIRM.getDescription())) {
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr("Đơn hàng này chưa được xác nhận nên không thể thanh toán !")); 
+        }
+
+        return null;
     }
 }

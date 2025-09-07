@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import vn.tuhoc.vinaeatery.domain.PayMethod;
 import vn.tuhoc.vinaeatery.domain.enumm.OrderStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.PayStatusEnum;
 import vn.tuhoc.vinaeatery.repository.converter.OrderStatusConverter;
@@ -33,9 +34,14 @@ public class OrderDTO {
     private EmployeeDTO employee;
     private CustomerDTO customer;
     private Long totalPrice;
-    @Convert(converter = PayStatusConverter.class)
-    private PayStatusEnum payStatus;
     @Convert(converter = OrderStatusConverter.class)
     private OrderStatusEnum status;
     private List<OrderDetailDTO> orderDetails;
+    private String payId;
+    private PayMethod payMethod;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime payTime;
+    private Long payTotalPrice;
+    @Convert(converter = PayStatusConverter.class)
+    private PayStatusEnum payStatus;
 }

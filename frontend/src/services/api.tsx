@@ -14,6 +14,8 @@ import type {
   FoodsFormatType,
   FoodsType,
   FunctionsType,
+  HandlePaymentsFormatType,
+  HandlePaymentsType,
   IngredientsFormatType,
   IngredientsType,
   InputTicketsFormatType,
@@ -24,6 +26,7 @@ import type {
   OrdersType,
   OrderTablesFormatType,
   OrderTablesType,
+  PayMethodsType,
   RestResponseType,
   RolesFormatType,
   RolesType,
@@ -37,6 +40,8 @@ import type {
 // Các key tương ứng cho từng đối tượng
 const keys = {
   auth: "auth",
+  momo: "momo",
+  handlePayments: "handle-payments",
   categoryFoods: "category-foods",
   categoryIngredients: "category-ingredients",
   categoryTables: "category-tables",
@@ -45,7 +50,6 @@ const keys = {
   employees: "employees",
   floors: "floors",
   foods: "foods",
-  functions: "functions",
   ingredients: "ingredients",
   inputTickets: "input-tickets",
   orders: "orders",
@@ -56,7 +60,9 @@ const keys = {
   suppliers: "suppliers",
   tables: "tables",
   useTables: "use-tables",
-}
+  functions: "functions",
+  payMethods: "pay-methods",
+};
 // Form bảo mật chung để truy vấn dữ liệu (bảo mật)
 const formSecurityValue = {
   project: {
@@ -68,21 +74,31 @@ const formSecurityValue = {
   developer: {
     fullname: "tranthanhquy",
     phone: "0923073724",
-    email: "thanhquyfu@gmail.com"
-  }
-}
+    email: "thanhquyfu@gmail.com",
+  },
+};
 // Hàm tạo form bảo mật mới tương ứng với đối tượng
-const getNewFormSecurityValue = ({ fieldName, fieldAction }: { fieldName: string, fieldAction: string }) => {
-  return { ...formSecurityValue, field: { name: fieldName, action: fieldAction } };
-}
+const getNewFormSecurityValue = ({
+  fieldName,
+  fieldAction,
+}: {
+  fieldName: string;
+  fieldAction: string;
+}) => {
+  return {
+    ...formSecurityValue,
+    field: { name: fieldName, action: fieldAction },
+  };
+};
 
 // Các api của đối tượng xác thực (Auth)
-export const HandleLogin = (
-  {
-    username,
-    password
-  }: { username: string, password: string }
-): Promise<AxiosResponse<RestResponseType, any>> => {
+export const HandleLogin = ({
+  username,
+  password,
+}: {
+  username: string;
+  password: string;
+}): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
 
@@ -91,7 +107,12 @@ export const HandleLogin = (
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.auth, fieldAction: "login" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.auth,
+            fieldAction: "login",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -103,7 +124,7 @@ export const HandleLogin = (
       [
         JSON.stringify({
           username,
-          password
+          password,
         }),
       ],
       { type: "application/json" }
@@ -116,18 +137,177 @@ export const HandleLogin = (
     },
   });
 };
-export const HandleLogout = (): Promise<AxiosResponse<RestResponseType, any>> => {
+export const HandleLogout = (): Promise<
+  AxiosResponse<RestResponseType, any>
+> => {
   return instance.post(
     `/api/${keys.auth}/logout`,
     getNewFormSecurityValue({ fieldName: keys.auth, fieldAction: "logout" })
   );
-}
-export const HandleAccount = (): Promise<AxiosResponse<RestResponseType, any>> => {
+};
+export const HandleAccount = (): Promise<
+  AxiosResponse<RestResponseType, any>
+> => {
   return instance.post(
     `/api/${keys.auth}/account`,
     getNewFormSecurityValue({ fieldName: keys.auth, fieldAction: "account" })
   );
-}
+};
+
+// Các api thanh toán hoá đơn
+export const HandleCreateMomoQR = (): Promise<
+  AxiosResponse<RestResponseType, any>
+> => {
+  const formData = new FormData();
+  formData.append(
+    "form-security",
+    new Blob(
+      [
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.momo,
+            fieldAction: "create",
+          })
+        ),
+      ],
+      { type: "application/json" }
+    )
+  );
+
+  return instance.post(`/api/${keys.momo}/create`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+export const HandleCancelPaymentMomo = ({
+  orderId,
+  amount,
+}: {
+  orderId: string;
+  amount: string;
+}): Promise<AxiosResponse<RestResponseType, any>> => {
+  // Form data
+  const formData = new FormData();
+
+  // Form bảo mật
+  formData.append(
+    "form-security",
+    new Blob(
+      [
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.momo,
+            fieldAction: "cancel",
+          })
+        ),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Tổng thanh toán
+  formData.append("amount", amount.toString());
+
+  return instance.post(`/api/momo/cancel/${orderId}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+// Các api xử lý thanh toán hoá đơn
+export const GetHandlePayment = (): Promise<
+  AxiosResponse<HandlePaymentsType, any>
+> => {
+  return instance.post(
+    `/api/${keys.handlePayments}/get`,
+    getNewFormSecurityValue({
+      fieldName: keys.handlePayments,
+      fieldAction: "read",
+    })
+  );
+};
+export const GetHandlePaymentFormat = (): Promise<
+  AxiosResponse<HandlePaymentsFormatType, any>
+> => {
+  return instance.post(
+    `/api/${keys.handlePayments}/get-format`,
+    getNewFormSecurityValue({
+      fieldName: keys.handlePayments,
+      fieldAction: "read",
+    })
+  );
+};
+export const GetHandlePaymentByUseTableId = (
+  useTableId: string
+): Promise<AxiosResponse<HandlePaymentsType, any>> => {
+  return instance.post(
+    `/api/${keys.handlePayments}/get/${useTableId}`,
+    getNewFormSecurityValue({
+      fieldName: keys.handlePayments,
+      fieldAction: "read",
+    })
+  );
+};
+export const GetHandlePaymentFormatByUseTableId = (
+  useTableId: string
+): Promise<AxiosResponse<HandlePaymentsFormatType, any>> => {
+  return instance.post(
+    `/api/${keys.handlePayments}/get-format/${useTableId}`,
+    getNewFormSecurityValue({
+      fieldName: keys.handlePayments,
+      fieldAction: "read",
+    })
+  );
+};
+export const HandleUpdateHandlePayment = ({
+  useTableId,
+  employeeId,
+  payMethodId,
+  payTotalPrice,
+  status,
+}: HandlePaymentsType): Promise<AxiosResponse<RestResponseType, any>> => {
+  // Form data
+  const formData = new FormData();
+
+  // Form bảo mật
+  formData.append(
+    "form-security",
+    new Blob(
+      [
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.handlePayments,
+            fieldAction: "update",
+          })
+        ),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Đối tượng
+  formData.append(
+    "handle-payment",
+    new Blob(
+      [
+        JSON.stringify({
+          useTableId,
+          employeeId,
+          payMethodId,
+          payTotalPrice,
+          status,
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+
+  return instance.put(`/api/${keys.handlePayments}/update`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
 
 // Các api của đối tượng Sử dụng bàn ăn (Use Table)
 export const FindOneNewUseTableByTableId = ({
@@ -156,16 +336,16 @@ export const FindAllUseTable = ({
     if (timeValue![0] !== "") params.timeStart = timeValue![0];
     if (timeValue![1] !== "") params.timeEnd = timeValue![1];
   }
-  if (floorValue! && floorValue!.length > 0)
-    params.floorId = floorValue![0];
-  if (statusValue! && statusValue!.length > 0)
-    params.status = statusValue![0];
+  if (floorValue! && floorValue!.length > 0) params.floorId = floorValue![0];
+  if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
   return instance.post<UseTablesFormatType[]>(
     `/api/${keys.useTables}/list-format`,
-    getNewFormSecurityValue({ fieldName: keys.useTables, fieldAction: "read" }), {
-    params,
-  });
+    getNewFormSecurityValue({ fieldName: keys.useTables, fieldAction: "read" }),
+    {
+      params,
+    }
+  );
 };
 export const FindAllUseTableTimeEndIsNull = ({
   findType,
@@ -178,16 +358,16 @@ export const FindAllUseTableTimeEndIsNull = ({
   if (findValue! !== "") {
     if (findType! === "table") params.tableName = findValue!;
   }
-  if (floorValue! && floorValue!.length > 0)
-    params.floorId = floorValue![0];
-  if (statusValue! && statusValue!.length > 0)
-    params.status = statusValue![0];
+  if (floorValue! && floorValue!.length > 0) params.floorId = floorValue![0];
+  if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
   return instance.post<UseTablesFormatType[]>(
     `/api/${keys.useTables}/list-format?timeEnd=null`,
-    getNewFormSecurityValue({ fieldName: keys.useTables, fieldAction: "read" }), {
-    params,
-  });
+    getNewFormSecurityValue({ fieldName: keys.useTables, fieldAction: "read" }),
+    {
+      params,
+    }
+  );
 };
 export const HandleUpdateUseTable = ({
   id,
@@ -211,7 +391,12 @@ export const HandleUpdateUseTable = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.useTables, fieldAction: "update" })),
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.useTables,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -263,16 +448,19 @@ export const FindAllOrderSheet = ({
   //   if (timeValue![0] !== "") params.timeCreateStart = timeValue![0];
   //   if (timeValue![1] !== "") params.timeCreateEnd = timeValue![1];
   // }
-  if (floorValue! && floorValue!.length > 0)
-    params.floorId = floorValue![0];
-  if (statusValue! && statusValue!.length > 0)
-    params.status = statusValue![0];
+  if (floorValue! && floorValue!.length > 0) params.floorId = floorValue![0];
+  if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
   return instance.post<OrderSheetsFormatType[]>(
     `/api/${keys.orderSheets}/list-format`,
-    getNewFormSecurityValue({ fieldName: keys.orderSheets, fieldAction: "read" }), {
-    params,
-  });
+    getNewFormSecurityValue({
+      fieldName: keys.orderSheets,
+      fieldAction: "read",
+    }),
+    {
+      params,
+    }
+  );
 };
 export const FindAllOrderSheetCurrentDate = ({
   findType,
@@ -282,23 +470,29 @@ export const FindAllOrderSheetCurrentDate = ({
 }: FilterDataProps): Promise<AxiosResponse<OrderSheetsFormatType[], any>> => {
   const params: Record<string, string> = {};
 
-  if (floorValue! && floorValue!.length > 0)
-    params.floorId = floorValue![0];
-  if (statusValue! && statusValue!.length > 0)
-    params.status = statusValue![0];
+  if (floorValue! && floorValue!.length > 0) params.floorId = floorValue![0];
+  if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 
   return instance.post<OrderSheetsFormatType[]>(
     `/api/${keys.orderSheets}/list-format?currentDate`,
-    getNewFormSecurityValue({ fieldName: keys.orderSheets, fieldAction: "read" }), {
-    params,
-  });
+    getNewFormSecurityValue({
+      fieldName: keys.orderSheets,
+      fieldAction: "read",
+    }),
+    {
+      params,
+    }
+  );
 };
 export const FindOneOrderSheet = (
   id: string
 ): Promise<AxiosResponse<OrderSheetsFormatType, any>> => {
   return instance.post(
     `/api/${keys.orderSheets}/detail/${id}`,
-    getNewFormSecurityValue({ fieldName: keys.orderSheets, fieldAction: "read" })
+    getNewFormSecurityValue({
+      fieldName: keys.orderSheets,
+      fieldAction: "read",
+    })
   );
 };
 export const HandleCreateOrderSheet = ({
@@ -318,7 +512,12 @@ export const HandleCreateOrderSheet = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.orderSheets, fieldAction: "create" })),
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.orderSheets,
+            fieldAction: "create",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -370,7 +569,12 @@ export const HandleUpdateOrderSheet = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.orderSheets, fieldAction: "update" })),
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.orderSheets,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -420,9 +624,11 @@ export const FindAllOrder = ({
 
   return instance.post<OrdersFormatType[]>(
     `/api/orders/list-format`,
-    getNewFormSecurityValue({ fieldName: keys.orders, fieldAction: "read" }), {
-    params,
-  });
+    getNewFormSecurityValue({ fieldName: keys.orders, fieldAction: "read" }),
+    {
+      params,
+    }
+  );
 };
 export const FindOneOrder = (
   id: string
@@ -449,7 +655,12 @@ export const HandleCreateOrder = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.orders, fieldAction: "create" })),
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.orders,
+            fieldAction: "create",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -499,7 +710,12 @@ export const HandleUpdateOrder = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.orders, fieldAction: "update" })),
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.orders,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -547,7 +763,10 @@ export const FindAllOrderTable = ({
 
   return instance.post<OrderTablesFormatType[]>(
     `/api/${keys.orderTables}/list-format`,
-    getNewFormSecurityValue({ fieldName: keys.orderTables, fieldAction: "read" }),
+    getNewFormSecurityValue({
+      fieldName: keys.orderTables,
+      fieldAction: "read",
+    }),
     {
       params,
     }
@@ -558,7 +777,10 @@ export const FindOneOrderTable = (
 ): Promise<AxiosResponse<OrderTablesFormatType, any>> => {
   return instance.post(
     `/api/${keys.orderTables}/detail/${id}`,
-    getNewFormSecurityValue({ fieldName: keys.orderTables, fieldAction: "read" })
+    getNewFormSecurityValue({
+      fieldName: keys.orderTables,
+      fieldAction: "read",
+    })
   );
 };
 export const HandleCreateOrderTable = ({
@@ -580,7 +802,12 @@ export const HandleCreateOrderTable = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.orderTables, fieldAction: "create" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.orderTables,
+            fieldAction: "create",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -631,7 +858,12 @@ export const HandleUpdateOrderTable = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.orderTables, fieldAction: "update" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.orderTables,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -675,7 +907,12 @@ export const HandleLockOrderTable = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.orderTables, fieldAction: "lock" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.orderTables,
+            fieldAction: "lock",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -717,16 +954,24 @@ export const FindAllCustomerCard = ({
 
   return instance.post<CustomerCardsType[]>(
     `/api/${keys.customerCards}/list`,
-    getNewFormSecurityValue({ fieldName: keys.customerCards, fieldAction: "read" }), {
-    params,
-  });
+    getNewFormSecurityValue({
+      fieldName: keys.customerCards,
+      fieldAction: "read",
+    }),
+    {
+      params,
+    }
+  );
 };
 export const FindOneCustomerCard = (
   id: string
 ): Promise<AxiosResponse<CustomerCardsType, any>> => {
   return instance.post(
     `/api/${keys.customerCards}/detail/${id}`,
-    getNewFormSecurityValue({ fieldName: keys.customerCards, fieldAction: "read" })
+    getNewFormSecurityValue({
+      fieldName: keys.customerCards,
+      fieldAction: "read",
+    })
   );
 };
 export const HandleCreateCustomerCard = ({
@@ -745,7 +990,12 @@ export const HandleCreateCustomerCard = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.customerCards, fieldAction: "create" })),
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.customerCards,
+            fieldAction: "create",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -792,7 +1042,12 @@ export const HandleUpdateCustomerCard = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.customerCards, fieldAction: "update" })),
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.customerCards,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -835,7 +1090,12 @@ export const HandleLockCustomerCard = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.customerCards, fieldAction: "lock" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.customerCards,
+            fieldAction: "lock",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -882,9 +1142,11 @@ export const FindAllCustomer = ({
 
   return instance.post<CustomersFormatType[]>(
     `/api/${keys.customers}/list-format`,
-    getNewFormSecurityValue({ fieldName: keys.customers, fieldAction: "read" }), {
-    params,
-  });
+    getNewFormSecurityValue({ fieldName: keys.customers, fieldAction: "read" }),
+    {
+      params,
+    }
+  );
 };
 export const FindOneCustomer = (
   id: string
@@ -914,7 +1176,12 @@ export const HandleCreateCustomer = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.customers, fieldAction: "create" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.customers,
+            fieldAction: "create",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -967,7 +1234,12 @@ export const HandleUpdateCustomer = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.customers, fieldAction: "update" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.customers,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1012,7 +1284,12 @@ export const HandleLockCustomer = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.customers, fieldAction: "lock" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.customers,
+            fieldAction: "lock",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1054,9 +1331,11 @@ export const FindAllFloor = ({
 
   return instance.post<FloorsType[]>(
     `/api/${keys.floors}/list`,
-    getNewFormSecurityValue({ fieldName: keys.floors, fieldAction: "read" }), {
-    params,
-  });
+    getNewFormSecurityValue({ fieldName: keys.floors, fieldAction: "read" }),
+    {
+      params,
+    }
+  );
 };
 export const FindOneFloor = (
   id: string
@@ -1079,7 +1358,12 @@ export const HandleCreateFloor = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.floors, fieldAction: "create" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.floors,
+            fieldAction: "create",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1119,7 +1403,12 @@ export const HandleUpdateFloor = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.floors, fieldAction: "update" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.floors,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1158,7 +1447,12 @@ export const HandleLockFloor = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.floors, fieldAction: "lock" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.floors,
+            fieldAction: "lock",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1203,9 +1497,13 @@ export const FindAllCategoryTable = ({
 
   return instance.post<CategoryTablesType[]>(
     `/api/${keys.categoryTables}/list`,
-    getNewFormSecurityValue({ fieldName: keys.categoryTables, fieldAction: "read" }), {
-    params,
-  }
+    getNewFormSecurityValue({
+      fieldName: keys.categoryTables,
+      fieldAction: "read",
+    }),
+    {
+      params,
+    }
   );
 };
 export const FindOneCategoryTable = (
@@ -1213,7 +1511,10 @@ export const FindOneCategoryTable = (
 ): Promise<AxiosResponse<CategoryTablesType, any>> => {
   return instance.post(
     `/api/${keys.categoryTables}/detail/${id}`,
-    getNewFormSecurityValue({ fieldName: keys.categoryTables, fieldAction: "read" })
+    getNewFormSecurityValue({
+      fieldName: keys.categoryTables,
+      fieldAction: "read",
+    })
   );
 };
 export const HandleCreateCategoryTable = ({
@@ -1231,7 +1532,12 @@ export const HandleCreateCategoryTable = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.categoryTables, fieldAction: "create" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.categoryTables,
+            fieldAction: "create",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1275,7 +1581,12 @@ export const HandleUpdateCategoryTable = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.categoryTables, fieldAction: "update" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.categoryTables,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1316,7 +1627,12 @@ export const HandleLockCategoryTable = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.categoryTables, fieldAction: "lock" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.categoryTables,
+            fieldAction: "lock",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1361,9 +1677,11 @@ export const FindAllTable = ({
 
   return instance.post<TablesFormatType[]>(
     `/api/${keys.tables}/list-format`,
-    getNewFormSecurityValue({ fieldName: keys.tables, fieldAction: "read" }), {
-    params,
-  });
+    getNewFormSecurityValue({ fieldName: keys.tables, fieldAction: "read" }),
+    {
+      params,
+    }
+  );
 };
 export const FindOneTable = (
   id: string
@@ -1389,7 +1707,12 @@ export const HandleCreateTable = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.tables, fieldAction: "create" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.tables,
+            fieldAction: "create",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1435,7 +1758,12 @@ export const HandleUpdateTable = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.tables, fieldAction: "update" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.tables,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1478,7 +1806,12 @@ export const HandleLockTable = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.tables, fieldAction: "lock" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.tables,
+            fieldAction: "lock",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1527,7 +1860,10 @@ export const FindAllInputTicket = ({
 
   return instance.post<InputTicketsFormatType[]>(
     `/api/${keys.inputTickets}/list-format`,
-    getNewFormSecurityValue({ fieldName: keys.inputTickets, fieldAction: "read" }),
+    getNewFormSecurityValue({
+      fieldName: keys.inputTickets,
+      fieldAction: "read",
+    }),
     {
       params,
     }
@@ -1538,7 +1874,10 @@ export const FindOneInputTicket = (
 ): Promise<AxiosResponse<InputTicketsFormatType, any>> => {
   return instance.post(
     `/api/${keys.inputTickets}/detail/${id}`,
-    getNewFormSecurityValue({ fieldName: keys.inputTickets, fieldAction: "read" })
+    getNewFormSecurityValue({
+      fieldName: keys.inputTickets,
+      fieldAction: "read",
+    })
   );
 };
 export const HandleCreateInputTicket = ({
@@ -1558,7 +1897,12 @@ export const HandleCreateInputTicket = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.inputTickets, fieldAction: "create" })),
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.inputTickets,
+            fieldAction: "create",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1608,7 +1952,12 @@ export const HandleUpdateInputTicket = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.inputTickets, fieldAction: "update" })),
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.inputTickets,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1652,9 +2001,11 @@ export const FindAllSupplier = ({
 
   return instance.post<SuppliersType[]>(
     `/api/${keys.suppliers}/list`,
-    getNewFormSecurityValue({ fieldName: keys.suppliers, fieldAction: "read" }), {
-    params,
-  });
+    getNewFormSecurityValue({ fieldName: keys.suppliers, fieldAction: "read" }),
+    {
+      params,
+    }
+  );
 };
 export const FindOneSupplier = (
   id: string
@@ -1679,7 +2030,12 @@ export const HandleCreateSupplier = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.suppliers, fieldAction: "create" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.suppliers,
+            fieldAction: "create",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1723,7 +2079,12 @@ export const HandleUpdateSupplier = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.suppliers, fieldAction: "update" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.suppliers,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1764,11 +2125,16 @@ export const HandleLockSupplier = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.suppliers, fieldAction: "lock" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.suppliers,
+            fieldAction: "lock",
+          })
+        ),
       ],
       { type: "application/json" }
     )
-  )
+  );
   // Đối tượng
   formData.append(
     "supplier",
@@ -1806,16 +2172,24 @@ export const FindAllCategoryIngredient = ({
 
   return instance.post<CategoryIngredientsType[]>(
     `/api/${keys.categoryIngredients}/list`,
-    getNewFormSecurityValue({ fieldName: keys.categoryIngredients, fieldAction: "read" }), {
-    params,
-  });
+    getNewFormSecurityValue({
+      fieldName: keys.categoryIngredients,
+      fieldAction: "read",
+    }),
+    {
+      params,
+    }
+  );
 };
 export const FindOneCategoryIngredient = (
   id: string
 ): Promise<AxiosResponse<CategoryIngredientsType, any>> => {
   return instance.post(
     `/api/${keys.categoryIngredients}/detail/${id}`,
-    getNewFormSecurityValue({ fieldName: keys.categoryIngredients, fieldAction: "read" })
+    getNewFormSecurityValue({
+      fieldName: keys.categoryIngredients,
+      fieldAction: "read",
+    })
   );
 };
 export const HandleCreateCategoryIngredient = ({
@@ -1831,7 +2205,12 @@ export const HandleCreateCategoryIngredient = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.categoryIngredients, fieldAction: "create" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.categoryIngredients,
+            fieldAction: "create",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1871,7 +2250,12 @@ export const HandleUpdateCategoryIngredient = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.categoryIngredients, fieldAction: "update" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.categoryIngredients,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -1891,11 +2275,15 @@ export const HandleUpdateCategoryIngredient = ({
     )
   );
 
-  return instance.put(`/api/${keys.categoryIngredients}/update/${id}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  return instance.put(
+    `/api/${keys.categoryIngredients}/update/${id}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 };
 export const HandleLockCategoryIngredient = ({
   id,
@@ -1910,11 +2298,16 @@ export const HandleLockCategoryIngredient = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.categoryIngredients, fieldAction: "lock" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.categoryIngredients,
+            fieldAction: "lock",
+          })
+        ),
       ],
       { type: "application/json" }
     )
-  )
+  );
   // Đối tượng
   formData.append(
     "category-ingredient",
@@ -1955,16 +2348,24 @@ export const FindAllIngredient = ({
 
   return instance.post<IngredientsFormatType[]>(
     `/api/${keys.ingredients}/list-format`,
-    getNewFormSecurityValue({ fieldName: keys.ingredients, fieldAction: "read" }), {
-    params,
-  });
+    getNewFormSecurityValue({
+      fieldName: keys.ingredients,
+      fieldAction: "read",
+    }),
+    {
+      params,
+    }
+  );
 };
 export const FindOneIngredient = (
   id: string
 ): Promise<AxiosResponse<IngredientsFormatType, any>> => {
   return instance.post(
     `/api/${keys.ingredients}/detail/${id}`,
-    getNewFormSecurityValue({ fieldName: keys.ingredients, fieldAction: "read" })
+    getNewFormSecurityValue({
+      fieldName: keys.ingredients,
+      fieldAction: "read",
+    })
   );
 };
 export const HandleCreateIngredient = ({
@@ -1987,7 +2388,12 @@ export const HandleCreateIngredient = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.ingredients, fieldAction: "create" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.ingredients,
+            fieldAction: "create",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -2040,7 +2446,12 @@ export const HandleUpdateIngredient = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.ingredients, fieldAction: "update" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.ingredients,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -2085,11 +2496,16 @@ export const HandleLockIngredient = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.ingredients, fieldAction: "lock" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.ingredients,
+            fieldAction: "lock",
+          })
+        ),
       ],
       { type: "application/json" }
     )
-  )
+  );
   // Đối tượng
   formData.append(
     "ingredient",
@@ -2127,16 +2543,24 @@ export const FindAllCategoryFood = ({
 
   return instance.post<CategoryFoodsType[]>(
     `/api/${keys.categoryFoods}/list`,
-    getNewFormSecurityValue({ fieldName: keys.categoryFoods, fieldAction: "read" }), {
-    params,
-  });
+    getNewFormSecurityValue({
+      fieldName: keys.categoryFoods,
+      fieldAction: "read",
+    }),
+    {
+      params,
+    }
+  );
 };
 export const FindOneCategoryFood = (
   id: string
 ): Promise<AxiosResponse<CategoryFoodsType, any>> => {
   return instance.post(
     `/api/${keys.categoryFoods}/detail/${id}`,
-    getNewFormSecurityValue({ fieldName: keys.categoryFoods, fieldAction: "read" })
+    getNewFormSecurityValue({
+      fieldName: keys.categoryFoods,
+      fieldAction: "read",
+    })
   );
 };
 export const HandleCreateCategoryFood = ({
@@ -2153,11 +2577,16 @@ export const HandleCreateCategoryFood = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.categoryFoods, fieldAction: "create" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.categoryFoods,
+            fieldAction: "create",
+          })
+        ),
       ],
       { type: "application/json" }
     )
-  )
+  );
   // Đối tượng
   formData.append(
     "category-food",
@@ -2196,11 +2625,16 @@ export const HandleUpdateCategoryFood = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.categoryFoods, fieldAction: "update" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.categoryFoods,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
-  )
+  );
   // Đối tượng
   formData.append(
     "category-food",
@@ -2237,11 +2671,16 @@ export const HandleLockCategoryFood = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.categoryFoods, fieldAction: "lock" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.categoryFoods,
+            fieldAction: "lock",
+          })
+        ),
       ],
       { type: "application/json" }
     )
-  )
+  );
   // Đối tượng
   formData.append(
     "category-food",
@@ -2282,9 +2721,11 @@ export const FindAllFood = ({
 
   return instance.post<FoodsFormatType[]>(
     `/api/${keys.foods}/list-format`,
-    getNewFormSecurityValue({ fieldName: keys.foods, fieldAction: "read" }), {
-    params,
-  });
+    getNewFormSecurityValue({ fieldName: keys.foods, fieldAction: "read" }),
+    {
+      params,
+    }
+  );
 };
 export const FindOneFood = (
   id: string
@@ -2312,11 +2753,16 @@ export const HandleCreateFood = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.foods, fieldAction: "create" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.foods,
+            fieldAction: "create",
+          })
+        ),
       ],
       { type: "application/json" }
     )
-  )
+  );
   // Thông tin cơ bản
   formData.append(
     "food",
@@ -2368,11 +2814,16 @@ export const HandleUpdateFood = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.foods, fieldAction: "update" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.foods,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
-  )
+  );
   // Thông tin cơ bản
   formData.append(
     "food",
@@ -2418,11 +2869,16 @@ export const HandleLockFood = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.foods, fieldAction: "lock" }))
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.foods,
+            fieldAction: "lock",
+          })
+        ),
       ],
       { type: "application/json" }
     )
-  )
+  );
   // Đối tượng
   formData.append(
     "food",
@@ -2460,9 +2916,11 @@ export const FindAllRole = ({
 
   return instance.post<RolesFormatType[]>(
     `/api/${keys.roles}/list-format`,
-    getNewFormSecurityValue({ fieldName: keys.roles, fieldAction: "read" }), {
-    params,
-  });
+    getNewFormSecurityValue({ fieldName: keys.roles, fieldAction: "read" }),
+    {
+      params,
+    }
+  );
 };
 export const FindOneRole = (
   id: string
@@ -2486,7 +2944,12 @@ export const HandleCreateRole = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.roles, fieldAction: "create" })),
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.roles,
+            fieldAction: "create",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -2528,7 +2991,12 @@ export const HandleUpdateRole = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.roles, fieldAction: "update" })),
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.roles,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -2568,7 +3036,12 @@ export const HandleLockRole = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.roles, fieldAction: "lock" })),
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.roles,
+            fieldAction: "lock",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -2614,9 +3087,11 @@ export const FindAllEmployee = ({
 
   return instance.post<EmployeesFormatType[]>(
     `/api/${keys.employees}/list-format`,
-    getNewFormSecurityValue({ fieldName: keys.employees, fieldAction: "read" }), {
-    params,
-  });
+    getNewFormSecurityValue({ fieldName: keys.employees, fieldAction: "read" }),
+    {
+      params,
+    }
+  );
 };
 export const FindOneEmployee = (
   id: string
@@ -2649,7 +3124,12 @@ export const HandleCreateEmployee = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.employees, fieldAction: "create" })),
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.employees,
+            fieldAction: "create",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -2708,7 +3188,12 @@ export const HandleUpdateEmployee = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.employees, fieldAction: "update" })),
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.employees,
+            fieldAction: "update",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -2755,7 +3240,12 @@ export const HandleLockEmployee = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.employees, fieldAction: "lock" })),
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.employees,
+            fieldAction: "lock",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -2767,7 +3257,7 @@ export const HandleLockEmployee = ({
       [
         JSON.stringify({
           status,
-          timeUpdate
+          timeUpdate,
         }),
       ],
       { type: "application/json" }
@@ -2801,7 +3291,12 @@ export const HandleChangePasswordEmployee = ({
     "form-security",
     new Blob(
       [
-        JSON.stringify(getNewFormSecurityValue({ fieldName: keys.employees, fieldAction: "change-password" })),
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.employees,
+            fieldAction: "change-password",
+          })
+        ),
       ],
       { type: "application/json" }
     )
@@ -2822,11 +3317,15 @@ export const HandleChangePasswordEmployee = ({
     )
   );
 
-  return instance.put(`/api/${keys.employees}/change-password/${id}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  return instance.put(
+    `/api/${keys.employees}/change-password/${id}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 };
 
 // Các api của đối tượng Chức năng (Function)
@@ -2836,5 +3335,15 @@ export const FindAllFunction = (): Promise<
   return instance.post<FunctionsType[]>(
     `/api/${keys.functions}/list`,
     getNewFormSecurityValue({ fieldName: keys.functions, fieldAction: "read" })
+  );
+};
+
+// Các api của đối tượng Phương thức thanh toán (Pay Method)
+export const FindAllPayMethod = (): Promise<
+  AxiosResponse<PayMethodsType[], any>
+> => {
+  return instance.post<PayMethodsType[]>(
+    `/api/${keys.payMethods}/list`,
+    getNewFormSecurityValue({ fieldName: keys.payMethods, fieldAction: "read" })
   );
 };

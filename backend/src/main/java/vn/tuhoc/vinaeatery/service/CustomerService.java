@@ -7,7 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Customer_;
 import vn.tuhoc.vinaeatery.domain.Customer;
 import vn.tuhoc.vinaeatery.domain.criteria.CustomerCriteria;
@@ -18,7 +18,7 @@ import vn.tuhoc.vinaeatery.repository.CustomerRepository;
 import vn.tuhoc.vinaeatery.service.specification.CustomerSpecification;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CustomerService {
     // Properties
     private final CustomerCardRepository customerCardRepository;

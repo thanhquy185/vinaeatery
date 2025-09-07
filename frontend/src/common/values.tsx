@@ -2,7 +2,7 @@
 export const ReactQueryGetData = {
   retry: 2, // cho phép retry dữ liệu 2 lần
   staleTime: 1000 * 60, // cache dữ liệu sau mỗi 1 phút
-}
+};
 
 // Các tiêu đề chung của modal
 export const TitleModalCommon = {
@@ -13,13 +13,19 @@ export const TitleModalCommon = {
   unlock: (objectName: string) => "Mở khoá " + objectName,
   print: (objectName: string) => "In " + objectName,
   changePassword: (objectName: string) => "Thay đổi mật khẩu" + objectName,
-}
+};
 
 // Giới tính chung
 export const CommonGender = {
   male: "Nam",
   female: "Nữ",
-}
+};
+
+// Phụ thu loại bàn
+export const SurchargeCategoryTable = {
+  percent: "Phần trăm hoá đơn",
+  fixed: "Tiền cố định",
+};
 
 // Trạng thái chung cho các đối tượng
 export const CommonStatus = {
@@ -31,6 +37,15 @@ export const CommonStatus = {
 export const PayStatus = {
   pay: "Đã thanh toán",
   notPay: "Chưa thanh toán",
+};
+
+// Trạng thái xử lý chung cho xử lý thanh toán
+export const HandlePaymentStatus = {
+  nothing: "Chưa có hoá đơn thanh toán",
+  exists: "Đã có hoá đơn thanh toán",
+  pending: "Đang chọn phương thức thanh toán",
+  selected: "Đã chọn phương thức thanh toán",
+  completed: "Đã hoàn tất thanh toán hoá đơn",
 };
 
 // Trạng thái chung cho đối tượng sử dụng bàn

@@ -1,10 +1,20 @@
 import { useEffect, useState, type JSX } from "react";
-import { createBrowserRouter, Navigate, useLocation, useNavigate } from "react-router-dom";
-import type { EmployeesFormatType, FunctionsType } from "../common/types";
+import {
+  createBrowserRouter,
+  Navigate,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+import type {
+  EmployeesFormatType,
+  FunctionsType,
+  PayMethodsType,
+} from "../common/types";
 import AdminLayout from "../layouts/admin-layout";
 import AdminDashboardProfitPage from "../pages/admin/dashboard/dashboard-profit";
 import AdminDashboardOrdersPage from "../pages/admin/dashboard/dashboard-orders";
 import AdminDashboardInputTicketsPage from "../pages/admin/dashboard/dashboard-input-tickets";
+import AdminTableHistoriesPage from "../pages/admin/active/table-histories";
 import AdminUseTablesPage from "../pages/admin/active/use-tables";
 import AdminOrderSheetsPage from "../pages/admin/active/order-sheets";
 import AdminOrdersPage from "../pages/admin/active/orders";
@@ -30,12 +40,12 @@ import AdminEmployeesPage from "../pages/admin/manager-employee/employees";
 import ClientLayout from "../layouts/client-layout";
 // import ClientMainPage from "../pages/client/main";
 import LoginPage from "../pages/public/login";
+import PaymentPage from "../pages/public/payment";
 import ErrorPage from "../pages/public/error";
 import UnauthorizedPage from "../pages/public/unauthorized";
-import { openNotification } from "../utils/showNotification";
-import { FindAllFunction, HandleAccount } from "./api";
-import AdminTableHistoriesPage from "../pages/admin/active/table-histories";
+import { FindAllFunction, FindAllPayMethod, HandleAccount } from "./api";
 import RequireAuth from "./required-auth";
+import ClientPublicPage from "../pages/client/public";
 
 // Router giúp chuyển hướng trang
 // Chú thích
@@ -62,39 +72,55 @@ export const getRouter = async (): Promise<
   const functions = responseFunction.data as Array<FunctionsType>;
 
   // Hàm trả về page component tương ứng với chức năng
-  const pageComponentMap: Record<string, React.ComponentType<{ functionId: number }>> = {
+  const pageComponentMap: Record<
+    string,
+    React.ComponentType<{
+      employeeLogin: EmployeesFormatType;
+      functionId: number;
+    }>
+  > = {
     "dashboard-profit": AdminDashboardProfitPage,
     "dashboard-orders": AdminDashboardOrdersPage,
     "dashboard-input-tickets": AdminDashboardInputTicketsPage,
     "table-histories": AdminTableHistoriesPage,
     "use-tables": AdminUseTablesPage,
     "order-sheets": AdminOrderSheetsPage,
-    "orders": AdminOrdersPage,
+    orders: AdminOrdersPage,
     "order-tables": AdminOrderTablesPage,
     "customer-cards": AdminCustomerCardsPage,
-    "customers": AdminCustomersPage,
-    "floors": AdminFloorsPage,
+    customers: AdminCustomersPage,
+    floors: AdminFloorsPage,
     "category-tables": AdminCategoryTablesPage,
-    "tables": AdminTablesPage,
+    tables: AdminTablesPage,
     "input-tickets": AdminInputTicketsPage,
-    "suppliers": AdminSuppliersPage,
+    suppliers: AdminSuppliersPage,
     "category-ingredients": AdminCategoryIngredientsPage,
-    "ingredients": AdminIngredientsPage,
+    ingredients: AdminIngredientsPage,
     "category-foods": AdminCategoryFoodsPage,
-    "foods": AdminFoodsPage,
-    "payslip": AdminPayslipPage,
+    foods: AdminFoodsPage,
+    payslip: AdminPayslipPage,
     "category-reward-punishes": AdminCategoryRewardPunishesPage,
     "reward-punishes": AdminRewardPunishesPage,
-    "schedules": AdminSchedulesPage,
-    "shifts": AdminShiftsPage,
-    "roles": AdminRolesPage,
-    "employees": AdminEmployeesPage,
+    schedules: AdminSchedulesPage,
+    shifts: AdminShiftsPage,
+    roles: AdminRolesPage,
+    employees: AdminEmployeesPage,
   };
-  const getPageByFunctionNameEN = ({ functionId, nameEN }: { functionId: number; nameEN: string }): JSX.Element | null => {
+  const getPageByFunctionNameEN = ({
+    employeeLogin,
+    functionId,
+    nameEN,
+  }: {
+    employeeLogin: EmployeesFormatType;
+    functionId: number;
+    nameEN: string;
+  }): JSX.Element | null => {
     const PageComponent = pageComponentMap[nameEN];
 
     if (PageComponent) {
-      return <PageComponent functionId={functionId} />;
+      return (
+        <PageComponent employeeLogin={employeeLogin} functionId={functionId} />
+      );
     }
 
     return null;
@@ -113,9 +139,13 @@ export const getRouter = async (): Promise<
         path: func.nameEN,
         element: (
           <RequireAuth requireFunctionId={func.id!}>
-            {getPageByFunctionNameEN({ functionId: func.id!, nameEN: func.nameEN! })}
-          </RequireAuth >
-        )
+            {getPageByFunctionNameEN({
+              employeeLogin: employeeLogin!,
+              functionId: func.id!,
+              nameEN: func.nameEN!,
+            })}
+          </RequireAuth>
+        ),
       })),
     },
     {
@@ -123,9 +153,17 @@ export const getRouter = async (): Promise<
       element: <ClientLayout />,
       errorElement: <ErrorPage />,
     },
+     {
+      path: "/public",
+      element: <ClientPublicPage />,
+    },
     {
       path: "/login",
       element: <LoginPage />,
+    },
+    {
+      path: "/payment",
+      element: <PaymentPage />,
     },
     {
       path: "/error",

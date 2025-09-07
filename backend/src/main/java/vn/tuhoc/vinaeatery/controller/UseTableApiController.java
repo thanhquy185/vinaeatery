@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.CategoryTable;
 import vn.tuhoc.vinaeatery.domain.Customer;
 import vn.tuhoc.vinaeatery.domain.CustomerCard;
@@ -49,7 +49,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
 @RequestMapping("/api/use-tables")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UseTableApiController {
     // Properties
     private final UseTableService useTableService;
@@ -200,80 +200,80 @@ public class UseTableApiController {
                     newUseTable.setOrderTableId(useTable.getOrderTableId());
                 }
             } else if (useTable.getStatus() == UseTableStatusEnum.EMPTY) {
-                // Nếu là "thanh toán tiền bàn", ngược lại là "khách trả bàn"
-                if (useTable.getOrderSheets() != null && !useTable.getOrderSheets().isEmpty()) {
-                    // Tổng tiền thanh toán
-                    Long totalPriceValue = 0L;
-                    // - Tổng tiền món ăn
-                    for (OrderSheetDTO orderSheet : useTable.getOrderSheets()) {
-                        if (orderSheet.getStatus() == OrderSheetStatusEnum.SERVICED) {
-                            totalPriceValue += orderSheet.getTotalPrice();
-                        }
-                    }
-                    // - Phí theo loại bàn ăn
-                    CategoryTable categoryTable = categoryTableService
-                            .getOneById(tableService.getOneById(useTableUpdated.getTableId()).getCategoryTableId());
-                    if (categoryTable != null && categoryTable.getSurchargeValue() != null
-                            && categoryTable.getSurchargeValue() > 0) {
-                        if (categoryTable.getSurchargeType().equals("Phần trăm hoá đơn")) {
-                            totalPriceValue += totalPriceValue * categoryTable.getSurchargeValue() / 100;
-                        } else if (categoryTable.getSurchargeType().equals("Tiền cố định")) {
-                            totalPriceValue += categoryTable.getSurchargeValue();
-                        }
-                    }
-                    // - Giảm giá theo loại thẻ khách hàng
-                    CustomerCard customerCard = customerCardService.getOneById(
-                            customerService.getOneById(useTableUpdated.getCustomerId()).getCustomerCardId());
-                    if (customerCard != null && customerCard.getDiscount() != null && customerCard.getDiscount() > 0) {
-                        totalPriceValue -= totalPriceValue * customerCard.getDiscount() / 100;
-                    }
+                // // Nếu là "thanh toán tiền bàn", ngược lại là "khách trả bàn"
+                // if (useTable.getOrderSheets() != null && !useTable.getOrderSheets().isEmpty()) {
+                //     // Tổng tiền thanh toán
+                //     Long totalPriceValue = 0L;
+                //     // - Tổng tiền món ăn
+                //     for (OrderSheetDTO orderSheet : useTable.getOrderSheets()) {
+                //         if (orderSheet.getStatus() == OrderSheetStatusEnum.SERVICED) {
+                //             totalPriceValue += orderSheet.getTotalPrice();
+                //         }
+                //     }
+                //     // - Phí theo loại bàn ăn
+                //     CategoryTable categoryTable = categoryTableService
+                //             .getOneById(tableService.getOneById(useTableUpdated.getTableId()).getCategoryTableId());
+                //     if (categoryTable != null && categoryTable.getSurchargeValue() != null
+                //             && categoryTable.getSurchargeValue() > 0) {
+                //         if (categoryTable.getSurchargeType().equals("Phần trăm hoá đơn")) {
+                //             totalPriceValue += totalPriceValue * categoryTable.getSurchargeValue() / 100;
+                //         } else if (categoryTable.getSurchargeType().equals("Tiền cố định")) {
+                //             totalPriceValue += categoryTable.getSurchargeValue();
+                //         }
+                //     }
+                //     // - Giảm giá theo loại thẻ khách hàng
+                //     CustomerCard customerCard = customerCardService.getOneById(
+                //             customerService.getOneById(useTableUpdated.getCustomerId()).getCustomerCardId());
+                //     if (customerCard != null && customerCard.getDiscount() != null && customerCard.getDiscount() > 0) {
+                //         totalPriceValue -= totalPriceValue * customerCard.getDiscount() / 100;
+                //     }
 
-                    // Tạo đơn hàng mới
-                    Order newOrder = new Order();
-                    newOrder.setTimeCreate(LocalDateTime.now());
-                    newOrder.setEmployeeId(useTable.getEmployeeId());
-                    newOrder.setCustomerId(useTableUpdated.getCustomerId());
-                    newOrder.setTotalPrice(totalPriceValue);
-                    newOrder.setPayStatus(PayStatusEnum.PAY);
-                    newOrder.setStatus(OrderStatusEnum.CONFIRM);
+                //     // Tạo đơn hàng mới
+                //     Order newOrder = new Order();
+                //     newOrder.setTimeCreate(LocalDateTime.now());
+                //     newOrder.setEmployeeId(useTable.getEmployeeId());
+                //     newOrder.setCustomerId(useTableUpdated.getCustomerId());
+                //     newOrder.setTotalPrice(totalPriceValue);
+                //     newOrder.setPayStatus(PayStatusEnum.PAY);
+                //     newOrder.setStatus(OrderStatusEnum.CONFIRM);
 
-                    // Cập nhật tổng tiền chi tiêu cho khách hàng
-                    Customer customer = customerService.getOneById(useTableUpdated.getCustomerId());
-                    customer.setTotalThreshold(customer.getTotalThreshold() + totalPriceValue);
+                //     // Cập nhật tổng tiền chi tiêu cho khách hàng
+                //     Customer customer = customerService.getOneById(useTableUpdated.getCustomerId());
+                //     customer.setTotalThreshold(customer.getTotalThreshold() + totalPriceValue);
 
-                    // Cập nhật chi tiết đơn hàng
-                    Order newOrderAfterHandle = this.orderService.upsert(newOrder);
-                    if (newOrderAfterHandle != null) {
-                        useTableUpdated.setOrderId(newOrderAfterHandle.getId());
-                        // newUseTable.setOrderId(newOrderAfterHandle.getId());
+                //     // Cập nhật chi tiết đơn hàng
+                //     Order newOrderAfterHandle = this.orderService.upsert(newOrder);
+                //     if (newOrderAfterHandle != null) {
+                //         useTableUpdated.setOrderId(newOrderAfterHandle.getId());
+                //         // newUseTable.setOrderId(newOrderAfterHandle.getId());
 
-                        for (OrderSheetDTO orderSheet : useTable.getOrderSheets()) {
-                            if (orderSheet.getStatus() == OrderSheetStatusEnum.SERVICED) {
-                                for (OrderSheetDetailDTO orderSheetDetail : orderSheet.getOrderSheetDetails()) {
-                                    OrderDetail newOrderDetail = new OrderDetail();
-                                    newOrderDetail.setId(new OrderDetailId(newOrderAfterHandle.getId(),
-                                            orderSheetDetail.getFood().getId()));
-                                    newOrderDetail.setPrice(orderSheetDetail.getPrice());
-                                    newOrderDetail.setQuantity(orderSheetDetail.getQuantity());
+                //         for (OrderSheetDTO orderSheet : useTable.getOrderSheets()) {
+                //             if (orderSheet.getStatus() == OrderSheetStatusEnum.SERVICED) {
+                //                 for (OrderSheetDetailDTO orderSheetDetail : orderSheet.getOrderSheetDetails()) {
+                //                     OrderDetail newOrderDetail = new OrderDetail();
+                //                     newOrderDetail.setId(new OrderDetailId(newOrderAfterHandle.getId(),
+                //                             orderSheetDetail.getFood().getId()));
+                //                     newOrderDetail.setPrice(orderSheetDetail.getPrice());
+                //                     newOrderDetail.setQuantity(orderSheetDetail.getQuantity());
 
-                                    this.orderDetailService.upsert(newOrderDetail);
-                                }
-                            }
-                            // else if (orderSheet.getStatus() == OrderSheetStatusEnum.CONFIRM
-                            // || orderSheet.getStatus() == OrderSheetStatusEnum.PENDING) {
-                            // OrderSheet orderSheetCancel =
-                            // orderSheetService.getOneById(orderSheet.getId());
-                            // orderSheetCancel.setStatus(OrderSheetStatusEnum.CANCELLED);
-                            // this.orderSheetService.upsert(orderSheetCancel);
-                            // }
-                        }
-                    }
-                } else {
+                //                     this.orderDetailService.upsert(newOrderDetail);
+                //                 }
+                //             }
+                //             // else if (orderSheet.getStatus() == OrderSheetStatusEnum.CONFIRM
+                //             // || orderSheet.getStatus() == OrderSheetStatusEnum.PENDING) {
+                //             // OrderSheet orderSheetCancel =
+                //             // orderSheetService.getOneById(orderSheet.getId());
+                //             // orderSheetCancel.setStatus(OrderSheetStatusEnum.CANCELLED);
+                //             // this.orderSheetService.upsert(orderSheetCancel);
+                //             // }
+                //         }
+                //     }
+                // } else {
 
-                }
+                // }
 
-                // useTableUpdated.setCustomerId(null);
-                newUseTable.setCustomerId(null);
+                // // useTableUpdated.setCustomerId(null);
+                // newUseTable.setCustomerId(null);
             } else if (useTable.getStatus() == UseTableStatusEnum.REPAIR) {
 
             }

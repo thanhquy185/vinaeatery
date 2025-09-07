@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Role;
 import vn.tuhoc.vinaeatery.domain.RoleDetail;
 import vn.tuhoc.vinaeatery.domain.RoleDetailForCrud;
@@ -37,7 +37,7 @@ import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
 @RequestMapping("/api/roles")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RoleApiController {
     // Properties
     private final RoleService roleService;

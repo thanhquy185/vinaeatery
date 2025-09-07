@@ -14,7 +14,15 @@ import {
   faPlus,
   faPrint,
 } from "@fortawesome/free-solid-svg-icons";
-import { Form, Input, InputNumber, Select, Tag, type SelectProps } from "antd";
+import {
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Tag,
+  type SelectProps,
+} from "antd";
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
@@ -31,7 +39,12 @@ import type {
 } from "../../../common/types";
 import { ruleRequired } from "../../../common/rules";
 import { CustomPaginationProps } from "../../../common/props";
-import { OrderStatus, PayStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
+import {
+  OrderStatus,
+  PayStatus,
+  ReactQueryGetData,
+  TitleModalCommon,
+} from "../../../common/values";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";
@@ -47,7 +60,10 @@ import {
   HandleUpdateOrder,
 } from "../../../services/api";
 import { getVietnamCurrentDatetime } from "../../../services/dayjs";
-import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import {
+  getActionNameEn,
+  getActionNameVn,
+} from "../../../services/default-actions";
 import { getActionsString } from "../../../services/employee-login";
 import {
   numberToVietnamWords,
@@ -56,10 +72,11 @@ import {
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
 import { handlePrintTicket } from "../../../utils/printTicket";
+import dayjs from "dayjs";
 
 // Các giá trị chung
 // - Tên đối tượng
-const objectName = "Đơn món ăn"
+const objectName = "Đơn món ăn";
 // - Tiêu đề modal
 const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
 const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
@@ -90,7 +107,7 @@ const OrDetailsFormat = ["", "", "price", "", "price"];
 // Admin Orders Page
 const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
   // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
-  const validActions = getActionsString({ currentFunctionId: functionId })
+  const validActions = getActionsString({ currentFunctionId: functionId });
 
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
@@ -128,7 +145,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
     error,
   } = useQuery({
     queryKey: [
-      'orders',
+      "orders",
       filterFindType,
       filterFindValue,
       filterTimeValue,
@@ -154,7 +171,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
         throw res;
       }
     },
-    enabled: !!filterFindType,  //
+    enabled: !!filterFindType, //
     retry: ReactQueryGetData.retry,
     staleTime: ReactQueryGetData.staleTime,
   });
@@ -199,7 +216,9 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
       key: "payStatus",
       width: "12%",
       render: (status: string) => (
-        <Tag color={status === PayStatus.pay ? "volcano" : "default"}>{status}</Tag>
+        <Tag color={status === PayStatus.pay ? "volcano" : "default"}>
+          {status}
+        </Tag>
       ),
     },
     {
@@ -210,7 +229,11 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
       render: (status: string) => (
         <Tag
           color={
-            status === OrderStatus.confirm ? "green" : status === OrderStatus.canceled ? "red" : "default"
+            status === OrderStatus.confirm
+              ? "green"
+              : status === OrderStatus.canceled
+              ? "red"
+              : "default"
           }
         >
           {status}
@@ -225,60 +248,54 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
       className: "buttons",
       render: (text: any, record: OrdersFormatType, index: number) => (
         <>
-          {
-            validActions?.includes(getActionNameVn(0)) && (
-              <button
-                className={"action " + getActionNameEn(0)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalDetail,
-                    true,
-                    "89%",
-                    getActionNameEn(0) + " orders",
-                    AdminOrdersModal.detail(record)
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faCircleInfo} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(2)) && (
-              <button
-                className={"action " + getActionNameEn(2)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalUpdate,
-                    true,
-                    "89%",
-                    getActionNameEn(2) + " orders",
-                    AdminOrdersModal.update(record)
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPenToSquare} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(0)) && (
-              <button
-                className={"action " + getActionNameEn(4)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalPrint,
-                    true,
-                    "80%",
-                    getActionNameEn(4) + " orders",
-                    AdminOrdersModal.print(record)
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPrint} />
-              </button>
-            )
-          }
+          {validActions?.includes(getActionNameVn(0)) && (
+            <button
+              className={"action " + getActionNameEn(0)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalDetail,
+                  true,
+                  "89%",
+                  getActionNameEn(0) + " orders",
+                  AdminOrdersModal.detail(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faCircleInfo} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(2)) && (
+            <button
+              className={"action " + getActionNameEn(2)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalUpdate,
+                  true,
+                  "89%",
+                  getActionNameEn(2) + " orders",
+                  AdminOrdersModal.update(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPenToSquare} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(0)) && (
+            <button
+              className={"action " + getActionNameEn(4)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalPrint,
+                  true,
+                  "80%",
+                  getActionNameEn(4) + " orders",
+                  AdminOrdersModal.print(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPrint} />
+            </button>
+          )}
         </>
       ),
     },
@@ -324,6 +341,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
   const defaultLabels = {
     title1: "Thông tin cơ bản",
     title2: "Thông tin bán hàng",
+    title3: "Thông tin thanh toán",
     id: "Mã đơn món ăn",
     timeCreate: "Thời gian tạo đơn",
     employee:
@@ -332,12 +350,18 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
       "Khách hàng  (Mã khách hàng - Tên khách hàng - Số điện thoại - Email - Thẻ khách hàng)",
     totalPrice: "Tổng thanh toán (VNĐ)",
     status: "Trạng thái đơn món ăn",
+    payId: "Mã giao dịch",
+    payMethod: "Phương thức thanh toán",
+    payTime: "Thời gian thanh toán",
+    payTotalPrice: "Số tiền thanh toán",
+    payStatus: "Trạng thái thanh toán",
     orderDetails: "Chi tiết gọi món ăn",
   };
   // - Các giá trị mặc định cho nhập liệu
   const defaultInputs = {
     title1: "",
     title2: "",
+    title3: "",
     id: "Chưa xác định !",
     timeCreate: "",
     employee:
@@ -345,7 +369,12 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
     customer:
       "Chọn Khách hàng (Mã khách hàng - Tên khách hàng - Số điện thoại - Email - Thẻ khách hàng)",
     totalPrice: "",
-    status: "Đang chờ xác nhận (Chưa thanh toán)",
+    status: "Đang chờ xác nhận",
+    payId: "Nhập Mã giao dịch",
+    payMethod: "Chọn Phương thức thanh toán",
+    payTime: "Chọn Thời gian thanh toán",
+    payTotalPrice: "Nhập Số tiền thanh toán",
+    payStatus: "Chọn Trạng thái thanh toán",
     orderDetails: "",
   };
   // - Các modal tương ứng cho từng chức năng
@@ -355,9 +384,13 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
     employee,
     customer,
     totalPrice,
-    payStatus,
     status,
     orderDetails,
+    payId,
+    payMethod,
+    payTime,
+    payTotalPrice,
+    payStatus,
   }: OrdersFormatType) => {
     const [form] = Form.useForm();
 
@@ -394,7 +427,16 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
               " (" +
               numberToVietnamWords(totalPrice!) +
               ")",
-            status: status! + " (" + payStatus! + ")",
+            status: status,
+            payId: payId,
+            payMethod: "#" + payMethod?.id + " - " + payMethod?.name,
+            payTime: dayjs(payTime!, "YYYY-MM-DD HH:mm:ss"),
+            payTotalPrice:
+              vietnamMoneyFormat(payTotalPrice!) +
+              " (" +
+              numberToVietnamWords(payTotalPrice!) +
+              ")",
+            payStatus: payStatus,
           }}
           className="modal__form split-3"
           autoComplete="off"
@@ -466,6 +508,54 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
                   attributes={OrDetailsAttributes}
                   data={orderDetails}
                   format={OrDetailsFormat}
+                />
+              </Form.Item>
+            </div>
+          </div>
+          <div className="modal__form-group-warper">
+            <p className="modal__form-group-title">{defaultLabels["title3"]}</p>
+            <div className="modal__form-group">
+              <Form.Item
+                name="payId"
+                label={defaultLabels["payId"]}
+                className="modal__form-group-item"
+              >
+                <Input disabled={true} />
+              </Form.Item>
+              <Form.Item
+                name="payStatus"
+                label={defaultLabels["payStatus"]}
+                className="modal__form-group-item margin-bottom-0"
+              >
+                <Input disabled={true} />
+              </Form.Item>
+            </div>
+            <div className="modal__form-group">
+              <Form.Item
+                name="payMethod"
+                label={defaultLabels["payMethod"]}
+                className="modal__form-group-item"
+              >
+                <Input disabled={true} />
+              </Form.Item>
+              <Form.Item
+                name="payTotalPrice"
+                label={defaultLabels["payTotalPrice"]}
+                className="modal__form-group-item multiple-2 margin-bottom-0"
+              >
+                <Input disabled={true} />
+              </Form.Item>
+            </div>
+            <div className="modal__form-group">
+              <Form.Item
+                name="payTime"
+                label={defaultLabels["payTime"]}
+                className="modal__form-group-item"
+              >
+                <DatePicker
+                  showTime
+                  format="YYYY-MM-DD HH:mm:ss"
+                  disabled={true}
                 />
               </Form.Item>
             </div>
@@ -739,6 +829,54 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
               </Form.Item>
             </div>
           </div>
+          <div className="modal__form-group-warper">
+            <p className="modal__form-group-title">{defaultLabels["title3"]}</p>
+            <div className="modal__form-group">
+              <Form.Item
+                name="payId"
+                label={defaultLabels["payId"]}
+                className="modal__form-group-item"
+              >
+                <Input disabled={true} />
+              </Form.Item>
+              <Form.Item
+                name="payStatus"
+                label={defaultLabels["payStatus"]}
+                className="modal__form-group-item"
+              >
+                <Input disabled={true} />
+              </Form.Item>
+            </div>
+            <div className="modal__form-group">
+              <Form.Item
+                name="payMethod"
+                label={defaultLabels["payMethod"]}
+                className="modal__form-group-item"
+              >
+                <Input disabled={true} />
+              </Form.Item>
+              <Form.Item
+                name="payTotalPrice"
+                label={defaultLabels["payTotalPrice"]}
+                className="modal__form-group-item multiple-2"
+              >
+                <Input disabled={true} />
+              </Form.Item>
+            </div>
+            <div className="modal__form-group">
+              <Form.Item
+                name="payTime"
+                label={defaultLabels["payTime"]}
+                className="modal__form-group-item"
+              >
+                <DatePicker
+                  showTime
+                  format="yyyy-mm-dd HH:MM:SS"
+                  disabled={true}
+                />
+              </Form.Item>
+            </div>
+          </div>
           <div className="modal__buttons">
             <button type="submit" className="modal__button btn create">
               Xác nhận
@@ -754,8 +892,12 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
     employee,
     customer,
     totalPrice,
-    payStatus,
     status,
+    payId,
+    payMethod,
+    payTime,
+    payTotalPrice,
+    payStatus,
     orderDetails,
   }: OrdersFormatType) => {
     const [form] = Form.useForm();
@@ -794,6 +936,11 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
               numberToVietnamWords(totalPrice!) +
               ")",
             status: status! + " (" + payStatus! + ")",
+            payId: payId,
+            payMethod: "#" + payMethod?.id + " - " + payMethod?.name,
+            payTime: payTime,
+            payTotalPrice: payTotalPrice,
+            payStatus: payStatus,
           }}
           className="modal__form split-3"
           autoComplete="off"
@@ -866,13 +1013,65 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
               </Form.Item>
             </div>
           </div>
+          <div className="modal__form-group-warper">
+            <p className="modal__form-group-title">{defaultLabels["title3"]}</p>
+            <div className="modal__form-group">
+              <Form.Item
+                name="payId"
+                label={defaultLabels["payId"]}
+                className="modal__form-group-item"
+              >
+                <Input disabled={true} />
+              </Form.Item>
+              <Form.Item
+                name="payStatus"
+                label={defaultLabels["payStatus"]}
+                className="modal__form-group-item margin-bottom-0"
+              >
+                <Input disabled={true} />
+              </Form.Item>
+            </div>
+            <div className="modal__form-group">
+              <Form.Item
+                name="payMethod"
+                label={defaultLabels["payMethod"]}
+                className="modal__form-group-item"
+              >
+                <Input disabled={true} />
+              </Form.Item>
+              <Form.Item
+                name="payTotalPrice"
+                label={defaultLabels["payTotalPrice"]}
+                className="modal__form-group-item multiple-2 margin-bottom-0"
+              >
+                <Input disabled={true} />
+              </Form.Item>
+            </div>
+            <div className="modal__form-group">
+              <Form.Item
+                name="payTime"
+                label={defaultLabels["payTime"]}
+                className="modal__form-group-item"
+              >
+                <DatePicker
+                  showTime
+                  format="yyyy-mm-dd HH:MM:SS"
+                  disabled={true}
+                />
+              </Form.Item>
+            </div>
+          </div>
           <div className="modal__buttons">
             {status === OrderStatus.pending && (
               <>
                 <button
                   className="modal__button secondary btn green-secondary"
                   onClick={(e) =>
-                    callApiToUpdateOrder(id!, e.target as HTMLElement, OrderStatus.confirm)
+                    callApiToUpdateOrder(
+                      id!,
+                      e.target as HTMLElement,
+                      OrderStatus.confirm
+                    )
                   }
                 >
                   {OrderStatus.confirm}
@@ -880,14 +1079,18 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
                 <button
                   className="modal__button secondary btn red-secondary"
                   onClick={(e) =>
-                    callApiToUpdateOrder(id!, e.target as HTMLElement, OrderStatus.canceled)
+                    callApiToUpdateOrder(
+                      id!,
+                      e.target as HTMLElement,
+                      OrderStatus.canceled
+                    )
                   }
                 >
                   {OrderStatus.canceled}
                 </button>
               </>
             )}
-            <button
+            {/* <button
               className="modal__button secondary btn"
               onClick={(e) =>
                 callApiToUpdateOrder(
@@ -898,7 +1101,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
               }
             >
               {payStatus === PayStatus.pay ? PayStatus.notPay : PayStatus.pay}
-            </button>
+            </button> */}
           </div>
         </Form>
       </>
@@ -1007,8 +1210,12 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
         employee={order!.employee}
         customer={order!.customer}
         totalPrice={order!.totalPrice}
-        payStatus={order!.payStatus}
         status={order!.status}
+        payId={order!.payId}
+        payMethod={order!.payMethod}
+        payTime={order!.payTime}
+        payTotalPrice={order!.payTotalPrice}
+        payStatus={order!.payStatus}
         orderDetails={order!.orderDetails}
       />
     ),
@@ -1020,8 +1227,12 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
         employee={order!.employee}
         customer={order!.customer}
         totalPrice={order!.totalPrice}
-        payStatus={order!.payStatus}
         status={order!.status}
+        payId={order!.payId}
+        payMethod={order!.payMethod}
+        payTime={order!.payTime}
+        payTotalPrice={order!.payTotalPrice}
+        payStatus={order!.payStatus}
         orderDetails={order!.orderDetails}
       />
     ),
@@ -1032,8 +1243,12 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
         employee={order!.employee}
         customer={order!.customer}
         totalPrice={order!.totalPrice}
-        payStatus={order!.payStatus}
         status={order!.status}
+        payId={order!.payId}
+        payMethod={order!.payMethod}
+        payTime={order!.payTime}
+        payTotalPrice={order!.payTotalPrice}
+        payStatus={order!.payStatus}
         orderDetails={order!.orderDetails}
       />
     ),
@@ -1086,13 +1301,13 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
           description:
             res.status === 400
               ? String(res.data)
-                .split("|")
-                .map((line, index) => (
-                  <div key={index}>
-                    {line}
-                    <br />
-                  </div>
-                ))
+                  .split("|")
+                  .map((line, index) => (
+                    <div key={index}>
+                      {line}
+                      <br />
+                    </div>
+                  ))
               : "Cập nhật thất bại !",
           duration: 1.5,
         });
@@ -1510,7 +1725,10 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
     setPendingCardValue(totalPending);
   };
   // ...
-  useEffect(() => { updateCards(); }, [orders])
+  useEffect(() => {
+    console.log(orders);
+    updateCards();
+  }, [orders]);
 
   return (
     <>
@@ -1542,30 +1760,27 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          {
-            validActions?.includes(getActionNameVn(1)) && (
-              <button
-                className={
-                  "main__filter-button btn " + getActionNameEn(1) +
-                  (openModal && titleModal === titleModalCreate
-                    ? " active"
-                    : "")
-                }
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalCreate,
-                    true,
-                    "89%",
-                    getActionNameEn(1) + " orders",
-                    AdminOrdersModal.create()
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPlus} className="icon" />
-                &nbsp;Thêm
-              </button>
-            )
-          }
+          {validActions?.includes(getActionNameVn(1)) && (
+            <button
+              className={
+                "main__filter-button btn " +
+                getActionNameEn(1) +
+                (openModal && titleModal === titleModalCreate ? " active" : "")
+              }
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalCreate,
+                  true,
+                  "89%",
+                  getActionNameEn(1) + " orders",
+                  AdminOrdersModal.create()
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPlus} className="icon" />
+              &nbsp;Thêm
+            </button>
+          )}
         </div>
         <div className="main__cards">
           <CustomCardStatic

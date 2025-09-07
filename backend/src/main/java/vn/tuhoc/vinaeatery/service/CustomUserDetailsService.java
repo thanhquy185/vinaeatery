@@ -5,13 +5,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Employee;
 import vn.tuhoc.vinaeatery.repository.RoleHistoryRepository;
 import vn.tuhoc.vinaeatery.repository.RoleRepository;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
     // Properties
     private final EmployeeService employeeService;

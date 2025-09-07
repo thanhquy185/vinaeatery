@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.Employee;
 import vn.tuhoc.vinaeatery.domain.RoleHistory;
 import vn.tuhoc.vinaeatery.domain.RoleHistoryId;
@@ -40,7 +40,7 @@ import vn.tuhoc.vinaeatery.service.RoleHistoryService;
 
 @RestController
 @RequestMapping("/api/employees")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class EmployeeApiController {
         // Properties
         private final RoleHistoryService roleHistoryService;
