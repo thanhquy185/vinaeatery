@@ -3491,6 +3491,72 @@ body:has(.sidebar.hide) .main {
   font-size: 3.2rem;
 }
 
+.public-landing__header, .public-landing__brand, .public-landing__navbar, .public-landing__buttons {
+  display: flex;
+  align-items: center;
+}
+.public-landing__header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100px;
+  padding: 0 20px;
+}
+.public-landing__brand {
+  gap: 14px;
+}
+.public-landing__brand-image {
+  width: 80px;
+  height: 80px;
+}
+.public-landing__brand-text {
+  color: #d32f2f;
+  font-size: 3.6rem;
+  font-weight: 700;
+}
+.public-landing__navbar {
+  gap: 40px;
+  margin-left: auto;
+}
+.public-landing__navbar-item {
+  position: relative;
+  color: #777;
+  font-size: 2.2rem;
+  text-align: center;
+  transition: 0.3 ease-in-out !important;
+}
+.public-landing__navbar-item::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  display: block;
+  background: #d32f2f;
+  width: 0;
+  height: 3px;
+  transition: 0.3 ease-in-out !important;
+}
+.public-landing__navbar-item:is(:hover, .active) {
+  color: #d32f2f;
+}
+.public-landing__navbar-item:is(:hover, .active)::after {
+  width: 100%;
+}
+.public-landing__buttons {
+  justify-content: space-between;
+  width: 24%;
+  margin-left: 12%;
+}
+.public-landing__button {
+  width: 50px;
+  height: 50px;
+  font-size: 1.8rem;
+}
+.public-landing__button.order {
+  width: 64%;
+}
+.public-landing__hero {
+  min-height: calc(100vh - 100px);
+}
 .public__main {
   position: relative;
   height: 100vh;

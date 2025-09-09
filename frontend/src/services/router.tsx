@@ -40,12 +40,12 @@ import AdminEmployeesPage from "../pages/admin/manager-employee/employees";
 import ClientLayout from "../layouts/client-layout";
 // import ClientMainPage from "../pages/client/main";
 import LoginPage from "../pages/public/login";
+import LandingPage from "../pages/public/landing";
 import PaymentPage from "../pages/public/payment";
 import ErrorPage from "../pages/public/error";
 import UnauthorizedPage from "../pages/public/unauthorized";
 import { FindAllFunction, FindAllPayMethod, HandleAccount } from "./api";
 import RequireAuth from "./required-auth";
-import ClientPublicPage from "../pages/client/public";
 
 // Router giúp chuyển hướng trang
 // Chú thích
@@ -155,7 +155,7 @@ export const getRouter = async (): Promise<
     },
      {
       path: "/public",
-      element: <ClientPublicPage />,
+      element: <LandingPage />,
     },
     {
       path: "/login",
