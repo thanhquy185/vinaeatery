@@ -15,6 +15,7 @@ import {
   faPrint,
 } from "@fortawesome/free-solid-svg-icons";
 import {
+  Button,
   DatePicker,
   Form,
   Input,
@@ -40,6 +41,7 @@ import type {
 import { ruleRequired } from "../../../common/rules";
 import { CustomPaginationProps } from "../../../common/props";
 import {
+  CommonStatus,
   OrderStatus,
   PayStatus,
   ReactQueryGetData,
@@ -73,6 +75,8 @@ import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
 import { handlePrintTicket } from "../../../utils/printTicket";
 import dayjs from "dayjs";
+
+const { Option } = Select;
 
 // Các giá trị chung
 // - Tên đối tượng
@@ -112,6 +116,27 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
+  // Các biến giữ dữ liệu về khách hàng
+  // - Khách hàng
+  const { data: customers } = useQuery({
+    queryKey: ["customers"],
+    queryFn: async () => {
+      const res = await FindAllCustomer({ statusValue: [CommonStatus.active] });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+  });
+
   // Các biến giữ giá trị từ việc lọc thông tin
   // - Tìm kiếm thông tin
   const findOptions = [
@@ -122,8 +147,6 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
     findOptions[0].value
   );
   const [filterFindValue, setFilterFindValue] = useState<string | null>("");
-  // - Thời gian bắt đầu / Thời gian kết thúc
-  const [filterTimeValue, setFilterTimeValue] = useState<[string, string]>();
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
     { label: OrderStatus.confirm, value: OrderStatus.confirm },
@@ -144,18 +167,11 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
     isError,
     error,
   } = useQuery({
-    queryKey: [
-      "orders",
-      filterFindType,
-      filterFindValue,
-      filterTimeValue,
-      filterStatusValue,
-    ],
+    queryKey: ["orders", filterFindType, filterFindValue, filterStatusValue],
     queryFn: async () => {
       const res = await FindAllOrder({
         findType: filterFindType!,
         findValue: filterFindValue!,
-        timeValue: filterTimeValue!,
         statusValue: filterStatusValue!,
       });
       if (res.status === 200) {
@@ -181,34 +197,190 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
       title: "#",
       dataIndex: "id",
       key: "id",
-      sorter: true,
       width: "8%",
+      sorter: (a, b) => a?.id! - b?.id!,
     },
     {
       title: "Thời gian tạo đơn",
       dataIndex: "timeCreate",
       key: "timeCreate",
-      sorter: true,
       width: "16%",
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8 }}>
+          <DatePicker.RangePicker
+            showTime
+            format="YYYY-MM-DD HH:mm:ss"
+            style={{ display: "flex" }}
+            value={
+              selectedKeys[0]
+                ? (() => {
+                    const [start, end] = JSON.parse(
+                      selectedKeys[0] as string
+                    ) as [string, string];
+                    return [dayjs(start), dayjs(end)];
+                  })()
+                : null
+            }
+            onChange={(dates) =>
+              setSelectedKeys(
+                dates
+                  ? [
+                      JSON.stringify([
+                        dates[0]?.toISOString(),
+                        dates[1]?.toISOString(),
+                      ]),
+                    ]
+                  : []
+              )
+            }
+          />
+          <Button
+            type="primary"
+            size="small"
+            style={{ width: "100%", marginTop: 8 }}
+            onClick={() => confirm()}
+          >
+            Lọc
+          </Button>
+          {/* Nếu muốn nút reset thì bật lại */}
+          {/* <Button
+        size="small"
+        style={{ width: "100%", marginTop: 4 }}
+        onClick={() => {
+          clearFilters?.();
+          confirm();
+        }}
+      >
+        Đặt lại
+      </Button> */}
+        </div>
+      ),
+      onFilter: (value, record) => {
+        if (!value) return true;
+        const [start, end] = JSON.parse(value as string) as [string, string];
+        const date = dayjs(record.timeCreate);
+
+        return (
+          date.isSame(dayjs(start)) ||
+          date.isSame(dayjs(end)) ||
+          (date.isAfter(dayjs(start)) && date.isBefore(dayjs(end)))
+        );
+      },
+      sorter: (a, b) =>
+        dayjs(a.timeCreate).valueOf() - dayjs(b.timeCreate).valueOf(),
+      render: (val) => val ? dayjs(val).format("YYYY-MM-DD HH:mm:ss") : "",
     },
     {
       title: "Khách hàng",
       key: "customer",
-      sorter: (a, b) => {
-        const idA = a.customer?.id ?? 0;
-        const idB = b.customer?.id ?? 0;
-        return idA - idB;
-      },
       width: "24%",
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+        <div style={{ width: 400, padding: 8 }}>
+          <Select
+            allowClear
+            value={selectedKeys[0]}
+            placeholder="Chọn Khách hàng"
+            style={{ width: "100%" }}
+            onChange={(val) => setSelectedKeys(val ? [val] : [])}
+          >
+            {customers?.map((customer) => (
+              <Option key={customer.id} value={customer.id}>
+                #{customer.id} - {customer.fullname} - {customer.phone} -{" "}
+                {customer.email}
+              </Option>
+            ))}
+          </Select>
+          <Button
+            type="primary"
+            size="small"
+            style={{ width: "100%", marginTop: 8 }}
+            onClick={() => confirm()}
+          >
+            Lọc
+          </Button>
+        </div>
+      ),
+      onFilter: (value, record) => record.customer?.id === value,
+      sorter: (a, b) => a.customer?.id! - b.customer?.id!,
       render: (record) =>
         `#${record.customer?.id} - ${record.customer?.fullname} - ${record.customer?.phone} - ${record.customer?.email}`,
     },
     {
-      title: "Tổng thanh toán (VNĐ)",
+      title: "Tổng thanh toán",
+      dataIndex: "totalPrice",
       key: "totalPrice",
-      sorter: (a, b) => (a.totalPrice as number) - (b.totalPrice as number),
       width: "16%",
-      render: (record) => vietnamMoneyFormat(record.totalPrice),
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => {
+        let min = 0,
+          max = 0;
+        if (selectedKeys[0]) {
+          try {
+            [min, max] = JSON.parse(selectedKeys[0] as string) as [
+              number,
+              number
+            ];
+          } catch {}
+        }
+
+        return (
+          <div style={{ padding: 8 }}>
+            <InputNumber
+              placeholder="Tối thiểu"
+              style={{ marginBottom: 8, display: "block", width: "100%" }}
+              value={min || undefined}
+              onChange={(val) => {
+                setSelectedKeys([JSON.stringify([val ?? 0, max ?? 0])]);
+              }}
+            />
+            <InputNumber
+              placeholder="Tối đa"
+              style={{ marginBottom: 8, display: "block", width: "100%" }}
+              value={max || undefined}
+              onChange={(val) => {
+                setSelectedKeys([JSON.stringify([min ?? 0, val ?? 0])]);
+              }}
+            />
+            <Button
+              type="primary"
+              size="small"
+              style={{ width: "100%" }}
+              onClick={() => confirm()}
+            >
+              Lọc
+            </Button>
+            {/* <Button
+              size="small"
+              style={{ width: "100%", marginTop: 4 }}
+              onClick={() => {
+                clearFilters?.();
+                confirm();
+              }}
+            >
+              Đặt lại
+            </Button> */}
+          </div>
+        );
+      },
+      onFilter: (value, record) => {
+        if (!value) return true;
+        const [min, max] = JSON.parse(value as string) as [number, number];
+        const totalPrice = record.totalPrice ?? 0;
+        if (min && totalPrice < min) return false;
+        if (max && totalPrice > max) return false;
+        return true;
+      },
+      sorter: (a, b) => a?.totalPrice! - b?.totalPrice!,
+      render: (totalPrice: number) => vietnamMoneyFormat(totalPrice || 0),
     },
     {
       title: "Thanh toán",
@@ -300,14 +472,6 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
       ),
     },
   ];
-  // - Các thành phần
-  const {
-    currentItems,
-    handleTableChange,
-    paginationProps,
-    sortField,
-    sortOrder,
-  } = CustomPaginationProps(orders || [], 8, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các biến giữ giá trị cho việc hiển thị thông số trên card
   const [totalPriceCardValue, setTotalPriceCardValue] = useState<number>(0);
@@ -1726,7 +1890,6 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
   };
   // ...
   useEffect(() => {
-    console.log(orders);
     updateCards();
   }, [orders]);
 
@@ -1734,7 +1897,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Vận hành quán ăn - {objectName}</h2>
+          <h2 className="main__title">{objectName}</h2>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -1744,12 +1907,6 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
             className="main__filter-find"
             setFilterFindType={setFilterFindType}
             setFilterFindValue={setFilterFindValue}
-          />
-          <CustomDateRangePicker
-            showTime={true}
-            placeholder={["Thời gian bắt đầu", "Thời gian kết thúc"]}
-            className="main__filter-select filter-time big"
-            setDateRangeValue={setFilterTimeValue}
           />
           <CustomFindSelect
             mode="tags"
@@ -1816,14 +1973,13 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
           />
         </div>
         <div className="main__table">
-          <CustomTableActions
+          <CustomTableActions<OrdersFormatType>
             columns={columns}
-            rowKey={(record) => record!.id as number}
-            data={currentItems}
+            data={orders || []}
+            rowKey={(record) => String(record?.id)}
             loading={isLoading}
-            pagination={paginationProps}
+            defaultPageSize={10}
             className="table-actions orders"
-            onChange={handleTableChange}
           />
         </div>
       </main>

@@ -8,17 +8,28 @@ import {
   faPlus,
   faUnlock,
 } from "@fortawesome/free-solid-svg-icons";
-import { DatePicker, Form, Input, InputNumber, Select, Tag } from "antd";
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Tag,
+} from "antd";
 import TextArea from "antd/es/input/TextArea";
 import type { SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { CustomPaginationProps } from "../../../common/props";
 import type {
   IngredientsFormatType,
   IngredientsType,
   ReactQueryMutationProps,
 } from "../../../common/types";
-import { CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
+import {
+  CommonStatus,
+  ReactQueryGetData,
+  TitleModalCommon,
+} from "../../../common/values";
 import { ruleRequired } from "../../../common/rules";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
@@ -31,15 +42,20 @@ import {
   HandleLockIngredient,
   HandleUpdateIngredient,
 } from "../../../services/api";
-import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import {
+  getActionNameEn,
+  getActionNameVn,
+} from "../../../services/default-actions";
 import { getActionsString } from "../../../services/employee-login";
 import { openNotification } from "../../../utils/showNotification";
 import { openConfirmation } from "../../../utils/showConfirmation";
 import dayjs from "dayjs";
 
+const { Option } = Select;
+
 // Các giá trị chung
 // - Tên đối tượng
-const objectName = "Nguyên liệu"
+const objectName = "Nguyên liệu";
 // - Tiêu đề modal
 const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
 const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
@@ -74,20 +90,18 @@ const units = [
 // Admin Ingredients Page
 const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
   // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
-  const validActions = getActionsString({ currentFunctionId: functionId })
+  const validActions = getActionsString({ currentFunctionId: functionId });
 
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
   // Các biến giữ dữ liệu về loại nguyên liệu
-  const {
-    data: categoryIngredients,
-  } = useQuery({
-    queryKey: [
-      'category-ingredients',
-    ],
+  const { data: categoryIngredients } = useQuery({
+    queryKey: ["category-ingredients"],
     queryFn: async () => {
-      const res = await FindAllCategoryIngredient({ statusValue: [CommonStatus.active] });
+      const res = await FindAllCategoryIngredient({
+        statusValue: [CommonStatus.active],
+      });
       if (res.status === 200) {
         return res.data;
       } else {
@@ -113,16 +127,6 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
     findOptions[0].value
   );
   const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
-  // - Loại món ăn
-  const categoryOptions: SelectProps["options"] = categoryIngredients?.map(
-    (categoryIngredient) => ({
-      label: `#${categoryIngredient.id} - ${categoryIngredient.name}`,
-      value: categoryIngredient.id,
-    })
-  );
-  const [filterCategoryValue, setFilterCategoryValue] = useState<
-    string[] | null
-  >(null);
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
     { label: CommonStatus["active"], value: CommonStatus["active"] },
@@ -141,17 +145,15 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
     error,
   } = useQuery({
     queryKey: [
-      'ingredients',
+      "ingredients",
       filterFindType,
       filterFindValue,
-      filterCategoryValue,
       filterStatusValue,
     ],
     queryFn: async () => {
       const res = await FindAllIngredient({
         findType: filterFindType!,
         findValue: filterFindValue!,
-        categoryValue: filterCategoryValue!,
         statusValue: filterStatusValue!,
       });
       if (res.status === 200) {
@@ -167,7 +169,7 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
         throw res;
       }
     },
-    enabled: !!filterFindType,  //
+    enabled: !!filterFindType, //
     retry: ReactQueryGetData.retry,
     staleTime: ReactQueryGetData.staleTime,
   });
@@ -177,21 +179,48 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
       title: "#",
       dataIndex: "id",
       key: "id",
-      sorter: true,
       width: "10%",
+      sorter: (a, b) => a?.id! - b?.id!,
     },
     {
       title: "Tên nguyên liệu",
       dataIndex: "name",
       key: "name",
-      sorter: true,
       width: "24%",
       className: "left",
+      sorter: (a, b) =>  a?.name!.localeCompare(b?.name!),
     },
     {
       title: "Loại nguyên liệu",
       key: "categoryIngredient",
-      width: "13%",
+      width: "14%",
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+        <div style={{ width: 250, padding: 8 }}>
+          <Select
+            allowClear
+            value={selectedKeys[0]}
+            placeholder="Chọn Loại nguyên liệu"
+            style={{ width: "100%" }}
+            onChange={(val) => setSelectedKeys(val ? [val] : [])}
+          >
+            {categoryIngredients?.map((categoryIngredient) => (
+              <Option key={categoryIngredient.id} value={categoryIngredient.id}>
+                #{categoryIngredient.id} - {categoryIngredient.name}
+              </Option>
+            ))}
+          </Select>
+          <Button
+            type="primary"
+            size="small"
+            style={{ width: "100%", marginTop: 8 }}
+            onClick={() => confirm()}
+          >
+            Lọc
+          </Button>
+        </div>
+      ),
+      onFilter: (value, record) => record.categoryIngredient?.id === value,
+      sorter: (a, b) => a.categoryIngredient?.id! - b.categoryIngredient?.id!,
       render: (record) =>
         `#${record.categoryIngredient?.id} - ${record.categoryIngredient?.name}`,
     },
@@ -199,22 +228,48 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
       title: "Đơn vị",
       dataIndex: "unit",
       key: "unit",
-      sorter: true,
       width: "10%",
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+        <div style={{ width: 250, padding: 8 }}>
+          <Select
+            allowClear
+            value={selectedKeys[0]}
+            placeholder="Chọn Đơn vị"
+            style={{ width: "100%" }}
+            onChange={(val) => setSelectedKeys(val ? [val] : [])}
+          >
+            {units?.map((unit) => (
+              <Option key={unit} value={unit}>
+                {unit}
+              </Option>
+            ))}
+          </Select>
+          <Button
+            type="primary"
+            size="small"
+            style={{ width: "100%", marginTop: 8 }}
+            onClick={() => confirm()}
+          >
+            Lọc
+          </Button>
+        </div>
+      ),
+      onFilter: (value, record) => record.unit === value,
+      sorter: (a, b) => a?.unit!.localeCompare(b?.unit!),
     },
     {
       title: "Định lượng",
       dataIndex: "capacity",
       key: "capacity",
-      sorter: true,
       width: "10%",
+      sorter: (a, b) => a?.capacity! - b?.capacity!,
     },
     {
       title: "Tồn kho",
       dataIndex: "inventory",
       key: "inventory",
-      sorter: true,
-      width: "13%",
+      width: "12%",
+      sorter: (a, b) => a?.inventory! - b?.inventory!,
     },
     {
       title: "Trạng thái",
@@ -223,7 +278,9 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
       // sorter: true,
       width: "10%",
       render: (status: string) => (
-        <Tag color={status === CommonStatus["active"] ? "green" : "red"}>{status}</Tag>
+        <Tag color={status === CommonStatus["active"] ? "green" : "red"}>
+          {status}
+        </Tag>
       ),
     },
     {
@@ -234,74 +291,67 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
       className: "buttons",
       render: (text: any, record: IngredientsFormatType, index: number) => (
         <>
-          {
-            validActions?.includes(getActionNameVn(0)) && (
-              <button
-                className={"action " + getActionNameEn(0)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalDetail,
-                    true,
-                    "60%",
-                    getActionNameEn(0) + " ingredients",
-                    AdminIngredientsModal.detail(record)
+          {validActions?.includes(getActionNameVn(0)) && (
+            <button
+              className={"action " + getActionNameEn(0)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalDetail,
+                  true,
+                  "60%",
+                  getActionNameEn(0) + " ingredients",
+                  AdminIngredientsModal.detail(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faCircleInfo} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(2)) && (
+            <button
+              className={"action " + getActionNameEn(2)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalUpdate,
+                  true,
+                  "60%",
+                  getActionNameEn(2) + " ingredients",
+                  AdminIngredientsModal.update(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPenToSquare} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(3)) && (
+            <button
+              className={"action " + getActionNameEn(3)}
+              onClick={() =>
+                updatePropertiesModal(
+                  record.status == CommonStatus["active"]
+                    ? titleModalLock
+                    : titleModalUnlock,
+                  true,
+                  "30%",
+                  getActionNameEn(3) + " ingredients",
+                  AdminIngredientsModal.lock(
+                    record!.id as number,
+                    record!.status
                   )
+                )
+              }
+            >
+              <FontAwesomeIcon
+                icon={
+                  record.status == CommonStatus["active"] ? faLock : faUnlock
                 }
-              >
-                <FontAwesomeIcon icon={faCircleInfo} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(2)) && (
-              <button
-                className={"action " + getActionNameEn(2)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalUpdate,
-                    true,
-                    "60%",
-                    getActionNameEn(2) + " ingredients",
-                    AdminIngredientsModal.update(record)
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPenToSquare} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(3)) && (
-              <button
-                className={"action " + getActionNameEn(3)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
-                    true,
-                    "30%",
-                    getActionNameEn(3) + " ingredients",
-                    AdminIngredientsModal.lock(record!.id as number, record!.status)
-                  )
-                }
-              >
-                <FontAwesomeIcon
-                  icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
-                />
-              </button>
-            )
-          }
+              />
+            </button>
+          )}
         </>
       ),
     },
   ];
-  // - Các thành phần
-  const {
-    currentItems,
-    handleTableChange,
-    paginationProps,
-    sortField,
-    sortOrder,
-  } = CustomPaginationProps(ingredients || [], 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -356,7 +406,11 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
   };
   // - Mutation cho việc thêm, cập nhật và khoá dữ liệu
   const handleSubmitMutation = useMutation({
-    mutationFn: async ({ type, values, objectId }: ReactQueryMutationProps<IngredientsType>) => {
+    mutationFn: async ({
+      type,
+      values,
+      objectId,
+    }: ReactQueryMutationProps<IngredientsType>) => {
       if (openModal) {
         if (type === "create" && titleModal === titleModalCreate) {
           const res = await HandleCreateIngredient({
@@ -380,7 +434,8 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
         } else if (type === "update" && titleModal === titleModalUpdate) {
@@ -405,20 +460,26 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
-        } else if ((type === "lock" && titleModal === titleModalLock)
-          || (type === "unlock" && titleModal === titleModalUnlock)) {
+        } else if (
+          (type === "lock" && titleModal === titleModalLock) ||
+          (type === "unlock" && titleModal === titleModalUnlock)
+        ) {
           const res = await HandleLockIngredient({
             id: objectId! as number,
-            status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
+            status:
+              (type === "lock" ? CommonStatus.active : CommonStatus.inactive) ||
+              undefined,
             timeUpdate: new Date().toISOString(),
           });
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
         }
@@ -428,12 +489,21 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
       openNotification({
         type: "success",
         message: "Thành công",
-        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thành công!",
+        description:
+          (openModal
+            ? titleModal === titleModalCreate
+              ? "Thêm"
+              : titleModal === titleModalUpdate
+              ? "Cập nhật"
+              : titleModal === titleModalLock
+              ? "Khoá"
+              : "Mở khoá"
+            : "") + " thành công!",
         duration: 1.5,
       });
 
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['ingredients'] });
+        queryClient.invalidateQueries({ queryKey: ["ingredients"] });
         setOpenModal(false);
       }, 1500);
     },
@@ -441,12 +511,20 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
       openNotification({
         type: "error",
         message: "Thất bại",
-        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thất bại!",
+        description:
+          (openModal
+            ? titleModal === titleModalCreate
+              ? "Thêm"
+              : titleModal === titleModalUpdate
+              ? "Cập nhật"
+              : titleModal === titleModalLock
+              ? "Khoá"
+              : "Mở khoá"
+            : "") + " thất bại!",
         duration: 1.5,
       });
 
-      setTimeout(() => {
-      }, 1500);
+      setTimeout(() => {}, 1500);
     },
   });
   // - Các modal tương ứng cho từng chức năng
@@ -728,8 +806,14 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
                   id="create-status"
                   placeholder={defaultInputs["status"]}
                   options={[
-                    { label: CommonStatus["active"], value: CommonStatus["active"] },
-                    { label: CommonStatus["inactive"], value: CommonStatus["inactive"] },
+                    {
+                      label: CommonStatus["active"],
+                      value: CommonStatus["active"],
+                    },
+                    {
+                      label: CommonStatus["inactive"],
+                      value: CommonStatus["inactive"],
+                    },
                   ]}
                 />
               </Form.Item>
@@ -1048,7 +1132,10 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
             });
             if (answer) {
               // Thực thi mutation
-              handleSubmitMutation.mutate({ type: (statusValue ? "lock" : "unlock"), objectId: id! });
+              handleSubmitMutation.mutate({
+                type: statusValue ? "lock" : "unlock",
+                objectId: id!,
+              });
 
               // Xoá class 'active' thể hiện nút không còn được nhấn
               submitButton?.classList.remove("active");
@@ -1124,7 +1211,7 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Quản lý món ăn - {objectName}</h2>
+          <h2 className="main__title">{objectName}</h2>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -1136,15 +1223,6 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
             setFilterFindValue={setFilterFindValue}
           />
           <CustomFindSelect
-            mode="tags"
-            placeholder="Chọn Loại món ăn"
-            optionFilterProp="label"
-            maxTagCount="responsive"
-            className="main__filter-select filter-category"
-            options={categoryOptions}
-            setFilterSelectValue={setFilterCategoryValue}
-          />
-          <CustomFindSelect
             mode={undefined}
             placeholder="Chọn Trạng thái"
             optionFilterProp="label"
@@ -1153,40 +1231,36 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          {
-            validActions?.includes(getActionNameVn(1)) && (
-              <button
-                className={
-                  "main__filter-button btn " + getActionNameEn(1) +
-                  (openModal && titleModal === titleModalCreate
-                    ? " active"
-                    : "")
-                }
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalCreate,
-                    true,
-                    "60%",
-                    getActionNameEn(1) + " ingredients",
-                    AdminIngredientsModal.create()
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPlus} className="icon" />
-                &nbsp;Thêm
-              </button>
-            )
-          }
+          {validActions?.includes(getActionNameVn(1)) && (
+            <button
+              className={
+                "main__filter-button btn " +
+                getActionNameEn(1) +
+                (openModal && titleModal === titleModalCreate ? " active" : "")
+              }
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalCreate,
+                  true,
+                  "60%",
+                  getActionNameEn(1) + " ingredients",
+                  AdminIngredientsModal.create()
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPlus} className="icon" />
+              &nbsp;Thêm
+            </button>
+          )}
         </div>
         <div className="main__table">
-          <CustomTableActions
+          <CustomTableActions<IngredientsFormatType>
             columns={columns}
-            rowKey={(record) => record!.id as number}
-            data={currentItems}
+            data={ingredients || []}
+            rowKey={(record) => String(record?.id)}
             loading={isLoading}
-            pagination={paginationProps}
+            defaultPageSize={10}
             className="table-actions ingredients"
-            onChange={handleTableChange}
           />
         </div>
       </main>

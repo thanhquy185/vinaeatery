@@ -440,10 +440,10 @@ export const FindAllOrderSheet = ({
 }: FilterDataProps): Promise<AxiosResponse<OrderSheetsFormatType[], any>> => {
   const params: Record<string, string> = {};
 
-  if (findValue! !== "") {
-    // if (findType! === "id") params.id = findValue!;
-    // if (findType! === "customer") params.customerId = findValue!;
-  }
+  // if (findValue! !== "") {
+  //   if (findType! === "id") params.id = findValue!;
+  //   if (findType! === "table") params.tableName = findValue!;
+  // }
   // if (timeValue! && timeValue!.length > 0) {
   //   if (timeValue![0] !== "") params.timeCreateStart = timeValue![0];
   //   if (timeValue![1] !== "") params.timeCreateEnd = timeValue![1];
@@ -470,6 +470,10 @@ export const FindAllOrderSheetCurrentDate = ({
 }: FilterDataProps): Promise<AxiosResponse<OrderSheetsFormatType[], any>> => {
   const params: Record<string, string> = {};
 
+  if (findValue! !== "") {
+    // if (findType! === "id") params.id = findValue!;
+    if (findType! === "table") params.tableName = findValue!;
+  }
   if (floorValue! && floorValue!.length > 0) params.floorId = floorValue![0];
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
 

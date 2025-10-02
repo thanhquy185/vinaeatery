@@ -8,11 +8,27 @@ import {
   faPlus,
   faUnlock,
 } from "@fortawesome/free-solid-svg-icons";
-import { Form, Input, InputNumber, Select, Tag, type SelectProps } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Tag,
+  type SelectProps,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
-import type { ReactQueryMutationProps, RoleDetailsType, RolesFormatType, RolesType } from "../../../common/types";
-import { CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
-import { CustomPaginationProps } from "../../../common/props";
+import type {
+  ReactQueryMutationProps,
+  RoleDetailsType,
+  RolesFormatType,
+  RolesType,
+} from "../../../common/types";
+import {
+  CommonStatus,
+  ReactQueryGetData,
+  TitleModalCommon,
+} from "../../../common/values";
 import { ruleRequired } from "../../../common/rules";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
@@ -25,7 +41,10 @@ import {
   HandleLockRole,
   HandleUpdateRole,
 } from "../../../services/api";
-import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import {
+  getActionNameEn,
+  getActionNameVn,
+} from "../../../services/default-actions";
 import { getActionsString } from "../../../services/employee-login";
 import { vietnamMoneyFormat } from "../../../utils/otherEvents";
 import { openConfirmation } from "../../../utils/showConfirmation";
@@ -33,7 +52,7 @@ import { openNotification } from "../../../utils/showNotification";
 
 // Các giá trị chung
 // - Tên đối tượng
-const objectName = "Chức vụ"
+const objectName = "Chức vụ";
 // - Tiêu đề modal
 const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
 const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
@@ -44,7 +63,7 @@ const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 // Admin Roles Page
 const AdminRolesPage = ({ functionId }: { functionId: number }) => {
   // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
-  const validActions = getActionsString({ currentFunctionId: functionId })
+  const validActions = getActionsString({ currentFunctionId: functionId });
 
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
@@ -76,12 +95,7 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
     isError,
     error,
   } = useQuery({
-    queryKey: [
-      'roles',
-      filterFindType,
-      filterFindValue,
-      filterStatusValue,
-    ],
+    queryKey: ["roles", filterFindType, filterFindValue, filterStatusValue],
     queryFn: async () => {
       const res = await FindAllRole({
         findType: filterFindType!,
@@ -101,7 +115,7 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
         throw res;
       }
     },
-    enabled: !!filterFindType,  //
+    enabled: !!filterFindType, //
     retry: ReactQueryGetData.retry,
     staleTime: ReactQueryGetData.staleTime,
   });
@@ -111,24 +125,90 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
       title: "#",
       dataIndex: "id",
       key: "id",
-      sorter: true,
       width: "16%",
+      sorter: (a, b) => a?.id! - b?.id!,
     },
     {
       title: "Tên chức vụ",
       dataIndex: "name",
       key: "name",
-      sorter: true,
       width: "34%",
+      sorter: (a, b) => a?.name!.localeCompare(b?.name!),
     },
     {
       title: "Lương cơ bản (VNĐ)",
+
       dataIndex: "salary",
       key: "salary",
-      sorter: true,
       width: "20%",
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => {
+        let min = 0,
+          max = 0;
+        if (selectedKeys[0]) {
+          try {
+            [min, max] = JSON.parse(selectedKeys[0] as string) as [
+              number,
+              number
+            ];
+          } catch {}
+        }
+
+        return (
+          <div style={{ padding: 8 }}>
+            <InputNumber
+              placeholder="Tối thiểu"
+              style={{ marginBottom: 8, display: "block", width: "100%" }}
+              value={min || undefined}
+              onChange={(val) => {
+                setSelectedKeys([JSON.stringify([val ?? 0, max ?? 0])]);
+              }}
+            />
+            <InputNumber
+              placeholder="Tối đa"
+              style={{ marginBottom: 8, display: "block", width: "100%" }}
+              value={max || undefined}
+              onChange={(val) => {
+                setSelectedKeys([JSON.stringify([min ?? 0, val ?? 0])]);
+              }}
+            />
+            <Button
+              type="primary"
+              size="small"
+              style={{ width: "100%" }}
+              onClick={() => confirm()}
+            >
+              Lọc
+            </Button>
+            {/* <Button
+              size="small"
+              style={{ width: "100%", marginTop: 4 }}
+              onClick={() => {
+                clearFilters?.();
+                confirm();
+              }}
+            >
+              Đặt lại
+            </Button> */}
+          </div>
+        );
+      },
+      onFilter: (value, record) => {
+        if (!value) return true;
+        const [min, max] = JSON.parse(value as string) as [number, number];
+        const salary = record.salary ?? 0;
+        if (min && salary < min) return false;
+        if (max && salary > max) return false;
+        return true;
+      },
+      sorter: (a, b) => a?.salary! - b?.salary!,
       render: (salary: number) => vietnamMoneyFormat(salary),
     },
+
     {
       title: "Trạng thái",
       dataIndex: "status",
@@ -148,74 +228,64 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
       className: "buttons",
       render: (text: any, record: RolesFormatType, index: number) => (
         <>
-          {
-            validActions?.includes(getActionNameVn(0)) && (
-              <button
-                className={"action " + getActionNameEn(0)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalDetail,
-                    true,
-                    "60%",
-                    getActionNameEn(0) + " roles",
-                    AdminRolesModal.detail(record)
-                  )
+          {validActions?.includes(getActionNameVn(0)) && (
+            <button
+              className={"action " + getActionNameEn(0)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalDetail,
+                  true,
+                  "60%",
+                  getActionNameEn(0) + " roles",
+                  AdminRolesModal.detail(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faCircleInfo} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(2)) && (
+            <button
+              className={"action " + getActionNameEn(2)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalUpdate,
+                  true,
+                  "60%",
+                  getActionNameEn(2) + " roles",
+                  AdminRolesModal.update(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPenToSquare} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(3)) && (
+            <button
+              className={"action " + getActionNameEn(3)}
+              onClick={() =>
+                updatePropertiesModal(
+                  record.status == CommonStatus["active"]
+                    ? titleModalLock
+                    : titleModalUnlock,
+                  true,
+                  "30%",
+                  getActionNameEn(3) + " roles",
+                  AdminRolesModal.lock(record!.id as number, record!.status)
+                )
+              }
+            >
+              <FontAwesomeIcon
+                icon={
+                  record.status == CommonStatus["active"] ? faLock : faUnlock
                 }
-              >
-                <FontAwesomeIcon icon={faCircleInfo} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(2)) && (
-              <button
-                className={"action " + getActionNameEn(2)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalUpdate,
-                    true,
-                    "60%",
-                    getActionNameEn(2) + " roles",
-                    AdminRolesModal.update(record)
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPenToSquare} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(3)) && (
-              <button
-                className={"action " + getActionNameEn(3)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
-                    true,
-                    "30%",
-                    getActionNameEn(3) + " roles",
-                    AdminRolesModal.lock(record!.id as number, record!.status)
-                  )
-                }
-              >
-                <FontAwesomeIcon
-                  icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
-                />
-              </button>
-            )
-          }
+              />
+            </button>
+          )}
         </>
       ),
     },
   ];
-  // - Các thành phần
-  const {
-    currentItems,
-    handleTableChange,
-    paginationProps,
-    sortField,
-    sortOrder,
-  } = CustomPaginationProps(roles || [], 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -246,7 +316,8 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
     name: "Tên chức vụ",
     salary: "Lương cơ bản (VNĐ)",
     status: "Trạng thái",
-    roleDetails: 'Chi tiết chức vụ (Hành động "Xem" cần có để 1 chức năng hoạt động)',
+    roleDetails:
+      'Chi tiết chức vụ (Hành động "Xem" cần có để 1 chức năng hoạt động)',
   };
   // - Các giá trị mặc định cho nhập liệu
   const defaultInputs = {
@@ -260,7 +331,12 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
   };
   // - Mutation cho việc thêm, cập nhật và khoá dữ liệu
   const handleSubmitMutation = useMutation({
-    mutationFn: async ({ type, values, objectId, details }: ReactQueryMutationProps<RolesType>) => {
+    mutationFn: async ({
+      type,
+      values,
+      objectId,
+      details,
+    }: ReactQueryMutationProps<RolesType>) => {
       if (openModal) {
         if (type === "create" && titleModal === titleModalCreate) {
           const res = await HandleCreateRole({
@@ -268,11 +344,12 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
             salary: values!.salary || 0,
             status: values!.status || undefined,
             roleDetails: details || [],
-          })
+          });
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
         } else if (type === "update" && titleModal === titleModalUpdate) {
@@ -286,20 +363,26 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
-        } else if ((type === "lock" && titleModal === titleModalLock)
-          || (type === "unlock" && titleModal === titleModalUnlock)) {
+        } else if (
+          (type === "lock" && titleModal === titleModalLock) ||
+          (type === "unlock" && titleModal === titleModalUnlock)
+        ) {
           const res = await HandleLockRole({
             id: objectId! as number,
-            status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
+            status:
+              (type === "lock" ? CommonStatus.active : CommonStatus.inactive) ||
+              undefined,
             timeUpdate: new Date().toISOString(),
-          })
+          });
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
         }
@@ -309,12 +392,21 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
       openNotification({
         type: "success",
         message: "Thành công",
-        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thành công!",
+        description:
+          (openModal
+            ? titleModal === titleModalCreate
+              ? "Thêm"
+              : titleModal === titleModalUpdate
+              ? "Cập nhật"
+              : titleModal === titleModalLock
+              ? "Khoá"
+              : "Mở khoá"
+            : "") + " thành công!",
         duration: 1.5,
       });
 
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['roles'] });
+        queryClient.invalidateQueries({ queryKey: ["roles"] });
         setOpenModal(false);
       }, 1500);
     },
@@ -322,12 +414,21 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
       openNotification({
         type: "error",
         message: "Thất bại",
-        description: (error ? error.message : (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thất bại!"),
+        description: error
+          ? error.message
+          : (openModal
+              ? titleModal === titleModalCreate
+                ? "Thêm"
+                : titleModal === titleModalUpdate
+                ? "Cập nhật"
+                : titleModal === titleModalLock
+                ? "Khoá"
+                : "Mở khoá"
+              : "") + " thất bại!",
         duration: 1.5,
       });
 
-      setTimeout(() => {
-      }, 1500);
+      setTimeout(() => {}, 1500);
     },
   });
   // - Các modal tương ứng cho từng chức năng
@@ -404,7 +505,7 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
       </>
     );
   };
-  const CreateRoles = ({ }) => {
+  const CreateRoles = ({}) => {
     const [form] = Form.useForm();
     const [roleDetails, setRoleDetails] = useState<RoleDetailsType[]>([]);
 
@@ -434,7 +535,11 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
               const values = form.getFieldsValue();
 
               // Thực thi mutation
-              handleSubmitMutation.mutate({ type: "create", values: values, details: roleDetails });
+              handleSubmitMutation.mutate({
+                type: "create",
+                values: values,
+                details: roleDetails,
+              });
 
               // Xoá class 'active' thể hiện nút không còn được nhấn
               submitButton?.classList.remove("active");
@@ -580,7 +685,11 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
               const values = form.getFieldsValue();
 
               // Thực thi mutation
-              handleSubmitMutation.mutate({ type: "update", values: values, details: roleDetailsUpdate });
+              handleSubmitMutation.mutate({
+                type: "update",
+                values: values,
+                details: roleDetailsUpdate,
+              });
 
               // Xoá class 'active' thể hiện nút không còn được nhấn
               submitButton?.classList.remove("active");
@@ -690,7 +799,10 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
             });
             if (answer) {
               // Thực thi mutation
-              handleSubmitMutation.mutate({ type: (statusValue ? "lock" : "unlock"), objectId: id! });
+              handleSubmitMutation.mutate({
+                type: statusValue ? "lock" : "unlock",
+                objectId: id!,
+              });
 
               // Xoá class 'active' thể hiện nút không còn được nhấn
               submitButton?.classList.remove("active");
@@ -717,7 +829,9 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
             </p>
           </div>
           <div className="modal__buttons">
-            <button type="submit" className="modal__button btn lock">Xác nhận</button>
+            <button type="submit" className="modal__button btn lock">
+              Xác nhận
+            </button>
           </div>
         </Form>
       </>
@@ -752,7 +866,7 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
     <>
       <main className="main">
         <div className="main__header">
-          <h1 className="main__title">Quản lý nhân sự - {objectName}</h1>
+          <h1 className="main__title">{objectName}</h1>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -772,40 +886,36 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          {
-            validActions?.includes(getActionNameVn(1)) && (
-              <button
-                className={
-                  "main__filter-button btn " + getActionNameEn(1) +
-                  (openModal && titleModal === titleModalCreate
-                    ? " active"
-                    : "")
-                }
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalCreate,
-                    true,
-                    "60%",
-                    getActionNameEn(1) + " roles",
-                    AdminRolesModal.create()
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPlus} className="icon" />
-                &nbsp;Thêm
-              </button>
-            )
-          }
+          {validActions?.includes(getActionNameVn(1)) && (
+            <button
+              className={
+                "main__filter-button btn " +
+                getActionNameEn(1) +
+                (openModal && titleModal === titleModalCreate ? " active" : "")
+              }
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalCreate,
+                  true,
+                  "60%",
+                  getActionNameEn(1) + " roles",
+                  AdminRolesModal.create()
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPlus} className="icon" />
+              &nbsp;Thêm
+            </button>
+          )}
         </div>
         <div className="main__table">
-          <CustomTableActions
+          <CustomTableActions<RolesType>
             columns={columns}
-            rowKey={(record) => record!.id as number}
-            data={currentItems}
+            data={roles || []}
+            rowKey={(record) => String(record?.id)}
             loading={isLoading}
-            pagination={paginationProps}
+            defaultPageSize={10}
             className="table-actions roles"
-            onChange={handleTableChange}
           />
         </div>
       </main>

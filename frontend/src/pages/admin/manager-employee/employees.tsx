@@ -10,6 +10,7 @@ import {
   faUnlock,
 } from "@fortawesome/free-solid-svg-icons";
 import {
+  Button,
   DatePicker,
   Form,
   Image,
@@ -27,8 +28,12 @@ import type {
   ReactQueryMutationProps,
   RoleHistoriesFormatType,
 } from "../../../common/types.tsx";
-import { CommonGender, CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values.tsx";
-import { CustomPaginationProps } from "../../../common/props.tsx";
+import {
+  CommonGender,
+  CommonStatus,
+  ReactQueryGetData,
+  TitleModalCommon,
+} from "../../../common/values.tsx";
 import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules.tsx";
 import CustomFindInput from "../../../components/admin/find-input.tsx";
 import CustomFindSelect from "../../../components/admin/find-select.tsx";
@@ -44,39 +49,42 @@ import {
   HandleLockEmployee,
   HandleUpdateEmployee,
 } from "../../../services/api.tsx";
-import { getActionNameEn, getActionNameVn } from "../../../services/default-actions.tsx";
+import {
+  getActionNameEn,
+  getActionNameVn,
+} from "../../../services/default-actions.tsx";
 import { getActionsString } from "../../../services/employee-login.tsx";
 import { showCreateValidAddress } from "../../../utils/showCreateValidAddress.tsx";
 import { openConfirmation } from "../../../utils/showConfirmation.ts";
 import { openNotification } from "../../../utils/showNotification.ts";
 import dayjs from "dayjs";
 
+const { Option } = Select;
+
 // Các giá trị chung
 // - Tên đối tượng
-const objectName = "Nhân viên"
+const objectName = "Nhân viên";
 // - Tiêu đề modal
 const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
 const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
 const titleModalUpdate = TitleModalCommon.update(objectName.toLowerCase());
 const titleModalLock = TitleModalCommon.lock(objectName.toLowerCase());
 const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
-const titleModalChangePassword = TitleModalCommon.changePassword(objectName.toLowerCase());
+const titleModalChangePassword = TitleModalCommon.changePassword(
+  objectName.toLowerCase()
+);
 
 // Admin Employees Page
 const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
   // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
-  const validActions = getActionsString({ currentFunctionId: functionId })
+  const validActions = getActionsString({ currentFunctionId: functionId });
 
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
   // Các biến giữ dữ liệu về chức vụ
-  const {
-    data: roles,
-  } = useQuery({
-    queryKey: [
-      'roles',
-    ],
+  const { data: roles } = useQuery({
+    queryKey: ["roles"],
     queryFn: async () => {
       const res = await FindAllRole({ statusValue: [CommonStatus.active] });
       if (res.status === 200) {
@@ -105,12 +113,6 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
     findOptions[0].value
   );
   const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
-  // - Chức vụ
-  const roleOptions: SelectProps["options"] = roles?.map((role) => ({
-    label: "#" + role!.id + " - " + role!.name,
-    value: role!.id,
-  }));
-  const [filterRoleValue, setFilterRoleValue] = useState<string[] | null>(null);
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
     { label: CommonStatus["active"], value: CommonStatus["active"] },
@@ -128,18 +130,11 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
     isError,
     error,
   } = useQuery({
-    queryKey: [
-      'employees',
-      filterFindType,
-      filterFindValue,
-      filterRoleValue,
-      filterStatusValue,
-    ],
+    queryKey: ["employees", filterFindType, filterFindValue, filterStatusValue],
     queryFn: async () => {
       const res = await FindAllEmployee({
         findType: filterFindType!,
         findValue: filterFindValue!,
-        roleValue: filterRoleValue!,
         statusValue: filterStatusValue!,
       });
       if (res.status === 200) {
@@ -155,7 +150,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
         throw res;
       }
     },
-    enabled: !!filterFindType,  //
+    enabled: !!filterFindType, //
     retry: ReactQueryGetData.retry,
     staleTime: ReactQueryGetData.staleTime,
   });
@@ -165,8 +160,8 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
       title: "#",
       dataIndex: "id",
       key: "id",
-      sorter: true,
       width: "8%",
+      sorter: (a, b) => a?.id! - b?.id!,
     },
     {
       title: "Hình ảnh",
@@ -188,28 +183,122 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
       title: "Họ và tên",
       dataIndex: "fullname",
       key: "fullname",
-      sorter: true,
       width: "18%",
       className: "left",
+      sorter: (a, b) => a?.fullname!.localeCompare(b?.fullname!),
     },
     {
       title: "Số điện thoại",
       dataIndex: "phone",
       key: "phone",
-      sorter: true,
       width: "12%",
+      sorter: (a, b) => a?.phone!.localeCompare(b?.phone!),
     },
     {
       title: "Ngày vào làm",
       dataIndex: "dateBegin",
       key: "dateBegin",
-      sorter: true,
       width: "12%",
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8 }}>
+          <DatePicker.RangePicker
+            format="YYYY-MM-DD"
+            style={{ display: "flex" }}
+            value={
+              selectedKeys[0]
+                ? (() => {
+                    const [start, end] = JSON.parse(
+                      selectedKeys[0] as string
+                    ) as [string, string];
+                    return [dayjs(start), dayjs(end)];
+                  })()
+                : null
+            }
+            onChange={(dates) =>
+              setSelectedKeys(
+                dates
+                  ? [
+                      JSON.stringify([
+                        dates[0]?.toISOString(),
+                        dates[1]?.toISOString(),
+                      ]),
+                    ]
+                  : []
+              )
+            }
+          />
+          <Button
+            type="primary"
+            size="small"
+            style={{ width: "100%", marginTop: 8 }}
+            onClick={() => confirm()}
+          >
+            Lọc
+          </Button>
+          {/* <Button
+            size="small"
+            style={{ width: "100%", marginTop: 4 }}
+            onClick={() => {
+              clearFilters?.();
+              confirm();
+            }}
+          >
+            Đặt lại
+          </Button> */}
+        </div>
+      ),
+      onFilter: (value, record) => {
+        if (!value) return true;
+        // parse JSON
+        const [start, end] = JSON.parse(value as string) as [string, string];
+        const date = dayjs(record.dateBegin);
+
+        return (
+          date.isSame(dayjs(start), "day") ||
+          date.isSame(dayjs(end), "day") ||
+          (date.isAfter(dayjs(start), "day") &&
+            date.isBefore(dayjs(end), "day"))
+        );
+      },
+      sorter: (a, b) => a?.dateBegin!.localeCompare(b?.dateBegin!),
+      render: (val) => val ? dayjs(val).format("YYYY-MM-DD") : "",
     },
     {
       title: "Chức vụ",
       key: "currentRole",
       width: "20%",
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+        <div style={{ width: 250, padding: 8 }}>
+          <Select
+            allowClear
+            value={selectedKeys[0]}
+            placeholder="Chọn Chức vụ"
+            style={{ width: "100%" }}
+            onChange={(val) => setSelectedKeys(val ? [val] : [])}
+          >
+            {roles?.map((role) => (
+              <Option key={role.id} value={role.id}>
+                #{role.id} - {role.name}
+              </Option>
+            ))}
+          </Select>
+          <Button
+            type="primary"
+            size="small"
+            style={{ width: "100%", marginTop: 8 }}
+            onClick={() => confirm()}
+          >
+            Lọc
+          </Button>
+        </div>
+      ),
+      onFilter: (value, record) => record.currentRole?.id === value,
+      sorter: (a, b) => a.currentRole?.id! - b.currentRole?.id!,
       render: (record) =>
         `#${record.currentRole?.id} - ${record.currentRole?.name}`,
     },
@@ -232,93 +321,80 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
       className: "buttons",
       render: (text: any, record: EmployeesFormatType, index: number) => (
         <>
-          {
-            validActions?.includes(getActionNameVn(0)) && (
-              <button
-                className={"action " + getActionNameEn(0)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalDetail,
-                    true,
-                    "89%",
-                    getActionNameEn(0) + " employees",
-                    AdminEmployeesModal.detail(record)
-                  )
+          {validActions?.includes(getActionNameVn(0)) && (
+            <button
+              className={"action " + getActionNameEn(0)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalDetail,
+                  true,
+                  "89%",
+                  getActionNameEn(0) + " employees",
+                  AdminEmployeesModal.detail(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faCircleInfo} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(2)) && (
+            <button
+              className={"action " + getActionNameEn(2)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalUpdate,
+                  true,
+                  "89%",
+                  getActionNameEn(2) + " employees",
+                  AdminEmployeesModal.update(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPenToSquare} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(3)) && (
+            <button
+              className={"action " + getActionNameEn(3)}
+              onClick={() =>
+                updatePropertiesModal(
+                  record.status == CommonStatus["active"]
+                    ? titleModalLock
+                    : titleModalUnlock,
+                  true,
+                  "30%",
+                  getActionNameEn(3) + " employees",
+                  AdminEmployeesModal.lock(record!.id as number, record!.status)
+                )
+              }
+            >
+              <FontAwesomeIcon
+                icon={
+                  record.status == CommonStatus["active"] ? faLock : faUnlock
                 }
-              >
-                <FontAwesomeIcon icon={faCircleInfo} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(2)) && (
-              <button
-                className={"action " + getActionNameEn(2)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalUpdate,
-                    true,
-                    "89%",
-                    getActionNameEn(2) + " employees",
-                    AdminEmployeesModal.update(record)
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPenToSquare} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(3)) && (
-              <button
-                className={"action " + getActionNameEn(3)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
-                    true,
-                    "30%",
-                    getActionNameEn(3) + " employees",
-                    AdminEmployeesModal.lock(record!.id as number, record!.status)
-                  )
-                }
-              >
-                <FontAwesomeIcon
-                  icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
-                />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(2)) && (
-
-              <button
-                className={"action " + getActionNameEn(4)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalChangePassword,
-                    true,
-                    "31%",
-                    getActionNameEn(4) + " employees",
-                    AdminEmployeesModal.changePassword(record!.id as number)
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faKey} />
-              </button>
-            )
-          }
+              />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(2)) && (
+            <button
+              className={"action " + getActionNameEn(4)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalChangePassword,
+                  true,
+                  "31%",
+                  getActionNameEn(4) + " employees",
+                  AdminEmployeesModal.changePassword(record!.id as number)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faKey} />
+            </button>
+          )}
         </>
       ),
     },
   ];
-  // - Các thành phần
-  const {
-    currentItems,
-    handleTableChange,
-    paginationProps,
-    sortField,
-    sortOrder,
-  } = CustomPaginationProps(employees || [], 7, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -385,7 +461,12 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
   };
   // - Mutation cho việc thêm, cập nhật và khoá dữ liệu
   const handleSubmitMutation = useMutation({
-    mutationFn: async ({ type, values, objectId, imageFile }: ReactQueryMutationProps<EmployeesType>) => {
+    mutationFn: async ({
+      type,
+      values,
+      objectId,
+      imageFile,
+    }: ReactQueryMutationProps<EmployeesType>) => {
       if (openModal) {
         if (type === "create" && titleModal === titleModalCreate) {
           const res = await HandleCreateEmployee({
@@ -411,11 +492,12 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
             username: values!.username || undefined,
             password: values!.password || undefined,
             status: values!.status || undefined,
-          })
+          });
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
         } else if (type === "update" && titleModal === titleModalUpdate) {
@@ -445,34 +527,44 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
-        } else if ((type === "lock" && titleModal === titleModalLock)
-          || (type === "unlock" && titleModal === titleModalUnlock)) {
+        } else if (
+          (type === "lock" && titleModal === titleModalLock) ||
+          (type === "unlock" && titleModal === titleModalUnlock)
+        ) {
           const res = await HandleLockEmployee({
             id: objectId! as number,
-            status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
+            status:
+              (type === "lock" ? CommonStatus.active : CommonStatus.inactive) ||
+              undefined,
             timeUpdate: new Date().toISOString(),
-          })
+          });
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
-        } else if (type === "change-password" && titleModal === titleModalChangePassword) {
+        } else if (
+          type === "change-password" &&
+          titleModal === titleModalChangePassword
+        ) {
           const res = await HandleChangePasswordEmployee({
             id: objectId! as number,
             currentPassword: values!.currentPassword || undefined,
             newPassword: values!.newPassword || undefined,
             authNewPassword: values!.authNewPassword || undefined,
             timeUpdate: new Date().toISOString(),
-          })
+          });
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
         }
@@ -482,12 +574,23 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
       openNotification({
         type: "success",
         message: "Thành công",
-        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalChangePassword ? "Thay đổi mật khẩu" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thành công!",
+        description:
+          (openModal
+            ? titleModal === titleModalCreate
+              ? "Thêm"
+              : titleModal === titleModalUpdate
+              ? "Cập nhật"
+              : titleModal === titleModalChangePassword
+              ? "Thay đổi mật khẩu"
+              : titleModal === titleModalLock
+              ? "Khoá"
+              : "Mở khoá"
+            : "") + " thành công!",
         duration: 1.5,
       });
 
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['employees'] });
+        queryClient.invalidateQueries({ queryKey: ["employees"] });
         setOpenModal(false);
       }, 1500);
     },
@@ -495,12 +598,23 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
       openNotification({
         type: "error",
         message: "Thất bại",
-        description: (error ? error.message : (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalChangePassword ? "Thay đổi mật khẩu" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thất bại!"),
+        description: error
+          ? error.message
+          : (openModal
+              ? titleModal === titleModalCreate
+                ? "Thêm"
+                : titleModal === titleModalUpdate
+                ? "Cập nhật"
+                : titleModal === titleModalChangePassword
+                ? "Thay đổi mật khẩu"
+                : titleModal === titleModalLock
+                ? "Khoá"
+                : "Mở khoá"
+              : "") + " thất bại!",
         duration: 1.5,
       });
 
-      setTimeout(() => {
-      }, 1500);
+      setTimeout(() => {}, 1500);
     },
   });
   // - Các modal tương ứng cho từng chức năng
@@ -696,7 +810,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
       </>
     );
   };
-  const CreateEmployees = ({ }) => {
+  const CreateEmployees = ({}) => {
     const [form] = Form.useForm();
     const [imageFile, setImageFile] = useState<RcFile>();
 
@@ -726,7 +840,11 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
               const values = form.getFieldsValue();
 
               // Thực thi mutation
-              handleSubmitMutation.mutate({ type: "create", values: values, imageFile: imageFile });
+              handleSubmitMutation.mutate({
+                type: "create",
+                values: values,
+                imageFile: imageFile,
+              });
 
               // Xoá class 'active' thể hiện nút không còn được nhấn
               submitButton?.classList.remove("active");
@@ -944,7 +1062,10 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
                     placeholder={defaultInputs["gender"]}
                     options={[
                       { label: CommonGender.male, value: CommonGender.male },
-                      { label: CommonGender.female, value: CommonGender.female },
+                      {
+                        label: CommonGender.female,
+                        value: CommonGender.female,
+                      },
                     ]}
                   />
                 </Form.Item>
@@ -1029,7 +1150,11 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
               const values = form.getFieldsValue();
 
               // Thực thi mutation
-              handleSubmitMutation.mutate({ type: "update", values: values, imageFile: imageFile });
+              handleSubmitMutation.mutate({
+                type: "update",
+                values: values,
+                imageFile: imageFile,
+              });
 
               // Xoá class 'active' thể hiện nút không còn được nhấn
               submitButton?.classList.remove("active");
@@ -1244,7 +1369,10 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
                     placeholder={defaultInputs["gender"]}
                     options={[
                       { label: CommonGender.male, value: CommonGender.male },
-                      { label: CommonGender.female, value: CommonGender.female },
+                      {
+                        label: CommonGender.female,
+                        value: CommonGender.female,
+                      },
                     ]}
                   />
                 </Form.Item>
@@ -1301,7 +1429,10 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
             });
             if (answer) {
               // Thực thi mutation
-              handleSubmitMutation.mutate({ type: (statusValue ? "lock" : "unlock"), objectId: id! });
+              handleSubmitMutation.mutate({
+                type: statusValue ? "lock" : "unlock",
+                objectId: id!,
+              });
 
               // Xoá class 'active' thể hiện nút không còn được nhấn
               submitButton?.classList.remove("active");
@@ -1366,7 +1497,11 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
                 const values = form.getFieldsValue();
 
                 // Thực thi mutation
-                handleSubmitMutation.mutate({ type: "change-password", values: values, objectId: id });
+                handleSubmitMutation.mutate({
+                  type: "change-password",
+                  values: values,
+                  objectId: id,
+                });
 
                 // Xoá class 'active' thể hiện nút không còn được nhấn
                 submitButton?.classList.remove("active");
@@ -1534,7 +1669,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
     <>
       <main className="main">
         <div className="main__header">
-          <h1 className="main__title">Quản lý nhân sự - {objectName}</h1>
+          <h1 className="main__title">{objectName}</h1>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -1546,15 +1681,6 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
             setFilterFindValue={setFilterFindValue}
           />
           <CustomFindSelect
-            mode="tags"
-            placeholder="Chọn Chức vụ"
-            optionFilterProp="label"
-            maxTagCount="responsive"
-            className="main__filter-select filter-role"
-            options={roleOptions}
-            setFilterSelectValue={setFilterRoleValue}
-          />
-          <CustomFindSelect
             mode={undefined}
             placeholder="Chọn Trạng thái"
             optionFilterProp="label"
@@ -1563,40 +1689,36 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          {
-            validActions?.includes(getActionNameVn(1)) && (
-              <button
-                className={
-                  "main__filter-button btn " + getActionNameEn(1) +
-                  (openModal && titleModal === titleModalCreate
-                    ? " active"
-                    : "")
-                }
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalCreate,
-                    true,
-                    "89%",
-                    getActionNameEn(1) + " employees",
-                    AdminEmployeesModal.create()
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPlus} className="icon" />
-                &nbsp;Thêm
-              </button>
-            )
-          }
+          {validActions?.includes(getActionNameVn(1)) && (
+            <button
+              className={
+                "main__filter-button btn " +
+                getActionNameEn(1) +
+                (openModal && titleModal === titleModalCreate ? " active" : "")
+              }
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalCreate,
+                  true,
+                  "89%",
+                  getActionNameEn(1) + " employees",
+                  AdminEmployeesModal.create()
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPlus} className="icon" />
+              &nbsp;Thêm
+            </button>
+          )}
         </div>
         <div className="main__table">
-          <CustomTableActions
+          <CustomTableActions<EmployeesFormatType>
             columns={columns}
-            rowKey={(record) => record!.id as number}
-            data={currentItems}
+            data={employees || []}
+            rowKey={(record) => String(record?.id)}
             loading={isLoading}
-            pagination={paginationProps}
+            defaultPageSize={10}
             className="table-actions employees"
-            onChange={handleTableChange}
           />
         </div>
       </main>

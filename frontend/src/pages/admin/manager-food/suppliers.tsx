@@ -20,7 +20,6 @@ import type { ColumnsType } from "antd/es/table";
 import type { ReactQueryMutationProps, SuppliersType } from "../../../common/types";
 import { CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
 import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules";
-import { CustomPaginationProps } from "../../../common/props";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomTableActions from "../../../components/admin/table-actions";
@@ -119,30 +118,30 @@ const AdminSuppliersPage = ({ functionId }: { functionId: number }) => {
       title: "#",
       dataIndex: "id",
       key: "id",
-      sorter: true,
       width: "12%",
+      sorter: (a, b) => a?.id! - b?.id!,
     },
     {
       title: "Tên nhà cung cấp",
       dataIndex: "name",
       key: "name",
-      sorter: true,
       width: "34%",
       className: "left",
+      sorter: (a, b) => a?.name!.localeCompare(b?.name!),
     },
     {
       title: "Số điện thoại",
       dataIndex: "phone",
       key: "phone",
-      sorter: true,
       width: "12%",
+      sorter: (a, b) => a?.phone!.localeCompare(b?.phone!),
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
-      sorter: true,
       width: "20%",
+      sorter: (a, b) => a?.email!.localeCompare(b?.email!),
     },
     {
       title: "Trạng thái",
@@ -223,14 +222,6 @@ const AdminSuppliersPage = ({ functionId }: { functionId: number }) => {
       ),
     },
   ];
-  // Các thành phần
-  const {
-    currentItems,
-    handleTableChange,
-    paginationProps,
-    sortField,
-    sortOrder,
-  } = CustomPaginationProps(suppliers || [], 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -820,7 +811,7 @@ const AdminSuppliersPage = ({ functionId }: { functionId: number }) => {
     <>
       <main className="main">
         <div className="main__header">
-          <h1 className="main__title">Quản lý món ăn - {objectName}</h1>
+          <h1 className="main__title">{objectName}</h1>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -866,14 +857,13 @@ const AdminSuppliersPage = ({ functionId }: { functionId: number }) => {
           }
         </div>
         <div className="main__table">
-          <CustomTableActions
+          <CustomTableActions<SuppliersType>
             columns={columns}
-            rowKey={(record) => record!.id as number}
-            data={currentItems}
-            pagination={paginationProps}
+            data={suppliers || []}
+            rowKey={(record) => String(record?.id)}
             loading={isLoading}
+            defaultPageSize={10}
             className="table-actions suppliers"
-            onChange={handleTableChange}
           />
         </div>
       </main>

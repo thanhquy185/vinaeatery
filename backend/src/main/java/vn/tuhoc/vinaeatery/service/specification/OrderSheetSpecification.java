@@ -2,6 +2,7 @@ package vn.tuhoc.vinaeatery.service.specification;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -45,7 +46,7 @@ public class OrderSheetSpecification {
 
     public static Specification<OrderSheet> currentDate() {
         return (root, query, criteriaBuilder) -> {
-            LocalDateTime startOfDay = LocalDate.now().atStartOfDay(); // 00:00:00
+            LocalDateTime startOfDay = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh")).atStartOfDay(); // 00:00:00
             LocalDateTime endOfDay = startOfDay.plusDays(1); // ngày mai 00:00:00 (exclusive)
 
             return criteriaBuilder.between(
@@ -63,6 +64,19 @@ public class OrderSheetSpecification {
     public static Specification<OrderSheet> tableIdEqual(String tableId) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(OrderSheet_.TABLE_ID),
                 tableId);
+    }
+
+    public static Specification<OrderSheet> tableNameLike(String tableName) {
+        return (root, query, cb) -> {
+            // Tạo subquery Table
+            Subquery<Integer> subquery = query.subquery(Integer.class);
+            Root<TableE> tableRoot = subquery.from(TableE.class);
+            subquery.select(tableRoot.get("id"))
+                    .where(cb.like(tableRoot.get("name"), "%" + tableName + "%"));
+
+            // So sánh tableId của OrderSheet nằm trong danh sách tableId từ Table
+            return root.get("tableId").in(subquery);
+        };
     }
 
     public static Specification<OrderSheet> floorIdEqual(String floorId) {

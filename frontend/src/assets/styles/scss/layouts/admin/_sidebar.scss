@@ -1,0 +1,74 @@
+@use "../../abstracts/variables" as *;
+@use "../../abstracts/colors" as *;
+@use "../../abstracts/mixins" as *;
+
+.sidebar {
+  $sidebar-width: 20%;
+  $sidebar-width-collapsed: 90px;
+
+  max-width: $sidebar-width !important;
+  min-width: $sidebar-width !important;
+  width: $sidebar-width !important;
+  background: #fff;
+
+  &__brand {
+    @include flex(center, center);
+    gap: 6px;
+    background: $primary-color;
+    padding: 14px 4px;
+    margin: 10px;
+    border-radius: 8px;
+    transition: 0.3s ease;
+  }
+
+  &__brand-image {
+    @include size(50px);
+  }
+
+  &__brand-name {
+    color: #fff;
+    font-size: 2.8rem;
+    font-weight: 700;
+  }
+
+  & .ant-layout-sider-children {
+    width: 100%;
+  }
+
+  // & :is(.ant-menu-submenu, .ant-menu-item) {
+  //   height: 50px ;
+  // }
+
+  // & :is(.ant-menu-title-content) {
+  //   height: 50px ;
+  //   line-height: 50px ;
+  // }
+
+  & :is(.ant-menu-item-icon, .ant-menu-title-content, .ant-menu-submenu-arrow) {
+    font-size: 1.8rem !important;
+  }
+
+  & .ant-menu-item-icon {
+    width: 20px;
+  }
+
+  & .ant-layout-sider-trigger {
+    width: $sidebar-width !important;
+    background: $primary-color;
+  }
+
+  /* Collapsed */
+  &.ant-layout-sider-collapsed {
+    max-width: $sidebar-width-collapsed !important;
+    min-width: $sidebar-width-collapsed !important;
+    width: $sidebar-width-collapsed !important;
+  }
+
+  &.ant-layout-sider-collapsed .ant-layout-sider-trigger {
+    width: $sidebar-width-collapsed !important;
+  }
+  
+  &.ant-layout-sider-collapsed &__brand-name {
+    display: none;
+  }
+}

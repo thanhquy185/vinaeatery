@@ -12,7 +12,7 @@ export const TitleModalCommon = {
   lock: (objectName: string) => "Khoá " + objectName,
   unlock: (objectName: string) => "Mở khoá " + objectName,
   print: (objectName: string) => "In " + objectName,
-  changePassword: (objectName: string) => "Thay đổi mật khẩu" + objectName,
+  changePassword: (objectName: string) => "Thay đổi mật khẩu " + objectName,
 };
 
 // Giới tính chung

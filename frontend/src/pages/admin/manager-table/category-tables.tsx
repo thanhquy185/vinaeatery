@@ -8,13 +8,20 @@ import {
   faPlus,
   faUnlock,
 } from "@fortawesome/free-solid-svg-icons";
-import { Form, Input, InputNumber, Select, Tag } from "antd";
+import { Button, Form, Input, InputNumber, Select, Tag } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import type { SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import type { CategoryTablesType, ReactQueryMutationProps } from "../../../common/types";
-import { CommonStatus, ReactQueryGetData, SurchargeCategoryTable, TitleModalCommon } from "../../../common/values";
-import { CustomPaginationProps } from "../../../common/props";
+import type {
+  CategoryTablesType,
+  ReactQueryMutationProps,
+} from "../../../common/types";
+import {
+  CommonStatus,
+  ReactQueryGetData,
+  SurchargeCategoryTable,
+  TitleModalCommon,
+} from "../../../common/values";
 import { ruleRequired } from "../../../common/rules";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
@@ -26,14 +33,18 @@ import {
   HandleLockCategoryTable,
   HandleUpdateCategoryTable,
 } from "../../../services/api";
-import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import {
+  getActionNameEn,
+  getActionNameVn,
+} from "../../../services/default-actions";
 import { getActionsString } from "../../../services/employee-login";
+import { vietnamMoneyFormat } from "../../../utils/otherEvents";
 import { openNotification } from "../../../utils/showNotification";
 import { openConfirmation } from "../../../utils/showConfirmation";
 
 // Các giá trị chung
 // - Tên đối tượng
-const objectName = "Loại bàn ăn"
+const objectName = "Loại bàn ăn";
 // - Tiêu đề modal
 const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
 const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
@@ -44,7 +55,7 @@ const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 // Admin Category Tables Page
 const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
   // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
-  const validActions = getActionsString({ currentFunctionId: functionId })
+  const validActions = getActionsString({ currentFunctionId: functionId });
 
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
@@ -59,14 +70,6 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
     findOptions[0].value
   );
   const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
-  // - Loại phụ thu
-  const surchargeTypeOptions: SelectProps["options"] = [
-    { label: SurchargeCategoryTable.percent, value: SurchargeCategoryTable.percent },
-    { label: SurchargeCategoryTable.fixed, value: SurchargeCategoryTable.fixed },
-  ];
-  const [filterSurchargeTypeValue, setFilterSurchargeTypeValue] = useState<
-    string[] | null
-  >(null);
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
     { label: CommonStatus["active"], value: CommonStatus["active"] },
@@ -85,17 +88,15 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
     error,
   } = useQuery({
     queryKey: [
-      'category-tables',
+      "category-tables",
       filterFindType,
       filterFindValue,
-      filterSurchargeTypeValue,
       filterStatusValue,
     ],
     queryFn: async () => {
       const res = await FindAllCategoryTable({
         findType: filterFindType!,
         findValue: filterFindValue!,
-        surchargeTypeValue: filterSurchargeTypeValue!,
         statusValue: filterStatusValue!,
       });
       if (res.status === 200) {
@@ -111,7 +112,7 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
         throw res;
       }
     },
-    enabled: !!filterFindType,  //
+    enabled: !!filterFindType, //
     retry: ReactQueryGetData.retry,
     staleTime: ReactQueryGetData.staleTime,
   });
@@ -121,29 +122,95 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
       title: "#",
       dataIndex: "id",
       key: "id",
-      sorter: true,
       width: "12%",
+      sorter: (a, b) => a?.id! - b?.id!,
     },
     {
       title: "Tên loại bàn ăn",
       dataIndex: "name",
       key: "name",
-      sorter: true,
       width: "30%",
+      sorter: (a, b) => a?.name!.localeCompare(b?.name!),
     },
     {
       title: "Loại phụ thu",
       dataIndex: "surchargeType",
       key: "surchargeType",
-      sorter: true,
       width: "17%",
+      sorter: (a, b) => a?.surchargeType!.localeCompare(b?.surchargeType!),
     },
     {
       title: "Giá trị phụ thu",
       dataIndex: "surchargeValue",
       key: "surchargeValue",
-      sorter: true,
       width: "17%",
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => {
+        let min = 0,
+          max = 0;
+        if (selectedKeys[0]) {
+          try {
+            [min, max] = JSON.parse(selectedKeys[0] as string) as [
+              number,
+              number
+            ];
+          } catch {}
+        }
+
+        return (
+          <div style={{ padding: 8 }}>
+            <InputNumber
+              placeholder="Tối thiểu"
+              style={{ marginBottom: 8, display: "block", width: "100%" }}
+              value={min || undefined}
+              onChange={(val) => {
+                setSelectedKeys([JSON.stringify([val ?? 0, max ?? 0])]);
+              }}
+            />
+            <InputNumber
+              placeholder="Tối đa"
+              style={{ marginBottom: 8, display: "block", width: "100%" }}
+              value={max || undefined}
+              onChange={(val) => {
+                setSelectedKeys([JSON.stringify([min ?? 0, val ?? 0])]);
+              }}
+            />
+            <Button
+              type="primary"
+              size="small"
+              style={{ width: "100%" }}
+              onClick={() => confirm()}
+            >
+              Lọc
+            </Button>
+            {/* <Button
+              size="small"
+              style={{ width: "100%", marginTop: 4 }}
+              onClick={() => {
+                clearFilters?.();
+                confirm();
+              }}
+            >
+              Đặt lại
+            </Button> */}
+          </div>
+        );
+      },
+      onFilter: (value, record) => {
+        if (!value) return true;
+        const [min, max] = JSON.parse(value as string) as [number, number];
+        const surchargeValue = record.surchargeValue ?? 0;
+        if (min && surchargeValue < min) return false;
+        if (max && surchargeValue > max) return false;
+        return true;
+      },
+      sorter: (a, b) => a?.surchargeValue! - b?.surchargeValue!,
+      render: (surchargeValue: number) =>
+        vietnamMoneyFormat(surchargeValue || 0),
     },
     {
       title: "Trạng thái",
@@ -164,79 +231,67 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
       className: "buttons",
       render: (text: any, record: CategoryTablesType, index: number) => (
         <>
-          {
-            validActions?.includes(getActionNameVn(0)) && (
-              <button
-                className={"action " + getActionNameEn(0)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalDetail,
-                    true,
-                    "60%",
-                    getActionNameEn(0) + " category-tables",
-                    AdminCategoryTablesModal.detail(record)
+          {validActions?.includes(getActionNameVn(0)) && (
+            <button
+              className={"action " + getActionNameEn(0)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalDetail,
+                  true,
+                  "60%",
+                  getActionNameEn(0) + " category-tables",
+                  AdminCategoryTablesModal.detail(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faCircleInfo} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(2)) && (
+            <button
+              className={"action " + getActionNameEn(2)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalUpdate,
+                  true,
+                  "60%",
+                  getActionNameEn(2) + " category-tables",
+                  AdminCategoryTablesModal.update(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPenToSquare} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(3)) && (
+            <button
+              className={"action " + getActionNameEn(3)}
+              onClick={() =>
+                updatePropertiesModal(
+                  record.status == CommonStatus["active"]
+                    ? titleModalLock
+                    : titleModalUnlock,
+                  true,
+                  "30%",
+                  getActionNameEn(3) + " category-tables",
+                  AdminCategoryTablesModal.lock(
+                    record!.id as number,
+                    record!.status
                   )
+                )
+              }
+            >
+              <FontAwesomeIcon
+                icon={
+                  record.status == CommonStatus["active"] ? faLock : faUnlock
                 }
-              >
-                <FontAwesomeIcon icon={faCircleInfo} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(2)) && (
-
-              <button
-                className={"action " + getActionNameEn(2)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalUpdate,
-                    true,
-                    "60%",
-                    getActionNameEn(2) + " category-tables",
-                    AdminCategoryTablesModal.update(record)
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPenToSquare} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(3)) && (
-              <button
-                className={"action " + getActionNameEn(3)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
-                    true,
-                    "30%",
-                    getActionNameEn(3) + " category-tables",
-                    AdminCategoryTablesModal.lock(record!.id as number, record!.status)
-                  )
-                }
-              >
-                <FontAwesomeIcon
-                  icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
-                />
-              </button>
-            )
-          }
+              />
+            </button>
+          )}
         </>
       ),
     },
   ];
-  // - Các thành phần 
-  const {
-    currentItems,
-    handleTableChange,
-    paginationProps,
-    sortField,
-    sortOrder,
-  } = CustomPaginationProps(
-    categoryTables || [],
-    10,
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-  );
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -281,7 +336,11 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
   };
   // - Mutation cho việc thêm, cập nhật và khoá dữ liệu
   const handleSubmitMutation = useMutation({
-    mutationFn: async ({ type, values, objectId }: ReactQueryMutationProps<CategoryTablesType>) => {
+    mutationFn: async ({
+      type,
+      values,
+      objectId,
+    }: ReactQueryMutationProps<CategoryTablesType>) => {
       if (openModal) {
         if (type === "create" && titleModal === titleModalCreate) {
           const res = await HandleCreateCategoryTable({
@@ -290,11 +349,12 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
             surchargeValue: values!.surchargeValue || undefined,
             description: values!.description || undefined,
             status: values!.status || undefined,
-          })
+          });
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
         } else if (type === "update" && titleModal === titleModalUpdate) {
@@ -309,20 +369,26 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
-        } else if ((type === "lock" && titleModal === titleModalLock)
-          || (type === "unlock" && titleModal === titleModalUnlock)) {
+        } else if (
+          (type === "lock" && titleModal === titleModalLock) ||
+          (type === "unlock" && titleModal === titleModalUnlock)
+        ) {
           const res = await HandleLockCategoryTable({
             id: objectId! as number,
-            status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
+            status:
+              (type === "lock" ? CommonStatus.active : CommonStatus.inactive) ||
+              undefined,
             timeUpdate: new Date().toISOString(),
-          })
+          });
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
         }
@@ -332,12 +398,21 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
       openNotification({
         type: "success",
         message: "Thành công",
-        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thành công!",
+        description:
+          (openModal
+            ? titleModal === titleModalCreate
+              ? "Thêm"
+              : titleModal === titleModalUpdate
+              ? "Cập nhật"
+              : titleModal === titleModalLock
+              ? "Khoá"
+              : "Mở khoá"
+            : "") + " thành công!",
         duration: 1.5,
       });
 
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['category-tables'] });
+        queryClient.invalidateQueries({ queryKey: ["category-tables"] });
         setOpenModal(false);
       }, 1500);
     },
@@ -345,7 +420,17 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
       openNotification({
         type: "error",
         message: "Thất bại",
-        description: (error ? error.message : (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thất bại!"),
+        description: error
+          ? error.message
+          : (openModal
+              ? titleModal === titleModalCreate
+                ? "Thêm"
+                : titleModal === titleModalUpdate
+                ? "Cập nhật"
+                : titleModal === titleModalLock
+                ? "Khoá"
+                : "Mở khoá"
+              : "") + " thất bại!",
         duration: 1.5,
       });
 
@@ -435,7 +520,7 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
       </>
     );
   };
-  const CreateCategoryTables = ({ }) => {
+  const CreateCategoryTables = ({}) => {
     // Khai báo form
     const [form] = Form.useForm();
 
@@ -470,8 +555,7 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
               // Xoá class 'active' thể hiện nút không còn được nhấn
               submitButton?.classList.remove("active");
             }
-          }
-          }
+          }}
         >
           <div className="modal__form-group-warper">
             <p className="modal__form-group-title">{defaultLabels["title"]}</p>
@@ -545,8 +629,14 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
                     id="create-surchargeType"
                     placeholder={defaultInputs["surchargeType"]}
                     options={[
-                      { label: SurchargeCategoryTable.percent, value: SurchargeCategoryTable.percent },
-                      { label: SurchargeCategoryTable.fixed, value: SurchargeCategoryTable.fixed },
+                      {
+                        label: SurchargeCategoryTable.percent,
+                        value: SurchargeCategoryTable.percent,
+                      },
+                      {
+                        label: SurchargeCategoryTable.fixed,
+                        value: SurchargeCategoryTable.fixed,
+                      },
                     ]}
                   />
                 </Form.Item>
@@ -570,7 +660,7 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
               Xác nhận
             </button>
           </div>
-        </Form >
+        </Form>
       </>
     );
   };
@@ -680,8 +770,14 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
                     id="update-surchargeType"
                     placeholder={defaultInputs["surchargeType"]}
                     options={[
-                      { label: SurchargeCategoryTable.percent, value: SurchargeCategoryTable.percent },
-                      { label: SurchargeCategoryTable.fixed, value: SurchargeCategoryTable.fixed },
+                      {
+                        label: SurchargeCategoryTable.percent,
+                        value: SurchargeCategoryTable.percent,
+                      },
+                      {
+                        label: SurchargeCategoryTable.fixed,
+                        value: SurchargeCategoryTable.fixed,
+                      },
                     ]}
                   />
                 </Form.Item>
@@ -741,7 +837,10 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
             });
             if (answer) {
               // Thực thi mutation
-              handleSubmitMutation.mutate({ type: (statusValue ? "lock" : "unlock"), objectId: id! });
+              handleSubmitMutation.mutate({
+                type: statusValue ? "lock" : "unlock",
+                objectId: id!,
+              });
 
               // Xoá class 'active' thể hiện nút không còn được nhấn
               submitButton?.classList.remove("active");
@@ -807,7 +906,7 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
     <>
       <main className="main">
         <div className="main__header">
-          <h1 className="main__title">Quản lý chỗ ngồi - {objectName}</h1>
+          <h1 className="main__title">{objectName}</h1>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -820,15 +919,6 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
           />
           <CustomFindSelect
             mode={undefined}
-            placeholder="Chọn Loại phụ thu"
-            optionFilterProp="label"
-            maxTagCount="responsive"
-            className="main__filter-select filter-surchargeType"
-            options={surchargeTypeOptions}
-            setFilterSelectValue={setFilterSurchargeTypeValue}
-          />
-          <CustomFindSelect
-            mode={undefined}
             placeholder="Chọn Trạng thái"
             optionFilterProp="label"
             maxTagCount="responsive"
@@ -836,40 +926,36 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          {
-            validActions?.includes(getActionNameVn(1)) && (
-              <button
-                className={
-                  "main__filter-button btn " + getActionNameEn(1) +
-                  (openModal && titleModal === titleModalCreate
-                    ? " active"
-                    : "")
-                }
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalCreate,
-                    true,
-                    "60%",
-                    getActionNameEn(1) + " category-tables",
-                    AdminCategoryTablesModal.create()
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPlus} className="icon" />
-                &nbsp;Thêm
-              </button>
-            )
-          }
+          {validActions?.includes(getActionNameVn(1)) && (
+            <button
+              className={
+                "main__filter-button btn " +
+                getActionNameEn(1) +
+                (openModal && titleModal === titleModalCreate ? " active" : "")
+              }
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalCreate,
+                  true,
+                  "60%",
+                  getActionNameEn(1) + " category-tables",
+                  AdminCategoryTablesModal.create()
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPlus} className="icon" />
+              &nbsp;Thêm
+            </button>
+          )}
         </div>
         <div className="main__table">
-          <CustomTableActions
+          <CustomTableActions<CategoryTablesType>
             columns={columns}
-            rowKey={(record) => record!.id as number}
-            data={currentItems}
+            data={categoryTables || []}
+            rowKey={(record) => String(record?.id)}
             loading={isLoading}
-            pagination={paginationProps}
+            defaultPageSize={10}
             className="table-actions category-tables"
-            onChange={handleTableChange}
           />
         </div>
       </main>

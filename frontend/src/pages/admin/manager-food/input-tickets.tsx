@@ -15,7 +15,16 @@ import {
   faPlus,
   faPrint,
 } from "@fortawesome/free-solid-svg-icons";
-import { Form, Input, InputNumber, Select, Tag, type SelectProps } from "antd";
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Tag,
+  type SelectProps,
+} from "antd";
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
@@ -28,12 +37,16 @@ import type {
   InputTicketDetailsFormatType,
   InputTicketsFormatType,
 } from "../../../common/types";
-import { CustomPaginationProps } from "../../../common/props";
-import { CommonStatus, InputTicketStatus, PayStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
+import {
+  CommonStatus,
+  InputTicketStatus,
+  PayStatus,
+  ReactQueryGetData,
+  TitleModalCommon,
+} from "../../../common/values";
 import { ruleRequired } from "../../../common/rules";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
-import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";
 import CustomCardStatic from "../../../components/admin/card-static";
 import CustomTableActions from "../../../components/admin/table-actions";
 import CustomTableNoActions from "../../../components/admin/table-no-actions";
@@ -46,7 +59,10 @@ import {
   HandleUpdateInputTicket,
 } from "../../../services/api";
 import { getVietnamCurrentDatetime } from "../../../services/dayjs";
-import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import {
+  getActionNameEn,
+  getActionNameVn,
+} from "../../../services/default-actions";
 import { getActionsString } from "../../../services/employee-login";
 import {
   numberToVietnamWords,
@@ -55,10 +71,13 @@ import {
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
 import { handlePrintTicket } from "../../../utils/printTicket";
+import dayjs from "dayjs";
+
+const { Option } = Select;
 
 // Các giá trị chung
 // - Tên đối tượng
-const objectName = "Phiếu nhập"
+const objectName = "Phiếu nhập";
 // - Tiêu đề modal
 const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
 const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
@@ -91,10 +110,31 @@ const IPDetailsFormat = ["", "", "price", "", "price"];
 // Admin Input Tickets Page
 const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
   // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
-  const validActions = getActionsString({ currentFunctionId: functionId })
+  const validActions = getActionsString({ currentFunctionId: functionId });
 
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
+
+  // Các biến giữ dữ liệu về nhà cung cấp
+  // - Nhà cung cấp
+  const { data: suppliers } = useQuery({
+    queryKey: ["suppliers"],
+    queryFn: async () => {
+      const res = await FindAllSupplier({ statusValue: [CommonStatus.active] });
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        openNotification({
+          type: "error",
+          message: "Truy vấn dữ liệu thất bại",
+          description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+          duration: 2,
+        });
+
+        throw res;
+      }
+    },
+  });
 
   // Các biến giữ giá trị từ việc lọc thông tin
   // - Tìm kiếm thông tin
@@ -106,8 +146,6 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
     findOptions[0].value
   );
   const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
-  // - Thời gian bắt đầu / Thời gian kết thúc
-  const [filterTimeValue, setFilterTimeValue] = useState<[string, string]>();
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
     { label: InputTicketStatus.giveback, value: InputTicketStatus.giveback },
@@ -130,7 +168,7 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
     error,
   } = useQuery({
     queryKey: [
-      'input-tickets',
+      "input-tickets",
       filterFindType,
       filterFindValue,
       filterStatusValue,
@@ -139,7 +177,6 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
       const res = await FindAllInputTicket({
         findType: filterFindType!,
         findValue: filterFindValue!,
-        timeValue: filterTimeValue!,
         statusValue: filterStatusValue!,
       });
       if (res.status === 200) {
@@ -155,7 +192,7 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
         throw res;
       }
     },
-    enabled: !!filterFindType,  //
+    enabled: !!filterFindType, //
     retry: ReactQueryGetData.retry,
     staleTime: ReactQueryGetData.staleTime,
   });
@@ -165,33 +202,189 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
       title: "#",
       dataIndex: "id",
       key: "id",
-      sorter: true,
       width: "8%",
+      sorter: (a, b) => a?.id! - b?.id!,
     },
     {
       title: "Thời gian tạo phiếu",
       dataIndex: "timeCreate",
       key: "timeCreate",
-      sorter: true,
       width: "16%",
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8 }}>
+          <DatePicker.RangePicker
+            showTime
+            format="YYYY-MM-DD HH:mm:ss"
+            style={{ display: "flex" }}
+            value={
+              selectedKeys[0]
+                ? (() => {
+                    const [start, end] = JSON.parse(
+                      selectedKeys[0] as string
+                    ) as [string, string];
+                    return [dayjs(start), dayjs(end)];
+                  })()
+                : null
+            }
+            onChange={(dates) =>
+              setSelectedKeys(
+                dates
+                  ? [
+                      JSON.stringify([
+                        dates[0]?.toISOString(),
+                        dates[1]?.toISOString(),
+                      ]),
+                    ]
+                  : []
+              )
+            }
+          />
+          <Button
+            type="primary"
+            size="small"
+            style={{ width: "100%", marginTop: 8 }}
+            onClick={() => confirm()}
+          >
+            Lọc
+          </Button>
+          {/* Nếu muốn nút reset thì bật lại */}
+          {/* <Button
+        size="small"
+        style={{ width: "100%", marginTop: 4 }}
+        onClick={() => {
+          clearFilters?.();
+          confirm();
+        }}
+      >
+        Đặt lại
+      </Button> */}
+        </div>
+      ),
+      onFilter: (value, record) => {
+        if (!value) return true;
+        const [start, end] = JSON.parse(value as string) as [string, string];
+        const date = dayjs(record.timeCreate);
+
+        return (
+          date.isSame(dayjs(start)) ||
+          date.isSame(dayjs(end)) ||
+          (date.isAfter(dayjs(start)) && date.isBefore(dayjs(end)))
+        );
+      },
+      sorter: (a, b) =>
+        dayjs(a.timeCreate).valueOf() - dayjs(b.timeCreate).valueOf(),
+      render: (val) => val ? dayjs(val).format("YYYY-MM-DD HH:mm:ss") : "",
     },
+
     {
       title: "Nhà cung cấp",
       key: "supplier",
-      sorter: (a, b) => {
-        const idA = a.supplier?.id ?? 0;
-        const idB = b.supplier?.id ?? 0;
-        return idA - idB;
-      },
       width: "24%",
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+        <div style={{ width: 400, padding: 8 }}>
+          <Select
+            allowClear
+            value={selectedKeys[0]}
+            placeholder="Chọn Nhà cung cấp"
+            style={{ width: "100%" }}
+            onChange={(val) => setSelectedKeys(val ? [val] : [])}
+          >
+            {suppliers?.map((supplier) => (
+              <Option key={supplier.id} value={supplier.id}>
+                #{supplier.id} - {supplier.name}
+              </Option>
+            ))}
+          </Select>
+          <Button
+            type="primary"
+            size="small"
+            style={{ width: "100%", marginTop: 8 }}
+            onClick={() => confirm()}
+          >
+            Lọc
+          </Button>
+        </div>
+      ),
+      onFilter: (value, record) => record.supplier?.id === value,
+      sorter: (a, b) => a.supplier?.id! - b.supplier?.id!,
       render: (record) => `#${record.supplier?.id} - ${record.supplier?.name}`,
     },
     {
-      title: "Tổng thanh toán (VNĐ)",
+      title: "Tổng thanh toán",
+      dataIndex: "totalPrice",
       key: "totalPrice",
-      sorter: (a, b) => (a.totalPrice as number) - (b.totalPrice as number),
       width: "16%",
-      render: (record) => vietnamMoneyFormat(record.totalPrice),
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => {
+        let min = 0,
+          max = 0;
+        if (selectedKeys[0]) {
+          try {
+            [min, max] = JSON.parse(selectedKeys[0] as string) as [
+              number,
+              number
+            ];
+          } catch {}
+        }
+
+        return (
+          <div style={{ padding: 8 }}>
+            <InputNumber
+              placeholder="Tối thiểu"
+              style={{ marginBottom: 8, display: "block", width: "100%" }}
+              value={min || undefined}
+              onChange={(val) => {
+                setSelectedKeys([JSON.stringify([val ?? 0, max ?? 0])]);
+              }}
+            />
+            <InputNumber
+              placeholder="Tối đa"
+              style={{ marginBottom: 8, display: "block", width: "100%" }}
+              value={max || undefined}
+              onChange={(val) => {
+                setSelectedKeys([JSON.stringify([min ?? 0, val ?? 0])]);
+              }}
+            />
+            <Button
+              type="primary"
+              size="small"
+              style={{ width: "100%" }}
+              onClick={() => confirm()}
+            >
+              Lọc
+            </Button>
+            {/* <Button
+              size="small"
+              style={{ width: "100%", marginTop: 4 }}
+              onClick={() => {
+                clearFilters?.();
+                confirm();
+              }}
+            >
+              Đặt lại
+            </Button> */}
+          </div>
+        );
+      },
+      onFilter: (value, record) => {
+        if (!value) return true;
+        const [min, max] = JSON.parse(value as string) as [number, number];
+        const totalPrice = record.totalPrice ?? 0;
+        if (min && totalPrice < min) return false;
+        if (max && totalPrice > max) return false;
+        return true;
+      },
+      sorter: (a, b) => a?.totalPrice! - b?.totalPrice!,
+      render: (totalPrice: number) => vietnamMoneyFormat(totalPrice || 0),
     },
     {
       title: "Thanh toán",
@@ -199,7 +392,9 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
       key: "payStatus",
       width: "12%",
       render: (status: string) => (
-        <Tag color={status === PayStatus.pay ? "volcano" : "default"}>{status}</Tag>
+        <Tag color={status === PayStatus.pay ? "volcano" : "default"}>
+          {status}
+        </Tag>
       ),
     },
     {
@@ -213,10 +408,10 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
             status === InputTicketStatus.giveback
               ? "purple"
               : status === InputTicketStatus.confirm
-                ? "green"
-                : status === InputTicketStatus.canceled
-                  ? "red"
-                  : "default"
+              ? "green"
+              : status === InputTicketStatus.canceled
+              ? "red"
+              : "default"
           }
         >
           {status}
@@ -231,72 +426,58 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
       className: "buttons",
       render: (text: any, record: InputTicketsFormatType, index: number) => (
         <>
-          {
-            validActions?.includes(getActionNameVn(0)) && (
-              <button
-                className={"action " + getActionNameEn(0)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalDetail,
-                    true,
-                    "89%",
-                    getActionNameEn(0) + " input-tickets",
-                    AdminInputTicketsModal.detail(record)
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faCircleInfo} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(2)) && (
-              <button
-                className={"action " + getActionNameEn(2)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalUpdate,
-                    true,
-                    "89%",
-                    getActionNameEn(2) + " input-tickets",
-                    AdminInputTicketsModal.update(record)
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPenToSquare} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(0)) && (
-              <button
-                className={"action " + getActionNameEn(4)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalPrint,
-                    true,
-                    "80%",
-                    getActionNameEn(4) + " input-tickets",
-                    AdminInputTicketsModal.print(record)
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPrint} />
-              </button>
-            )
-          }
+          {validActions?.includes(getActionNameVn(0)) && (
+            <button
+              className={"action " + getActionNameEn(0)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalDetail,
+                  true,
+                  "89%",
+                  getActionNameEn(0) + " input-tickets",
+                  AdminInputTicketsModal.detail(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faCircleInfo} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(2)) && (
+            <button
+              className={"action " + getActionNameEn(2)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalUpdate,
+                  true,
+                  "89%",
+                  getActionNameEn(2) + " input-tickets",
+                  AdminInputTicketsModal.update(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPenToSquare} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(0)) && (
+            <button
+              className={"action " + getActionNameEn(4)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalPrint,
+                  true,
+                  "80%",
+                  getActionNameEn(4) + " input-tickets",
+                  AdminInputTicketsModal.print(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPrint} />
+            </button>
+          )}
         </>
       ),
     },
   ];
-  // - Các thành phần
-  const {
-    currentItems,
-    handleTableChange,
-    paginationProps,
-    sortField,
-    sortOrder,
-  } = CustomPaginationProps(inputTickets || [], 8, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các biến giữ giá trị cho việc hiển thị thông số trên card
   const [totalPriceCardValue, setTotalPriceCardValue] = useState<number>(0);
@@ -489,21 +670,20 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
     >([]);
 
     // Truy vấn dữ liệu nhà cung cấp đang "hoạt động"
-    const {
-      data: suppliers,
-    } = useQuery({
-      queryKey: [
-        'suppliers',
-      ],
+    const { data: suppliers } = useQuery({
+      queryKey: ["suppliers"],
       queryFn: async () => {
-        const res = await FindAllSupplier({ statusValue: [CommonStatus.active] });
+        const res = await FindAllSupplier({
+          statusValue: [CommonStatus.active],
+        });
         if (res.status === 200) {
           return res.data;
         } else {
           openNotification({
             type: "error",
             message: "Truy vấn dữ liệu thất bại",
-            description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+            description:
+              String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
             duration: 2,
           });
 
@@ -572,7 +752,9 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
                 });
 
                 setTimeout(() => {
-                  queryClient.invalidateQueries({ queryKey: ['input-tickets'] });
+                  queryClient.invalidateQueries({
+                    queryKey: ["input-tickets"],
+                  });
                   setOpenModal(false);
                 }, 1500);
               } else {
@@ -923,7 +1105,9 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
                 callApiToUpdateInputTicket(
                   id!,
                   e.target as HTMLElement,
-                  payStatus! === PayStatus.pay ? PayStatus.notPay : PayStatus.pay
+                  payStatus! === PayStatus.pay
+                    ? PayStatus.notPay
+                    : PayStatus.pay
                 )
               }
             >
@@ -1096,7 +1280,11 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
       // Biến giữ giá trị tương ứng với "trạng thái" cần thay đổi
       let payStatus = null,
         status = null;
-      if (value === InputTicketStatus.giveback || value === InputTicketStatus.confirm || value === InputTicketStatus.canceled) {
+      if (
+        value === InputTicketStatus.giveback ||
+        value === InputTicketStatus.confirm ||
+        value === InputTicketStatus.canceled
+      ) {
         status = value;
       } else if (value === PayStatus.pay || value === PayStatus.notPay) {
         payStatus = value;
@@ -1116,7 +1304,7 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
           duration: 1.5,
         });
         setTimeout(() => {
-          queryClient.invalidateQueries({ queryKey: ["input-tickets"], })
+          queryClient.invalidateQueries({ queryKey: ["input-tickets"] });
           setOpenModal(false);
         }, 1500);
       } else {
@@ -1126,13 +1314,13 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
           description:
             res.status === 400
               ? String(res.data)
-                .split("|")
-                .map((line, index) => (
-                  <div key={index}>
-                    {line}
-                    <br />
-                  </div>
-                ))
+                  .split("|")
+                  .map((line, index) => (
+                    <div key={index}>
+                      {line}
+                      <br />
+                    </div>
+                  ))
               : "Cập nhật thất bại !",
           duration: 1.5,
         });
@@ -1196,21 +1384,20 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
     const [form] = Form.useForm();
 
     // Truy vấn dữ liệu nguyên liệu đang "hoạt động"
-    const {
-      data: ingredients,
-    } = useQuery({
-      queryKey: [
-        'ingredients',
-      ],
+    const { data: ingredients } = useQuery({
+      queryKey: ["ingredients"],
       queryFn: async () => {
-        const res = await FindAllIngredient({ statusValue: [CommonStatus.active] });
+        const res = await FindAllIngredient({
+          statusValue: [CommonStatus.active],
+        });
         if (res.status === 200) {
           return res.data;
         } else {
           openNotification({
             type: "error",
             message: "Truy vấn dữ liệu thất bại",
-            description: String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
+            description:
+              String(res.data) || "Lỗi phát sinh khi truy vấn dữ liệu",
             duration: 2,
           });
 
@@ -1580,13 +1767,15 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
     setPendingCardValue(totalPending);
   };
   // Cập nhật mỗi khi danh sách phiếu nhập thay đổi
-  useEffect(() => { updateCards(); }, [inputTickets])
+  useEffect(() => {
+    updateCards();
+  }, [inputTickets]);
 
   return (
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Quản lý món ăn - {objectName}</h2>
+          <h2 className="main__title">{objectName}</h2>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -1597,12 +1786,6 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
             setFilterFindType={setFilterFindType}
             setFilterFindValue={setFilterFindValue}
           />
-          <CustomDateRangePicker
-            showTime={true}
-            placeholder={["Thời gian bắt đầu", "Thời gian kết thúc"]}
-            className="main__filter-select filter-time big"
-            setDateRangeValue={setFilterTimeValue}
-          />
           <CustomFindSelect
             mode="tags"
             placeholder="Chọn Trạng thái"
@@ -1612,30 +1795,27 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          {
-            validActions?.includes(getActionNameVn(1)) && (
-              <button
-                className={
-                  "main__filter-button btn " + getActionNameEn(1) +
-                  (openModal && titleModal === titleModalCreate
-                    ? " active"
-                    : "")
-                }
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalCreate,
-                    true,
-                    "89%",
-                    getActionNameEn(1) + " input-tickets",
-                    AdminInputTicketsModal.create()
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPlus} className="icon" />
-                &nbsp;Thêm
-              </button>
-            )
-          }
+          {validActions?.includes(getActionNameVn(1)) && (
+            <button
+              className={
+                "main__filter-button btn " +
+                getActionNameEn(1) +
+                (openModal && titleModal === titleModalCreate ? " active" : "")
+              }
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalCreate,
+                  true,
+                  "89%",
+                  getActionNameEn(1) + " input-tickets",
+                  AdminInputTicketsModal.create()
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPlus} className="icon" />
+              &nbsp;Thêm
+            </button>
+          )}
         </div>
         <div className="main__cards">
           <CustomCardStatic
@@ -1671,14 +1851,13 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
           />
         </div>
         <div className="main__table">
-          <CustomTableActions
+          <CustomTableActions<InputTicketsFormatType>
             columns={columns}
-            rowKey={(record) => record!.id as number}
-            data={currentItems}
+            data={inputTickets || []}
+            rowKey={(record) => String(record?.id)}
             loading={isLoading}
-            pagination={paginationProps}
+            defaultPageSize={10}
             className="table-actions input-tickets"
-            onChange={handleTableChange}
           />
         </div>
       </main>

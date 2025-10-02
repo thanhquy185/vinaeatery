@@ -15,7 +15,6 @@ import type { SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { CategoryFoodsType, ReactQueryMutationProps } from "../../../common/types";
 import { CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
-import { CustomPaginationProps } from "../../../common/props";
 import { ruleRequired } from "../../../common/rules";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
@@ -113,8 +112,8 @@ const AdminCategoryFoodsPage = ({ functionId }: { functionId: number }) => {
       title: "#",
       dataIndex: "id",
       key: "id",
-      sorter: true,
       width: "14%",
+      sorter: (a, b) => a?.id! - b?.id!,
     },
     {
       title: "Hình ảnh",
@@ -136,8 +135,8 @@ const AdminCategoryFoodsPage = ({ functionId }: { functionId: number }) => {
       title: "Tên loại món ăn",
       dataIndex: "name",
       key: "name",
-      sorter: true,
       width: "40%",
+      sorter: (a, b) => a?.name!.localeCompare(b?.name!),
     },
     {
       title: "Trạng thái",
@@ -218,14 +217,6 @@ const AdminCategoryFoodsPage = ({ functionId }: { functionId: number }) => {
       ),
     },
   ];
-  // - Các thành phần
-  const {
-    currentItems,
-    handleTableChange,
-    paginationProps,
-    sortField,
-    sortOrder,
-  } = CustomPaginationProps(categoryFoods || [], 4, [1, 2, 3, 4, 5]);
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -758,7 +749,7 @@ const AdminCategoryFoodsPage = ({ functionId }: { functionId: number }) => {
     <>
       <main className="main">
         <div className="main__header">
-          <h1 className="main__title">Quản lý món ăn - {objectName}</h1>
+          <h1 className="main__title">{objectName}</h1>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -804,14 +795,13 @@ const AdminCategoryFoodsPage = ({ functionId }: { functionId: number }) => {
           }
         </div>
         <div className="main__table">
-          <CustomTableActions
+          <CustomTableActions<CategoryFoodsType>
             columns={columns}
-            rowKey={(record) => record!.id as number}
-            data={currentItems}
+            data={categoryFoods || []}
+            rowKey={(record) => String(record?.id)}
             loading={isLoading}
-            pagination={paginationProps}
+            defaultPageSize={10}
             className="table-actions category-foods"
-            onChange={handleTableChange}
           />
         </div>
       </main>

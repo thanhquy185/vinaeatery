@@ -21,6 +21,7 @@ public class OrderSheetCriteria {
     private Optional<String> currentDate;
     private Optional<String> employeeId;
     private Optional<String> tableId;
+    private Optional<String> tableName;
     private Optional<String> floorId;
     private Optional<String> status;
     private Optional<String> sort;

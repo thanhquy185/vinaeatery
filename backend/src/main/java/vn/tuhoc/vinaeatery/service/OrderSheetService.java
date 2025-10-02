@@ -133,6 +133,7 @@ public class OrderSheetService {
                 && orderSheetCriteria.getCurrentDate() == null
                 && orderSheetCriteria.getEmployeeId() == null
                 && orderSheetCriteria.getTableId() == null
+                && orderSheetCriteria.getTableName() == null
                 && orderSheetCriteria.getFloorId() == null
                 && orderSheetCriteria.getStatus() == null
                 && orderSheetCriteria.getSort() == null) {
@@ -186,6 +187,11 @@ public class OrderSheetService {
                         .tableIdEqual(orderSheetCriteria.getTableId().get());
                 combinedSpec = combinedSpec.and(currentSpec);
             }
+        }
+        if (orderSheetCriteria.getTableName() != null && orderSheetCriteria.getTableName().isPresent()) {
+            Specification<OrderSheet> currentSpec = OrderSheetSpecification
+                    .tableNameLike(orderSheetCriteria.getTableName().get());
+            combinedSpec = combinedSpec.and(currentSpec);
         }
         if (orderSheetCriteria.getFloorId() != null && orderSheetCriteria.getFloorId().isPresent()) {
             if (orderSheetCriteria.getFloorId().get().matches("\\d+")) {

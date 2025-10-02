@@ -8,7 +8,16 @@ import {
   faPlus,
   faUnlock,
 } from "@fortawesome/free-solid-svg-icons";
-import { DatePicker, Form, Input, InputNumber, Select, Space, Tag } from "antd";
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Space,
+  Tag,
+} from "antd";
 import TextArea from "antd/es/input/TextArea";
 import type { SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
@@ -17,7 +26,12 @@ import type {
   CustomersType,
   ReactQueryMutationProps,
 } from "../../../common/types";
-import { CommonGender, CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
+import {
+  CommonGender,
+  CommonStatus,
+  ReactQueryGetData,
+  TitleModalCommon,
+} from "../../../common/values";
 import { CustomPaginationProps } from "../../../common/props";
 import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules";
 import CustomFindInput from "../../../components/admin/find-input";
@@ -31,7 +45,10 @@ import {
   HandleLockCustomer,
   HandleUpdateCustomer,
 } from "../../../services/api";
-import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import {
+  getActionNameEn,
+  getActionNameVn,
+} from "../../../services/default-actions";
 import { getActionsString } from "../../../services/employee-login";
 import { vietnamMoneyFormat } from "../../../utils/otherEvents";
 import { showCreateValidAddress } from "../../../utils/showCreateValidAddress";
@@ -39,9 +56,11 @@ import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
 import dayjs from "dayjs";
 
+const { Option } = Select;
+
 // Các giá trị chung
 // - Tên đối tượng
-const objectName = "Khách hàng"
+const objectName = "Khách hàng";
 // - Tiêu đề modal
 const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
 const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
@@ -52,20 +71,18 @@ const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 // Admin Customers Page
 const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
   // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
-  const validActions = getActionsString({ currentFunctionId: functionId })
+  const validActions = getActionsString({ currentFunctionId: functionId });
 
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
   // Các biến giữ dữ liệu về thẻ khách hàng
-  const {
-    data: customerCards,
-  } = useQuery({
-    queryKey: [
-      'customer-cards',
-    ],
+  const { data: customerCards } = useQuery({
+    queryKey: ["customer-cards"],
     queryFn: async () => {
-      const res = await FindAllCustomerCard({ statusValue: [CommonStatus.active] });
+      const res = await FindAllCustomerCard({
+        statusValue: [CommonStatus.active],
+      });
       if (res.status === 200) {
         return res.data;
       } else {
@@ -92,16 +109,6 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
     findOptions[0].value
   );
   const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
-  // - Thẻ khách hàng
-  const customerCardOptions: SelectProps["options"] = customerCards?.map(
-    (customerCard) => ({
-      label: "#" + customerCard.id + " - " + customerCard.name,
-      value: customerCard.id,
-    })
-  );
-  const [filterCustomerCardValue, setFilterCustomerCardValue] = useState<
-    string[] | null
-  >(null);
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
     { label: CommonStatus["active"], value: CommonStatus["active"] },
@@ -119,18 +126,11 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
     isError,
     error,
   } = useQuery({
-    queryKey: [
-      'customers',
-      filterFindType,
-      filterFindValue,
-      filterCustomerCardValue,
-      filterStatusValue,
-    ],
+    queryKey: ["customers", filterFindType, filterFindValue, filterStatusValue],
     queryFn: async () => {
       const res = await FindAllCustomer({
         findType: filterFindType!,
         findValue: filterFindValue!,
-        customerCardValue: filterCustomerCardValue!,
         statusValue: filterStatusValue!,
       });
       if (res.status === 200) {
@@ -146,7 +146,7 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
         throw res;
       }
     },
-    enabled: !!filterFindType,  //
+    enabled: !!filterFindType, //
     retry: ReactQueryGetData.retry,
     staleTime: ReactQueryGetData.staleTime,
   });
@@ -156,37 +156,130 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
       title: "#",
       dataIndex: "id",
       key: "id",
-      sorter: true,
       width: "10%",
+      sorter: (a, b) => a?.id! - b?.id!,
     },
     {
       title: "Tên khách hàng",
       dataIndex: "fullname",
       key: "fullname",
-      sorter: true,
       width: "24%",
       className: "left",
+      sorter: (a, b) => a?.fullname!.localeCompare(b?.fullname!),
     },
     {
       title: "Số điện thoại",
       dataIndex: "phone",
       key: "phone",
-      sorter: true,
       width: "12%",
-    },
-    {
-      title: "Tổng tiêu (VNĐ)",
-      key: "totalThreshold",
-      sorter: true,
-      width: "17%",
-      render: (record) => vietnamMoneyFormat(record!.totalThreshold!),
+      sorter: (a, b) => a?.phone!.localeCompare(b?.phone!),
     },
     {
       title: "Thẻ khách hàng",
       key: "customerCard",
       width: "17%",
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+        <div style={{ width: 250, padding: 8 }}>
+          <Select
+            allowClear
+            value={selectedKeys[0]}
+            placeholder="Chọn Thẻ khách hàng"
+            style={{ width: "100%" }}
+            onChange={(val) => setSelectedKeys(val ? [val] : [])}
+          >
+            {customerCards?.map((customerCard) => (
+              <Option key={customerCard.id} value={customerCard.id}>
+                #{customerCard.id} - {customerCard.name}
+              </Option>
+            ))}
+          </Select>
+          <Button
+            type="primary"
+            size="small"
+            style={{ width: "100%", marginTop: 8 }}
+            onClick={() => confirm()}
+          >
+            Lọc
+          </Button>
+        </div>
+      ),
+      onFilter: (value, record) => record.customerCard?.id === value,
+      sorter: (a, b) => a.customerCard?.id! - b.customerCard?.id!,
       render: (record) =>
         `#${record.customerCard?.id} - ${record.customerCard?.name}`,
+    },
+    {
+      title: "Tổng tiêu (VNĐ)",
+      dataIndex: "totalThreshold",
+      key: "totalThreshold",
+      width: "17%",
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => {
+        let min = 0,
+          max = 0;
+        if (selectedKeys[0]) {
+          try {
+            [min, max] = JSON.parse(selectedKeys[0] as string) as [
+              number,
+              number
+            ];
+          } catch {}
+        }
+
+        return (
+          <div style={{ padding: 8 }}>
+            <InputNumber
+              placeholder="Tối thiểu"
+              style={{ marginBottom: 8, display: "block", width: "100%" }}
+              value={min || undefined}
+              onChange={(val) => {
+                setSelectedKeys([JSON.stringify([val ?? 0, max ?? 0])]);
+              }}
+            />
+            <InputNumber
+              placeholder="Tối đa"
+              style={{ marginBottom: 8, display: "block", width: "100%" }}
+              value={max || undefined}
+              onChange={(val) => {
+                setSelectedKeys([JSON.stringify([min ?? 0, val ?? 0])]);
+              }}
+            />
+            <Button
+              type="primary"
+              size="small"
+              style={{ width: "100%" }}
+              onClick={() => confirm()}
+            >
+              Lọc
+            </Button>
+            {/* <Button
+              size="small"
+              style={{ width: "100%", marginTop: 4 }}
+              onClick={() => {
+                clearFilters?.();
+                confirm();
+              }}
+            >
+              Đặt lại
+            </Button> */}
+          </div>
+        );
+      },
+      onFilter: (value, record) => {
+        if (!value) return true;
+        const [min, max] = JSON.parse(value as string) as [number, number];
+        const totalThreshold = record.totalThreshold ?? 0;
+        if (min && totalThreshold < min) return false;
+        if (max && totalThreshold > max) return false;
+        return true;
+      },
+      sorter: (a, b) => a?.totalThreshold! - b?.totalThreshold!,
+      render: (totalThreshold: number) =>
+        vietnamMoneyFormat(totalThreshold || 0),
     },
     {
       title: "Trạng thái",
@@ -207,74 +300,64 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
       className: "buttons",
       render: (text: any, record: CustomersFormatType, index: number) => (
         <>
-          {
-            validActions?.includes(getActionNameVn(0)) && (
-              <button
-                className={"action " + getActionNameEn(0)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalDetail,
-                    true,
-                    "60%",
-                    getActionNameEn(0) + " customers",
-                    AdminCustomersModal.detail(record)
-                  )
+          {validActions?.includes(getActionNameVn(0)) && (
+            <button
+              className={"action " + getActionNameEn(0)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalDetail,
+                  true,
+                  "60%",
+                  getActionNameEn(0) + " customers",
+                  AdminCustomersModal.detail(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faCircleInfo} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(2)) && (
+            <button
+              className={"action " + getActionNameEn(2)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalUpdate,
+                  true,
+                  "60%",
+                  getActionNameEn(2) + " customers",
+                  AdminCustomersModal.update(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPenToSquare} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(3)) && (
+            <button
+              className={"action " + getActionNameEn(3)}
+              onClick={() =>
+                updatePropertiesModal(
+                  record.status == CommonStatus["active"]
+                    ? titleModalLock
+                    : titleModalUnlock,
+                  true,
+                  "30%",
+                  getActionNameEn(3) + " customers",
+                  AdminCustomersModal.lock(record!.id as number, record!.status)
+                )
+              }
+            >
+              <FontAwesomeIcon
+                icon={
+                  record.status == CommonStatus["active"] ? faLock : faUnlock
                 }
-              >
-                <FontAwesomeIcon icon={faCircleInfo} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(2)) && (
-              <button
-                className={"action " + getActionNameEn(2)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalUpdate,
-                    true,
-                    "60%",
-                    getActionNameEn(2) + " customers",
-                    AdminCustomersModal.update(record)
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPenToSquare} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(3)) && (
-              <button
-                className={"action " + getActionNameEn(3)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
-                    true,
-                    "30%",
-                    getActionNameEn(3) + " customers",
-                    AdminCustomersModal.lock(record!.id as number, record!.status)
-                  )
-                }
-              >
-                <FontAwesomeIcon
-                  icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
-                />
-              </button>
-            )
-          }
+              />
+            </button>
+          )}
         </>
       ),
     },
   ];
-  // - Các thành phần
-  const {
-    currentItems,
-    handleTableChange,
-    paginationProps,
-    sortField,
-    sortOrder,
-  } = CustomPaginationProps(customers || [], 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -329,7 +412,11 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
   };
   // - Mutation cho việc thêm, cập nhật và khoá dữ liệu
   const handleSubmitMutation = useMutation({
-    mutationFn: async ({ type, values, objectId }: ReactQueryMutationProps<CustomersType>) => {
+    mutationFn: async ({
+      type,
+      values,
+      objectId,
+    }: ReactQueryMutationProps<CustomersType>) => {
       if (openModal) {
         if (type === "create" && titleModal === titleModalCreate) {
           const res = await HandleCreateCustomer({
@@ -350,7 +437,8 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
         } else if (type === "update" && titleModal === titleModalUpdate) {
@@ -372,20 +460,26 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
-        } else if ((type === "lock" && titleModal === titleModalLock)
-          || (type === "unlock" && titleModal === titleModalUnlock)) {
+        } else if (
+          (type === "lock" && titleModal === titleModalLock) ||
+          (type === "unlock" && titleModal === titleModalUnlock)
+        ) {
           const res = await HandleLockCustomer({
             id: objectId! as number,
-            status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
+            status:
+              (type === "lock" ? CommonStatus.active : CommonStatus.inactive) ||
+              undefined,
             timeUpdate: new Date().toISOString(),
-          })
+          });
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
         }
@@ -395,12 +489,21 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
       openNotification({
         type: "success",
         message: "Thành công",
-        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thành công!",
+        description:
+          (openModal
+            ? titleModal === titleModalCreate
+              ? "Thêm"
+              : titleModal === titleModalUpdate
+              ? "Cập nhật"
+              : titleModal === titleModalLock
+              ? "Khoá"
+              : "Mở khoá"
+            : "") + " thành công!",
         duration: 1.5,
       });
 
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['customers'] });
+        queryClient.invalidateQueries({ queryKey: ["customers"] });
         setOpenModal(false);
       }, 1500);
     },
@@ -408,12 +511,21 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
       openNotification({
         type: "error",
         message: "Thất bại",
-        description: (error ? error.message : (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thất bại!"),
+        description: error
+          ? error.message
+          : (openModal
+              ? titleModal === titleModalCreate
+                ? "Thêm"
+                : titleModal === titleModalUpdate
+                ? "Cập nhật"
+                : titleModal === titleModalLock
+                ? "Khoá"
+                : "Mở khoá"
+              : "") + " thất bại!",
         duration: 1.5,
       });
 
-      setTimeout(() => {
-      }, 1500);
+      setTimeout(() => {}, 1500);
     },
   });
   // - Các modal tương ứng cho từng chức năng
@@ -716,8 +828,14 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
                     id="create-gender"
                     placeholder={defaultInputs["gender"]}
                     options={[
-                      { label: CommonGender["male"], value: CommonGender["male"] },
-                      { label: CommonGender["female"], value: CommonGender["female"] },
+                      {
+                        label: CommonGender["male"],
+                        value: CommonGender["male"],
+                      },
+                      {
+                        label: CommonGender["female"],
+                        value: CommonGender["female"],
+                      },
                     ]}
                   />
                 </Form.Item>
@@ -943,8 +1061,14 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
                     id="update-gender"
                     placeholder={defaultInputs["gender"]}
                     options={[
-                      { label: CommonGender["male"], value: CommonGender["male"] },
-                      { label: CommonGender["female"], value: CommonGender["female"] },
+                      {
+                        label: CommonGender["male"],
+                        value: CommonGender["male"],
+                      },
+                      {
+                        label: CommonGender["female"],
+                        value: CommonGender["female"],
+                      },
                     ]}
                   />
                 </Form.Item>
@@ -1016,7 +1140,10 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
             });
             if (answer) {
               // Thực thi mutation
-              handleSubmitMutation.mutate({ type: (statusValue ? "lock" : "unlock"), objectId: id! });
+              handleSubmitMutation.mutate({
+                type: statusValue ? "lock" : "unlock",
+                objectId: id!,
+              });
 
               // Xoá class 'active' thể hiện nút không còn được nhấn
               submitButton?.classList.remove("active");
@@ -1043,7 +1170,9 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
             </p>
           </div>
           <div className="modal__buttons">
-            <button type="submit" className="modal__button btn lock">Xác nhận</button>
+            <button type="submit" className="modal__button btn lock">
+              Xác nhận
+            </button>
           </div>
         </Form>
       </>
@@ -1090,7 +1219,7 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Vận hành quán ăn - {objectName}</h2>
+          <h2 className="main__title">{objectName}</h2>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -1102,15 +1231,6 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
             setFilterFindValue={setFilterFindValue}
           />
           <CustomFindSelect
-            mode="tags"
-            placeholder="Chọn Thẻ khách hàng"
-            optionFilterProp="label"
-            maxTagCount="responsive"
-            className="main__filter-select filter-customerCard"
-            options={customerCardOptions}
-            setFilterSelectValue={setFilterCustomerCardValue}
-          />
-          <CustomFindSelect
             mode={undefined}
             placeholder="Chọn Trạng thái"
             optionFilterProp="label"
@@ -1119,40 +1239,36 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          {
-            validActions?.includes(getActionNameVn(1)) && (
-              <button
-                className={
-                  "main__filter-button btn " + getActionNameEn(1) +
-                  (openModal && titleModal === titleModalCreate
-                    ? " active"
-                    : "")
-                }
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalCreate,
-                    true,
-                    "60%",
-                    getActionNameEn(1) + " customers",
-                    AdminCustomersModal.create()
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPlus} className="icon" />
-                &nbsp;Thêm
-              </button>
-            )
-          }
+          {validActions?.includes(getActionNameVn(1)) && (
+            <button
+              className={
+                "main__filter-button btn " +
+                getActionNameEn(1) +
+                (openModal && titleModal === titleModalCreate ? " active" : "")
+              }
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalCreate,
+                  true,
+                  "60%",
+                  getActionNameEn(1) + " customers",
+                  AdminCustomersModal.create()
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPlus} className="icon" />
+              &nbsp;Thêm
+            </button>
+          )}
         </div>
         <div className="main__table">
-          <CustomTableActions
+          <CustomTableActions<CustomersFormatType>
             columns={columns}
-            rowKey={(record) => record!.id as number}
-            data={currentItems}
+            data={customers || []}
+            rowKey={(record) => String(record?.id)}
             loading={isLoading}
-            pagination={paginationProps}
+            defaultPageSize={10}
             className="table-actions customers"
-            onChange={handleTableChange}
           />
         </div>
       </main>

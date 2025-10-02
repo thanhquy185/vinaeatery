@@ -12,11 +12,13 @@ import {
   faCommentDots,
   faGear,
   faMinus,
+  faPaperPlane,
   faPlus,
   faQrcode,
   faReceipt,
   faShoppingCart,
   faTrashAlt,
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { Image } from "antd";
 import TextArea from "antd/es/input/TextArea";
@@ -130,39 +132,139 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
     message: () => {
       return (
         <>
-          <CustomTextArea
-            placeholder="Nhập nội dung góp ý"
-            className="drawer__text-area"
-          />
-          <button
-            type="button"
-            className="drawer__button btn"
-            onClick={async (e) => {
-              // Nút hiện tại
-              const button = e.currentTarget;
-              // Thêm class 'active' thể hiện nút đang được nhấn
-              button.classList.add("active");
+          <div className="drawer__message-content-warper">
+            <div className="drawer__message-content">
+              <div className="drawer__message-chat">
+                <img
+                  src="/src/assets/images/others/brand-image.png"
+                  alt=""
+                  className="avatar"
+                />
+                <div className="info">
+                  <b className="name">Vinaeatery</b>
+                  <p className="content">123123</p>
+                </div>
+              </div>
+              <div className="drawer__message-chat guest">
+               <span className="avatar">
+                <FontAwesomeIcon icon={faUser} />
+               </span>
+                <div className="info">
+                  <b className="name">Bàn T02-01</b>
+                  <p className="content">
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    Repellendus consequatur quae, velit officia, ullam
+                    aspernatur reiciendis voluptas ex deleniti blanditiis ab
+                    dignissimos libero eius assumenda ipsum delectus qui sit
+                    labore recusandae nostrum nulla! Consequatur, magnam, porro
+                    earum velit quos perspiciatis mollitia reiciendis facere id
+                    laboriosam ducimus magni accusamus nostrum. Pariatur laborum
+                    quidem ex nihil tenetur, sed placeat? Iusto, ut quo,
+                    blanditiis perferendis sunt error id labore sequi in nulla
+                    ab, eligendi delectus nihil aperiam doloremque consequuntur
+                    reprehenderit quisquam minima corporis. Maiores libero
+                    velit, obcaecati laborum eos ex officia porro, ipsum
+                    consequuntur, sapiente ea eum quas commodi! Animi, vero?
+                    Hic, sapiente expedita non quidem pariatur ea. Similique
+                    laudantium, consequatur ab assumenda animi quos, mollitia
+                    nostrum quas porro labore fugit repudiandae, accusamus amet
+                    quam a dolorem obcaecati! Aperiam molestiae autem sint
+                    itaque dolorem quidem similique quisquam officia delectus
+                    eveniet iste, ipsam quos minima, mollitia in commodi
+                    aspernatur praesentium nulla qui. Labore doloribus maiores
+                    assumenda? Itaque, officiis recusandae. Voluptas eligendi
+                    nam porro voluptatum, minima atque cumque eaque repellendus,
+                    neque enim dicta ut velit pariatur magni nulla quae!
+                    Mollitia quisquam, sapiente odit cumque minus ad facilis
+                    alias odio maxime animi. At, laudantium, corrupti velit,
+                    officia laborum quibusdam cum iure eveniet molestias dolor
+                    assumenda numquam.
+                  </p>
+                </div>
+              </div>
+              <div className="drawer__message-chat">
+                <img
+                  src="/src/assets/images/others/brand-image.png"
+                  alt=""
+                  className="avatar"
+                />
+                <div className="info">
+                  <b className="name">Vinaeatery</b>
+                  <p className="content">123123</p>
+                </div>
+              </div>
+              <div className="drawer__message-chat guest">
+               <span className="avatar">
+                <FontAwesomeIcon icon={faUser} />
+               </span>
+                <div className="info">
+                  <b className="name">Bàn T02-01</b>
+                  <p className="content">
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    Repellendus consequatur quae, velit officia, ullam
+                    aspernatur reiciendis voluptas ex deleniti blanditiis ab
+                    dignissimos libero eius assumenda ipsum delectus qui sit
+                    labore recusandae nostrum nulla! Consequatur, magnam, porro
+                    earum velit quos perspiciatis mollitia reiciendis facere id
+                    laboriosam ducimus magni accusamus nostrum. Pariatur laborum
+                    quidem ex nihil tenetur, sed placeat? Iusto, ut quo,
+                    blanditiis perferendis sunt error id labore sequi in nulla
+                    ab, eligendi delectus nihil aperiam doloremque consequuntur
+                    reprehenderit quisquam minima corporis. Maiores libero
+                    velit, obcaecati laborum eos ex officia porro, ipsum
+                    consequuntur, sapiente ea eum quas commodi! Animi, vero?
+                    Hic, sapiente expedita non quidem pariatur ea. Similique
+                    laudantium, consequatur ab assumenda animi quos, mollitia
+                    nostrum quas porro labore fugit repudiandae, accusamus amet
+                    quam a dolorem obcaecati! Aperiam molestiae autem sint
+                    itaque dolorem quidem similique quisquam officia delectus
+                    eveniet iste, ipsam quos minima, mollitia in commodi
+                    aspernatur praesentium nulla qui. Labore doloribus maiores
+                    assumenda? Itaque, officiis recusandae. Voluptas eligendi
+                    nam porro voluptatum, minima atque cumque eaque repellendus,
+                    neque enim dicta ut velit pariatur magni nulla quae!
+                    Mollitia quisquam, sapiente odit cumque minus ad facilis
+                    alias odio maxime animi. At, laudantium, corrupti velit,
+                    officia laborum quibusdam cum iure eveniet molestias dolor
+                    assumenda numquam.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="drawer__message-action">
+            <input type="text" placeholder="Nhập nội dung cần gửi" />
+            <button
+              type="button"
+              className="btn"
+              // onClick={async (e) => {
+              //   // Nút hiện tại
+              //   const button = e.currentTarget;
+              //   // Thêm class 'active' thể hiện nút đang được nhấn
+              //   button.classList.add("active");
 
-              // Hỏi trước khi xử khi xử lý ?
-              const answer = await openConfirmation({
-                title: "Bạn có chắc chắn góp ý ?",
-                content: "Hành động này không thể hoàn tác.",
-              });
-              if (answer) {
-                openNotification({
-                  type: "success",
-                  message: "Thành công",
-                  description: "Đã góp ý nhân viên",
-                  duration: 1.5,
-                });
-              }
+              //   // Hỏi trước khi xử khi xử lý ?
+              //   const answer = await openConfirmation({
+              //     title: "Bạn có chắc chắn góp ý ?",
+              //     content: "Hành động này không thể hoàn tác.",
+              //   });
+              //   if (answer) {
+              //     openNotification({
+              //       type: "success",
+              //       message: "Thành công",
+              //       description: "Đã góp ý nhân viên",
+              //       duration: 1.5,
+              //     });
+              //   }
 
-              // Xoá class 'active' thể hiện nút không còn được nhấn
-              button.classList.remove("active");
-            }}
-          >
-            Gửi góp ý
-          </button>
+              //   // Xoá class 'active' thể hiện nút không còn được nhấn
+              //   button.classList.remove("active");
+              // }}
+            >
+              <FontAwesomeIcon icon={faPaperPlane} />
+              &nbsp;&nbsp;Gửi
+            </button>
+          </div>
         </>
       );
     },
@@ -300,7 +402,7 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
                 <div className="client__cart-buttons">
                   <button
                     type="button"
-                    className="client__cart-button btn"
+                    className="btn drawer__button client__cart-button"
                     onClick={async (e) => {
                       // Nút hiện tại
                       const button = e.currentTarget;
@@ -333,7 +435,7 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
                   </button>
                   <button
                     type="button"
-                    className="client__cart-button btn"
+                    className="btn drawer__button client__cart-button"
                     onClick={async (e) => {
                       // Nút hiện tại
                       const button = e.currentTarget;
@@ -544,9 +646,10 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
               />
               <CustomDrawer
                 key={3}
+                size="large"
                 prefixClassName="client__"
                 icon={faCommentDots}
-                title="Góp ý nhân viên"
+                title="Trò chuyện"
                 children={ClientDrawers.message()}
               />
               <CustomDrawer

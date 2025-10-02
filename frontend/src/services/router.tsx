@@ -16,6 +16,7 @@ import AdminDashboardOrdersPage from "../pages/admin/dashboard/dashboard-orders"
 import AdminDashboardInputTicketsPage from "../pages/admin/dashboard/dashboard-input-tickets";
 import AdminTableHistoriesPage from "../pages/admin/active/table-histories";
 import AdminUseTablesPage from "../pages/admin/active/use-tables";
+import AdminInteractCustomer from "../pages/admin/active/interact-customer";
 import AdminOrderSheetsPage from "../pages/admin/active/order-sheets";
 import AdminOrdersPage from "../pages/admin/active/orders";
 import AdminOrderTablesPage from "../pages/admin/active/order-tables";
@@ -44,7 +45,7 @@ import LandingPage from "../pages/public/landing";
 import PaymentPage from "../pages/public/payment";
 import ErrorPage from "../pages/public/error";
 import UnauthorizedPage from "../pages/public/unauthorized";
-import { FindAllFunction, FindAllPayMethod, HandleAccount } from "./api";
+import { FindAllFunction, HandleAccount } from "./api";
 import RequireAuth from "./required-auth";
 
 // Router giúp chuyển hướng trang
@@ -147,6 +148,11 @@ export const getRouter = async (): Promise<
           </RequireAuth>
         ),
       })),
+    },
+    {
+      path: "/admin/interact-customer",
+      element: <AdminInteractCustomer />,
+      errorElement: <ErrorPage />,
     },
     {
       path: "/client/:tableId",

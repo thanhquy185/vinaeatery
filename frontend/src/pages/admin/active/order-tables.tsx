@@ -10,6 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import dayjs from "dayjs";
 import {
+  Button,
   DatePicker,
   Form,
   Input,
@@ -20,12 +21,18 @@ import {
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import type { ColumnsType } from "antd/es/table";
-import type { OrderTablesFormatType, OrderTablesType, ReactQueryMutationProps } from "../../../common/types";
+import type {
+  OrderTablesFormatType,
+  OrderTablesType,
+  ReactQueryMutationProps,
+} from "../../../common/types";
 import { ruleEmail, rulePhone, ruleRequired } from "../../../common/rules";
-import { CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
-import { CustomPaginationProps } from "../../../common/props";
+import {
+  CommonStatus,
+  ReactQueryGetData,
+  TitleModalCommon,
+} from "../../../common/values";
 import CustomFindInput from "../../../components/admin/find-input";
-import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";
 import CustomTableActions from "../../../components/admin/table-actions";
 import CustomModal from "../../../components/admin/modal";
 import CustomFindSelect from "../../../components/admin/find-select";
@@ -35,7 +42,10 @@ import {
   HandleLockOrderTable,
   HandleUpdateOrderTable,
 } from "../../../services/api";
-import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import {
+  getActionNameEn,
+  getActionNameVn,
+} from "../../../services/default-actions";
 import { getActionsString } from "../../../services/employee-login";
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
@@ -43,7 +53,7 @@ import { showCreateValidAddress } from "../../../utils/showCreateValidAddress";
 
 // Các giá trị chung
 // - Tên đối tượng
-const objectName = "Đơn đặt bàn"
+const objectName = "Đơn đặt bàn";
 // - Tiêu đề modal
 const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
 const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
@@ -70,8 +80,6 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
     findOptions[0].value
   );
   const [filterFindValue, setFilterFindValue] = useState<string | null>("");
-  // - Thời gian đặt bàn
-  const [filterTimeValue, setFilterTimeValue] = useState<[string, string]>();
   /// - Trạng thái
   const statusOptions: SelectProps["options"] = [
     { label: CommonStatus["active"], value: CommonStatus["active"] },
@@ -90,17 +98,15 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
     error,
   } = useQuery({
     queryKey: [
-      'order-tables',
+      "order-tables",
       filterFindType,
       filterFindValue,
-      filterTimeValue,
       filterStatusValue,
     ],
     queryFn: async () => {
       const res = await FindAllOrderTable({
         findType: filterFindType!,
         findValue: filterFindValue!,
-        timeValue: filterTimeValue!,
         statusValue: filterStatusValue!,
       });
       if (res.status === 200) {
@@ -116,7 +122,7 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
         throw res;
       }
     },
-    enabled: !!filterFindType,  //
+    enabled: !!filterFindType, //
     retry: ReactQueryGetData.retry,
     staleTime: ReactQueryGetData.staleTime,
   });
@@ -126,29 +132,97 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
       title: "#",
       dataIndex: "id",
       key: "id",
-      sorter: true,
       width: "10%",
+      sorter: (a, b) => a?.id! - b?.id!,
     },
     {
       title: "Thời gian đặt bàn",
       dataIndex: "timeOrder",
       key: "timeOrder",
-      sorter: true,
       width: "18%",
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8 }}>
+          <DatePicker.RangePicker
+            showTime
+            format="YYYY-MM-DD HH:mm:ss"
+            style={{ display: "flex" }}
+            value={
+              selectedKeys[0]
+                ? (() => {
+                    const [start, end] = JSON.parse(
+                      selectedKeys[0] as string
+                    ) as [string, string];
+                    return [dayjs(start), dayjs(end)];
+                  })()
+                : null
+            }
+            onChange={(dates) =>
+              setSelectedKeys(
+                dates
+                  ? [
+                      JSON.stringify([
+                        dates[0]?.toISOString(),
+                        dates[1]?.toISOString(),
+                      ]),
+                    ]
+                  : []
+              )
+            }
+          />
+          <Button
+            type="primary"
+            size="small"
+            style={{ width: "100%", marginTop: 8 }}
+            onClick={() => confirm()}
+          >
+            Lọc
+          </Button>
+          {/* Nếu muốn nút reset thì bật lại */}
+          {/* <Button
+        size="small"
+        style={{ width: "100%", marginTop: 4 }}
+        onClick={() => {
+          clearFilters?.();
+          confirm();
+        }}
+      >
+        Đặt lại
+      </Button> */}
+        </div>
+      ),
+      onFilter: (value, record) => {
+        if (!value) return true;
+        const [start, end] = JSON.parse(value as string) as [string, string];
+        const date = dayjs(record.timeOrder);
+
+        return (
+          date.isSame(dayjs(start)) ||
+          date.isSame(dayjs(end)) ||
+          (date.isAfter(dayjs(start)) && date.isBefore(dayjs(end)))
+        );
+      },
+      sorter: (a, b) =>
+        dayjs(a.timeOrder).valueOf() - dayjs(b.timeOrder).valueOf(),
+      render: (val) => val ? dayjs(val).format("YYYY-MM-DD HH:mm:ss") : "",
     },
     {
       title: "Tên khách hàng",
       dataIndex: "fullname",
       key: "fullname",
-      sorter: true,
       width: "18%",
+      sorter: (a, b) => a?.fullname!.localeCompare(b?.fullname!),
     },
     {
       title: "Số điện thoại",
       dataIndex: "phone",
       key: "phone",
-      sorter: true,
       width: "12%",
+      sorter: (a, b) => a?.phone!.localeCompare(b?.phone!),
     },
     {
       title: "Ghi chú",
@@ -176,74 +250,67 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
       className: "buttons",
       render: (text: any, record: OrderTablesFormatType, index: number) => (
         <>
-          {
-            validActions?.includes(getActionNameVn(0)) && (
-              <button
-                className={"action " + getActionNameEn(0)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalDetail,
-                    true,
-                    "89%",
-                    getActionNameEn(0) + " order-tables",
-                    AdminOrderTablesModal.detail(record)
+          {validActions?.includes(getActionNameVn(0)) && (
+            <button
+              className={"action " + getActionNameEn(0)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalDetail,
+                  true,
+                  "89%",
+                  getActionNameEn(0) + " order-tables",
+                  AdminOrderTablesModal.detail(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faCircleInfo} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(2)) && (
+            <button
+              className={"action " + getActionNameEn(2)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalUpdate,
+                  true,
+                  "89%",
+                  getActionNameEn(2) + " order-tables",
+                  AdminOrderTablesModal.update(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPenToSquare} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(3)) && (
+            <button
+              className={"action " + getActionNameEn(3)}
+              onClick={() =>
+                updatePropertiesModal(
+                  record.status == CommonStatus["active"]
+                    ? titleModalLock
+                    : titleModalUnlock,
+                  true,
+                  "30%",
+                  getActionNameEn(3) + " order-tables",
+                  AdminOrderTablesModal.lock(
+                    record!.id as number,
+                    record!.status
                   )
+                )
+              }
+            >
+              <FontAwesomeIcon
+                icon={
+                  record.status == CommonStatus["active"] ? faLock : faUnlock
                 }
-              >
-                <FontAwesomeIcon icon={faCircleInfo} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(2)) && (
-              <button
-                className={"action " + getActionNameEn(2)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalUpdate,
-                    true,
-                    "89%",
-                    getActionNameEn(2) + " order-tables",
-                    AdminOrderTablesModal.update(record)
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPenToSquare} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(3)) && (
-              <button
-                className={"action " + getActionNameEn(3)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
-                    true,
-                    "30%",
-                    getActionNameEn(3) + " order-tables",
-                    AdminOrderTablesModal.lock(record!.id as number, record!.status)
-                  )
-                }
-              >
-                <FontAwesomeIcon
-                  icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
-                />
-              </button>
-            )
-          }
+              />
+            </button>
+          )}
         </>
       ),
     },
   ];
-  // - Các thành phần
-  const {
-    currentItems,
-    handleTableChange,
-    paginationProps,
-    sortField,
-    sortOrder,
-  } = CustomPaginationProps(orderTables || [], 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -299,7 +366,11 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
   };
   // - Mutation cho việc thêm, cập nhật và khoá dữ liệu
   const handleSubmitMutation = useMutation({
-    mutationFn: async ({ type, values, objectId }: ReactQueryMutationProps<OrderTablesType>) => {
+    mutationFn: async ({
+      type,
+      values,
+      objectId,
+    }: ReactQueryMutationProps<OrderTablesType>) => {
       if (openModal) {
         if (type === "create" && titleModal === titleModalCreate) {
           const res = await HandleCreateOrderTable({
@@ -318,11 +389,12 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
             email: values!.email || undefined,
             address: values!.address || undefined,
             status: values!.status || undefined,
-          })
+          });
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
         } else if (type === "update" && titleModal === titleModalUpdate) {
@@ -346,20 +418,26 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
-        } else if ((type === "lock" && titleModal === titleModalLock)
-          || (type === "unlock" && titleModal === titleModalUnlock)) {
+        } else if (
+          (type === "lock" && titleModal === titleModalLock) ||
+          (type === "unlock" && titleModal === titleModalUnlock)
+        ) {
           const res = await HandleLockOrderTable({
             id: objectId! as number,
-            status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
+            status:
+              (type === "lock" ? CommonStatus.active : CommonStatus.inactive) ||
+              undefined,
             timeUpdate: new Date().toISOString(),
-          })
+          });
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
         }
@@ -369,12 +447,21 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
       openNotification({
         type: "success",
         message: "Thành công",
-        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thành công!",
+        description:
+          (openModal
+            ? titleModal === titleModalCreate
+              ? "Thêm"
+              : titleModal === titleModalUpdate
+              ? "Cập nhật"
+              : titleModal === titleModalLock
+              ? "Khoá"
+              : "Mở khoá"
+            : "") + " thành công!",
         duration: 1.5,
       });
 
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['order-tables'] });
+        queryClient.invalidateQueries({ queryKey: ["order-tables"] });
         setOpenModal(false);
       }, 1500);
     },
@@ -382,12 +469,21 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
       openNotification({
         type: "error",
         message: "Thất bại",
-        description: (error ? error.message : (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thất bại!"),
+        description: error
+          ? error.message
+          : (openModal
+              ? titleModal === titleModalCreate
+                ? "Thêm"
+                : titleModal === titleModalUpdate
+                ? "Cập nhật"
+                : titleModal === titleModalLock
+                ? "Khoá"
+                : "Mở khoá"
+              : "") + " thất bại!",
         duration: 1.5,
       });
 
-      setTimeout(() => {
-      }, 1500);
+      setTimeout(() => {}, 1500);
     },
   });
   // - Các modal tương ứng cho từng chức năng
@@ -989,7 +1085,10 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
             });
             if (answer) {
               // Thực thi mutation
-              handleSubmitMutation.mutate({ type: (statusValue ? "lock" : "unlock"), objectId: id! });
+              handleSubmitMutation.mutate({
+                type: statusValue ? "lock" : "unlock",
+                objectId: id!,
+              });
 
               // Xoá class 'active' thể hiện nút không còn được nhấn
               submitButton?.classList.remove("active");
@@ -1063,7 +1162,7 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Vận hành quán ăn - {objectName}</h2>
+          <h2 className="main__title">{objectName}</h2>
         </div>
         <div className="main__filter order-tables">
           <CustomFindInput
@@ -1074,12 +1173,6 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
             setFilterFindType={setFilterFindType}
             setFilterFindValue={setFilterFindValue}
           />
-          <CustomDateRangePicker
-            showTime={true}
-            placeholder={["Thời gian bắt đầu", "Thời gian kết thúc"]}
-            className="main__filter-select filter-time big"
-            setDateRangeValue={setFilterTimeValue}
-          />
           <CustomFindSelect
             mode={undefined}
             placeholder="Chọn Trạng thái"
@@ -1089,40 +1182,36 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          {
-            validActions?.includes(getActionNameVn(1)) && (
-              <button
-                className={
-                  "main__filter-button btn " + getActionNameEn(1) +
-                  (openModal && titleModal === titleModalCreate
-                    ? " active"
-                    : "")
-                }
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalCreate,
-                    true,
-                    "89%",
-                    getActionNameEn(1) + " order-tables",
-                    AdminOrderTablesModal.create()
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPlus} className="icon" />
-                &nbsp;Thêm
-              </button>
-            )
-          }
+          {validActions?.includes(getActionNameVn(1)) && (
+            <button
+              className={
+                "main__filter-button btn " +
+                getActionNameEn(1) +
+                (openModal && titleModal === titleModalCreate ? " active" : "")
+              }
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalCreate,
+                  true,
+                  "89%",
+                  getActionNameEn(1) + " order-tables",
+                  AdminOrderTablesModal.create()
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPlus} className="icon" />
+              &nbsp;Thêm
+            </button>
+          )}
         </div>
         <div className="main__table">
-          <CustomTableActions
+          <CustomTableActions<OrderTablesFormatType>
             columns={columns}
-            rowKey={(record) => record!.id as number}
-            data={currentItems}
+            data={orderTables || []}
+            rowKey={(record) => String(record?.id)}
             loading={isLoading}
-            pagination={paginationProps}
+            defaultPageSize={10}
             className="table-actions order-tables"
-            onChange={handleTableChange}
           />
         </div>
       </main>

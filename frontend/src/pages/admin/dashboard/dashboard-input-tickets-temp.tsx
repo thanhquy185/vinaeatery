@@ -106,7 +106,7 @@ const AdminDashboardInputTicketsPageTemp = () => {
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Thống kê - Thống kê Chi tiêu</h2>
+          <h2 className="main__title">Thống kê Chi tiêu</h2>
         </div>
         <div className="main__segmented">
           <CustomSegmented

@@ -1413,7 +1413,7 @@ const AdminUseTablesPage = ({
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Vận hành quán ăn - {objectName}</h2>
+          <h2 className="main__title">{objectName}</h2>
         </div>
         <div className="main__filter use-tables">
           <CustomFindInput

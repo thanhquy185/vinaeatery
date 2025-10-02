@@ -216,10 +216,9 @@ const PaymentPage = () => {
         handlePayment?.useTable &&
         handlePayment?.employee &&
         handlePayment?.payMethod &&
-        handlePayment?.payTotalPrice &&
+        handlePayment?.payTotalPrice! >= 0 &&
         handlePayment?.status === HandlePaymentStatus.completed
       ) {
-        console.log(123);
         setCurrent(2);
       }
       if (
@@ -609,72 +608,74 @@ const PaymentPage = () => {
                                   </p>
                                 </>
                               )}
-                            {/* {methodImage !== atmLogo &&
-                              methodTitle !== atmTitle && (
+                            {methodImage === momoLogo &&
+                              methodTitle === momoTitle && (
                                 <p>
                                   <span>Mã giao dịch: </span>
                                   <b>{payId}</b>
                                 </p>
-                              )} */}
-                            <p>
-                              <span>Mã giao dịch: </span>
-                              <b>{payId}</b>
-                            </p>
+                              )}
                             <p>
                               <span>Thời gian thanh toán: </span>
                               <b>
                                 <CurrentDateTime />
                               </b>
                             </p>
+                            {methodImage === momoLogo &&
+                              methodTitle === momoTitle && (
+                                <p>
+                                  <span>Thời hạn thanh toán: </span>
+                                  <b>
+                                    <CountdownTimer
+                                      timeMs={
+                                        payResponseTime +
+                                        1000 * 60 * 5 -
+                                        Date.now()
+                                      }
+                                      //   onChange={(formatted, remainingMs) => {
+                                      //     console.log(
+                                      //       "Thời gian còn lại:",
+                                      //       formatted
+                                      //     );
+                                      //   }}
+                                      onFinish={async () => {
+                                        setIsShowSpinner(true);
 
-                            <p>
-                              <span>Thời hạn thanh toán: </span>
-                              <b>
-                                <CountdownTimer
-                                  timeMs={
-                                    payResponseTime + 1000 * 60 * 5 - Date.now()
-                                  }
-                                  //   onChange={(formatted, remainingMs) => {
-                                  //     console.log(
-                                  //       "Thời gian còn lại:",
-                                  //       formatted
-                                  //     );
-                                  //   }}
-                                  onFinish={async () => {
-                                    setIsShowSpinner(true);
+                                        const momoResponse =
+                                          await HandleCancelPaymentMomo({
+                                            orderId: payId,
+                                            amount: String(payTotalPrice),
+                                          });
+                                        const momoData = momoResponse!
+                                          .data as any;
 
-                                    const momoResponse =
-                                      await HandleCancelPaymentMomo({
-                                        orderId: payId,
-                                        amount: String(payTotalPrice),
-                                      });
-                                    const momoData = momoResponse!.data as any;
+                                        const handlePaymentData =
+                                          await HandleUpdateHandlePayment({
+                                            useTableId:
+                                              handlePayment?.useTable?.id,
+                                            payMethodId: undefined,
+                                            status: HandlePaymentStatus.exists,
+                                          });
 
-                                    const handlePaymentData =
-                                      await HandleUpdateHandlePayment({
-                                        useTableId: handlePayment?.useTable?.id,
-                                        payMethodId: undefined,
-                                        status: HandlePaymentStatus.exists,
-                                      });
+                                        if (momoData && handlePaymentData) {
+                                          setIsShowSpinner(false);
 
-                                    if (momoData && handlePaymentData) {
-                                      setIsShowSpinner(false);
+                                          openNotification({
+                                            type: "error",
+                                            message: "Thất bại",
+                                            description:
+                                              "Thanh toán hiện tại bị huỷ vì quá hạn thời gian thanh toán cho phép !",
+                                            duration: 2,
+                                          });
 
-                                      openNotification({
-                                        type: "error",
-                                        message: "Thất bại",
-                                        description:
-                                          "Thanh toán hiện tại bị huỷ vì quá hạn thời gian thanh toán cho phép !",
-                                        duration: 2,
-                                      });
-
-                                      updateMethodInfo("", "", null);
-                                      updatePayInfo("", "", 0, 0);
-                                    }
-                                  }}
-                                />
-                              </b>
-                            </p>
+                                          updateMethodInfo("", "", null);
+                                          updatePayInfo("", "", 0, 0);
+                                        }
+                                      }}
+                                    />
+                                  </b>
+                                </p>
+                              )}
                             <p>
                               <span>Tổng thanh toán: </span>
                               <b>{vietnamMoneyFormat(payTotalPrice)} VNĐ</b>

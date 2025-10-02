@@ -1,0 +1,132 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/colors" as *;
+@use "../abstracts/mixins" as *;
+
+.drawer {
+  $border-radius: 6px;
+
+  & .ant-drawer-title {
+    font-size: 2.2rem;
+  }
+
+  &__paragraph {
+    font-size: 1.6rem;
+    line-height: 1.2;
+  }
+
+  &__text-area {
+    height: 140px !important;
+    font-size: 1.6rem;
+  }
+
+  &:has(&__qr) .ant-image {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 30px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &__qr {
+    @include size(200px !important);
+  }
+
+  &__button {
+    width: 100%;
+    margin-top: 30px;
+    font-size: 1.4rem;
+    border-radius: $border-radius;
+  }
+
+  &__message-content-warper {
+    height: 700px;
+    background: #ffefef;
+    border: 1px solid $primary-color;
+    padding: 12px;
+    border-radius: $border-radius;
+    overflow: scroll;
+  }
+
+  &__message-chat {
+    width: 70%;
+    // background: red;
+    display: flex;
+    gap: 8px;
+  }
+
+  &__message-chat:not(:first-of-type) {
+    margin-top: 20px;
+  }
+
+  &__message-chat .avatar {
+    @include size(30px);
+  }
+
+  &__message-chat .info {
+    width: 100%;
+    padding-top: 6px;
+  }
+
+  &__message-chat .name {
+    display: inline-block;
+    width: 100%;
+    color: $primary-color;
+    font-size: 1.8rem;
+  }
+
+  &__message-chat .content {
+    background: #ffe0e0;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 4px;
+    color: #4e4e4e;
+  }
+
+  &__message-chat.guest {
+    flex-direction: row-reverse;
+    margin-left: auto;
+  }
+
+  &__message-chat.guest .avatar {
+    @include flexCenter();
+    background: $primary-color;
+    border-radius: 50%;
+    color: #fff;
+  }
+
+  &__message-chat.guest .avatar svg {
+    @include size(12px);
+  }
+
+  &__message-chat.guest .name {
+    text-align: right;
+  }
+
+  &__message-action {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  &__message-action :is(input, button) {
+    border-radius: $border-radius;
+    font-size: 1.7rem;
+  }
+
+  &__message-action input {
+    @include size(80%, 50px);
+    padding-left: 10px;
+    border: 1px solid #d9d9d9;
+    transition: 0.2s ease-in-out;
+  }
+
+  &__message-action input:is(:hover, :focus, :not(:placeholder-shown)) {
+    border-color: $primary-color;
+  }
+
+  &__message-action button {
+    @include size(20%, 50px);
+  }
+}

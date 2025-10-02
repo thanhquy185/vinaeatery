@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Provider } from 'react-redux';
-import { store } from './store';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Provider } from "react-redux";
+import { store } from "./store";
 import CustomSpinner from "./components/common/spinner";
 import { getRouter } from "./services/router";
-import "./assets/css/main.css";
+// import "./assets/styles/tailwind.css";
+import "./utils/i18n";
+import "./assets/styles/css/main.css";
+import { ConfigProvider } from "antd";
+import { App as AntdApp } from "antd";
 
 // Query Client
 const queryClient = new QueryClient();
@@ -30,15 +34,28 @@ const App = () => {
     loadRouter();
   }, []);
 
-
-  return router ? <RouterProvider router={router} /> : <CustomSpinner />;
+  return router ? (
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: "#b91c1c",
+        },
+      }}
+    >
+      <RouterProvider router={router} />
+    </ConfigProvider>
+  ) : (
+    <CustomSpinner />
+  );
 };
 
 //  Dấu ! sau document.getElementById("root")! trong TypeScript có tên là non-null assertion operator (toán tử khẳng định không null).
 createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
     <Provider store={store}>
-      <App />
+      <AntdApp>
+        <App />
+      </AntdApp>
     </Provider>
   </QueryClientProvider>
 );

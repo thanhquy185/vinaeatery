@@ -1,39 +1,44 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { type SelectProps } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import type { OrderSheetsFormatType } from "../../../common/types";
-import { CommonStatus, OrderSheetStatus, ReactQueryGetData } from "../../../common/values";
+import {
+  CommonStatus,
+  OrderSheetStatus,
+  ReactQueryGetData,
+} from "../../../common/values";
 import { getElapsedTimeText, useElapsedTime } from "../../../hook/time";
 import CustomFindSelect from "../../../components/admin/find-select";
 import OrderSheetCard from "../../../components/admin/order-sheet-card";
 import CustomModal from "../../../components/admin/modal";
-import { FindAllFloor, FindAllOrderSheetCurrentDate, HandleUpdateOrderSheet } from "../../../services/api";
+import {
+  FindAllFloor,
+  FindAllOrderSheetCurrentDate,
+  HandleUpdateOrderSheet,
+} from "../../../services/api";
 import { getActionNameVn } from "../../../services/default-actions";
 import { getActionsString } from "../../../services/employee-login";
 import { vietnamMoneyFormat } from "../../../utils/otherEvents";
 import { openConfirmation } from "../../../utils/showConfirmation";
 import { openNotification } from "../../../utils/showNotification";
+import CustomFindInput from "../../../components/admin/find-input";
 
 // Các giá trị chung
 // - Tên đối tượng
-const objectName = "Phiếu gọi món"
+const objectName = "Phiếu gọi món";
 
 // Admin Order Sheets Page
 const AdminOrderSheetsPage = ({ functionId }: { functionId: number }) => {
   // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
-  const validActions = getActionsString({ currentFunctionId: functionId })
+  const validActions = getActionsString({ currentFunctionId: functionId });
 
   // Đối tượng query client để thực thi react-query
   const queryClient = useQueryClient();
 
   // Các biến giữ dữ liệu về tầng
-  const {
-    data: floors,
-  } = useQuery({
-    queryKey: [
-      'floors',
-    ],
+  const { data: floors } = useQuery({
+    queryKey: ["floors"],
     queryFn: async () => {
       const res = await FindAllFloor({ statusValue: [CommonStatus.active] });
       if (res.status === 200) {
@@ -52,10 +57,19 @@ const AdminOrderSheetsPage = ({ functionId }: { functionId: number }) => {
   });
 
   // Các biến giữ giá trị từ việc lọc thông tin
+  // - Tìm kiếm thông tin
+  const findOptions = [{ label: "Bàn", value: "table" }];
+  const [filterFindType, setFilterFindType] = useState<string | null>(
+    findOptions[0].value
+  );
+  const [filterFindValue, setFilterFindValue] = useState<string | null>("");
   // - Thời gian gọi món bắt đầu / Thời gian gọi món kết thúc
   const [filterTimeValue, setFilterTimeValue] = useState<[string, string]>();
   // - Tầng
-  const floorOptions: SelectProps["options"] = floors?.map((floor) => ({ label: floor.name, value: floor.id }));
+  const floorOptions: SelectProps["options"] = floors?.map((floor) => ({
+    label: floor.name,
+    value: floor.id,
+  }));
   const [filterFloorValue, setFilterFloorValue] = useState<string[] | null>([]);
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
@@ -69,16 +83,21 @@ const AdminOrderSheetsPage = ({ functionId }: { functionId: number }) => {
   );
 
   // Truy vấn dữ liệu phiếu gọi món (hôm nay)
-  const {
-    data: orderSheets,
-  } = useQuery({
+  const { data: orderSheets } = useQuery({
     queryKey: [
-      'order-sheets',
+      "order-sheets",
+      filterFindType!,
+      filterFindValue!,
       filterFloorValue!,
-      filterStatusValue!
+      filterStatusValue!,
     ],
     queryFn: async () => {
-      const res = await FindAllOrderSheetCurrentDate({ floorValue: filterFloorValue!, statusValue: filterStatusValue! });
+      const res = await FindAllOrderSheetCurrentDate({
+        findType: filterFindType!,
+        findValue: filterFindValue!,
+        floorValue: filterFloorValue!,
+        statusValue: filterStatusValue!,
+      });
       if (res.status === 200) {
         return res.data;
       } else {
@@ -138,9 +157,10 @@ const AdminOrderSheetsPage = ({ functionId }: { functionId: number }) => {
     const orderTime = timeCreate!;
 
     // Nếu đang pending thì đếm tự động mỗi giây
-    const elapsed = isPending || isConfirm
-      ? useElapsedTime(orderTime)
-      : getElapsedTimeText(orderTime, timeService! as string);
+    const elapsed =
+      isPending || isConfirm
+        ? useElapsedTime(orderTime)
+        : getElapsedTimeText(orderTime, timeService! as string);
 
     //
     const [messageValue, setMessageValue] = useState<string>(message!);
@@ -156,27 +176,22 @@ const AdminOrderSheetsPage = ({ functionId }: { functionId: number }) => {
         <div className="info">
           <b>Thời gian gọi món:</b> {timeCreate!}
         </div>
-        {
-          (isPending || isConfirm) && (
-            <div className="info">
-              <b>Thời gian đã chờ:</b> {elapsed.text}
-            </div>
-          )
-        }
-        {
-          isService && (
-            <div className="info">
-              <b>Thời gian phục vụ:</b> {timeService!}
-            </div>
-          )
-        }
-        {
-          (isService || isConfirm || isCancel) && (
-            <div className="info">
-              <b>Nhân viên xác nhận:</b> {employee!.fullname} - {employee!.phone} - {employee!.email}
-            </div>
-          )
-        }
+        {(isPending || isConfirm) && (
+          <div className="info">
+            <b>Thời gian đã chờ:</b> {elapsed.text}
+          </div>
+        )}
+        {isService && (
+          <div className="info">
+            <b>Thời gian phục vụ:</b> {timeService!}
+          </div>
+        )}
+        {(isService || isConfirm || isCancel) && (
+          <div className="info">
+            <b>Nhân viên xác nhận:</b> {employee!.fullname} - {employee!.phone}{" "}
+            - {employee!.email}
+          </div>
+        )}
         <div className="info">
           <b>Tổng tiền món ăn:</b> {vietnamMoneyFormat(totalPrice!)}
         </div>
@@ -188,10 +203,10 @@ const AdminOrderSheetsPage = ({ functionId }: { functionId: number }) => {
               (status! === OrderSheetStatus.serviced
                 ? "purple"
                 : status! === OrderSheetStatus.confirm
-                  ? "green"
-                  : status! === OrderSheetStatus.canceled
-                    ? "red"
-                    : "gray")
+                ? "green"
+                : status! === OrderSheetStatus.canceled
+                ? "red"
+                : "gray")
             }
           >
             {status!}
@@ -230,60 +245,64 @@ const AdminOrderSheetsPage = ({ functionId }: { functionId: number }) => {
           </table>
         </div>
         <div className="info">
-          <b>Lời nhắn:</b> <TextArea placeholder="Nhập Lời nhắn" value={messageValue!} onChange={(e) => setMessageValue(e.target.value)} disabled={isCancel || isService} />
+          <b>Lời nhắn:</b>{" "}
+          <TextArea
+            placeholder="Nhập Lời nhắn"
+            value={messageValue!}
+            onChange={(e) => setMessageValue(e.target.value)}
+            disabled={isCancel || isService}
+          />
         </div>
         <div className="note">Ghi chú: {note! ? note : "Không"}</div>
-        {
-          validActions!.includes(getActionNameVn(2)) && (
-            <div className="modal__buttons">
-              {status! === OrderSheetStatus.confirm && (
+        {validActions!.includes(getActionNameVn(2)) && (
+          <div className="modal__buttons">
+            {status! === OrderSheetStatus.confirm && (
+              <button
+                className="modal__button secondary btn purple-secondary"
+                onClick={(e) =>
+                  callApiToUpdateOrderSheet(
+                    id!,
+                    e.target as HTMLElement,
+                    OrderSheetStatus.serviced,
+                    messageValue
+                  )
+                }
+              >
+                {OrderSheetStatus.serviced}
+              </button>
+            )}
+            {status! === OrderSheetStatus.pending && (
+              <>
                 <button
-                  className="modal__button secondary btn purple-secondary"
+                  className="modal__button secondary btn green-secondary"
                   onClick={(e) =>
                     callApiToUpdateOrderSheet(
                       id!,
                       e.target as HTMLElement,
-                      OrderSheetStatus.serviced,
-                      messageValue,
+                      OrderSheetStatus.confirm,
+                      messageValue
                     )
                   }
                 >
-                  {OrderSheetStatus.serviced}
+                  {OrderSheetStatus.confirm}
                 </button>
-              )}
-              {status! === OrderSheetStatus.pending && (
-                <>
-                  <button
-                    className="modal__button secondary btn green-secondary"
-                    onClick={(e) =>
-                      callApiToUpdateOrderSheet(
-                        id!,
-                        e.target as HTMLElement,
-                        OrderSheetStatus.confirm,
-                        messageValue,
-                      )
-                    }
-                  >
-                    {OrderSheetStatus.confirm}
-                  </button>
-                  <button
-                    className="modal__button secondary btn red-secondary"
-                    onClick={(e) =>
-                      callApiToUpdateOrderSheet(
-                        id!,
-                        e.target as HTMLElement,
-                        OrderSheetStatus.canceled,
-                        messageValue,
-                      )
-                    }
-                  >
-                    {OrderSheetStatus.canceled}
-                  </button>
-                </>
-              )}
-            </div>
-          )
-        }
+                <button
+                  className="modal__button secondary btn red-secondary"
+                  onClick={(e) =>
+                    callApiToUpdateOrderSheet(
+                      id!,
+                      e.target as HTMLElement,
+                      OrderSheetStatus.canceled,
+                      messageValue
+                    )
+                  }
+                >
+                  {OrderSheetStatus.canceled}
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </>
     );
   };
@@ -308,7 +327,7 @@ const AdminOrderSheetsPage = ({ functionId }: { functionId: number }) => {
     id: number,
     button: HTMLElement,
     value: string,
-    messageValue: string,
+    messageValue: string
   ) => {
     // Thêm class 'active' thể hiện là nút được nhấn
     button.classList.add("active");
@@ -321,14 +340,21 @@ const AdminOrderSheetsPage = ({ functionId }: { functionId: number }) => {
     if (answer) {
       // Biến giữ giá trị tương ứng với "trạng thái" cần thay đổi
       let status = null;
-      if (value === OrderSheetStatus.serviced || value === OrderSheetStatus.confirm || value === OrderSheetStatus.canceled) {
+      if (
+        value === OrderSheetStatus.serviced ||
+        value === OrderSheetStatus.confirm ||
+        value === OrderSheetStatus.canceled
+      ) {
         status = value;
       }
 
       // Gọi api xử lý
       const res = await HandleUpdateOrderSheet({
         id: id,
-        timeService: value === OrderSheetStatus.serviced ? new Date().toISOString() : undefined,
+        timeService:
+          value === OrderSheetStatus.serviced
+            ? new Date().toISOString()
+            : undefined,
         employeeId: 2,
         message: messageValue! || undefined,
         status: status!,
@@ -351,13 +377,13 @@ const AdminOrderSheetsPage = ({ functionId }: { functionId: number }) => {
           description:
             res.status === 400
               ? String(res.data)
-                .split("|")
-                .map((line, index) => (
-                  <div key={index}>
-                    {line}
-                    <br />
-                  </div>
-                ))
+                  .split("|")
+                  .map((line, index) => (
+                    <div key={index}>
+                      {line}
+                      <br />
+                    </div>
+                  ))
               : "Cập nhật thất bại !",
           duration: 1.5,
         });
@@ -375,7 +401,7 @@ const AdminOrderSheetsPage = ({ functionId }: { functionId: number }) => {
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Vận hành quán ăn - {objectName}</h2>
+          <h2 className="main__title">{objectName}</h2>
         </div>
         <div className="main__filter call-foods">
           {/* <CustomDateRangePicker
@@ -387,6 +413,14 @@ const AdminOrderSheetsPage = ({ functionId }: { functionId: number }) => {
             className="main__filter-select filter-time"
             setDateRangeValue={setFilterTimeValue}
           /> */}
+          <CustomFindInput
+            selectItems={findOptions}
+            placeholder="Nhập thông tin cần tìm kiếm"
+            defaultValue=""
+            className="main__filter-find"
+            setFilterFindType={setFilterFindType}
+            setFilterFindValue={setFilterFindValue}
+          />
           <CustomFindSelect
             mode={undefined}
             placeholder="Chọn Tầng"
@@ -422,7 +456,6 @@ const AdminOrderSheetsPage = ({ functionId }: { functionId: number }) => {
               }
             />
           ))}
-
         </div>
       </main>
       {openModal && (

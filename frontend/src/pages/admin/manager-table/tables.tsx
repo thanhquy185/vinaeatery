@@ -8,7 +8,7 @@ import {
   faPlus,
   faUnlock,
 } from "@fortawesome/free-solid-svg-icons";
-import { Form, Input, InputNumber, Select, Tag } from "antd";
+import { Button, Form, Input, InputNumber, Select, Tag } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import type { SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
@@ -18,8 +18,11 @@ import type {
   TablesType,
 } from "../../../common/types";
 import { ruleRequired } from "../../../common/rules";
-import { CustomPaginationProps } from "../../../common/props";
-import { CommonStatus, ReactQueryGetData, TitleModalCommon } from "../../../common/values";
+import {
+  CommonStatus,
+  ReactQueryGetData,
+  TitleModalCommon,
+} from "../../../common/values";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
 import CustomTableActions from "../../../components/admin/table-actions";
@@ -32,14 +35,19 @@ import {
   HandleLockTable,
   HandleUpdateTable,
 } from "../../../services/api";
-import { getActionNameEn, getActionNameVn } from "../../../services/default-actions";
+import {
+  getActionNameEn,
+  getActionNameVn,
+} from "../../../services/default-actions";
 import { getActionsString } from "../../../services/employee-login";
 import { openNotification } from "../../../utils/showNotification";
 import { openConfirmation } from "../../../utils/showConfirmation";
 
+const { Option } = Select;
+
 // Các giá trị chung
 // - Tên đối tượng
-const objectName = "Bàn ăn"
+const objectName = "Bàn ăn";
 // - Tiêu đề modal
 const titleModalDetail = TitleModalCommon.detail(objectName.toLowerCase());
 const titleModalCreate = TitleModalCommon.create(objectName.toLowerCase());
@@ -50,7 +58,7 @@ const titleModalUnlock = TitleModalCommon.unlock(objectName.toLowerCase());
 // Admin Tables Page
 const AdminTablesPage = ({ functionId }: { functionId: number }) => {
   // Danh sách tác vụ mà nhân viên có thể thực hiện theo mã chức năng
-  const validActions = getActionsString({ currentFunctionId: functionId })
+  const validActions = getActionsString({ currentFunctionId: functionId });
   // const validActions = "Xem|Thêm|Cập nhật|Khóa|In";
 
   // Đối tượng query client để thực thi react-query
@@ -58,12 +66,8 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
 
   // Các biến giữ dữ liệu về tầng và loại bàn ăn
   // - Tầng
-  const {
-    data: floors,
-  } = useQuery({
-    queryKey: [
-      'floors',
-    ],
+  const { data: floors } = useQuery({
+    queryKey: ["floors"],
     queryFn: async () => {
       const res = await FindAllFloor({ statusValue: [CommonStatus.active] });
       if (res.status === 200) {
@@ -81,14 +85,12 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
     },
   });
   // - Loại bàn ăn
-  const {
-    data: categoryTables,
-  } = useQuery({
-    queryKey: [
-      'category-tables',
-    ],
+  const { data: categoryTables } = useQuery({
+    queryKey: ["category-tables"],
     queryFn: async () => {
-      const res = await FindAllCategoryTable({ statusValue: [CommonStatus.active] });
+      const res = await FindAllCategoryTable({
+        statusValue: [CommonStatus.active],
+      });
       if (res.status === 200) {
         return res.data;
       } else {
@@ -114,16 +116,6 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
     findOptions[0].value
   );
   const [filterFindValue, setFilterFindValue] = useState<string | null>(null);
-  // - Loại bàn ăn
-  const categoryOptions: SelectProps["options"] = categoryTables?.map(
-    (categoryTable) => ({
-      label: `#${categoryTable.id} - ${categoryTable.name}`,
-      value: categoryTable.id,
-    })
-  );
-  const [filterCategoryValue, setFilterCategoryValue] = useState<
-    string[] | null
-  >(null);
   // - Trạng thái
   const statusOptions: SelectProps["options"] = [
     { label: CommonStatus["active"], value: CommonStatus["active"] },
@@ -141,18 +133,11 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
     isError,
     error,
   } = useQuery({
-    queryKey: [
-      'tables',
-      filterFindType,
-      filterFindValue,
-      filterCategoryValue,
-      filterStatusValue,
-    ],
+    queryKey: ["tables", filterFindType, filterFindValue, filterStatusValue],
     queryFn: async () => {
       const res = await FindAllTable({
         findType: filterFindType!,
         findValue: filterFindValue!,
-        categoryValue: filterCategoryValue!,
         statusValue: filterStatusValue!,
       });
       if (res.status === 200) {
@@ -168,7 +153,7 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
         throw res;
       }
     },
-    enabled: !!filterFindType,  //
+    enabled: !!filterFindType, //
     retry: ReactQueryGetData.retry,
     staleTime: ReactQueryGetData.staleTime,
   });
@@ -178,38 +163,89 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
       title: "#",
       dataIndex: "id",
       key: "id",
-      sorter: true,
       width: "10%",
+      sorter: (a, b) => a?.id! - b?.id!,
     },
     {
       title: "Tên loại bàn ăn",
       dataIndex: "name",
       key: "name",
-      sorter: true,
       width: "24%",
       className: "left",
+      sorter: (a, b) => a?.name!.localeCompare(b?.name!),
     },
     {
       title: "Số chỗ ngồi",
       dataIndex: "seats",
       key: "seats",
-      sorter: true,
       width: "12%",
+      sorter: (a, b) => a?.seats! - b?.seats!,
     },
     {
       title: "Loại bàn ăn",
       key: "categoryTable",
-      // sorter: true,
       width: "17%",
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+        <div style={{ width: 250, padding: 8 }}>
+          <Select
+            allowClear
+            value={selectedKeys[0]}
+            placeholder="Chọn Loại bàn ăn"
+            style={{ width: "100%" }}
+            onChange={(val) => setSelectedKeys(val ? [val] : [])}
+          >
+            {categoryTables?.map((categoryTable) => (
+              <Option key={categoryTable.id} value={categoryTable.id}>
+                #{categoryTable.id} - {categoryTable.name}
+              </Option>
+            ))}
+          </Select>
+          <Button
+            type="primary"
+            size="small"
+            style={{ width: "100%", marginTop: 8 }}
+            onClick={() => confirm()}
+          >
+            Lọc
+          </Button>
+        </div>
+      ),
+      onFilter: (value, record) => record.categoryTable?.id === value,
+      sorter: (a, b) => a.categoryTable?.id! - b.categoryTable?.id!,
       render: (record) =>
         `#${record.categoryTable?.id} - ${record.categoryTable?.name}`,
     },
-
     {
       title: "Tầng",
       key: "floor",
-      // sorter: true,
       width: "17%",
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+        <div style={{ width: 250, padding: 8 }}>
+          <Select
+            allowClear
+            value={selectedKeys[0]}
+            placeholder="Chọn Tầng"
+            style={{ width: "100%" }}
+            onChange={(val) => setSelectedKeys(val ? [val] : [])}
+          >
+            {floors?.map((floor) => (
+              <Option key={floor.id} value={floor.id}>
+                #{floor.id} - {floor.name}
+              </Option>
+            ))}
+          </Select>
+          <Button
+            type="primary"
+            size="small"
+            style={{ width: "100%", marginTop: 8 }}
+            onClick={() => confirm()}
+          >
+            Lọc
+          </Button>
+        </div>
+      ),
+      onFilter: (value, record) => record.floor?.id === value,
+      sorter: (a, b) => a.floor?.id! - b.floor?.id!,
       render: (record) => `#${record.floor?.id} - ${record.floor?.name}`,
     },
     {
@@ -226,78 +262,68 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
     {
       title: "",
       dataIndex: "",
-      key: "actions",
       width: "10%",
+      className: "buttons",
       render: (text: any, record: TablesFormatType, index: number) => (
         <>
-          {
-            validActions?.includes(getActionNameVn(0)) && (
-              <button
-                className={"action " + getActionNameEn(0)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalDetail,
-                    true,
-                    "60%",
-                    getActionNameEn(0) + " tables",
-                    AdminTablesModal.detail(record)
-                  )
+          {validActions?.includes(getActionNameVn(0)) && (
+            <button
+              className={"action " + getActionNameEn(0)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalDetail,
+                  true,
+                  "60%",
+                  getActionNameEn(0) + " tables",
+                  AdminTablesModal.detail(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faCircleInfo} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(2)) && (
+            <button
+              className={"action " + getActionNameEn(2)}
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalUpdate,
+                  true,
+                  "60%",
+                  getActionNameEn(2) + " tables",
+                  AdminTablesModal.update(record)
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPenToSquare} />
+            </button>
+          )}
+          {validActions?.includes(getActionNameVn(3)) && (
+            <button
+              className={"action " + getActionNameEn(3)}
+              onClick={() =>
+                updatePropertiesModal(
+                  record.status == CommonStatus["active"]
+                    ? titleModalLock
+                    : titleModalUnlock,
+                  true,
+                  "30%",
+                  getActionNameEn(3) + " tables",
+                  AdminTablesModal.lock(record!.id as number, record!.status)
+                )
+              }
+            >
+              <FontAwesomeIcon
+                icon={
+                  record.status == CommonStatus["active"] ? faLock : faUnlock
                 }
-              >
-                <FontAwesomeIcon icon={faCircleInfo} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(2)) && (
-              <button
-                className={"action " + getActionNameEn(2)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalUpdate,
-                    true,
-                    "60%",
-                    getActionNameEn(2) + " tables",
-                    AdminTablesModal.update(record)
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPenToSquare} />
-              </button>
-            )
-          }
-          {
-            validActions?.includes(getActionNameVn(3)) && (
-              <button
-                className={"action " + getActionNameEn(3)}
-                onClick={() =>
-                  updatePropertiesModal(
-                    (record.status == CommonStatus["active"] ? titleModalLock : titleModalUnlock),
-                    true,
-                    "30%",
-                    getActionNameEn(3) + " tables",
-                    AdminTablesModal.lock(record!.id as number, record!.status)
-                  )
-                }
-              >
-                <FontAwesomeIcon
-                  icon={record.status == CommonStatus["active"] ? faLock : faUnlock}
-                />
-              </button>
-            )
-          }
+              />
+            </button>
+          )}
         </>
       ),
     },
   ];
-  // - Các thành phần
-  const {
-    currentItems,
-    handleTableChange,
-    paginationProps,
-    sortField,
-    sortOrder,
-  } = CustomPaginationProps(tables || [], 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -344,7 +370,11 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
   };
   // - Mutation cho việc thêm, cập nhật và khoá dữ liệu
   const handleSubmitMutation = useMutation({
-    mutationFn: async ({ type, values, objectId }: ReactQueryMutationProps<TablesType>) => {
+    mutationFn: async ({
+      type,
+      values,
+      objectId,
+    }: ReactQueryMutationProps<TablesType>) => {
       if (openModal) {
         if (type === "create" && titleModal === titleModalCreate) {
           const res = await HandleCreateTable({
@@ -354,11 +384,12 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
             seats: values!.seats || undefined,
             description: values!.description || undefined,
             status: values!.status || undefined,
-          })
+          });
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
         } else if (type === "update" && titleModal === titleModalUpdate) {
@@ -374,20 +405,26 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
-        } else if ((type === "lock" && titleModal === titleModalLock)
-          || (type === "unlock" && titleModal === titleModalUnlock)) {
+        } else if (
+          (type === "lock" && titleModal === titleModalLock) ||
+          (type === "unlock" && titleModal === titleModalUnlock)
+        ) {
           const res = await HandleLockTable({
             id: objectId! as number,
-            status: (type === "lock" ? CommonStatus.active : CommonStatus.inactive) || undefined,
+            status:
+              (type === "lock" ? CommonStatus.active : CommonStatus.inactive) ||
+              undefined,
             timeUpdate: new Date().toISOString(),
-          })
+          });
 
           if (res.status === 200) {
             return res.data;
-          } {
+          }
+          {
             throw new Error(String(res.data));
           }
         }
@@ -397,12 +434,21 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
       openNotification({
         type: "success",
         message: "Thành công",
-        description: (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thành công!",
+        description:
+          (openModal
+            ? titleModal === titleModalCreate
+              ? "Thêm"
+              : titleModal === titleModalUpdate
+              ? "Cập nhật"
+              : titleModal === titleModalLock
+              ? "Khoá"
+              : "Mở khoá"
+            : "") + " thành công!",
         duration: 1.5,
       });
 
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['tables'] });
+        queryClient.invalidateQueries({ queryKey: ["tables"] });
         setOpenModal(false);
       }, 1500);
     },
@@ -410,12 +456,21 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
       openNotification({
         type: "error",
         message: "Thất bại",
-        description: (error ? error.message : (openModal ? (titleModal === titleModalCreate ? "Thêm" : titleModal === titleModalUpdate ? "Cập nhật" : titleModal === titleModalLock ? "Khoá" : "Mở khoá") : "") + " thất bại!"),
+        description: error
+          ? error.message
+          : (openModal
+              ? titleModal === titleModalCreate
+                ? "Thêm"
+                : titleModal === titleModalUpdate
+                ? "Cập nhật"
+                : titleModal === titleModalLock
+                ? "Khoá"
+                : "Mở khoá"
+              : "") + " thất bại!",
         duration: 1.5,
       });
 
-      setTimeout(() => {
-      }, 1500);
+      setTimeout(() => {}, 1500);
     },
   });
   // - Các modal tương ứng cho từng chức năng
@@ -507,7 +562,7 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
       </>
     );
   };
-  const CreateTables = ({ }) => {
+  const CreateTables = ({}) => {
     const [form] = Form.useForm();
 
     return (
@@ -853,7 +908,10 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
             });
             if (answer) {
               // Thực thi mutation
-              handleSubmitMutation.mutate({ type: (statusValue ? "lock" : "unlock"), objectId: id! });
+              handleSubmitMutation.mutate({
+                type: statusValue ? "lock" : "unlock",
+                objectId: id!,
+              });
 
               // Xoá class 'active' thể hiện nút không còn được nhấn
               submitButton?.classList.remove("active");
@@ -921,7 +979,7 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
     <>
       <main className="main">
         <div className="main__header">
-          <h2 className="main__title">Quản lý chỗ ngồi - {objectName}</h2>
+          <h2 className="main__title">{objectName}</h2>
         </div>
         <div className="main__filter">
           <CustomFindInput
@@ -933,15 +991,6 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
             setFilterFindValue={setFilterFindValue}
           />
           <CustomFindSelect
-            mode="tags"
-            placeholder="Chọn Loại bàn ăn"
-            optionFilterProp="label"
-            maxTagCount="responsive"
-            className="main__filter-select filter-category"
-            options={categoryOptions}
-            setFilterSelectValue={setFilterCategoryValue}
-          />
-          <CustomFindSelect
             mode={undefined}
             placeholder="Chọn Trạng thái"
             optionFilterProp="label"
@@ -950,40 +999,36 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
             options={statusOptions}
             setFilterSelectValue={setFilterStatusValue}
           />
-          {
-            validActions?.includes(getActionNameVn(1)) && (
-              <button
-                className={
-                  "main__filter-button btn " + getActionNameEn(1) +
-                  (openModal && titleModal === titleModalCreate
-                    ? " active"
-                    : "")
-                }
-                onClick={() =>
-                  updatePropertiesModal(
-                    titleModalCreate,
-                    true,
-                    "60%",
-                    getActionNameEn(1) + " tables",
-                    AdminTablesModal.create()
-                  )
-                }
-              >
-                <FontAwesomeIcon icon={faPlus} className="icon" />
-                &nbsp;Thêm
-              </button>
-            )
-          }
+          {validActions?.includes(getActionNameVn(1)) && (
+            <button
+              className={
+                "main__filter-button btn " +
+                getActionNameEn(1) +
+                (openModal && titleModal === titleModalCreate ? " active" : "")
+              }
+              onClick={() =>
+                updatePropertiesModal(
+                  titleModalCreate,
+                  true,
+                  "60%",
+                  getActionNameEn(1) + " tables",
+                  AdminTablesModal.create()
+                )
+              }
+            >
+              <FontAwesomeIcon icon={faPlus} className="icon" />
+              &nbsp;Thêm
+            </button>
+          )}
         </div>
         <div className="main__table">
-          <CustomTableActions
+          <CustomTableActions<TablesFormatType>
             columns={columns}
-            rowKey={(record) => record!.id as number}
-            data={currentItems}
+            data={tables || []}
+            rowKey={(record) => String(record?.id)}
             loading={isLoading}
-            pagination={paginationProps}
+            defaultPageSize={10}
             className="table-actions tables"
-            onChange={handleTableChange}
           />
         </div>
       </main>

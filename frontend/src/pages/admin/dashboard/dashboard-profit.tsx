@@ -216,7 +216,7 @@ const AdminDashboardProfitPage = () => {
     <>
       <main className="main">
         <div className="main__header">
-          <div className="main__title">Thống kê - Thống kê Lợi nhuận</div>
+          <div className="main__title">Thống kê Lợi nhuận</div>
         </div>
         <div className="main__filter">
           <FilterDashboard
