@@ -4,23 +4,9 @@
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
-  // "compilerOptions": {
-  //   "moduleResolution": "node",
-  //   "esModuleInterop": true,
-  //   "resolveJsonModule": true,
-  //   "module": "ESNext",
-  //   "target": "ESNext",
-  //   "baseUrl": ".",
-  //   "paths": {
-  //     "*": ["node_modules/*"]
-  //   }
-  // }
-  // "emitDecoratorMetadata": true,
-  // "preserveValueImports": true,
-  // "verbatimModuleSyntax": true,
-  // "erasableSyntaxOnly": false
-  // "compilerOptions": {
-  //   "strict": true,
-  //   "erasableSyntaxOnly": false
-  // }
+  "compilerOptions": {
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "skipLibCheck": true
+  }
 }
