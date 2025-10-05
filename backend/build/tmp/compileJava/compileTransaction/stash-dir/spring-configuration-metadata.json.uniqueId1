@@ -14,12 +14,14 @@
     {
       "name": "momo.dev",
       "type": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO"
+      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO",
+      "sourceMethod": "getDev()"
     },
     {
       "name": "momo.prod",
       "type": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO"
+      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO",
+      "sourceMethod": "getProd()"
     }
   ],
   "properties": [

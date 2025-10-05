@@ -247,7 +247,7 @@ const AdminCategoryIngredientsPage = ({
   // - Các giá trị mặc định cho nhập liệu
   const defaultInputs = {
     title: "",
-    id: "Được xác định sau khi xác nhận thêm !",
+    id: "Được xác định sau khi xác nhận thêm!",
     name: "Nhập Tên loại nguyên liệu",
     description: "Nhập Mô tả",
     status: "Chọn Trạng thái",
@@ -471,7 +471,7 @@ const AdminCategoryIngredientsPage = ({
                 htmlFor="create-name"
                 className="modal__form-group-item multiple-2"
                 rules={[
-                  ruleRequired("Tên loại nguyên liệu không được để trống !"),
+                  ruleRequired("Tên loại nguyên liệu không được để trống!"),
                 ]}
               >
                 <Input id="create-name" placeholder={defaultInputs["name"]} />
@@ -495,7 +495,7 @@ const AdminCategoryIngredientsPage = ({
                 label={defaultLabels["status"]}
                 htmlFor="create-status"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Trạng thái không được để trống !")]}
+                rules={[ruleRequired("Trạng thái không được để trống!")]}
               >
                 <Select
                   allowClear={true}
@@ -590,7 +590,7 @@ const AdminCategoryIngredientsPage = ({
                 htmlFor="update-name"
                 className="modal__form-group-item multiple-2"
                 rules={[
-                  ruleRequired("Tên loại nguyên liệu không được để trống !"),
+                  ruleRequired("Tên loại nguyên liệu không được để trống!"),
                 ]}
               >
                 <Input id="update-name" placeholder={defaultInputs["name"]} />

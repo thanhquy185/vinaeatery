@@ -226,7 +226,7 @@ const AdminRewardPunishesPage = () => {
   // - Các giá trị mặc định cho nhập liệu
   const defaultInputs = {
     title: "",
-    id: "Được xác định sau khi xác nhận thêm !",
+    id: "Được xác định sau khi xác nhận thêm!",
     employeeMain: "Chọn Nhân viên nhận",
     categoryRewardPunishes: "Chọn Loại thưởng phạt",
     date: "Chọn Ngày",

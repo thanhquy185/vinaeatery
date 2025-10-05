@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.tuhoc.vinaeatery.VinaeateryApplicationTests" tests="1" skipped="0" failures="1" errors="0" timestamp="2025-10-01T12:56:38.190Z" hostname="macbooks-MacBook-Air.local" time="0.002">
+<testsuite name="com.tuhoc.vinaeatery.VinaeateryApplicationTests" tests="1" skipped="0" failures="1" errors="0" timestamp="2025-10-02T10:11:36.433Z" hostname="macbooks-MacBook-Air.local" time="0.001">
   <properties/>
-  <testcase name="initializationError" classname="com.tuhoc.vinaeatery.VinaeateryApplicationTests" time="0.002">
+  <testcase name="initializationError" classname="com.tuhoc.vinaeatery.VinaeateryApplicationTests" time="0.001">
     <failure message="java.lang.IllegalStateException: Unable to find a @SpringBootConfiguration by searching packages upwards from the test. You can use @ContextConfiguration, @SpringBootTest(classes=...) or other Spring Test supported mechanisms to explicitly declare the configuration classes to load. Classes annotated with @TestConfiguration are not considered." type="java.lang.IllegalStateException">java.lang.IllegalStateException: Unable to find a @SpringBootConfiguration by searching packages upwards from the test. You can use @ContextConfiguration, @SpringBootTest(classes=...) or other Spring Test supported mechanisms to explicitly declare the configuration classes to load. Classes annotated with @TestConfiguration are not considered.
 	at org.springframework.util.Assert.state(Assert.java:79)
 	at org.springframework.boot.test.context.SpringBootTestContextBootstrapper.findConfigurationClass(SpringBootTestContextBootstrapper.java:246)
@@ -19,7 +19,8 @@
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 </failure>
   </testcase>
-  <system-out><![CDATA[19:56:38.139 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.tuhoc.vinaeatery.VinaeateryApplicationTests]: VinaeateryApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+  <system-out><![CDATA[Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+17:11:36.389 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.tuhoc.vinaeatery.VinaeateryApplicationTests]: VinaeateryApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

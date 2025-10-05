@@ -41,6 +41,7 @@ import type {
 const keys = {
   auth: "auth",
   momo: "momo",
+  zalopay: "zalopay",
   handlePayments: "handle-payments",
   categoryFoods: "category-foods",
   categoryIngredients: "category-ingredients",
@@ -155,7 +156,8 @@ export const HandleAccount = (): Promise<
 };
 
 // Các api thanh toán hoá đơn
-export const HandleCreateMomoQR = (): Promise<
+// - Momo
+export const HandleCreateMomoOrder = (): Promise<
   AxiosResponse<RestResponseType, any>
 > => {
   const formData = new FormData();
@@ -180,7 +182,7 @@ export const HandleCreateMomoQR = (): Promise<
     },
   });
 };
-export const HandleCancelPaymentMomo = ({
+export const HandleCancelMomoOrder = ({
   orderId,
   amount,
 }: {
@@ -209,6 +211,32 @@ export const HandleCancelPaymentMomo = ({
   formData.append("amount", amount.toString());
 
   return instance.post(`/api/momo/cancel/${orderId}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+// - Zalopay
+export const HandleCreateZalopayOrder = (): Promise<
+  AxiosResponse<RestResponseType, any>
+> => {
+  const formData = new FormData();
+  formData.append(
+    "form-security",
+    new Blob(
+      [
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.zalopay,
+            fieldAction: "create",
+          })
+        ),
+      ],
+      { type: "application/json" }
+    )
+  );
+
+  return instance.post(`/api/${keys.zalopay}/create`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

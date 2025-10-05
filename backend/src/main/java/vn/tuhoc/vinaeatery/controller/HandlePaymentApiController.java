@@ -111,7 +111,7 @@ public class HandlePaymentApiController {
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
         }
 
-        HandlePayment handlePaymentUpdated = this.handlePaymentService.getOneById(0);
+        HandlePayment handlePaymentUpdated = this.handlePaymentService.getOne();
         if (handlePaymentUpdated != null) {
             handlePaymentUpdated.setUseTableId(handlePayment.getUseTableId());
             if (handlePayment.getEmployeeId() != null

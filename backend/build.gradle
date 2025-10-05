@@ -69,6 +69,11 @@ dependencies {
 	// Flyway
 	// implementation 'org.flywaydb:flyway-core'
 	// implementation 'org.flywaydb:flyway-mysql'
+
+    // Zalo Pay
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+    implementation 'org.json:json:20230227'
+    implementation files('/Users/macbook/Desktop/jar_files/zalopay-sdk.jar')
 }
 
 dependencyManagement {

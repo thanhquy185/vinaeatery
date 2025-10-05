@@ -435,7 +435,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
     phone: "Nhập Số điện thoại",
     email: "Nhập Email",
     address: "Nhập Địa chỉ",
-    id: "Được xác định sau khi xác nhận thêm !",
+    id: "Được xác định sau khi xác nhận thêm!",
     dateBegin: "Chọn Ngày vào làm",
     dateEnd: "Chọn Ngày nghỉ làm",
     currentRole: "Chọn Chức vụ",
@@ -699,7 +699,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
               >
                 <Input
                   className="text-center"
-                  value="Mật khẩu đã được mã hoá !"
+                  value="Mật khẩu đã được mã hoá!"
                   disabled={true}
                 />
               </Form.Item>
@@ -872,7 +872,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["username"]}
                 htmlFor="create-username"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Tên tài khoản không được để trống !")]}
+                rules={[ruleRequired("Tên tài khoản không được để trống!")]}
               >
                 <Input
                   id="create-username"
@@ -910,7 +910,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["password"]}
                 htmlFor="create-password"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Mật khẩu không được để trống !")]}
+                rules={[ruleRequired("Mật khẩu không được để trống!")]}
               >
                 <Input
                   id="create-password"
@@ -924,7 +924,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["currentRole"]}
                 htmlFor="create-currentRole"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Chức vụ không được để trống !")]}
+                rules={[ruleRequired("Chức vụ không được để trống!")]}
               >
                 <Select
                   allowClear={true}
@@ -942,7 +942,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["status"]}
                 htmlFor="create-status"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Trạng thái không được để trống !")]}
+                rules={[ruleRequired("Trạng thái không được để trống!")]}
               >
                 <Select
                   allowClear={true}
@@ -987,7 +987,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["fullname"]}
                 htmlFor="create-fullname"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Họ và tên không được để trống !")]}
+                rules={[ruleRequired("Họ và tên không được để trống!")]}
               >
                 <Input
                   id="create-fullname"
@@ -1000,7 +1000,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
                 htmlFor="create-phone"
                 className="modal__form-group-item"
                 rules={[
-                  ruleRequired("Số điện thoại không được để trống !"),
+                  ruleRequired("Số điện thoại không được để trống!"),
                   rulePhone(),
                 ]}
               >
@@ -1213,7 +1213,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
               >
                 <Input
                   className="text-center"
-                  value="Mật khẩu đã được mã hoá !"
+                  value="Mật khẩu đã được mã hoá!"
                   disabled={true}
                 />
               </Form.Item>
@@ -1228,7 +1228,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
                   <Form.Item
                     name="roleId"
                     noStyle
-                    rules={[ruleRequired("Chức vụ không được để trống !")]}
+                    rules={[ruleRequired("Chức vụ không được để trống!")]}
                   >
                     <Select
                       showSearch={true}
@@ -1294,7 +1294,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["fullname"]}
                 htmlFor="update-fullname"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Họ và tên không được để trống !")]}
+                rules={[ruleRequired("Họ và tên không được để trống!")]}
               >
                 <Input
                   id="update-fullname"
@@ -1307,7 +1307,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
                 htmlFor="update-phone"
                 className="modal__form-group-item"
                 rules={[
-                  ruleRequired("Số điện thoại không được để trống !"),
+                  ruleRequired("Số điện thoại không được để trống!"),
                   rulePhone(),
                 ]}
               >
@@ -1520,7 +1520,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
                   htmlFor="current-password"
                   className="modal__form-group-item"
                   rules={[
-                    ruleRequired("Mật khẩu hiện tại không được để trống !"),
+                    ruleRequired("Mật khẩu hiện tại không được để trống!"),
                   ]}
                 >
                   <Input
@@ -1533,7 +1533,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
                   label="Mật khẩu mới"
                   htmlFor="new-password"
                   className="modal__form-group-item"
-                  rules={[ruleRequired("Mật khẩu mới không được để trống !")]}
+                  rules={[ruleRequired("Mật khẩu mới không được để trống!")]}
                 >
                   <Input id="new-password" placeholder="Nhập Mật khẩu mới" />
                 </Form.Item>
@@ -1543,7 +1543,7 @@ const AdminEmployeesPage = ({ functionId }: { functionId: number }) => {
                   htmlFor="auth-new-password"
                   className="modal__form-group-item"
                   rules={[
-                    ruleRequired("Xác nhận mật khẩu mới không được để trống !"),
+                    ruleRequired("Xác nhận mật khẩu mới không được để trống!"),
                   ]}
                 >
                   <Input

@@ -355,11 +355,11 @@ const LangdingPage = () => {
               <img
                 src="/src/assets/images/others/brand-image.png"
                 alt="brand-logo"
-                className="size-25"
+                className="size-22"
               />
               <strong
                 className={
-                  "text-5xl font-bold " +
+                  "text-6xl font-bold " +
                   (scrolled ? "text-[#b91c1c]" : "text-white")
                 }
               >
@@ -367,7 +367,7 @@ const LangdingPage = () => {
               </strong>
             </motion.div>
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-x-10">
+            <nav className="hidden md:flex items-center gap-x-10 text-gray-300">
               {links.map((link, index) => (
                 <motion.a
                   key={link.name}

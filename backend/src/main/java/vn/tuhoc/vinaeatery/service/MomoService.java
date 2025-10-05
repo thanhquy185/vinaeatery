@@ -25,11 +25,11 @@ public class MomoService {
     private final MomoClientUtil momoClientUtil;
 
     // Methods
-    public void test() {
-        MomoPropertiesDTO.EnvConfig config = momoProperties.getActiveConfig();
-        log.info("PartnerCode: {}", config.getPartnerCode());
-        log.info("Endpoint: {}", config.getEndpoint());
-    }
+    // public void test() {
+    // MomoPropertiesDTO.EnvConfig config = momoProperties.getActiveConfig();
+    // log.info("PartnerCode: {}", config.getPartnerCode());
+    // log.info("Endpoint: {}", config.getEndpoint());
+    // }
 
     private static String signHmacSHA256(String data, String key) throws Exception {
         Mac hmacSHA256 = Mac.getInstance("HmacSHA256");
@@ -47,7 +47,7 @@ public class MomoService {
         return hexString.toString();
     }
 
-    public MomoResponseDTO handleCreateMomoQR() {
+    public MomoResponseDTO handleCreateOrder() {
         MomoPropertiesDTO.EnvConfig config = momoProperties.getActiveConfig();
         // log.info("PartnerCode: {}", config.getPartnerCode());
         // log.info("Endpoint: {}", config.getEndpoint());
@@ -56,14 +56,14 @@ public class MomoService {
         String requestId = UUID.randomUUID().toString();
         String orderInfo = "Thanh toán hoá đơn: " + orderId;
         String extraData = "Không có khuyến mãi gì hết";
-        Long amount = handlePaymentService.getOneById(0).getPayTotalPrice();
+        Long amount = handlePaymentService.getOneFormat().getPayTotalPrice();
+        Long orderExpire = System.currentTimeMillis() + 15 * 60 * 1000; // 15 phút
 
         String rawSignature = String.format(
                 "accessKey=%s&amount=%s&extraData=%s&ipnUrl=%s&orderId=%s&orderInfo=%s&partnerCode=%s&redirectUrl=%s&requestId=%s&requestType=%s",
-                config.getAccessKey(), amount, extraData, config.getIpnUrl(), orderId, orderInfo,
-                config.getPartnerCode(),
-                config.getRedirectUrl(), requestId,
-                config.getRequestType());
+                config.getAccessKey(), amount, extraData, config.getIpnUrl(),
+                orderId, orderInfo, config.getPartnerCode(), config.getRedirectUrl(),
+                requestId, config.getRequestType(), orderExpire);
 
         String handleSignature = "";
         try {
@@ -87,15 +87,16 @@ public class MomoService {
                 .orderInfo(orderInfo)
                 .requestId(requestId)
                 .extraData(extraData)
-                .amount(amount)
                 .signature(handleSignature)
+                .amount(amount)
+                .orderExpire(orderExpire)
                 .lang("vi")
                 .build();
 
         return this.momoClientUtil.createMomoQR(momoRequest);
     }
 
-    public MomoResponseDTO handleCancelMomoPayment(String orderId, Long amount) {
+    public MomoResponseDTO handleCancelOrder(String orderId, Long amount) {
         MomoPropertiesDTO.EnvConfig config = momoProperties.getActiveConfig();
         String requestId = UUID.randomUUID().toString();
         String description = "Khách hàng hủy giao dịch"; // MoMo dùng description
@@ -124,7 +125,7 @@ public class MomoService {
                 .orderId(orderId)
                 .requestId(requestId)
                 .amount(amount)
-                .description(description) // phải khớp với rawSignature
+                .description(description)
                 .signature(signature)
                 .build();
 

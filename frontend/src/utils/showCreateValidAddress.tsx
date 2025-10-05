@@ -96,7 +96,7 @@ export function showCreateValidAddress(): Promise<AddressResult | null> {
             openNotification({
               type: "success",
               message: "Thành công",
-              description: "Tạo địa chỉ hợp lệ thành công !",
+              description: "Tạo địa chỉ hợp lệ thành công!",
               duration: 1.5,
             });
 
@@ -143,7 +143,7 @@ export function showCreateValidAddress(): Promise<AddressResult | null> {
                 htmlFor="house-number-and-street-name"
                 className="modal__form-group-item"
                 rules={[
-                  ruleRequired("Số nhà, tên đường không được để trống !"),
+                  ruleRequired("Số nhà, tên đường không được để trống!"),
                 ]}
               >
                 <Input
@@ -157,7 +157,7 @@ export function showCreateValidAddress(): Promise<AddressResult | null> {
                 label="Tỉnh thành"
                 htmlFor="create-province"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Tỉnh thành không được để trống !")]}
+                rules={[ruleRequired("Tỉnh thành không được để trống!")]}
               >
                 <Select
                   allowClear
@@ -176,7 +176,7 @@ export function showCreateValidAddress(): Promise<AddressResult | null> {
                 label="Phường xã"
                 htmlFor="create-ward"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Phường xã không được để trống !")]}
+                rules={[ruleRequired("Phường xã không được để trống!")]}
               >
                 <Select
                   allowClear

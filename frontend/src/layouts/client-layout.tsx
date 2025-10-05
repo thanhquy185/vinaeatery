@@ -373,7 +373,7 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
                               openNotification({
                                 type: "success",
                                 message: "Thành công",
-                                description: "Xoá món ăn thành công !",
+                                description: "Xoá món ăn thành công!",
                                 duration: 1.5,
                               });
 
@@ -419,7 +419,7 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
                         openNotification({
                           type: "success",
                           message: "Thành công",
-                          description: "Xoá tất cả món ăn thành công !",
+                          description: "Xoá tất cả món ăn thành công!",
                           duration: 1.5,
                         });
 
@@ -453,7 +453,7 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
                           openNotification({
                             type: "warning",
                             message: "Cảnh báo",
-                            description: "Không có món ăn nào trong giỏ hàng !",
+                            description: "Không có món ăn nào trong giỏ hàng!",
                             duration: 1.5,
                           });
 
@@ -483,7 +483,7 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
                           openNotification({
                             type: "success",
                             message: "Thành công",
-                            description: "Gọi món thành công !",
+                            description: "Gọi món thành công!",
                             duration: 1.5,
                           });
 
@@ -498,7 +498,7 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
                           openNotification({
                             type: "error",
                             message: "Thất bại",
-                            description: "Gọi món thất bại !",
+                            description: "Gọi món thất bại!",
                             duration: 1.5,
                           });
 
@@ -623,7 +623,7 @@ const ClientHeader: React.FC<ClientLayoutProps> = ({
   return (
     <>
       <header className="client__header-warper">
-        <div className="client__header container">
+        <div className="client__header">
           <CustomBrand to="#!" prefixClassName="client__" name="VINAEATERY" />
           {currentUseTable!.status === UseTableStatus.occupied && (
             <div className="client__actions">

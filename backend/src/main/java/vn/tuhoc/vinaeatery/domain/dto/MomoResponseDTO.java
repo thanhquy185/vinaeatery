@@ -15,17 +15,18 @@ import lombok.Setter;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MomoResponseDTO {
+    private int resultCode;
     private String partnerCode;
     private String requestId;
     private String orderId;
-    private Long amount;
-    private Long responseTime;
     private String message;
-    private int resultCode;
     private String payUrl;
     private String deeplink;
     private String qrCodeUrl;
     private String deeplinkMiniApp;
     private String signature;
+    private Long responseTime;
+    private Long amount;
     private Long useFee;
+    private Long orderExpire;
 }

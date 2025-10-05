@@ -392,7 +392,7 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
   // - Các giá trị mặc định cho nhập liệu
   const defaultInputs = {
     title: "Thông tin cơ bản",
-    id: "Được xác định sau khi xác nhận thêm !",
+    id: "Được xác định sau khi xác nhận thêm!",
     name: "Nhập Tên nguyên liệu",
     categoryIngredient: "Chọn Loại nguyên liệu",
     unit: "Chọn Đơn vị",
@@ -733,7 +733,7 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["name"]}
                 htmlFor="create-name"
                 className="modal__form-group-item multiple-2"
-                rules={[ruleRequired("Tên nguyên liệu không được để trống !")]}
+                rules={[ruleRequired("Tên nguyên liệu không được để trống!")]}
               >
                 <Input id="create-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
@@ -742,7 +742,7 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["categoryIngredient"]}
                 htmlFor="create-categoryIngredient"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Loại nguyên liệu không được để trống !")]}
+                rules={[ruleRequired("Loại nguyên liệu không được để trống!")]}
               >
                 <Select
                   allowClear={true}
@@ -799,7 +799,7 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["status"]}
                 htmlFor="create-status"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Trạng thái không được để trống !")]}
+                rules={[ruleRequired("Trạng thái không được để trống!")]}
               >
                 <Select
                   allowClear={true}
@@ -826,7 +826,7 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
                   label={defaultLabels["unit"]}
                   htmlFor="create-unit"
                   className="modal__form-group-item"
-                  rules={[ruleRequired("Cần chọn Đơn vị !")]}
+                  rules={[ruleRequired("Cần chọn Đơn vị!")]}
                 >
                   <Select
                     showSearch={true}
@@ -844,7 +844,7 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
                   label={defaultLabels["capacity"]}
                   htmlFor="create-capacity"
                   className="modal__form-group-item"
-                  rules={[ruleRequired("Cần nhập Định lượng !")]}
+                  rules={[ruleRequired("Cần nhập Định lượng!")]}
                 >
                   <InputNumber
                     min={0}
@@ -964,7 +964,7 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["name"]}
                 htmlFor="update-name"
                 className="modal__form-group-item multiple-2"
-                rules={[ruleRequired("Tên nguyên liệu không được để trống !")]}
+                rules={[ruleRequired("Tên nguyên liệu không được để trống!")]}
               >
                 <Input id="update-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
@@ -973,7 +973,7 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["categoryIngredient"]}
                 htmlFor="update-categoryIngredient"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Loại nguyên liệu không được để trống !")]}
+                rules={[ruleRequired("Loại nguyên liệu không được để trống!")]}
               >
                 <Select
                   showSearch={true}
@@ -1041,7 +1041,7 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
                   label={defaultLabels["unit"]}
                   htmlFor="update-unit"
                   className="modal__form-group-item"
-                  rules={[ruleRequired("Cần chọn Đơn vị !")]}
+                  rules={[ruleRequired("Cần chọn Đơn vị!")]}
                 >
                   <Select
                     showSearch={true}
@@ -1059,7 +1059,7 @@ const AdminIngredientsPage = ({ functionId }: { functionId: number }) => {
                   label={defaultLabels["capacity"]}
                   htmlFor="update-capacity"
                   className="modal__form-group-item"
-                  rules={[ruleRequired("Cần nhập Định lượng !")]}
+                  rules={[ruleRequired("Cần nhập Định lượng!")]}
                 >
                   <InputNumber
                     min={0}

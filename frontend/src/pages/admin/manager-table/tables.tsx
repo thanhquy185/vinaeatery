@@ -360,7 +360,7 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
   // - Các giá trị mặc định cho nhập liệu
   const defaultInputs = {
     title: "",
-    id: "Được xác định sau khi xác nhận thêm !",
+    id: "Được xác định sau khi xác nhận thêm!",
     name: "Nhập Tên loại bàn ăn",
     categoryTable: "Chọn Loại bàn ăn",
     floor: "Chọn Tầng",
@@ -620,7 +620,7 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["categoryTable"]}
                 htmlFor="create-categoryTable"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Loại bàn không được để trống !")]}
+                rules={[ruleRequired("Loại bàn không được để trống!")]}
               >
                 <Select
                   showSearch={true}
@@ -638,7 +638,7 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["name"]}
                 htmlFor="create-name"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Tên bàn không được để trống !")]}
+                rules={[ruleRequired("Tên bàn không được để trống!")]}
               >
                 <Input id="create-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
@@ -661,7 +661,7 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["status"]}
                 htmlFor="create-status"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Trạng thái không được để trống !")]}
+                rules={[ruleRequired("Trạng thái không được để trống!")]}
               >
                 <Select
                   allowClear={true}
@@ -684,7 +684,7 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["floor"]}
                 htmlFor="create-floor"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Tầng không được để trống !")]}
+                rules={[ruleRequired("Tầng không được để trống!")]}
               >
                 <Select
                   showSearch={true}
@@ -703,7 +703,7 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["seats"]}
                 htmlFor="create-seats"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Số chỗ ngồi không được để trống !")]}
+                rules={[ruleRequired("Số chỗ ngồi không được để trống!")]}
               >
                 <InputNumber
                   min={1}
@@ -793,7 +793,7 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["categoryTable"]}
                 htmlFor="update-categoryTable"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Loại bàn không được để trống !")]}
+                rules={[ruleRequired("Loại bàn không được để trống!")]}
               >
                 <Select
                   showSearch={true}
@@ -811,7 +811,7 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["name"]}
                 htmlFor="update-name"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Tên bàn không được để trống !")]}
+                rules={[ruleRequired("Tên bàn không được để trống!")]}
               >
                 <Input id="update-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
@@ -841,7 +841,7 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["floor"]}
                 htmlFor="update-floor"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Tầng không được để trống !")]}
+                rules={[ruleRequired("Tầng không được để trống!")]}
               >
                 <Select
                   id="update-floor"
@@ -857,7 +857,7 @@ const AdminTablesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["seats"]}
                 htmlFor="update-seats"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Số chỗ ngồi không được để trống !")]}
+                rules={[ruleRequired("Số chỗ ngồi không được để trống!")]}
               >
                 <InputNumber
                   min={1}

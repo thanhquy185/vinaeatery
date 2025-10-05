@@ -57,6 +57,7 @@ button {
 }
 
 a {
+  color: inherit;
   text-decoration: none;
 }
 
@@ -84,4 +85,8 @@ table td.left {
 
 table td.right {
   text-align: right;
+}
+
+dialog {
+  padding: 0;
 }

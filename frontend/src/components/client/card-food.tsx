@@ -47,7 +47,7 @@ const CustomCardFood: React.FC<CustomCardFoodProps> = ({
           openNotification({
             type: "success",
             message: "Thành công",
-            description: "Thêm vào giỏ hàng thành công !",
+            description: "Thêm vào giỏ hàng thành công!",
             duration: 1.5,
           });
         }}

@@ -206,7 +206,7 @@ const AdminShiftsPage = () => {
   const defaultInputs = {
     title1: "",
     title2: "",
-    id: "Được xác định sau khi xác nhận thêm !",
+    id: "Được xác định sau khi xác nhận thêm!",
     name: "Nhập Tên ca làm việc",
     timeStart: "Chọn Thời gian bắt đầu",
     timeEnd: "Chọn Thời gian kết thúc",

@@ -363,7 +363,7 @@ const AdminOrderSheetsPage = ({ functionId }: { functionId: number }) => {
         openNotification({
           type: "success",
           message: "Thành công",
-          description: "Cập nhật thành công !",
+          description: "Cập nhật thành công!",
           duration: 1.5,
         });
         setTimeout(() => {
@@ -384,7 +384,7 @@ const AdminOrderSheetsPage = ({ functionId }: { functionId: number }) => {
                       <br />
                     </div>
                   ))
-              : "Cập nhật thất bại !",
+              : "Cập nhật thất bại!",
           duration: 1.5,
         });
         setTimeout(() => {

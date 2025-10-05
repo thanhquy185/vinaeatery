@@ -1,126 +1,136 @@
-# 🛒 VINAEATERY - Website quản lý nhà hàng
+# 🍽️ VINAEATERY - Website quản lý nhà hàng
 
 ---
 
 ## 📌 Giới thiệu
 
-Sau 2 đồ án là VINAFOOD và VINAMART, em dần hiểu được cách triển khai, cấu hình và kết hợp giữa React.js và Spring Boot
+VINAEATERY lấy cảm hứng từ mô hình phục vụ hiện đại tại các chuỗi nhà hàng nổi tiếng, nơi khách hàng có thể tự chọn món ăn thông qua thiết bị điện tử tại bàn.
 
-**_Ghi chú:_** _Tuy em đã hiểu, đã làm được nhưng còn hạn chế ở một vài chỗ_
+Hệ thống hỗ trợ quản lý menu, đơn hàng, bàn ăn và thanh toán, giúp tối ưu hóa quy trình vận hành và mang lại trải nghiệm tiện lợi cho thực khách.
 
 <p><br></p>
 
 ## 🖼️ Giao diện
 
-**_Ghi chú:_** _Vì có quá nhiều đối tượng nên em chỉ chụp những giao diện cần thiết_
-
 <table width="100%" align="center">
   <tr>
     <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/login.png" alt="Giao diện đăng nhập" width="100%"/>
+      <img src="frontend/public/readme/public-landing.png" alt="Giao diện giới thiệu nhà hàng" width="100%"/>
       <br>
-      <em>Hình 1: Giao diện đăng nhập</em>
+      <em>Hình 1: Giao diện giới thiệu nhà hàng</em>
     </td>
     <td width="50%" align="center">
-      <img src="frontend/src/assets/images/others/no-image.png" alt="Giao diện quên mật khẩu" width="100%"/>
+      <img src="frontend/public/readme/public-login.png" alt="Giao diện đăng nhập" width="100%"/>
       <br>
-      <em>Hình 2: Giao diện quên mật khẩu</em>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/dashboard-profit.png" alt="Giao diện thống kê lợi nhuận" width="100%"/>
-      <br>
-      <em>Hình 3: Giao diện thống kê lợi nhuận</em>
-    </td>
-    <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/dashboard-orders.png" alt="Giao diện thống kê đơn món ăn" width="100%"/>
-      <br>
-      <em>Hình 4: Giao diện thống kê đơn món ăn</em>
+      <em>Hình 2: Giao diện đăng nhập</em>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/dashboard-input-tickets.png" alt="Giao diện thống kê phiếu nhập" width="100%"/>
+      <img src="frontend/public/readme/admin-dashboard-profit.png" alt="Giao diện thống kê lợi nhuận (quản lý)" width="100%"/>
       <br>
-      <em>Hình 5: Giao diện thống kê phiếu nhập</em>
+      <em>Hình 3: Giao diện thống kê lợi nhuận (quản lý)</em>
     </td>
     <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/detail-table-histories.png" alt="Giao diện chi tiết lịch sử bàn ăn" width="100%"/>
+      <img src="frontend/public/readme/admin-dashboard-orders.png" alt="Giao diện thống kê đơn món ăn (quản lý)" width="100%"/>
       <br>
-      <em>Hình 6: Giao diện chi tiết lịch sử bàn ăn</em>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/use-tables-1.png" alt="Giao diện sử dụng bàn ăn (1)" width="100%"/>
-      <br>
-      <em>Hình 7: Giao diện sử dụng bàn ăn (1)</em>
-    </td>
-    <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/use-tables-2.png" alt="Giao diện sử dụng bàn ăn (2)" width="100%"/>
-      <br>
-      <em>Hình 8: Giao diện sử dụng bàn ăn (2)</em>
+      <em>Hình 4: Giao diện thống kê đơn món ăn (quản lý)</em>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/order-sheets-1.png" alt="Giao diện phiếu gọi món ăn (1)" width="100%"/>
+      <img src="frontend/public/readme/admin-objects.png" alt="Giao diện thông tin đối tượng (quản lý)" width="100%"/>
       <br>
-      <em>Hình 9: Giao diện phiếu gọi món ăn (1)</em>
+      <em>Hình 5: Giao diện thông tin đối tượng (quản lý)</em>
     </td>
     <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/order-sheets-2.png" alt="Giao diện phiếu gọi món ăn (2)" width="100%"/>
+      <img src="frontend/public/readme/admin-tickets.png" alt="Giao diện thông tin phiếu (quản lý)" width="100%"/>
       <br>
-      <em>Hình 10: Giao diện phiếu gọi món ăn (2)</em>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/orders.png" alt="Giao diện đơn món ăn" width="100%"/>
-      <br>
-      <em>Hình 11: Giao diện đơn món ăn</em>
-    </td>
-    <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/input-tickets.png" alt="Giao diện phiếu nhập" width="100%"/>
-      <br>
-      <em>Hình 12: Giao diện phiếu nhập</em>
-    </td>
-  </tr>
-   <tr>
-    <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/foods-1.png" alt="Giao diện món ăn (1)" width="100%"/>
-      <br>
-      <em>Hình 13: Giao diện món ăn (1)</em>
-    </td>
-    <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/foods-2.png" alt="Giao diện món ăn (2)" width="100%"/>
-      <br>
-      <em>Hình 14: Giao diện món ăn (2)</em>
+      <em>Hình 6: Giao diện thông tin phiếu (quản lý)</em>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/roles-1.png" alt="Giao diện chức vụ (1)" width="100%"/>
+      <img src="frontend/public/readme/admin-table-histories.png" alt="Giao diện lịch sử bàn ăn (quản lý)" width="100%"/>
       <br>
-      <em>Hình 15: Giao diện chức vụ (1)</em>
+      <em>Hình 7: Giao diện lịch sử bàn ăn (quản lý)</em>
     </td>
     <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/roles-2.png" alt="Giao diện chức vụ (2)" width="100%"/>
+      <img src="frontend/public/readme/admin-detail-table-history.png" alt="Giao diện chi tiết lịch sử bàn ăn (quản lý)" width="100%"/>
       <br>
-      <em>Hình 16: Giao diện chức vụ (2)</em>
+      <em>Hình 8: Giao diện chi tiết lịch sử bàn ăn (quản lý)</em>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/employees-1.png" alt="Giao diện nhân viên (1)" width="100%"/>
+      <img src="frontend/public/readme/admin-use-tables.png" alt="Giao diện sử dụng bàn ăn (quản lý)" width="100%"/>
       <br>
-      <em>Hình 17: Giao diện nhân viên (1)</em>
+      <em>Hình 9: Giao diện sử dụng bàn ăn (quản lý)</em>
     </td>
     <td width="50%" align="center">
-      <img src="frontend/src/assets/images/readme/employees-2.png" alt="Giao diện nhân viên (2)" width="100%"/>
+      <img src="frontend/public/readme/admin-table-has-customer.png" alt="Giao diện bàn ăn có khách (quản lý)" width="100%"/>
       <br>
-      <em>Hình 18: Giao diện nhân viên (2)</em>
+      <em>Hình 10: Giao diện bàn ăn có khách (quản lý)</em>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="frontend/public/readme/admin-order-sheets.png" alt="Giao diện phiếu gọi món (quản lý)" width="100%"/>
+      <br>
+      <em>Hình 11: Giao diện phiếu gọi món (quản lý)</em>
+    </td>
+    <td width="50%" align="center">
+      <img src="frontend/public/readme/admin-detail-order-sheet.png" alt="Giao diện chi tiết phiếu gọi món (quản lý)" width="100%"/>
+      <br>
+      <em>Hình 12: Giao diện chi tiết phiếu gọi món (quản lý)</em>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="frontend/public/readme/client-main.png" alt="Giao diện gọi món ăn (khách hàng)" width="100%"/>
+      <br>
+      <em>Hình 13: Giao diện gọi món ăn (khách hàng)</em>
+    </td>
+    <td width="50%" align="center">
+      <img src="frontend/public/readme/client-cart.png" alt="Giao diện giỏ hàng (khách hàng)" width="100%"/>
+      <br>
+      <em>Hình 14: Giao diện giỏ hàng (khách hàng)</em>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="frontend/public/readme/client-orders.png" alt="Giao diện lịch sử gọi món (khách hàng)" width="100%"/>
+      <br>
+      <em>Hình 15: Giao diện lịch sử gọi món (khách hàng)</em>
+    </td>
+    <td width="50%" align="center">
+      <img src="frontend/src/assets/images/others/no-image.png" alt="Giao diện ..." width="100%"/>
+      <br>
+      <em>Hình 16: Giao diện ...</em>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="frontend/public/readme/payment-info.png" alt="Giao diện thông tin hoá đơn (thanh toán)" width="100%"/>
+      <br>
+      <em>Hình 17: Giao diện thông tin hoá đơn (thanh toán)</em>
+    </td>
+    <td width="50%" align="center">
+      <img src="frontend/public/readme/payment-methods.png" alt="Giao diện phương thức thanh toán (thanh toán)" width="100%"/>
+      <br>
+      <em>Hình 18: Giao diện phương thức thanh toán (thanh toán)</em>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="frontend/public/readme/payment-selected.png" alt="Giao diện đã chọn phương thức (thanh toán)" width="100%"/>
+      <br>
+      <em>Hình 19: Giao diện đã chọn phương thức (thanh toán)</em>
+    </td>
+    <td width="50%" align="center">
+      <img src="frontend/public/readme/payment-feedback.png" alt="Giao diện đánh giá cảm nhận (thanh toán)" width="100%"/>
+      <br>
+      <em>Hình 20: Giao diện đánh giá cảm nhận (thanh toán)</em>
     </td>
   </tr>
 </table>
@@ -134,6 +144,8 @@ Sau 2 đồ án là VINAFOOD và VINAMART, em dần hiểu được cách triể
 - Đăng nhập, đăng ký, phân quyền linh động tài khoản nhân viên
 - Mỗi món ăn đều có công thức với nhiều nguyên liệu khác nhau
 - Có thống kê, báo cáo, in file pdf
+- Tích hợp thanh toán thông qua các ví điện tử (MoMo, ZaloPay...)
+- Sử dụng Docker để đóng gói ứng dụng
 - Ngoài quản lý nguyên liệu món ăn, còn có quản lý nhân sự (đang cập nhật)
 - ...
 
@@ -149,12 +161,11 @@ Sau 2 đồ án là VINAFOOD và VINAMART, em dần hiểu được cách triể
 
 ## ❌ Điểm hạn chế
 
-- Tuy đã dùng cái có sẵn (so với 2 đồ án trước) nhưng với em vẫn chưa thực sự đẹp
+- Giao diện chưa thực sự đẹp
+- Chưa xử lý một số lỗi nghiệp vụ nhỏ
 - Chưa xử lý việc khi nhân viên quên mật khẩu
-- Chưa tính hợp thanh toán online
 - Chưa xử lý trường hợp gửi nhiều request cùng lúc
 - Chưa xử lý realtime
-- Chưa sử dụng docker để quản lý phần mềm
 - ...
 
 **_Ghi chú:_** _Sẽ xây dựng trong tương lai_
@@ -167,18 +178,21 @@ Sau 2 đồ án là VINAFOOD và VINAMART, em dần hiểu được cách triể
 # Clone đồ án
 git clone https://github.com/thanhquy185/vinaeatery.git
 
+# Dùng Docker
+docker-compose up -d
+
+## Không dùng Docker
 # Chạy Frontend (dev mode)
 cd frontend (Di chuyển đến thư mục /frontend)
 npm install (Tải các dependencies cần thiết)
 npm run dev (Chạy frontend)
-
 # Chạy Backend (dev mode)
 cd backend (Di chuyển đến thư mục /backend)
 ./gradlew build (Biên dịch lại các file)
 ./gradlew bootRun (Chạy backend)
 ```
 
-**_Ghi chú:_** _Cần thay đổi hostname, username và password tương ứng với mysql mà bạn sử dụng ở đường dẫn /backend/src/resources/application.properties (#config spring jpa) và lấy lệnh tạo db từ file database.txt_
+**_Ghi chú:_** _Cần thay đổi hostname, username và password tương ứng với mysql mà bạn sử dụng ở đường dẫn /backend/src/resources/application.properties (#config spring jpa) và lấy lệnh tạo db từ file database.sql_
 
 <p align="center">
   💡 <em>Trường Đại học Sài Gòn – Khoa Công nghệ Thông tin</em>  

@@ -282,6 +282,7 @@ const AdminUseTablesPage = ({
         // Số tiền thanh toán
         setPayTotalPriceValue(handlePayment?.payTotalPrice!);
       } else {
+        setOpenModal(false);
         setCurrentOrderSheetDetails([]);
         setCurrentTotalFoodPrice(0);
         setPayTotalPriceValue(0);
@@ -544,7 +545,7 @@ const AdminUseTablesPage = ({
                             //     type: "error",
                             //     message: "Thất bại",
                             //     description:
-                            //       "Số tiền thanh toán không được để trống !",
+                            //       "Số tiền thanh toán không được để trống!",
                             //     duration: 1.5,
                             //   });
 
@@ -560,7 +561,7 @@ const AdminUseTablesPage = ({
                                 type: "error",
                                 message: "Thất bại",
                                 description:
-                                  "Số tiền thanh toán phải lớn hơn hoặc bằng tổng thanh toán !",
+                                  "Số tiền thanh toán phải lớn hơn hoặc bằng tổng thanh toán!",
                                 duration: 1.5,
                               });
                               confirmPaymentButtonRef.current.classList.remove(
@@ -584,7 +585,7 @@ const AdminUseTablesPage = ({
                               openNotification({
                                 type: "success",
                                 message: "Thành công",
-                                description: "Thanh toán hoá đơn thành công !",
+                                description: "Thanh toán hoá đơn thành công!",
                                 duration: 1.5,
                               });
 
@@ -603,7 +604,8 @@ const AdminUseTablesPage = ({
                         <span>Xác nhận đã nhận tiền</span>
                       </button>
                     )}
-                  {handlePayment?.payMethod?.id === 4 && (
+                  {(handlePayment?.payMethod?.id === 4 ||
+                    handlePayment?.payMethod?.id === 5) && (
                     <button
                       type="button"
                       className="modal__button secondary btn"
@@ -645,7 +647,7 @@ const AdminUseTablesPage = ({
                               type: "success",
                               message: "Thành công",
                               description:
-                                "Đã hủy thanh toán hoá đơn thành công !",
+                                "Đã hủy thanh toán hoá đơn thành công!",
                               duration: 1.5,
                             });
 
@@ -707,7 +709,7 @@ const AdminUseTablesPage = ({
                               type: "success",
                               message: "Thành công",
                               description:
-                                "Cập nhật giao diện thanh toán hoá đơn thành công !",
+                                "Cập nhật giao diện thanh toán hoá đơn thành công!",
                               duration: 1.5,
                             });
 
@@ -1049,7 +1051,7 @@ const AdminUseTablesPage = ({
                 label="Khách hàng (Mã khách hàng - Tên khách hàng - Số điện thoại - Email - Thẻ khách hàng)"
                 htmlFor="customer"
                 className="modal__form-group-item multiple-2"
-                rules={[ruleRequired("Khách hàng không được để trống !")]}
+                rules={[ruleRequired("Khách hàng không được để trống!")]}
               >
                 <Select
                   showSearch={true}
@@ -1126,7 +1128,7 @@ const AdminUseTablesPage = ({
                 label="Tên khách hàng"
                 htmlFor="fullname"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Tên khách hàng không được để trống !")]}
+                rules={[ruleRequired("Tên khách hàng không được để trống!")]}
               >
                 <Input id="fullname" placeholder="Nhập Tên khách hàng" />
               </Form.Item>
@@ -1166,7 +1168,7 @@ const AdminUseTablesPage = ({
                   htmlFor="phone"
                   className="modal__form-group-item"
                   rules={[
-                    ruleRequired("Số điện thoại không được để trống !"),
+                    ruleRequired("Số điện thoại không được để trống!"),
                     rulePhone(),
                   ]}
                 >
@@ -1245,7 +1247,7 @@ const AdminUseTablesPage = ({
                 label="Đơn đặt bàn (Mã Đơn đặt bàn - Thời gian đặt bàn - Thời gian nhận bàn - Tên khách hàng - Số điện thoại)"
                 htmlFor="orderTable"
                 className="modal__form-group-item multiple-2"
-                rules={[ruleRequired("Đơn đặt bàn không được để trống !")]}
+                rules={[ruleRequired("Đơn đặt bàn không được để trống!")]}
               >
                 <Select
                   showSearch={true}
@@ -1374,7 +1376,7 @@ const AdminUseTablesPage = ({
         openNotification({
           type: "success",
           message: "Thành công",
-          description: "Cập nhật thành công !",
+          description: "Cập nhật thành công!",
           duration: 1.5,
         });
         setTimeout(() => {
@@ -1396,7 +1398,7 @@ const AdminUseTablesPage = ({
                       <br />
                     </div>
                   ))
-              : "Cập nhật thất bại !",
+              : "Cập nhật thất bại!",
           duration: 1.5,
         });
         setTimeout(() => {

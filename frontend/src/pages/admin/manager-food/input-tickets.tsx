@@ -525,7 +525,7 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
   const defaultInputs = {
     title1: "",
     title2: "",
-    id: "Chưa xác định !",
+    id: "Chưa xác định!",
     timeCreate: "",
     employee: "",
     supplier:
@@ -747,7 +747,7 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
                 openNotification({
                   type: "success",
                   message: "Thành công",
-                  description: "Thêm thành công !",
+                  description: "Thêm thành công!",
                   duration: 1.5,
                 });
 
@@ -851,7 +851,7 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["supplier"]}
                 htmlFor="create-supplier"
                 className="modal__form-group-item multiple-3"
-                rules={[ruleRequired("Nhà cung cấp không được để trống !")]}
+                rules={[ruleRequired("Nhà cung cấp không được để trống!")]}
               >
                 <Select
                   showSearch={true}
@@ -1300,7 +1300,7 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
         openNotification({
           type: "success",
           message: "Thành công",
-          description: "Cập nhật thành công !",
+          description: "Cập nhật thành công!",
           duration: 1.5,
         });
         setTimeout(() => {
@@ -1321,7 +1321,7 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
                       <br />
                     </div>
                   ))
-              : "Cập nhật thất bại !",
+              : "Cập nhật thất bại!",
           duration: 1.5,
         });
         setTimeout(() => {
@@ -1471,7 +1471,7 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
               openNotification({
                 type: "success",
                 message: "Thành công",
-                description: "Thêm thành công !",
+                description: "Thêm thành công!",
                 duration: 1.5,
               });
             }
@@ -1490,7 +1490,7 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultSecondLabels["ingredientCreate"]}
                 htmlFor="create-ingredient"
                 className="modal__form-group-item multiple-2"
-                rules={[ruleRequired("Nguyên liệu không được để trống !")]}
+                rules={[ruleRequired("Nguyên liệu không được để trống!")]}
               >
                 <Select
                   mode={undefined}
@@ -1540,7 +1540,7 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultSecondLabels["price"]}
                 htmlFor="create-price"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Giá nhập không được để trống !")]}
+                rules={[ruleRequired("Giá nhập không được để trống!")]}
               >
                 <InputNumber
                   min={1}
@@ -1558,7 +1558,7 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultSecondLabels["quantity"]}
                 htmlFor="create-quantity"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Số lượng không được để trống !")]}
+                rules={[ruleRequired("Số lượng không được để trống!")]}
               >
                 <InputNumber
                   min={1}
@@ -1625,7 +1625,7 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
               openNotification({
                 type: "success",
                 message: "Thành công",
-                description: "Xoá thành công !",
+                description: "Xoá thành công!",
                 duration: 1.5,
               });
             }
@@ -1644,7 +1644,7 @@ const AdminInputTicketsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultSecondLabels["ingredientDelete"]}
                 htmlFor="delete-ingredient"
                 className="modal__form-group-item multiple-2"
-                rules={[ruleRequired("Nguyên liệu không được để trống !")]}
+                rules={[ruleRequired("Nguyên liệu không được để trống!")]}
               >
                 <Select
                   mode={undefined}

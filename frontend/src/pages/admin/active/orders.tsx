@@ -39,7 +39,6 @@ import type {
   OrdersFormatType,
 } from "../../../common/types";
 import { ruleRequired } from "../../../common/rules";
-import { CustomPaginationProps } from "../../../common/props";
 import {
   CommonStatus,
   OrderStatus,
@@ -49,7 +48,6 @@ import {
 } from "../../../common/values";
 import CustomFindInput from "../../../components/admin/find-input";
 import CustomFindSelect from "../../../components/admin/find-select";
-import CustomDateRangePicker from "../../../components/admin/date-ranger-picker";
 import CustomCardStatic from "../../../components/admin/card-static";
 import CustomTableActions from "../../../components/admin/table-actions";
 import CustomTableNoActions from "../../../components/admin/table-no-actions";
@@ -273,7 +271,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
       },
       sorter: (a, b) =>
         dayjs(a.timeCreate).valueOf() - dayjs(b.timeCreate).valueOf(),
-      render: (val) => val ? dayjs(val).format("YYYY-MM-DD HH:mm:ss") : "",
+      render: (val) => (val ? dayjs(val).format("YYYY-MM-DD HH:mm:ss") : ""),
     },
     {
       title: "Khách hàng",
@@ -526,7 +524,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
     title1: "",
     title2: "",
     title3: "",
-    id: "Chưa xác định !",
+    id: "Chưa xác định!",
     timeCreate: "",
     employee:
       "Chọn Nhân viên xác nhận (Mã nhân viên - Tên nhân viên - Số điện thoại - Email)",
@@ -810,7 +808,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
                 openNotification({
                   type: "success",
                   message: "Thành công",
-                  description: "Thêm thành công !",
+                  description: "Thêm thành công!",
                   duration: 1.5,
                 });
 
@@ -822,7 +820,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
                 openNotification({
                   type: "error",
                   message: "Thất bại",
-                  description: "Thêm thất bại !",
+                  description: "Thêm thất bại!",
                   duration: 1.5,
                 });
 
@@ -915,7 +913,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["customer"]}
                 htmlFor="create-customer"
                 className="modal__form-group-item multiple-3"
-                rules={[ruleRequired("Khách hàng không được để trống !")]}
+                rules={[ruleRequired("Khách hàng không được để trống!")]}
               >
                 <Select
                   showSearch={true}
@@ -1451,7 +1449,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
         openNotification({
           type: "success",
           message: "Thành công",
-          description: "Cập nhật thành công !",
+          description: "Cập nhật thành công!",
           duration: 1.5,
         });
         setTimeout(() => {
@@ -1472,7 +1470,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
                       <br />
                     </div>
                   ))
-              : "Cập nhật thất bại !",
+              : "Cập nhật thất bại!",
           duration: 1.5,
         });
         setTimeout(() => {
@@ -1612,7 +1610,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
               openNotification({
                 type: "success",
                 message: "Thành công",
-                description: "Thêm thành công !",
+                description: "Thêm thành công!",
                 duration: 1.5,
               });
             }
@@ -1631,7 +1629,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
                 label={defaultSecondLabels["foodCreate"]}
                 htmlFor="create-food"
                 className="modal__form-group-item multiple-2"
-                rules={[ruleRequired("Món ăn không được để trống !")]}
+                rules={[ruleRequired("Món ăn không được để trống!")]}
               >
                 <Select
                   mode={undefined}
@@ -1691,7 +1689,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
                 label={defaultSecondLabels["quantity"]}
                 htmlFor="create-quantity"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Số lượng không được để trống !")]}
+                rules={[ruleRequired("Số lượng không được để trống!")]}
               >
                 <InputNumber
                   min={1}
@@ -1755,7 +1753,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
               openNotification({
                 type: "success",
                 message: "Thành công",
-                description: "Xoá thành công !",
+                description: "Xoá thành công!",
                 duration: 1.5,
               });
             }
@@ -1774,7 +1772,7 @@ const AdminOrdersPage = ({ functionId }: { functionId: number }) => {
                 label={defaultSecondLabels["foodDelete"]}
                 htmlFor="delete-food"
                 className="modal__form-group-item multiple-2"
-                rules={[ruleRequired("Món ăn không được để trống !")]}
+                rules={[ruleRequired("Món ăn không được để trống!")]}
               >
                 <Select
                   mode={undefined}

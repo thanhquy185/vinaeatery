@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import {
   GetHandlePaymentFormat,
-  HandleCancelPaymentMomo,
-  HandleCreateMomoQR,
+  HandleCancelMomoOrder,
+  HandleCreateMomoOrder,
+  HandleCreateZalopayOrder,
   HandleUpdateHandlePayment,
 } from "../../services/api";
 import { ConfigProvider, QRCode, Rate, Steps } from "antd";
@@ -122,6 +123,7 @@ const PaymentPage = () => {
   const [methodData, setMethodData] = useState<any>(null);
   // Các biến giữ thông tin hiển thị khi thanh toán bằng 1 phương thức
   const [payId, setPayId] = useState<string>("");
+  const [payLogo, setPayLogo] = useState<string>("");
   const [payQRCodeUrl, setPayQRCodeUrl] = useState<string>("");
   const [payResponseTime, setPayResponseTime] = useState<number>(0);
   const [payTotalPrice, setPayTotalPrice] = useState<number>(0);
@@ -139,6 +141,7 @@ const PaymentPage = () => {
   const moneyButtonRef = useRef<HTMLButtonElement>(null);
   const atmButtonRef = useRef<HTMLButtonElement>(null);
   const momoButtonRef = useRef<HTMLButtonElement>(null);
+  const zalopayButtonRef = useRef<HTMLButtonElement>(null);
   const changePayMethodButtonRef = useRef<HTMLButtonElement>(null);
   const completedPaymentButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -162,11 +165,13 @@ const PaymentPage = () => {
   };
   const updatePayInfo = (
     id: string,
+    logo: string,
     qrCodeUrl: string,
     responseTime: number,
     totalPrice: number
   ) => {
     setPayId(id);
+    setPayLogo(logo);
     setPayQRCodeUrl(qrCodeUrl);
     setPayResponseTime(responseTime);
     setPayTotalPrice(totalPrice);
@@ -231,15 +236,23 @@ const PaymentPage = () => {
         setCurrent(3);
       }
 
-      if (
-        handlePayment?.payMethod?.id === 4 &&
-        handlePayment?.status === HandlePaymentStatus.completed
-      ) {
+      if (handlePayment?.status === HandlePaymentStatus.completed) {
         openNotification({
           type: "success",
           message: "Thành công",
-          description:
-            "Thanh toán bằng ví MoMo thành công. Xin khách hàng dành ra ít phút để đánh giá.",
+          description: `${
+            handlePayment?.payMethod?.id === 1
+              ? methodTitle
+              : handlePayment?.payMethod?.id === 2
+              ? atmTitle
+              : handlePayment?.payMethod?.id === 3
+              ? visMasterJcbTitle
+              : handlePayment?.payMethod?.id === 4
+              ? momoTitle
+              : handlePayment?.payMethod?.id === 5
+              ? zalopayTitle
+              : vnpayTitle
+          } thành công. Xin khách hàng dành ra ít phút để đánh giá.`,
           duration: 1.5,
         });
 
@@ -421,15 +434,7 @@ const PaymentPage = () => {
               />
               <h1 className="public__main-title">Thanh toán hoá đơn</h1>
             </div>
-            <ConfigProvider
-              theme={{
-                token: {
-                  colorPrimary: "#d32f2f",
-                },
-              }}
-            >
-              <Steps current={current} items={items} />
-            </ConfigProvider>
+            <Steps current={current} items={items} />
             {current === 0 &&
               (handlePayment?.status === HandlePaymentStatus.exists ||
                 handlePayment?.status === HandlePaymentStatus.pending) && (
@@ -454,19 +459,21 @@ const PaymentPage = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {currentOrderSheetDetails?.map((orderSheet) => (
-                            <tr>
-                              <td>{orderSheet.food.name}</td>
-                              <td>{orderSheet.food.unit}</td>
-                              <td>{vietnamMoneyFormat(orderSheet.price)}</td>
-                              <td>{orderSheet.quantity}</td>
-                              <td>
-                                {vietnamMoneyFormat(
-                                  orderSheet.price * orderSheet.quantity
-                                )}
-                              </td>
-                            </tr>
-                          ))}
+                          {currentOrderSheetDetails?.map(
+                            (orderSheet, index) => (
+                              <tr key={index}>
+                                <td>{orderSheet.food.name}</td>
+                                <td>{orderSheet.food.unit}</td>
+                                <td>{vietnamMoneyFormat(orderSheet.price)}</td>
+                                <td>{orderSheet.quantity}</td>
+                                <td>
+                                  {vietnamMoneyFormat(
+                                    orderSheet.price * orderSheet.quantity
+                                  )}
+                                </td>
+                              </tr>
+                            )
+                          )}
                         </tbody>
                       </table>
                     </div>
@@ -608,74 +615,77 @@ const PaymentPage = () => {
                                   </p>
                                 </>
                               )}
-                            {methodImage === momoLogo &&
-                              methodTitle === momoTitle && (
-                                <p>
-                                  <span>Mã giao dịch: </span>
-                                  <b>{payId}</b>
-                                </p>
-                              )}
+                            {((methodImage === momoLogo &&
+                              methodTitle === momoTitle) ||
+                              (methodImage === zalopayLogo &&
+                                methodTitle === zalopayTitle)) && (
+                              <p>
+                                <span>Mã giao dịch: </span>
+                                <b>{payId}</b>
+                              </p>
+                            )}
                             <p>
                               <span>Thời gian thanh toán: </span>
                               <b>
                                 <CurrentDateTime />
                               </b>
                             </p>
-                            {methodImage === momoLogo &&
-                              methodTitle === momoTitle && (
-                                <p>
-                                  <span>Thời hạn thanh toán: </span>
-                                  <b>
-                                    <CountdownTimer
-                                      timeMs={
-                                        payResponseTime +
-                                        1000 * 60 * 5 -
-                                        Date.now()
-                                      }
-                                      //   onChange={(formatted, remainingMs) => {
-                                      //     console.log(
-                                      //       "Thời gian còn lại:",
-                                      //       formatted
-                                      //     );
-                                      //   }}
-                                      onFinish={async () => {
-                                        setIsShowSpinner(true);
+                            {((methodImage === momoLogo &&
+                              methodTitle === momoTitle) ||
+                              (methodImage === zalopayLogo &&
+                                methodTitle === zalopayTitle)) && (
+                              <p>
+                                <span>Thời hạn thanh toán: </span>
+                                <b>
+                                  <CountdownTimer
+                                    timeMs={
+                                      payResponseTime +
+                                      1000 * 60 * 5 -
+                                      Date.now()
+                                    }
+                                    onFinish={async () => {
+                                      setIsShowSpinner(true);
 
+                                      if (
+                                        methodImage === momoLogo &&
+                                        methodTitle === momoTitle
+                                      ) {
                                         const momoResponse =
-                                          await HandleCancelPaymentMomo({
+                                          await HandleCancelMomoOrder({
                                             orderId: payId,
                                             amount: String(payTotalPrice),
                                           });
-                                        const momoData = momoResponse!
-                                          .data as any;
+                                        // const momoData = momoResponse!
+                                        //   .data as any;
+                                      }
 
-                                        const handlePaymentData =
-                                          await HandleUpdateHandlePayment({
-                                            useTableId:
-                                              handlePayment?.useTable?.id,
-                                            payMethodId: undefined,
-                                            status: HandlePaymentStatus.exists,
-                                          });
+                                      const handlePaymentData =
+                                        await HandleUpdateHandlePayment({
+                                          useTableId:
+                                            handlePayment?.useTable?.id,
+                                          payMethodId: undefined,
+                                          status: HandlePaymentStatus.pending,
+                                        });
 
-                                        if (momoData && handlePaymentData) {
-                                          setIsShowSpinner(false);
+                                      if (handlePaymentData) {
+                                        setIsShowSpinner(false);
 
-                                          openNotification({
-                                            type: "error",
-                                            message: "Thất bại",
-                                            description:
-                                              "Thanh toán hiện tại bị huỷ vì quá hạn thời gian thanh toán cho phép !",
-                                            duration: 2,
-                                          });
+                                        openNotification({
+                                          type: "error",
+                                          message: "Thất bại",
+                                          description:
+                                            "Thanh toán hiện tại bị huỷ vì quá hạn thời gian thanh toán cho phép! Chuyển về trang chọn phương thức thanh toán!",
+                                          duration: 2,
+                                        });
 
-                                          updateMethodInfo("", "", null);
-                                          updatePayInfo("", "", 0, 0);
-                                        }
-                                      }}
-                                    />
-                                  </b>
-                                </p>
-                              )}
+                                        updateMethodInfo("", "", null);
+                                        updatePayInfo("", "", "", 0, 0);
+                                      }
+                                    }}
+                                  />
+                                </b>
+                              </p>
+                            )}
                             <p>
                               <span>Tổng thanh toán: </span>
                               <b>{vietnamMoneyFormat(payTotalPrice)} VNĐ</b>
@@ -685,12 +695,7 @@ const PaymentPage = () => {
                                 className="qr-code"
                                 errorLevel="H"
                                 value={payQRCodeUrl}
-                                icon={
-                                  getImagePrefix +
-                                  (methodImage === momoLogo
-                                    ? momoLogo
-                                    : mbbankLogo)
-                                }
+                                icon={getImagePrefix + payLogo}
                               />
                             )}
                             {methodImage === moneyImage &&
@@ -738,7 +743,7 @@ const PaymentPage = () => {
                                     description:
                                       "Chuyển đến giao diện " +
                                       moneyTitle +
-                                      " !",
+                                      "!",
                                     duration: 1.5,
                                   });
 
@@ -749,6 +754,7 @@ const PaymentPage = () => {
                                   );
                                   updatePayInfo(
                                     "Lưu trữ nội bộ",
+                                    "",
                                     "",
                                     Date.now(),
                                     currentTotalFoodPrice +
@@ -803,7 +809,7 @@ const PaymentPage = () => {
 
                                 if (handlePaymentData) {
                                   const momoResponse =
-                                    await HandleCreateMomoQR();
+                                    await HandleCreateMomoOrder();
                                   const momoData = momoResponse.data as any;
 
                                   if (momoData) {
@@ -815,7 +821,7 @@ const PaymentPage = () => {
                                       description:
                                         "Chuyển đến giao diện " +
                                         momoTitle +
-                                        " !",
+                                        "!",
                                       duration: 1.5,
                                     });
 
@@ -826,6 +832,7 @@ const PaymentPage = () => {
                                     );
                                     updatePayInfo(
                                       momoData.orderId,
+                                      momoLogo,
                                       momoData.qrCodeUrl,
                                       momoData.responseTime,
                                       momoData.amount
@@ -876,13 +883,14 @@ const PaymentPage = () => {
                                     type: "success",
                                     message: "Thành công",
                                     description:
-                                      "Chuyển đến giao diện " + atmTitle + " !",
+                                      "Chuyển đến giao diện " + atmTitle + "!",
                                     duration: 1.5,
                                   });
 
                                   updateMethodInfo(atmLogo, atmTitle, "");
                                   updatePayInfo(
                                     "Lưu trữ nội bộ",
+                                    mbbankLogo,
                                     atmQRCodeUrl,
                                     Date.now(),
                                     currentTotalFoodPrice +
@@ -903,7 +911,80 @@ const PaymentPage = () => {
                           <img src={getImagePrefix + atmLogo} alt="atm-logo" />
                           <p>{atmTitle}</p>
                         </button>
-                        <button className="public__main-method disabled">
+                        <button
+                          ref={zalopayButtonRef}
+                          className="public__main-method"
+                          onClick={async () => {
+                            if (!zalopayButtonRef.current) return;
+
+                            zalopayButtonRef.current.classList.add("active");
+
+                            const answer = await openConfirmation({
+                              title: `Thanh toán phương thức này ?`,
+                              content: `Bạn sắp chọn phương thức thanh toán "${zalopayTitle}" để thanh toán hoá đơn.`,
+                            });
+
+                            if (zalopayButtonRef.current) {
+                              if (answer) {
+                                setIsShowSpinner(true);
+
+                                const handlePaymentData =
+                                  await HandleUpdateHandlePayment({
+                                    useTableId: handlePayment?.useTable?.id,
+                                    payMethodId: 5,
+                                    payTotalPrice: Math.round(
+                                      currentTotalFoodPrice +
+                                        currentCategoryTableSurcharge +
+                                        -1 * currentCustomerDiscount
+                                    ),
+                                    status: HandlePaymentStatus.selected,
+                                  });
+
+                                if (handlePaymentData) {
+                                  const zalopayResponse =
+                                    await HandleCreateZalopayOrder();
+                                  const zalopayData =
+                                    zalopayResponse.data as any;
+
+                                  if (zalopayData) {
+                                    // console.log(zalopayData);
+                                    setIsShowSpinner(false);
+
+                                    openNotification({
+                                      type: "success",
+                                      message: "Thành công",
+                                      description:
+                                        "Chuyển đến giao diện " +
+                                        zalopayTitle +
+                                        "!",
+                                      duration: 1.5,
+                                    });
+
+                                    updateMethodInfo(
+                                      zalopayLogo,
+                                      zalopayTitle,
+                                      zalopayData || null
+                                    );
+                                    updatePayInfo(
+                                      zalopayData.app_trans_id,
+                                      zalopayLogo,
+                                      zalopayData.order_url,
+                                      zalopayData.app_time,
+                                      zalopayData.amount
+                                    );
+
+                                    queryClient.invalidateQueries({
+                                      queryKey: ["handle-payment"],
+                                    });
+                                  }
+                                }
+                              }
+                              zalopayButtonRef.current.classList.remove(
+                                "active"
+                              );
+                            }
+                          }}
+                        >
                           <img
                             src={getImagePrefix + zalopayLogo}
                             alt="zalopay-logo"
@@ -1074,7 +1155,7 @@ const PaymentPage = () => {
                         setIsShowSpinner(true);
 
                         updateMethodInfo("", "", null);
-                        updatePayInfo("", "", 0, 0);
+                        updatePayInfo("", "", "", 0, 0);
                         next();
 
                         setIsShowSpinner(false);
@@ -1093,7 +1174,7 @@ const PaymentPage = () => {
                       setIsShowSpinner(true);
 
                       updateMethodInfo("", "", null);
-                      updatePayInfo("", "", 0, 0);
+                      updatePayInfo("", "", "", 0, 0);
                       prev();
 
                       setIsShowSpinner(false);
@@ -1133,7 +1214,7 @@ const PaymentPage = () => {
 
                           updateMethodInfo("", "", null);
 
-                          updatePayInfo("", "", 0, 0);
+                          updatePayInfo("", "", "", 0, 0);
 
                           queryClient.invalidateQueries({
                             queryKey: ["handle-payment"],
@@ -1172,7 +1253,7 @@ const PaymentPage = () => {
                               type: "warning",
                               message: "Cảnh báo",
                               description:
-                                "Xin vui lòng khách hàng hãy phản hồi mục trải nghiệm !",
+                                "Xin vui lòng khách hàng hãy phản hồi mục trải nghiệm!",
                               duration: 1.5,
                             });
 
@@ -1183,7 +1264,7 @@ const PaymentPage = () => {
                               type: "warning",
                               message: "Cảnh báo",
                               description:
-                                "Xin vui lòng khách hàng hãy phản hồi mục chất lượng món ăn !",
+                                "Xin vui lòng khách hàng hãy phản hồi mục chất lượng món ăn!",
                               duration: 1.5,
                             });
 
@@ -1194,7 +1275,7 @@ const PaymentPage = () => {
                               type: "warning",
                               message: "Cảnh báo",
                               description:
-                                "Xin vui lòng khách hàng hãy phản hồi mục tốc độ phục vụ !",
+                                "Xin vui lòng khách hàng hãy phản hồi mục tốc độ phục vụ!",
                               duration: 1.5,
                             });
 
@@ -1205,7 +1286,7 @@ const PaymentPage = () => {
                               type: "warning",
                               message: "Cảnh báo",
                               description:
-                                "Xin vui lòng khách hàng hãy phản hồi mục thái độ nhân viên !",
+                                "Xin vui lòng khách hàng hãy phản hồi mục thái độ nhân viên!",
                               duration: 1.5,
                             });
 
@@ -1216,7 +1297,7 @@ const PaymentPage = () => {
                               type: "warning",
                               message: "Cảnh báo",
                               description:
-                                "Xin vui lòng khách hàng hãy phản hồi mục dịch vụ mang lại !",
+                                "Xin vui lòng khách hàng hãy phản hồi mục dịch vụ mang lại!",
                               duration: 1.5,
                             });
 
@@ -1227,7 +1308,7 @@ const PaymentPage = () => {
                               type: "warning",
                               message: "Cảnh báo",
                               description:
-                                "Xin vui lòng khách hàng hãy phản hồi mục không gian và vệ sinh !",
+                                "Xin vui lòng khách hàng hãy phản hồi mục không gian và vệ sinh!",
                               duration: 1.5,
                             });
 
@@ -1238,7 +1319,7 @@ const PaymentPage = () => {
                               type: "warning",
                               message: "Cảnh báo",
                               description:
-                                "Xin vui lòng khách hàng hãy góp ý cửa hàng !",
+                                "Xin vui lòng khách hàng hãy góp ý cửa hàng!",
                               duration: 1.5,
                             });
 
@@ -1260,13 +1341,13 @@ const PaymentPage = () => {
                             openNotification({
                               type: "success",
                               message: "Thành công",
-                              description: "Hoàn tất thanh toán hoá đơn !",
+                              description: "Hoàn tất thanh toán hoá đơn!",
                               duration: 1.5,
                             });
 
                             updateMethodInfo("", "", null);
 
-                            updatePayInfo("", "", 0, 0);
+                            updatePayInfo("", "", "", 0, 0);
 
                             setExperienceValue("");
                             setScore01Value(0);

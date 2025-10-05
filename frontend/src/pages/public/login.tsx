@@ -59,7 +59,7 @@ const LoginPage = () => {
               openNotification({
                 type: "success",
                 message: "Thành công",
-                description: "Đăng nhập thành công !",
+                description: "Đăng nhập thành công!",
                 duration: 1.5,
               });
 
@@ -73,7 +73,7 @@ const LoginPage = () => {
                 message: "Thất bại",
                 description: res!.data
                   ? String(res!.data)
-                  : "Đăng nhập thất bại !",
+                  : "Đăng nhập thất bại!",
                 duration: 1.5,
               });
 
@@ -94,7 +94,7 @@ const LoginPage = () => {
             label="Tên tài khoản"
             htmlFor="username"
             className="form__form-group"
-            rules={[ruleRequired("Tên tài khoản không được để trống !")]}
+            rules={[ruleRequired("Tên tài khoản không được để trống!")]}
           >
             <Input
               id="username"
@@ -107,7 +107,7 @@ const LoginPage = () => {
             label="Mật khẩu"
             htmlFor="password"
             className="form__form-group"
-            rules={[ruleRequired("Mật khẩu không được để trống !")]}
+            rules={[ruleRequired("Mật khẩu không được để trống!")]}
           >
             <Input.Password
               id="password"

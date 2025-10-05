@@ -208,7 +208,7 @@ const AdminCategoryRewardPunishesPage = () => {
   // - Các giá trị mặc định cho nhập liệu
   const defaultInputs = {
     title: "",
-    id: "Được xác định sau khi xác nhận thêm !",
+    id: "Được xác định sau khi xác nhận thêm!",
     name: "Nhập Tên loại thưởng phạt",
     handle: "Chọn Xử lý",
     description: "Nhập Mô tả",

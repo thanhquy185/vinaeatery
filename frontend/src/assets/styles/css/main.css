@@ -174,6 +174,7 @@ button {
 }
 
 a {
+  color: inherit;
   text-decoration: none;
 }
 
@@ -200,6 +201,10 @@ table td.left {
 
 table td.right {
   text-align: right;
+}
+
+dialog {
+  padding: 0;
 }
 
 /* */
@@ -3027,7 +3032,8 @@ table td.right {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 14px 0;
+  padding: 14px 20px;
+  transition: padding 0.3s ease-in-out;
 }
 .client__brand {
   display: flex;
@@ -3036,27 +3042,30 @@ table td.right {
   margin-left: 50%;
   transform: translateX(-50%);
   color: #fff;
-  font-size: 2.8rem;
+  font-size: 3rem;
   font-weight: 700;
   box-sizing: content-box;
+  transition: font-size 0.3s ease-in-out;
 }
 .client__brand-image {
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 45px;
   margin-right: 10px;
+  transition: width height 0.3s ease-in-out;
 }
 .client__actions {
   display: flex;
   justify-content: stretch;
   align-items: center;
   gap: 24px;
+  transition: gap 0.3s ease-in-out;
 }
 .client__icon {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   color: #fff;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: width height 0.3s ease-in-out;
 }
 .client__icon:hover {
   transform: scale(1.2);
@@ -3066,14 +3075,16 @@ table td.right {
   display: flex;
   justify-content: stretch;
   align-items: flex-start;
-  gap: 48px;
+  gap: 26px;
 }
 .client__filter {
   position: fixed;
+  left: 0;
   z-index: 1000;
-  width: 20%;
+  width: 18%;
   height: 100vh;
   background: #fff;
+  transition: width 0.3s ease-in-out;
 }
 .client__filter-list-warper {
   overflow-y: scroll;
@@ -3095,15 +3106,17 @@ table td.right {
   cursor: pointer;
 }
 .client__filter-image {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
+  transition: width height 0.3s ease-in-out;
 }
 .client__filter-title {
   color: #333;
   font-size: 1.8rem;
   font-weight: 600;
   transition: 0.2s ease-in-out;
+  transition: font-size 0.3s ease-in-out;
 }
 .client__filter-action:hover {
   border-color: #b91c1c;
@@ -3119,37 +3132,39 @@ table td.right {
   color: #fff;
 }
 .client__foods {
-  width: calc(80% - 52px - 60px);
+  width: 82%;
   display: flex;
   justify-content: stretch;
   align-items: center;
-  gap: 26px;
+  gap: 20px;
   flex-wrap: wrap;
-  padding-bottom: 52px;
-  margin-top: 52px;
-  margin-left: calc(20% + 52px);
+  padding: 20px;
+  margin-left: auto;
+  transition: width 0.3s ease-in-out;
 }
 .client__food {
-  width: calc(33.3333333333% - 17.3333333333px);
+  width: calc(25% - 15px);
   height: auto;
   background: #fff;
   border-radius: 8px;
   transition: 0.2s ease-in-out;
   cursor: pointer;
+  transition: width 0.3s ease-in-out;
 }
 .client__food-image {
   width: 100%;
   height: 200px;
   border-radius: 8px 8px 0 0;
+  transition: height 0.3s ease-in-out;
 }
 .client__food-info {
   background: #fff;
-  padding: 18px 20px;
+  padding: 10px 14px;
   border-radius: 0 0 8px 8px;
 }
 .client__food-paragraph {
   font-size: 1.7rem;
-  margin-top: 8px;
+  transition: font-size 0.3s ease-in-out;
 }
 .client__food-paragraph.name, .client__food-paragraph.price {
   font-weight: 600;
@@ -3388,6 +3403,169 @@ table td.right {
   text-align: center;
   line-height: 1.28;
   opacity: 0.4;
+}
+@media (max-width: 1199.98px) {
+  .client__header {
+    padding: 12px;
+  }
+  .client__brand {
+    font-size: 2.6rem;
+  }
+  .client__brand-image {
+    width: 38px;
+    height: 38px;
+  }
+  .client__actions {
+    gap: 18px;
+  }
+  .client__icon {
+    width: 18px;
+    height: 18px;
+  }
+  .client__filter {
+    width: 20%;
+  }
+  .client__filter-action {
+    gap: 10px;
+    padding: 8px 12px;
+  }
+  .client__filter-image {
+    width: 32px;
+    height: 32px;
+  }
+  .client__filter-title {
+    font-size: 1.6rem;
+  }
+  .client__foods {
+    width: 80%;
+  }
+  .client__food {
+    width: calc(33.3333333333% - 13.3333333333px);
+  }
+  .client__food-image {
+    height: 160px;
+  }
+  .client__food-paragraph {
+    font-size: 1.5rem;
+  }
+  .client__food-paragraph.price {
+    font-size: 1.8rem;
+  }
+}
+@media (max-width: 991.98px) {
+  .client__header {
+    padding: 10px;
+  }
+  .client__brand {
+    font-size: 2.2rem;
+  }
+  .client__brand-image {
+    width: 32px;
+    height: 32px;
+  }
+  .client__actions {
+    gap: 14px;
+  }
+  .client__icon {
+    width: 16px;
+    height: 16px;
+  }
+  .client__filter {
+    width: 22%;
+  }
+  .client__filter-action {
+    gap: 10px;
+    padding: 6px 10px;
+  }
+  .client__filter-image {
+    width: 28px;
+    height: 28px;
+  }
+  .client__filter-title {
+    font-size: 1.4rem;
+  }
+  .client__foods {
+    gap: 14px;
+    width: 78%;
+    padding: 14px;
+  }
+  .client__food {
+    width: calc(33.3333333333% - 9.3333333333px);
+  }
+  .client__food-image {
+    height: 140px;
+  }
+  .client__food-paragraph {
+    font-size: 1.3rem;
+  }
+  .client__food-paragraph.price {
+    font-size: 1.6rem;
+  }
+}
+@media (max-width: 767.98px) {
+  .client__brand {
+    margin-left: 0;
+    transform: translateX(0);
+  }
+  .client__actions {
+    gap: 12px;
+  }
+  .client__filter {
+    width: 28%;
+  }
+  .client__foods {
+    width: 72%;
+  }
+  .client__food {
+    width: calc(50% - 7px);
+  }
+}
+@media (max-width: 575.98px) {
+  .client__brand {
+    font-size: 1.8rem;
+  }
+  .client__brand-image {
+    width: 28px;
+    height: 28px;
+    margin-right: 4px;
+  }
+  .client__actions {
+    gap: 10px;
+  }
+  .client__icon {
+    width: 12px;
+    height: 12px;
+  }
+  .client__filter-action {
+    gap: 8px;
+    padding: 4px 8px;
+  }
+  .client__filter-image {
+    width: 20px;
+    height: 20px;
+  }
+  .client__filter-title {
+    font-size: 1rem;
+  }
+  .client__foods {
+    gap: 10px;
+    padding: 10px;
+  }
+  .client__food {
+    width: calc(50% - 5px);
+  }
+  .client__food-info {
+    padding: 6px 10px;
+  }
+  .client__food-image {
+    height: 100px;
+  }
+  .client__food-paragraph {
+    font-size: 0.9rem;
+  }
+  .client__food-paragraph.price {
+    font-size: 1.2rem;
+  }
 }
 
 #comeback-home-btn {

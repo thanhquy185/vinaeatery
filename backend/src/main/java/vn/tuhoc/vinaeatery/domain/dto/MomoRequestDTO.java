@@ -16,7 +16,6 @@ public class MomoRequestDTO {
     private String requestType;
     private String ipnUrl;
     private String orderId;
-    private Long amount;
     private String description;
     private String orderInfo;
     private String requestId;
@@ -24,4 +23,6 @@ public class MomoRequestDTO {
     private String lang;
     private String extraData;
     private String signature;
+    private Long amount;
+    private Long orderExpire;
 }

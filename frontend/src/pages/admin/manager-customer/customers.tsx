@@ -398,7 +398,7 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
   // - Các giá trị mặc định cho nhập liệu
   const defaultInputs = {
     title: "",
-    id: "Được xác định sau khi xác nhận thêm !",
+    id: "Được xác định sau khi xác nhận thêm!",
     fullname: "Nhập Tên khách hàng",
     birthday: "Chọn Ngày sinh",
     gender: "Chọn Giới tính",
@@ -717,7 +717,7 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["fullname"]}
                 htmlFor="create-fullname"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Tên khách hàng không được để trống !")]}
+                rules={[ruleRequired("Tên khách hàng không được để trống!")]}
               >
                 <Input
                   id="create-fullname"
@@ -730,7 +730,7 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
                 htmlFor="create-phone"
                 className="modal__form-group-item"
                 rules={[
-                  ruleRequired("Số điện thoại không được để trống !"),
+                  ruleRequired("Số điện thoại không được để trống!"),
                   rulePhone(),
                 ]}
               >
@@ -787,7 +787,7 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["status"]}
                 htmlFor="create-status"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Trạng thái không được để trống !")]}
+                rules={[ruleRequired("Trạng thái không được để trống!")]}
               >
                 <Select
                   allowClear={true}
@@ -954,7 +954,7 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["fullname"]}
                 htmlFor="update-fullname"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Tên khách hàng không được để trống !")]}
+                rules={[ruleRequired("Tên khách hàng không được để trống!")]}
               >
                 <Input
                   id="update-fullname"
@@ -967,7 +967,7 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
                 htmlFor="update-phone"
                 className="modal__form-group-item"
                 rules={[
-                  ruleRequired("Số điện thoại không được để trống !"),
+                  ruleRequired("Số điện thoại không được để trống!"),
                   rulePhone(),
                 ]}
               >
@@ -1008,7 +1008,7 @@ const AdminCustomersPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["customerCard"]}
                 htmlFor="update-customerCard"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Thẻ khách hàng không được để trống !")]}
+                rules={[ruleRequired("Thẻ khách hàng không được để trống!")]}
               >
                 <Select
                   showSearch={true}

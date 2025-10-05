@@ -3,10 +3,11 @@
 @use "../../abstracts/mixins" as *;
 
 .client {
-  $sidebar-width: 20%;
-  $client-spacing: 26px;
+  $sidebar-width: 18%;
+  $client-spacing: 20px;
   $client-cart-item-height: 100px;
 
+  // Base
   &__header-warper {
     position: sticky;
     top: 0;
@@ -17,7 +18,8 @@
   &__header {
     @include flex(space-between, center);
     width: 100%;
-    padding: 14px 0;
+    padding: 14px $client-spacing;
+    transition: padding 0.3s ease-in-out;
   }
 
   &__brand {
@@ -25,26 +27,29 @@
     margin-left: 50%;
     transform: translateX(-50%);
     color: #fff;
-    font-size: 2.8rem;
+    font-size: 3rem;
     font-weight: 700;
     box-sizing: content-box;
+    transition: font-size 0.3s ease-in-out;
   }
 
   &__brand-image {
-    @include size(50px);
+    @include size(45px);
     margin-right: 10px;
+    transition: width height 0.3s ease-in-out;
   }
 
   &__actions {
     @include flex(stretch, center);
     gap: 24px;
+    transition: gap 0.3s ease-in-out;
   }
 
   &__icon {
-    @include size(22px);
+    @include size(20px);
     color: #fff;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: width height 0.3s ease-in-out;
   }
 
   &__icon:hover {
@@ -54,15 +59,17 @@
   &__main {
     --grid-gutter-x: 0;
     @include flex(stretch, flex-start);
-    gap: 48px;
+    gap: 26px;
   }
 
   &__filter {
     position: fixed;
+    left: 0;
     z-index: 1000;
     width: $sidebar-width;
     height: 100vh;
     background: #fff;
+    transition: width 0.3s ease-in-out;
   }
 
   &__filter-list-warper {
@@ -86,8 +93,9 @@
   }
 
   &__filter-image {
-    @include size(40px);
+    @include size(38px);
     border-radius: 50%;
+    transition: width height 0.3s ease-in-out;
   }
 
   &__filter-title {
@@ -95,6 +103,7 @@
     font-size: 1.8rem;
     font-weight: 600;
     transition: 0.2s ease-in-out;
+    transition: font-size 0.3s ease-in-out;
   }
 
   &__filter-action:hover {
@@ -115,39 +124,40 @@
   }
 
   &__foods {
-    width: calc(80% - calc($client-spacing * 2) - $grid-gutter-width / 0.5);
+    width: calc(100% - $sidebar-width);
     @include flex(stretch, center);
     gap: $client-spacing;
     flex-wrap: wrap;
-    padding-bottom: calc($client-spacing * 2);
-    margin-top: calc($client-spacing * 2);
-    margin-left: calc($sidebar-width + $client-spacing * 2);
+    padding: $client-spacing;
+    margin-left: auto;
+    transition: width 0.3s ease-in-out;
   }
 
   &__food {
-    width: calc(calc(100% / 3) - calc(calc($client-spacing * 2) / 3));
+    width: calc(calc(100% / 4) - calc(calc($client-spacing * 3) / 4));
     height: auto;
     background: #fff;
-    // border: 1px solid #ccc;
     border-radius: 8px;
     transition: 0.2s ease-in-out;
     cursor: pointer;
+    transition: width 0.3s ease-in-out;
   }
 
   &__food-image {
     @include size(100%, 200px);
     border-radius: 8px 8px 0 0;
+    transition: height 0.3s ease-in-out;
   }
 
   &__food-info {
     background: #fff;
-    padding: 18px 20px;
+    padding: 10px 14px;
     border-radius: 0 0 8px 8px;
   }
 
   &__food-paragraph {
     font-size: 1.7rem;
-    margin-top: 8px;
+    transition: font-size 0.3s ease-in-out;
   }
 
   &__food-paragraph.name,
@@ -452,5 +462,210 @@
     // border: 1px solid #ffeeba;
     // margin: 2rem auto;
     // box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  // Desktop
+  @media (max-width: 1199.98px) {
+    &__header {
+      padding: 12px;
+    }
+
+    &__brand {
+      font-size: 2.6rem;
+    }
+
+    &__brand-image {
+      @include size(38px);
+    }
+
+    &__actions {
+      gap: 18px;
+    }
+
+    &__icon {
+      @include size(18px);
+    }
+
+    &__filter {
+      width: 20%;
+    }
+
+    &__filter-action {
+      gap: 10px;
+      padding: 8px 12px;
+    }
+
+    &__filter-image {
+      @include size(32px);
+    }
+
+    &__filter-title {
+      font-size: 1.6rem;
+    }
+
+    &__foods {
+      width: 80%;
+    }
+
+    &__food {
+      width: calc(calc(100% / 3) - calc(calc($client-spacing * 2) / 3));
+    }
+
+    &__food-image {
+      height: 160px;
+    }
+
+    &__food-paragraph {
+      font-size: 1.5rem;
+    }
+
+    &__food-paragraph.price {
+      font-size: 1.8rem;
+    }
+  }
+
+  // Tables
+  @media (max-width: 991.98px) {
+    &__header {
+      padding: 10px;
+    }
+
+    &__brand {
+      font-size: 2.2rem;
+    }
+
+    &__brand-image {
+      @include size(32px);
+    }
+
+    &__actions {
+      gap: 14px;
+    }
+
+    &__icon {
+      @include size(16px);
+    }
+
+    &__filter {
+      width: 22%;
+    }
+
+    &__filter-action {
+      gap: 10px;
+      padding: 6px 10px;
+    }
+
+    &__filter-image {
+      @include size(28px);
+    }
+
+    &__filter-title {
+      font-size: 1.4rem;
+    }
+
+    &__foods {
+      gap: 14px;
+      width: 78%;
+      padding: 14px;
+    }
+
+    &__food {
+      width: calc(calc(100% / 3) - calc(calc(14px * 2) / 3));
+    }
+
+    &__food-image {
+      height: 140px;
+    }
+
+    &__food-paragraph {
+      font-size: 1.3rem;
+    }
+
+    &__food-paragraph.price {
+      font-size: 1.6rem;
+    }
+  }
+
+  // Mobile
+  @media (max-width: 767.98px) {
+     &__brand {
+      margin-left: 0;
+      transform: translateX(0);
+    }
+
+    &__actions {
+      gap: 12px;
+    }
+
+    &__filter {
+      width: 28%;
+    }
+
+    &__foods {
+      width: 72%;
+    }
+
+    &__food {
+      width: calc(calc(100% / 2) - calc(calc(14px * 1) / 2));
+    }
+  }
+
+  @media (max-width: 575.98px) {
+    &__brand {
+      // margin-left: 0;
+      // transform: translateX(0);
+      font-size: 1.8rem;
+    }
+
+    &__brand-image {
+      @include size(28px);
+      margin-right: 4px;
+    }
+
+    &__actions {
+      gap: 10px;
+    }
+
+    &__icon {
+      @include size(12px);
+    }
+
+    &__filter-action {
+      gap: 8px;
+      padding: 4px 8px;
+    }
+
+    &__filter-image {
+      @include size(20px);
+    }
+
+    &__filter-title {
+      font-size: 1rem;
+    }
+
+    &__foods {
+      gap: 10px;
+      padding: 10px;
+    }
+
+    &__food {
+      width: calc(calc(100% / 2) - calc(calc(10px * 1) / 2));
+    }
+    
+    &__food-info {
+      padding: 6px 10px;
+    }
+
+     &__food-image {
+      height: 100px;
+    }
+
+    &__food-paragraph {
+      font-size: 0.9rem;
+    }
+
+    &__food-paragraph.price {
+      font-size: 1.2rem;
+    }
   }
 }

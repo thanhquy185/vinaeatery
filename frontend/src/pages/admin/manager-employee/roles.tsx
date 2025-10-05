@@ -568,7 +568,7 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["name"]}
                 htmlFor="create-name"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Tên chức vụ không được để trống !")]}
+                rules={[ruleRequired("Tên chức vụ không được để trống!")]}
               >
                 <Input id="create-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
@@ -579,7 +579,7 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["status"]}
                 htmlFor="create-status"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Trạng thái không được để trống !")]}
+                rules={[ruleRequired("Trạng thái không được để trống!")]}
               >
                 <Select
                   allowClear={true}
@@ -602,7 +602,7 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["salary"]}
                 htmlFor="create-salary"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Lương cơ bản không được để trống !")]}
+                rules={[ruleRequired("Lương cơ bản không được để trống!")]}
               >
                 <InputNumber
                   min={0}
@@ -714,7 +714,7 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["name"]}
                 htmlFor="update-name"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Tên chức vụ không được để trống !")]}
+                rules={[ruleRequired("Tên chức vụ không được để trống!")]}
               >
                 <Input id="update-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
@@ -732,7 +732,7 @@ const AdminRolesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["salary"]}
                 htmlFor="update-salary"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Lương cơ bản không được để trống !")]}
+                rules={[ruleRequired("Lương cơ bản không được để trống!")]}
               >
                 <InputNumber
                   min={0}

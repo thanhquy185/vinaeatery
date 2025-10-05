@@ -353,7 +353,7 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
   const defaultInputs = {
     title1: "",
     title2: "",
-    id: "Chưa xác định !",
+    id: "Chưa xác định!",
     timeOrder: "Thời gian đặt bàn",
     timeArrive: "Thời gian đến ăn",
     employee: "",
@@ -680,7 +680,7 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
                   label={defaultLabels["status"]}
                   htmlFor="create-status"
                   className="modal__form-group-item"
-                  rules={[ruleRequired("Cần chọn Trạng thái !")]}
+                  rules={[ruleRequired("Cần chọn Trạng thái!")]}
                 >
                   <Select
                     allowClear={true}
@@ -705,7 +705,7 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
                 htmlFor="create-timeOrder"
                 className="modal__form-group-item"
                 rules={[
-                  ruleRequired("Thời gian đặt bàn không được để trống !"),
+                  ruleRequired("Thời gian đặt bàn không được để trống!"),
                 ]}
               >
                 <DatePicker
@@ -760,7 +760,7 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["fullname"]}
                 htmlFor="create-fullname"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Họ và tên không được để trống !")]}
+                rules={[ruleRequired("Họ và tên không được để trống!")]}
               >
                 <Input
                   id="create-fullname"
@@ -805,7 +805,7 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
                 htmlFor="create-phone"
                 className="modal__form-group-item"
                 rules={[
-                  ruleRequired("Số điện thoại không được để trống !"),
+                  ruleRequired("Số điện thoại không được để trống!"),
                   rulePhone(),
                 ]}
               >
@@ -928,7 +928,7 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
                 htmlFor="update-timeOrder"
                 className="modal__form-group-item"
                 rules={[
-                  ruleRequired("Thời gian đặt bàn không được để trống !"),
+                  ruleRequired("Thời gian đặt bàn không được để trống!"),
                 ]}
               >
                 <DatePicker
@@ -980,7 +980,7 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["fullname"]}
                 htmlFor="update-fullname"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Họ và tên không được để trống !")]}
+                rules={[ruleRequired("Họ và tên không được để trống!")]}
               >
                 <Input
                   id="update-fullname"
@@ -1025,7 +1025,7 @@ const AdminOrderTablesPage = ({ functionId }: { functionId: number }) => {
                 htmlFor="update-phone"
                 className="modal__form-group-item"
                 rules={[
-                  ruleRequired("Số điện thoại không được để trống !"),
+                  ruleRequired("Số điện thoại không được để trống!"),
                   rulePhone(),
                 ]}
               >

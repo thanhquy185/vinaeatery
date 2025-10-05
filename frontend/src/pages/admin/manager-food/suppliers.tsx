@@ -257,7 +257,7 @@ const AdminSuppliersPage = ({ functionId }: { functionId: number }) => {
   // - Các giá trị mặc định cho nhập liệu
   const defaultInputs = {
     title: "",
-    id: "Được xác định sau khi xác nhận thêm !",
+    id: "Được xác định sau khi xác nhận thêm!",
     name: "Nhập Tên nhà cung cấp",
     phone: "Nhập Số điện thoại",
     email: "Nhập Email",
@@ -478,7 +478,7 @@ const AdminSuppliersPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["name"]}
                 htmlFor="create-name"
                 className="modal__form-group-item multiple-2"
-                rules={[ruleRequired("Tên nhà cung cấp không được để trống !")]}
+                rules={[ruleRequired("Tên nhà cung cấp không được để trống!")]}
               >
                 <Input id="create-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
@@ -528,7 +528,7 @@ const AdminSuppliersPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["status"]}
                 htmlFor="create-status"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Trạng thái không được để trống !")]}
+                rules={[ruleRequired("Trạng thái không được để trống!")]}
               >
                 <Select
                   allowClear={true}
@@ -638,7 +638,7 @@ const AdminSuppliersPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["name"]}
                 htmlFor="update-name"
                 className="modal__form-group-item multiple-2"
-                rules={[ruleRequired("Tên nhà cung cấp không được để trống !")]}
+                rules={[ruleRequired("Tên nhà cung cấp không được để trống!")]}
               >
                 <Input id="update-name" placeholder={defaultInputs["name"]} />
               </Form.Item>

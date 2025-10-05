@@ -479,7 +479,7 @@ const AdminFoodsPage = ({ functionId }: { functionId: number }) => {
   const defaultInputs = {
     title1: "",
     title2: "",
-    id: "Được xác định sau khi xác nhận thêm !",
+    id: "Được xác định sau khi xác nhận thêm!",
     image: "Chọn Hình ảnh",
     name: "Nhập Tên món ăn",
     categoryFood: "Chọn Loại món ăn",
@@ -814,7 +814,7 @@ const AdminFoodsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["name"]}
                 htmlFor="create-name"
                 className="modal__form-group-item multiple-2"
-                rules={[ruleRequired("Tên món ăn không được để trống !")]}
+                rules={[ruleRequired("Tên món ăn không được để trống!")]}
               >
                 <Input id="create-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
@@ -823,7 +823,7 @@ const AdminFoodsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["categoryFood"]}
                 htmlFor="create-category"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Loại món ăn không được để trống !")]}
+                rules={[ruleRequired("Loại món ăn không được để trống!")]}
               >
                 <Select
                   showSearch={true}
@@ -842,7 +842,7 @@ const AdminFoodsPage = ({ functionId }: { functionId: number }) => {
                   label={defaultLabels["unit"]}
                   htmlFor="create-unit"
                   className="modal__form-group-item"
-                  rules={[ruleRequired("Cần chọn Đơn vị !")]}
+                  rules={[ruleRequired("Cần chọn Đơn vị!")]}
                 >
                   <Select
                     showSearch={true}
@@ -860,7 +860,7 @@ const AdminFoodsPage = ({ functionId }: { functionId: number }) => {
                   label={defaultLabels["price"]}
                   htmlFor="create-price"
                   className="modal__form-group-item"
-                  rules={[ruleRequired("Cần nhập Giá bán !")]}
+                  rules={[ruleRequired("Cần nhập Giá bán!")]}
                 >
                   <InputNumber
                     min={1}
@@ -876,7 +876,7 @@ const AdminFoodsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["status"]}
                 htmlFor="create-status"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Trạng thái không được để trống !")]}
+                rules={[ruleRequired("Trạng thái không được để trống!")]}
               >
                 <Select
                   showSearch={true}
@@ -1085,7 +1085,7 @@ const AdminFoodsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["name"]}
                 htmlFor="update-name"
                 className="modal__form-group-item multiple-2"
-                rules={[ruleRequired("Tên món ăn không được để trống !")]}
+                rules={[ruleRequired("Tên món ăn không được để trống!")]}
               >
                 <Input id="update-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
@@ -1094,7 +1094,7 @@ const AdminFoodsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["categoryFood"]}
                 htmlFor="update-category"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Loại món ăn không được để trống !")]}
+                rules={[ruleRequired("Loại món ăn không được để trống!")]}
               >
                 <Select
                   showSearch={true}
@@ -1113,7 +1113,7 @@ const AdminFoodsPage = ({ functionId }: { functionId: number }) => {
                   label={defaultLabels["unit"]}
                   htmlFor="update-unit"
                   className="modal__form-group-item"
-                  rules={[ruleRequired("Cần chọn Đơn vị !")]}
+                  rules={[ruleRequired("Cần chọn Đơn vị!")]}
                 >
                   <Select
                     showSearch={true}
@@ -1131,7 +1131,7 @@ const AdminFoodsPage = ({ functionId }: { functionId: number }) => {
                   label={defaultLabels["price"]}
                   htmlFor="update-price"
                   className="modal__form-group-item"
-                  rules={[ruleRequired("Cần nhập Giá bán !")]}
+                  rules={[ruleRequired("Cần nhập Giá bán!")]}
                 >
                   <InputNumber
                     min={1}
@@ -1467,7 +1467,7 @@ const AdminFoodsPage = ({ functionId }: { functionId: number }) => {
               openNotification({
                 type: "success",
                 message: "Thành công",
-                description: "Thêm thành công !",
+                description: "Thêm thành công!",
                 duration: 1.5,
               });
             }
@@ -1486,7 +1486,7 @@ const AdminFoodsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultSecondLabels["ingredientCreate"]}
                 htmlFor="create-ingredient"
                 className="modal__form-group-item multiple-2"
-                rules={[ruleRequired("Nguyên liệu không được để trống !")]}
+                rules={[ruleRequired("Nguyên liệu không được để trống!")]}
               >
                 <Select
                   mode={undefined}
@@ -1518,7 +1518,7 @@ const AdminFoodsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultSecondLabels["quantity"]}
                 htmlFor="create-quantity"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Số lượng không được để trống !")]}
+                rules={[ruleRequired("Số lượng không được để trống!")]}
               >
                 <InputNumber
                   min={1}
@@ -1596,7 +1596,7 @@ const AdminFoodsPage = ({ functionId }: { functionId: number }) => {
               openNotification({
                 type: "success",
                 message: "Thành công",
-                description: "Xoá thành công !",
+                description: "Xoá thành công!",
                 duration: 1.5,
               });
             }
@@ -1615,7 +1615,7 @@ const AdminFoodsPage = ({ functionId }: { functionId: number }) => {
                 label={defaultSecondLabels["ingredientDelete"]}
                 htmlFor="update-ingredient"
                 className="modal__form-group-item multiple-2"
-                rules={[ruleRequired("Nguyên liệu không được để trống !")]}
+                rules={[ruleRequired("Nguyên liệu không được để trống!")]}
               >
                 <Select
                   showSearch={true}

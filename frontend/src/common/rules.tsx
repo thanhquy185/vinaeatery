@@ -2,7 +2,7 @@
 export const ruleRequired = (message?: string) => {
   return {
     required: true,
-    message: message! ? message : "Trường nhập dữ liệu không được để trống !",
+    message: message! ? message : "Trường nhập dữ liệu không được để trống!",
   };
 };
 
@@ -10,7 +10,7 @@ export const ruleRequired = (message?: string) => {
 export const ruleEmail = (message?: string) => {
   return {
     pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-    message: message! ? message : "Email không hợp lệ !",
+    message: message! ? message : "Email không hợp lệ!",
   };
 };
 
@@ -18,6 +18,6 @@ export const ruleEmail = (message?: string) => {
 export const rulePhone = (message?: string) => {
   return {
     pattern: /^\d{10,11}$/,
-    message: message! ? message : "Số điện thoại phải có 10 hoặc 11 chữ số !",
+    message: message! ? message : "Số điện thoại phải có 10 hoặc 11 chữ số!",
   };
 };

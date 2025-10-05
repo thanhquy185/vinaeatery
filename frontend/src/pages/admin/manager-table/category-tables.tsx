@@ -327,7 +327,7 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
   // - Các giá trị mặc định cho nhập liệu
   const defaultInputs = {
     title: "",
-    id: "Được xác định sau khi xác nhận thêm !",
+    id: "Được xác định sau khi xác nhận thêm!",
     name: "Nhập Tên loại bàn ăn",
     surchargeType: "Loại phụ thu",
     surchargeValue: "Giá trị phụ thu",
@@ -576,7 +576,7 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["name"]}
                 htmlFor="create-name"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Tên loại bàn không được để trống !")]}
+                rules={[ruleRequired("Tên loại bàn không được để trống!")]}
               >
                 <Input id="create-name" placeholder={defaultInputs["name"]} />
               </Form.Item>
@@ -599,7 +599,7 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["status"]}
                 htmlFor="create-status"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Trạng thái không được để trống !")]}
+                rules={[ruleRequired("Trạng thái không được để trống!")]}
               >
                 <Select
                   allowClear={true}
@@ -733,7 +733,7 @@ const AdminCategoryTablesPage = ({ functionId }: { functionId: number }) => {
                 label={defaultLabels["name"]}
                 htmlFor="update-name"
                 className="modal__form-group-item"
-                rules={[ruleRequired("Tên loại bàn không được để trống !")]}
+                rules={[ruleRequired("Tên loại bàn không được để trống!")]}
               >
                 <Input id="update-name" placeholder={defaultInputs["name"]} />
               </Form.Item>

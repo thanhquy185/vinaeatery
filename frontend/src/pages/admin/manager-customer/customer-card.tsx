@@ -409,7 +409,7 @@ const AdminCustomerCardsPage = ({ functionId }: { functionId: number }) => {
   // - Các giá trị mặc định cho nhập liệu
   const defaultInputs = {
     title: "",
-    id: "Được xác định sau khi xác nhận thêm !",
+    id: "Được xác định sau khi xác nhận thêm!",
     image: "Tải hình ảnh",
     name: "Nhập Tên khách hàng",
     threshold: "Nhập Mức tiêu (VNĐ)",
@@ -694,7 +694,7 @@ const AdminCustomerCardsPage = ({ functionId }: { functionId: number }) => {
                   htmlFor="create-name"
                   className="modal__form-group-item multiple-2"
                   rules={[
-                    ruleRequired("Tên thẻ khách hàng không được để trống !"),
+                    ruleRequired("Tên thẻ khách hàng không được để trống!"),
                   ]}
                 >
                   <Input id="create-name" placeholder={defaultInputs["name"]} />
@@ -729,7 +729,7 @@ const AdminCustomerCardsPage = ({ functionId }: { functionId: number }) => {
                   label={defaultLabels["status"]}
                   htmlFor="create-status"
                   className="modal__form-group-item"
-                  rules={[ruleRequired("Trạng thái không được để trống !")]}
+                  rules={[ruleRequired("Trạng thái không được để trống!")]}
                 >
                   <Select
                     allowClear={true}
@@ -753,7 +753,7 @@ const AdminCustomerCardsPage = ({ functionId }: { functionId: number }) => {
                     label={defaultLabels["threshold"]}
                     htmlFor="create-threshold"
                     className="modal__form-group-item"
-                    rules={[ruleRequired("Cần nhập Mức tiêu !")]}
+                    rules={[ruleRequired("Cần nhập Mức tiêu!")]}
                   >
                     <InputNumber
                       min={0}
@@ -766,7 +766,7 @@ const AdminCustomerCardsPage = ({ functionId }: { functionId: number }) => {
                     label={defaultLabels["discount"]}
                     htmlFor="create-discount"
                     className="modal__form-group-item"
-                    rules={[ruleRequired("Cần nhập Giảm giá !")]}
+                    rules={[ruleRequired("Cần nhập Giảm giá!")]}
                   >
                     <InputNumber
                       min={0}
@@ -876,7 +876,7 @@ const AdminCustomerCardsPage = ({ functionId }: { functionId: number }) => {
                 htmlFor="update-name"
                 className="modal__form-group-item multiple-2"
                 rules={[
-                  ruleRequired("Tên thẻ khách hàng không được để trống !"),
+                  ruleRequired("Tên thẻ khách hàng không được để trống!"),
                 ]}
               >
                 <Input id="update-name" placeholder={defaultInputs["name"]} />
@@ -915,7 +915,7 @@ const AdminCustomerCardsPage = ({ functionId }: { functionId: number }) => {
                   label={defaultLabels["threshold"]}
                   htmlFor="update-threshold"
                   className="modal__form-group-item"
-                  rules={[ruleRequired("Cần nhập Mức tiêu !")]}
+                  rules={[ruleRequired("Cần nhập Mức tiêu!")]}
                 >
                   <InputNumber
                     min={0}
@@ -928,7 +928,7 @@ const AdminCustomerCardsPage = ({ functionId }: { functionId: number }) => {
                   label={defaultLabels["discount"]}
                   htmlFor="update-discount"
                   className="modal__form-group-item"
-                  rules={[ruleRequired("Cần nhập Giảm giá !")]}
+                  rules={[ruleRequired("Cần nhập Giảm giá!")]}
                 >
                   <InputNumber
                     min={0}
