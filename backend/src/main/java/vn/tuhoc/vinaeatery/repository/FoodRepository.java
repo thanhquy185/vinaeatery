@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import vn.tuhoc.vinaeatery.domain.Food;
+import vn.tuhoc.vinaeatery.domain.entity.Food;
 
 @Repository
 public interface FoodRepository
@@ -17,6 +17,8 @@ public interface FoodRepository
 
     @Query(value = "SELECT * FROM vinaeatery.foods ORDER BY id DESC LIMIT 1", nativeQuery = true)
     Food findLastOne();
+
+    List<Food> findAllByRestaurantId(Integer restaurantId);
 
     List<Food> findAllByCategoryFoodId(Integer categoryFoodId);
 

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import vn.tuhoc.vinaeatery.domain.Customer;
+import vn.tuhoc.vinaeatery.domain.entity.Customer;
 
 @Repository
 public interface CustomerRepository
@@ -14,7 +14,11 @@ public interface CustomerRepository
     // Methods
     Customer findOneById(Integer id);
 
-    List<Customer> findAllByCustomerCardId(Integer customerCardId);
+    Customer findOneByUserId(Integer userId);
+
+    Customer findOneByPhone(String phone);
+
+    Customer findOneByEmail(String email);
 
     void deleteById(Integer id);
 }

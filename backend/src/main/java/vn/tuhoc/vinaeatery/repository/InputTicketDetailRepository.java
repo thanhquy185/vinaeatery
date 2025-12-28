@@ -9,8 +9,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import jakarta.transaction.Transactional;
-import vn.tuhoc.vinaeatery.domain.InputTicketDetail;
-import vn.tuhoc.vinaeatery.domain.InputTicketDetailId;
+import vn.tuhoc.vinaeatery.domain.entity.InputTicketDetail;
+import vn.tuhoc.vinaeatery.domain.entity.InputTicketDetailId;
 
 @Repository
 public interface InputTicketDetailRepository

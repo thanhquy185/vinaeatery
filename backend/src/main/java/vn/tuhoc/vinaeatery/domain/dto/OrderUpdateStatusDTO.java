@@ -14,6 +14,8 @@ import vn.tuhoc.vinaeatery.repository.converter.OrderStatusConverter;
 @Setter
 public class OrderUpdateStatusDTO {
     // Properties
+    private Integer employeeId;
     @Convert(converter = OrderStatusConverter.class)
     private OrderStatusEnum status;
+    private String updateAt;
 }

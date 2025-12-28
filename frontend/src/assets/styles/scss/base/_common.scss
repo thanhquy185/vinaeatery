@@ -77,6 +77,7 @@ table :is(th, td) {
   white-space: nowrap;
   text-align: center;
   // padding: 4px 6px;
+  vertical-align: middle !important;
 }
 
 table td.left {

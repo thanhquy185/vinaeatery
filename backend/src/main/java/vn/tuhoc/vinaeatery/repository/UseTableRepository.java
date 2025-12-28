@@ -7,8 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import jakarta.transaction.Transactional;
-import vn.tuhoc.vinaeatery.domain.UseTable;
-
+import vn.tuhoc.vinaeatery.domain.entity.UseTable;
 
 @Repository
 public interface UseTableRepository
@@ -17,8 +16,9 @@ public interface UseTableRepository
     UseTable findOneById(Long id);
 
     @Transactional
-    @Query(value = "SELECT * FROM vinaeatery.use_tables WHERE table_id = :table_id AND time_end IS NULL", nativeQuery = true)
-    UseTable findNewOneByTableId(@Param("table_id") Integer tableId);
+    @Query(value = "SELECT * FROM vinaeatery.use_tables WHERE restaurant_id = :restaurant_id  AND table_id = :table_id AND time_end IS NULL", nativeQuery = true)
+    UseTable findNewOneByRestaurantIdAndTableId(@Param("restaurant_id") Integer restaurantId,
+            @Param("table_id") Integer tableId);
 
     @Transactional
     @Query(value = "SELECT * FROM vinaeatery.use_tables WHERE customer_id = :customer_id AND time_end IS NULL", nativeQuery = true)

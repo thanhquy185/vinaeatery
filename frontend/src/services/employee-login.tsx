@@ -20,9 +20,9 @@ export const getActionsString = (
         currentFunctionId
     }: { currentFunctionId: number }
 ) => {
-    const currentEmployeeLogin = useRouteLoaderData("admin")!.employeeLogin as EmployeesFormatType;
+    const infoLoginLogin = useRouteLoaderData("manager-info-login")!.infoLogin as EmployeesFormatType;
 
-    return currentEmployeeLogin
+    return infoLoginLogin
         ?.currentRole?.roleDetails?.filter(
             (roleDetail) => roleDetail.functionId == currentFunctionId
         )

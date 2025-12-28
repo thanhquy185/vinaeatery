@@ -16,7 +16,7 @@ import vn.tuhoc.vinaeatery.repository.converter.OrderSheetStatusConverter;
 @Setter
 public class OrderSheetUpdateDTO {
     // Properties
-    private LocalDateTime timeService;
+    private LocalDateTime serviceAt;
     private Integer employeeId;
     private String message;
     @Convert(converter = OrderSheetStatusConverter.class)

@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Function;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
+import vn.tuhoc.vinaeatery.domain.entity.Function;
 import vn.tuhoc.vinaeatery.service.FunctionService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;

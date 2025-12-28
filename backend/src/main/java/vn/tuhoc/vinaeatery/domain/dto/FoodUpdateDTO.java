@@ -16,7 +16,7 @@ public class FoodUpdateDTO {
     private String image;
     @NotNull(message = "Tên món ăn không được để trống !")
     private String name;
-     @NotNull(message = "Loại món ăn không được để trống !")
+    @NotNull(message = "Loại món ăn không được để trống !")
     private Integer categoryFoodId;
     @NotNull(message = "Đơn vị không được để trống !")
     private String unit;
@@ -24,5 +24,5 @@ public class FoodUpdateDTO {
     private Long price;
     private String description;
     @NotNull(message = "Ngày cập nhật không được để trống !")
-    private LocalDateTime timeUpdate;
+    private LocalDateTime updateAt;
 }

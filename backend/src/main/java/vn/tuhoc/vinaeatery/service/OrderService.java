@@ -8,12 +8,12 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Order;
-import vn.tuhoc.vinaeatery.domain.OrderDetail;
-import vn.tuhoc.vinaeatery.domain.Order_;
 import vn.tuhoc.vinaeatery.domain.criteria.OrderCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.OrderDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderDetailDTO;
+import vn.tuhoc.vinaeatery.domain.entity.Order;
+import vn.tuhoc.vinaeatery.domain.entity.Order_;
+import vn.tuhoc.vinaeatery.domain.entity.OrderDetail;
 import vn.tuhoc.vinaeatery.domain.enumm.OrderStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.PayStatusEnum;
 import vn.tuhoc.vinaeatery.repository.OrderDetailRepository;
@@ -24,9 +24,9 @@ import vn.tuhoc.vinaeatery.service.specification.OrderSpecification;
 @RequiredArgsConstructor
 public class OrderService {
     // Properties
-    private final CustomerService customerService;
     private final FoodService foodService;
     private final EmployeeService employeeService;
+    private final CustomerService customerService;
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final PayMethodService payMethodService;
@@ -49,7 +49,8 @@ public class OrderService {
             }
 
             orderDTO.setId(order.getId());
-            orderDTO.setTimeCreate(order.getTimeCreate());
+            orderDTO.setRestaurantId(order.getRestaurantId());
+            orderDTO.setCreateAt(order.getCreateAt());
             if (order.getEmployeeId() != null) {
                 orderDTO.setEmployee(employeeService.getOneFormatById(order.getEmployeeId()));
             }
@@ -77,16 +78,18 @@ public class OrderService {
             switch (sortStr) {
                 case "ID tăng dần" -> sort = Sort.by(Order_.ID).ascending();
                 case "ID giảm dần" -> sort = Sort.by(Order_.ID).descending();
-                case "Thời gian tạo đơn tăng dần" -> sort = Sort.by(Order_.TIME_CREATE).ascending();
-                case "Thời gian tạo đơn giảm dần" -> sort = Sort.by(Order_.TIME_CREATE).descending();
+                case "Thời gian tạo đơn tăng dần" -> sort = Sort.by(Order_.CREATE_AT).ascending();
+                case "Thời gian tạo đơn giảm dần" -> sort = Sort.by(Order_.CREATE_AT).descending();
                 case "Tổng thanh toán tăng dần" -> sort = Sort.by(Order_.TOTAL_PRICE).ascending();
                 case "Tổng thanh toán giảm dần" -> sort = Sort.by(Order_.TOTAL_PRICE).descending();
             }
         }
 
         //
-        if (orderCriteria.getId() == null && orderCriteria.getTimeCreateStart() == null
-                && orderCriteria.getTimeCreateEnd() == null
+        if (orderCriteria.getId() == null
+                && orderCriteria.getRestaurantId() == null
+                && orderCriteria.getCreateAtStart() == null
+                && orderCriteria.getCreateAtEnd() == null
                 && orderCriteria.getEmployeeId() == null
                 && orderCriteria.getCustomerId() == null
                 && orderCriteria.getStatusMerge() == null
@@ -105,14 +108,21 @@ public class OrderService {
                 combinedSpec = combinedSpec.and(currentSpec);
             }
         }
-        if (orderCriteria.getTimeCreateStart() != null && orderCriteria.getTimeCreateStart().isPresent()) {
+        if (orderCriteria.getRestaurantId() != null && orderCriteria.getRestaurantId().isPresent()) {
+            if (orderCriteria.getRestaurantId().get().matches("\\d+")) {
+                Specification<Order> currentSpec = OrderSpecification
+                        .restaurantIdEqual(orderCriteria.getRestaurantId().get());
+                combinedSpec = combinedSpec.and(currentSpec);
+            }
+        }
+        if (orderCriteria.getCreateAtStart() != null && orderCriteria.getCreateAtStart().isPresent()) {
             Specification<Order> currentSpec = OrderSpecification
-                    .timeCreateAfter(orderCriteria.getTimeCreateStart().get());
+                    .createAtAfter(orderCriteria.getCreateAtStart().get());
             combinedSpec = combinedSpec.and(currentSpec);
         }
-        if (orderCriteria.getTimeCreateEnd() != null && orderCriteria.getTimeCreateEnd().isPresent()) {
+        if (orderCriteria.getCreateAtEnd() != null && orderCriteria.getCreateAtEnd().isPresent()) {
             Specification<Order> currentSpec = OrderSpecification
-                    .timeCreateBefore(orderCriteria.getTimeCreateEnd().get());
+                    .createAtBefore(orderCriteria.getCreateAtEnd().get());
             combinedSpec = combinedSpec.and(currentSpec);
         }
         if (orderCriteria.getEmployeeId() != null && orderCriteria.getEmployeeId().isPresent()) {
@@ -196,7 +206,7 @@ public class OrderService {
 
             OrderDTO orderDTO = new OrderDTO();
             orderDTO.setId(order.getId());
-            orderDTO.setTimeCreate(order.getTimeCreate());
+            orderDTO.setCreateAt(order.getCreateAt());
             if (order.getEmployeeId() != null) {
                 orderDTO.setEmployee(employeeService.getOneFormatById(order.getEmployeeId()));
             }

@@ -7,21 +7,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Supplier;
 import vn.tuhoc.vinaeatery.domain.criteria.SupplierCriteria;
-import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
-import vn.tuhoc.vinaeatery.domain.dto.SupplierUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.entity.Supplier;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
+import vn.tuhoc.vinaeatery.domain.request.SupplierCreateRequest;
+import vn.tuhoc.vinaeatery.domain.request.SupplierLockRequest;
+import vn.tuhoc.vinaeatery.domain.request.SupplierUpdateRequest;
 import vn.tuhoc.vinaeatery.service.SupplierService;
 import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
@@ -64,13 +65,19 @@ public class SupplierApiController {
         return ResponseEntity.status(HttpStatus.OK).body(supplierSelected);
     }
 
-    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleCreateSupplier(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
-            @RequestPart("supplier") @Valid Supplier supplier, BindingResult bindingResult) {
-        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "suppliers", "create")) {
+    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> handleCreateSupplier(@RequestBody @Valid SupplierCreateRequest supplierCreateRequest,
+            BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(supplierCreateRequest.getFormSecurity(), "suppliers", "create")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
                             .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
+        if (supplierCreateRequest.getSupplier() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr("Dữ liệu nhà cung cấp không được để trống !"));
         }
 
         if (bindingResult.hasErrors()) {
@@ -78,19 +85,24 @@ public class SupplierApiController {
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
         }
 
-        Supplier supplierCreate = this.supplierService.upsert(supplier);
+        Supplier supplierCreate = this.supplierService.upsert(supplierCreateRequest.getSupplier());
         return ResponseEntity.status(HttpStatus.OK).body(supplierCreate);
     }
 
-    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleUpdateSupplier(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
-            @PathVariable("id") Integer id,
-            @RequestPart("supplier") @Valid SupplierUpdateDTO supplier,
+    @PutMapping(value = "/update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> handleUpdateSupplier(@PathVariable("id") Integer id,
+            @RequestBody @Valid SupplierUpdateRequest supplierUpdateRequest,
             BindingResult bindingResult) {
-        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "suppliers", "update")) {
+        if (!HandleFormSecurity.isValidFormData(supplierUpdateRequest.getFormSecurity(), "suppliers", "update")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
                             .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
+        if (supplierUpdateRequest.getSupplier() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr("Dữ liệu nhà cung cấp không được để trống !"));
         }
 
         if (bindingResult.hasErrors()) {
@@ -100,25 +112,33 @@ public class SupplierApiController {
 
         Supplier supplierUpdated = this.supplierService.getOneById(id);
         if (supplierUpdated != null) {
-            supplierUpdated.setName(supplier.getName());
-            supplierUpdated.setPhone(supplier.getPhone());
-            supplierUpdated.setEmail(supplier.getEmail());
-            supplierUpdated.setAddress(supplier.getAddress());
-            supplierUpdated.setTimeUpdate(this.timeService.getDateTimeVN(supplier.getTimeUpdate()));
+            supplierUpdated.setName(supplierUpdateRequest.getSupplier().getName());
+            supplierUpdated.setPhone(supplierUpdateRequest.getSupplier().getPhone());
+            supplierUpdated.setEmail(supplierUpdateRequest.getSupplier().getEmail());
+            supplierUpdated.setAddress(supplierUpdateRequest.getSupplier().getAddress());
+            // supplierUpdated.setUpdateAt(this.timeService.getDateTimeVN(supplierUpdateRequest.getSupplier().getUpdateAt()));
+            supplierUpdated.setUpdateAt(this.timeService.getDateTimeVN(LocalDateTime.now()));
+
             this.supplierService.upsert(supplierUpdated);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(supplierUpdated);
     }
 
-    @PutMapping(value = "/lock/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleLockSupplier(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
-            @PathVariable("id") Integer id,
-            @RequestPart("supplier") @Valid CommonStatusUpdateDTO commonStatusUpdate, BindingResult bindingResult) {
-        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "suppliers", "lock")) {
+    @PatchMapping(value = "/lock/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> handleLockSupplier(@PathVariable("id") Integer id,
+            @RequestBody @Valid SupplierLockRequest supplierLockRequest,
+            BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(supplierLockRequest.getFormSecurity(), "suppliers", "lock")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
                             .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
+        if (supplierLockRequest.getSupplier() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr("Dữ liệu nhà cung cấp không được để trống !"));
         }
 
         if (bindingResult.hasErrors()) {
@@ -126,15 +146,18 @@ public class SupplierApiController {
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
         }
 
-        CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
+        CommonStatusEnum handleStatus = supplierLockRequest.getSupplier().getStatus() == CommonStatusEnum.ACTIVE
                 ? CommonStatusEnum.INACTIVE
                 : CommonStatusEnum.ACTIVE;
-        LocalDateTime handleTimeUpdate = this.timeService.getDateTimeVN(commonStatusUpdate.getTimeUpdate());
+        // LocalDateTime handleUpdateAt =
+        // this.timeService.getDateTimeVN(supplierLockRequest.getSupplier().getUpdateAt());
+        LocalDateTime handleUpdateAt = this.timeService.getDateTimeVN(LocalDateTime.now());
 
         Supplier supplierLocked = this.supplierService.getOneById(id);
         if (supplierLocked != null) {
             supplierLocked.setStatus(handleStatus);
-            supplierLocked.setTimeUpdate(handleTimeUpdate);
+            supplierLocked.setUpdateAt(handleUpdateAt);
+
             this.supplierService.lock(supplierLocked);
         }
 

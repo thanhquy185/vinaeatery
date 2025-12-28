@@ -5,9 +5,9 @@ import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
-import vn.tuhoc.vinaeatery.domain.Employee;
-import vn.tuhoc.vinaeatery.domain.Employee_;
-import vn.tuhoc.vinaeatery.domain.RoleHistory;
+import vn.tuhoc.vinaeatery.domain.entity.Employee;
+import vn.tuhoc.vinaeatery.domain.entity.Employee_;
+import vn.tuhoc.vinaeatery.domain.entity.RoleHistory;
 
 public class EmployeeSpecification {
     // Methods
@@ -15,8 +15,8 @@ public class EmployeeSpecification {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Employee_.ID), id);
     }
 
-    public static Specification<Employee> usernameEqual(String username) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Employee_.USERNAME), username);
+    public static Specification<Employee> restaurantIdEqual(String restaurantId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Employee_.RESTAURANT_ID), restaurantId);
     }
 
     public static Specification<Employee> fullnameLike(String fullname) {

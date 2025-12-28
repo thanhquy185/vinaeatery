@@ -1,5 +1,6 @@
 package vn.tuhoc.vinaeatery.controller;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,20 +19,25 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Food;
-import vn.tuhoc.vinaeatery.domain.Recipe;
-import vn.tuhoc.vinaeatery.domain.RecipeId;
 import vn.tuhoc.vinaeatery.domain.criteria.FoodCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.FoodDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FoodStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FoodUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.RecipeDTO;
+import vn.tuhoc.vinaeatery.domain.entity.Food;
+import vn.tuhoc.vinaeatery.domain.entity.Recipe;
+import vn.tuhoc.vinaeatery.domain.entity.RecipeId;
+import vn.tuhoc.vinaeatery.domain.entity.UseFood;
+import vn.tuhoc.vinaeatery.domain.entity.UseTable;
 import vn.tuhoc.vinaeatery.domain.enumm.FoodStatusEnum;
+import vn.tuhoc.vinaeatery.domain.enumm.UseFoodStatusEnum;
+import vn.tuhoc.vinaeatery.domain.enumm.UseTableStatusEnum;
+import vn.tuhoc.vinaeatery.service.CloudinaryService;
 import vn.tuhoc.vinaeatery.service.FoodService;
 import vn.tuhoc.vinaeatery.service.RecipeService;
 import vn.tuhoc.vinaeatery.service.TimeService;
-import vn.tuhoc.vinaeatery.service.UploadService;
+import vn.tuhoc.vinaeatery.service.UseFoodService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -40,9 +46,10 @@ import vn.tuhoc.vinaeatery.util.ValidationUtil;
 @RequiredArgsConstructor
 public class FoodApiController {
     // Properties
+    private final UseFoodService useFoodService;
     private final FoodService foodService;
     private final RecipeService recipeService;
-    private final UploadService uploadService;
+    private final CloudinaryService cloudinaryService;
     private final TimeService timeService;
 
     // Methods
@@ -91,7 +98,7 @@ public class FoodApiController {
             @RequestPart("food") @Valid Food food,
             @RequestPart("recipe") List<RecipeDTO> recipe,
             @RequestPart(value = "image-file", required = false) MultipartFile imageFile,
-            BindingResult bindingResult) {
+            BindingResult bindingResult) throws IOException {
         if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "foods", "create")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
@@ -106,8 +113,7 @@ public class FoodApiController {
         // Cập nhật file ảnh vào source code và lấy ra tên file để lưu vào csdl
         String image = null;
         if (imageFile != null && !imageFile.isEmpty()) {
-            image = this.uploadService.uploadImageFiles(imageFile, "foods",
-                    String.valueOf(this.foodService.getLastOne().getId() + 1));
+            image = this.cloudinaryService.uploadImage(imageFile);
         }
         food.setImage(image);
 
@@ -119,6 +125,13 @@ public class FoodApiController {
                             r.getQuantity(), r.getNote()));
                 }
             }
+
+            UseFood newUseFood = new UseFood();
+            newUseFood.setRestaurantId(foodCreate.getRestaurantId());
+            newUseFood.setTimeStart(LocalDateTime.now());
+            newUseFood.setFoodId(foodCreate.getId());
+            newUseFood.setStatus(UseFoodStatusEnum.CANORDER);
+            this.useFoodService.upsert(newUseFood);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(foodCreate);
@@ -130,7 +143,7 @@ public class FoodApiController {
             @RequestPart("food") @Valid FoodUpdateDTO food,
             @RequestPart("recipe") List<RecipeDTO> recipe,
             @RequestPart(value = "image-file", required = false) MultipartFile imageFile,
-            BindingResult bindingResult) {
+            BindingResult bindingResult) throws IOException {
         if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "foods", "update")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
@@ -145,8 +158,7 @@ public class FoodApiController {
         // Cập nhật file ảnh vào source code và lấy ra tên file để lưu vào csdl
         String image = null;
         if (imageFile != null && !imageFile.isEmpty()) {
-            image = this.uploadService.uploadImageFiles(imageFile, "foods",
-                    String.valueOf(id));
+            image = this.cloudinaryService.uploadImage(imageFile);
         }
         food.setImage(image);
 
@@ -160,7 +172,7 @@ public class FoodApiController {
             foodUpdated.setUnit(food.getUnit());
             foodUpdated.setPrice(food.getPrice());
             foodUpdated.setDescription(food.getDescription());
-            foodUpdated.setTimeUpdate(this.timeService.getDateTimeVN(food.getTimeUpdate()));
+            foodUpdated.setUpdateAt(this.timeService.getDateTimeVN(food.getUpdateAt()));
             this.foodService.upsert(foodUpdated);
 
             if (recipe != null) {
@@ -194,12 +206,12 @@ public class FoodApiController {
         FoodStatusEnum handleStatus = foodStatusUpdate.getStatus() == FoodStatusEnum.ACTIVE
                 ? FoodStatusEnum.INACTIVE
                 : FoodStatusEnum.ACTIVE;
-        LocalDateTime handleTimeUpdate = this.timeService.getDateTimeVN(foodStatusUpdate.getTimeUpdate());
+        LocalDateTime handleUpdateAt = this.timeService.getDateTimeVN(foodStatusUpdate.getUpdateAt());
 
         Food foodLocked = this.foodService.getOneById(id);
         if (foodLocked != null) {
             foodLocked.setStatus(handleStatus);
-            foodLocked.setTimeUpdate(handleTimeUpdate);
+            foodLocked.setUpdateAt(handleUpdateAt);
             this.foodService.lock(foodLocked);
         }
 

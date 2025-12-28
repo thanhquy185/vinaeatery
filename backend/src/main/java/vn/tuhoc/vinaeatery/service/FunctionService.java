@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Function;
+import vn.tuhoc.vinaeatery.domain.entity.Function;
 import vn.tuhoc.vinaeatery.repository.FunctionRepository;
 
 @Service

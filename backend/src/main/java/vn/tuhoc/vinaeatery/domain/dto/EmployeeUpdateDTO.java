@@ -2,6 +2,7 @@ package vn.tuhoc.vinaeatery.domain.dto;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Convert;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -10,6 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import vn.tuhoc.vinaeatery.domain.enumm.CommonGenderEnum;
+import vn.tuhoc.vinaeatery.repository.converter.CommonGenderConverter;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,7 +24,8 @@ public class EmployeeUpdateDTO {
     @NotNull(message = "Họ và tên không được để trống !")
     private String fullname;
     private String birthday;
-    private String gender;
+    @Convert(converter = CommonGenderConverter.class)
+    private CommonGenderEnum gender;
     @NotNull(message = "Số điện thoại không được để trống !")
     @Pattern(regexp = "^(\\d{10}|\\d{11})$", message = "Số điện thoại chỉ chứa chữ số và có 10 hoặc 11 số !")
     private String phone;
@@ -31,7 +35,7 @@ public class EmployeeUpdateDTO {
     private String address;
     private String dateBegin;
     private String dateEnd;
-    @NotNull(message = "Chức vụ không được để trống !")
+    @NotNull(message = "Mã chức vụ không được để trống !")
     private Integer roleId;
-    private LocalDateTime timeUpdate;
+    private String updateAt;
 }

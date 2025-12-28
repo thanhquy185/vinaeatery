@@ -16,14 +16,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.OrderTable;
-import vn.tuhoc.vinaeatery.domain.UseTable;
 import vn.tuhoc.vinaeatery.domain.criteria.OrderTableCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderTableDTO;
-import vn.tuhoc.vinaeatery.domain.dto.OrderTableUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.dto.OrderUpdateStatusDTO;
+import vn.tuhoc.vinaeatery.domain.entity.Ingredient;
+import vn.tuhoc.vinaeatery.domain.entity.Order;
+import vn.tuhoc.vinaeatery.domain.entity.OrderDetail;
+import vn.tuhoc.vinaeatery.domain.entity.OrderTable;
+import vn.tuhoc.vinaeatery.domain.entity.Recipe;
+import vn.tuhoc.vinaeatery.domain.entity.UseTable;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
+import vn.tuhoc.vinaeatery.domain.enumm.OrderStatusEnum;
 import vn.tuhoc.vinaeatery.service.OrderTableService;
 import vn.tuhoc.vinaeatery.service.TableService;
 import vn.tuhoc.vinaeatery.service.TimeService;
@@ -92,7 +97,6 @@ public class OrderTableApiController {
                     .body(ValidationUtil
                             .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
-
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
@@ -102,74 +106,102 @@ public class OrderTableApiController {
         return ResponseEntity.status(HttpStatus.OK).body(orderTableCreate);
     }
 
-    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleUpdateOrderTable(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+    @PutMapping(value = "/update-status/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleUpdateStatusOrder(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
             @PathVariable("id") Integer id,
-            @RequestPart("order-table") @Valid OrderTableUpdateDTO orderTable,
-            BindingResult bindingResult) {
+            @RequestPart("order-table") OrderUpdateStatusDTO orderTable) {
         if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "order-tables", "update")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
                             .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
-        }
-
         OrderTable orderTableUpdated = this.orderTableService.getOneById(id);
         if (orderTableUpdated != null) {
-            orderTableUpdated.setTimeOrder(orderTable.getTimeOrder());
-            orderTableUpdated.setTimeArrive(orderTable.getTimeArrive());
-            orderTableUpdated.setNote(orderTable.getNote());
-            orderTableUpdated.setFullname(orderTable.getFullname());
-            orderTableUpdated.setPhone(orderTable.getPhone());
-            orderTableUpdated.setEmail(orderTable.getEmail());
-            orderTableUpdated.setAddress(orderTable.getAddress());
-            orderTableUpdated.setTimeUpdate(this.timeService.getDateTimeVN(orderTable.getTimeUpdate()));
-            this.orderTableService.upsert(orderTableUpdated);
+            orderTableUpdated.setEmployeeId(orderTable.getEmployeeId());
+            orderTableUpdated.setStatus(orderTable.getStatus());
+            orderTableUpdated.setUpdateAt(orderTable.getUpdateAt());
         }
+        this.orderTableService.upsert(orderTableUpdated);
 
         return ResponseEntity.status(HttpStatus.OK).body(orderTableUpdated);
     }
 
-    @PutMapping(value = "/lock/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleLockOrderTable(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
-            @PathVariable("id") Integer id,
-            @RequestPart("order-table") @Valid CommonStatusUpdateDTO commonStatusUpdate,
-            BindingResult bindingResult) {
-        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "order-tables", "lock")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil
-                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
-        }
+    // @PutMapping(value = "/update/{id}", consumes =
+    // MediaType.MULTIPART_FORM_DATA_VALUE)
+    // public ResponseEntity<?> handleUpdateOrderTable(@RequestPart("form-security")
+    // FormSecurityDTO formSecurityDTO,
+    // @PathVariable("id") Integer id,
+    // @RequestPart("order-table") @Valid OrderTableUpdateDTO orderTable,
+    // BindingResult bindingResult) {
+    // if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "order-tables",
+    // "update")) {
+    // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    // .body(ValidationUtil
+    // .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+    // }
 
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
-        }
+    // if (bindingResult.hasErrors()) {
+    // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    // .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
+    // }
 
-        UseTable useTable = useTableService.getNewOneByOrderTableId(id);
-        if (useTable != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(
-                            String.format("Đơn đặt bàn này đang được sử dụng trong bàn ăn %s !",
-                                    tableService.getOneById(useTable.getTableId()).getName())));
-        }
+    // OrderTable orderTableUpdated = this.orderTableService.getOneById(id);
+    // if (orderTableUpdated != null) {
+    // orderTableUpdated.setTimeArrive(orderTable.getTimeArrive());
+    // orderTableUpdated.setNote(orderTable.getNote());
+    // orderTableUpdated.setFullname(orderTable.getFullname());
+    // orderTableUpdated.setPhone(orderTable.getPhone());
+    // orderTableUpdated.setEmail(orderTable.getEmail());
+    // orderTableUpdated.setAddress(orderTable.getAddress());
+    // orderTableUpdated.setUpdateAt(this.timeService.getDateTimeVN(orderTable.getUpdateAt()));
+    // this.orderTableService.upsert(orderTableUpdated);
+    // }
 
-        CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
-                ? CommonStatusEnum.INACTIVE
-                : CommonStatusEnum.ACTIVE;
-        LocalDateTime handleTimeUpdate = this.timeService.getDateTimeVN(commonStatusUpdate.getTimeUpdate());
+    // return ResponseEntity.status(HttpStatus.OK).body(orderTableUpdated);
+    // }
 
-        OrderTable orderTableLocked = this.orderTableService.getOneById(id);
-        if (orderTableLocked != null) {
-            orderTableLocked.setStatus(handleStatus);
-            orderTableLocked.setTimeUpdate(handleTimeUpdate);
-            this.orderTableService.lock(orderTableLocked);
-        }
+    // @PutMapping(value = "/lock/{id}", consumes =
+    // MediaType.MULTIPART_FORM_DATA_VALUE)
+    // public ResponseEntity<?> handleLockOrderTable(@RequestPart("form-security")
+    // FormSecurityDTO formSecurityDTO,
+    // @PathVariable("id") Integer id,
+    // @RequestPart("order-table") @Valid CommonStatusUpdateDTO commonStatusUpdate,
+    // BindingResult bindingResult) {
+    // if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "order-tables",
+    // "lock")) {
+    // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    // .body(ValidationUtil
+    // .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+    // }
 
-        return ResponseEntity.status(HttpStatus.OK).body(orderTableLocked);
-    }
+    // if (bindingResult.hasErrors()) {
+    // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    // .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
+    // }
+
+    // UseTable useTable = useTableService.getNewOneByOrderTableId(id);
+    // if (useTable != null) {
+    // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    // .body(ValidationUtil.buildRestResponseWithStr(
+    // String.format("Đơn đặt bàn này đang được sử dụng trong bàn ăn %s !",
+    // tableService.getOneById(useTable.getTableId()).getName())));
+    // }
+
+    // CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() ==
+    // CommonStatusEnum.ACTIVE
+    // ? CommonStatusEnum.INACTIVE
+    // : CommonStatusEnum.ACTIVE;
+    // LocalDateTime handleUpdateAt =
+    // this.timeService.getDateTimeVN(commonStatusUpdate.getUpdateAt());
+
+    // OrderTable orderTableLocked = this.orderTableService.getOneById(id);
+    // if (orderTableLocked != null) {
+    // orderTableLocked.setStatus(handleStatus);
+    // orderTableLocked.setUpdateAt(handleUpdateAt);
+    // this.orderTableService.lock(orderTableLocked);
+    // }
+
+    // return ResponseEntity.status(HttpStatus.OK).body(orderTableLocked);
+    // }
 }

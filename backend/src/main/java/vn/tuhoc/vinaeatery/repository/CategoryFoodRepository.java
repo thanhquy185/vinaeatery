@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import vn.tuhoc.vinaeatery.domain.CategoryFood;
+import vn.tuhoc.vinaeatery.domain.entity.CategoryFood;
 
 @Repository
 public interface CategoryFoodRepository

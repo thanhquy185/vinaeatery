@@ -11,54 +11,53 @@ import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 @Generated("org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor")
 public abstract class CustomerCard_ {
 
-	
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.CustomerCard#image
 	 **/
 	public static volatile SingularAttribute<CustomerCard, String> image;
-	
+
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.CustomerCard#timeUpdate
+	 * @see vn.tuhoc.vinaeatery.domain.CustomerCard#updateAt
 	 **/
-	public static volatile SingularAttribute<CustomerCard, LocalDateTime> timeUpdate;
-	
+	public static volatile SingularAttribute<CustomerCard, LocalDateTime> updateAt;
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.CustomerCard#name
 	 **/
 	public static volatile SingularAttribute<CustomerCard, String> name;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.CustomerCard#discount
 	 **/
 	public static volatile SingularAttribute<CustomerCard, Integer> discount;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.CustomerCard#description
 	 **/
 	public static volatile SingularAttribute<CustomerCard, String> description;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.CustomerCard#threshold
 	 **/
 	public static volatile SingularAttribute<CustomerCard, Long> threshold;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.CustomerCard#id
 	 **/
 	public static volatile SingularAttribute<CustomerCard, Integer> id;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.CustomerCard
 	 **/
 	public static volatile EntityType<CustomerCard> class_;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.CustomerCard#status
 	 **/
 	public static volatile SingularAttribute<CustomerCard, CommonStatusEnum> status;
 
 	public static final String IMAGE = "image";
-	public static final String TIME_UPDATE = "timeUpdate";
+	public static final String TIME_UPDATE = "updateAt";
 	public static final String NAME = "name";
 	public static final String DISCOUNT = "discount";
 	public static final String DESCRIPTION = "description";
@@ -67,4 +66,3 @@ public abstract class CustomerCard_ {
 	public static final String STATUS = "status";
 
 }
-

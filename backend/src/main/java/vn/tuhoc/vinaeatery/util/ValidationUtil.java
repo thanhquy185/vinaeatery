@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 
-import vn.tuhoc.vinaeatery.domain.RestResponse;
+import vn.tuhoc.vinaeatery.domain.entity.RestResponse;
 
 public class ValidationUtil {
     public record ValidationError(String field, String message) {

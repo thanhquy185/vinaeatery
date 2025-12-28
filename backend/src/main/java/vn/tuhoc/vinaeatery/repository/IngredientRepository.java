@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import vn.tuhoc.vinaeatery.domain.Ingredient;
+import vn.tuhoc.vinaeatery.domain.entity.Ingredient;
 
 @Repository
 public interface IngredientRepository

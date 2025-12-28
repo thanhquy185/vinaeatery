@@ -7,24 +7,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.TableE;
-import vn.tuhoc.vinaeatery.domain.UseTable;
+import lombok.extern.slf4j.Slf4j;
 import vn.tuhoc.vinaeatery.domain.criteria.TableCriteria;
-import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.TableDTO;
-import vn.tuhoc.vinaeatery.domain.dto.TableUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.entity.TableE;
+import vn.tuhoc.vinaeatery.domain.entity.UseTable;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.UseTableStatusEnum;
+import vn.tuhoc.vinaeatery.domain.request.TableCreateRequest;
+import vn.tuhoc.vinaeatery.domain.request.TableLockRequest;
+import vn.tuhoc.vinaeatery.domain.request.TableUpdateRequest;
 import vn.tuhoc.vinaeatery.service.TableService;
 import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.UseTableService;
@@ -36,6 +38,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RestController
 @RequestMapping("/api/tables")
 @RequiredArgsConstructor
+@Slf4j
 public class TableApiController {
     // Properties
     private final UseTableService useTableService;
@@ -82,14 +85,19 @@ public class TableApiController {
         return ResponseEntity.status(HttpStatus.OK).body(tableSelected);
     }
 
-    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleCreateTable(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
-            @RequestPart("table") @Valid TableE table,
+    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> handleCreateTable(@RequestBody @Valid TableCreateRequest tableCreateRequest,
             BindingResult bindingResult) {
-        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "tables", "create")) {
+        if (!HandleFormSecurity.isValidFormData(tableCreateRequest.getFormSecurity(), "tables", "create")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
                             .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
+        if (tableCreateRequest.getTable() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr("Dữ liệu bàn không được để trống !"));
         }
 
         if (bindingResult.hasErrors()) {
@@ -97,27 +105,32 @@ public class TableApiController {
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
         }
 
-        TableE tableCreate = this.tableService.upsert(table);
+        TableE tableCreate = this.tableService.upsert(tableCreateRequest.getTable());
         if (tableCreate != null) {
             UseTable newUseTable = new UseTable();
+            newUseTable.setRestaurantId(tableCreate.getRestaurantId());
             newUseTable.setTimeStart(LocalDateTime.now());
             newUseTable.setTableId(tableCreate.getId());
-            newUseTable.setStatus(UseTableStatusEnum.REPAIR);
-
+            newUseTable.setStatus(UseTableStatusEnum.EMPTY);
             this.useTableService.upsert(newUseTable);
         }
         return ResponseEntity.status(HttpStatus.OK).body(tableCreate);
     }
 
-    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleUpdateTable(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
-            @PathVariable("id") Integer id,
-            @RequestPart("table") @Valid TableUpdateDTO table,
+    @PutMapping(value = "/update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> handleUpdateTable(@PathVariable("id") Integer id,
+            @RequestBody @Valid TableUpdateRequest tableUpdateRequest,
             BindingResult bindingResult) {
-        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "tables", "update")) {
+        if (!HandleFormSecurity.isValidFormData(tableUpdateRequest.getFormSecurity(), "tables", "update")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
                             .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
+        if (tableUpdateRequest.getTable() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr("Dữ liệu bàn không được để trống !"));
         }
 
         if (bindingResult.hasErrors()) {
@@ -127,26 +140,34 @@ public class TableApiController {
 
         TableE tableUpdated = this.tableService.getOneById(id);
         if (tableUpdated != null) {
-            tableUpdated.setName(table.getName());
-            tableUpdated.setCategoryTableId(table.getCategoryTableId());
-            tableUpdated.setFloorId(table.getFloorId());
-            tableUpdated.setSeats(table.getSeats());
-            tableUpdated.setDescription(table.getDescription());
-            tableUpdated.setTimeUpdate(this.timeService.getDateTimeVN(table.getTimeUpdate()));
+            tableUpdated.setName(tableUpdateRequest.getTable().getName());
+            tableUpdated.setCategoryTableId(tableUpdateRequest.getTable().getCategoryTableId());
+            tableUpdated.setFloorId(tableUpdateRequest.getTable().getFloorId());
+            tableUpdated.setSeats(tableUpdateRequest.getTable().getSeats());
+            tableUpdated.setDescription(tableUpdateRequest.getTable().getDescription());
+            // tableUpdated.setUpdateAt(this.timeService.getDateTimeVN(tableUpdateRequest.getTable().getUpdateAt()));
+            tableUpdated.setUpdateAt(this.timeService.getDateTimeVN(LocalDateTime.now()));
+
             this.tableService.upsert(tableUpdated);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(tableUpdated);
     }
 
-    @PutMapping(value = "/lock/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleLockTable(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
-            @PathVariable("id") Integer id,
-            @RequestPart("table") @Valid CommonStatusUpdateDTO commonStatusUpdate, BindingResult bindingResult) {
-        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "tables", "lock")) {
+    @PatchMapping(value = "/lock/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> handleLockTable(@PathVariable("id") Integer id,
+            @RequestBody @Valid TableLockRequest tableLockRequest,
+            BindingResult bindingResult) {
+        if (!HandleFormSecurity.isValidFormData(tableLockRequest.getFormSecurity(), "tables", "lock")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
                             .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
+        if (tableLockRequest.getTable() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr("Dữ liệu bàn không được để trống !"));
         }
 
         if (bindingResult.hasErrors()) {
@@ -154,15 +175,18 @@ public class TableApiController {
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
         }
 
-        CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
+        CommonStatusEnum handleStatus = tableLockRequest.getTable().getStatus() == CommonStatusEnum.ACTIVE
                 ? CommonStatusEnum.INACTIVE
                 : CommonStatusEnum.ACTIVE;
-        LocalDateTime handleTimeUpdate = this.timeService.getDateTimeVN(commonStatusUpdate.getTimeUpdate());
+        // LocalDateTime handleUpdateAt =
+        // this.timeService.getDateTimeVN(tableLockRequest.getTable().getUpdateAt());
+        LocalDateTime handleUpdateAt = this.timeService.getDateTimeVN(LocalDateTime.now());
 
         TableE tableLocked = this.tableService.getOneById(id);
         if (tableLocked != null) {
             tableLocked.setStatus(handleStatus);
-            tableLocked.setTimeUpdate(handleTimeUpdate);
+            tableLocked.setUpdateAt(handleUpdateAt);
+
             this.tableService.lock(tableLocked);
         }
 

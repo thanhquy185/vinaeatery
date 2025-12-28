@@ -14,6 +14,7 @@ import lombok.Setter;
 public class HandlePaymentCriteria {
     // Properties
     private Optional<String> id;
+    private Optional<String> useTableId;
     private Optional<String> status;
     private Optional<String> sort;
 }

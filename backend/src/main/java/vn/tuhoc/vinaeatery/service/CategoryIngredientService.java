@@ -7,9 +7,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.CategoryIngredient_;
-import vn.tuhoc.vinaeatery.domain.CategoryIngredient;
 import vn.tuhoc.vinaeatery.domain.criteria.CategoryIngredientCriteria;
+import vn.tuhoc.vinaeatery.domain.entity.CategoryIngredient_;
+import vn.tuhoc.vinaeatery.domain.entity.CategoryIngredient;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.CategoryIngredientRepository;
 import vn.tuhoc.vinaeatery.service.specification.CategoryIngredientSpecification;
@@ -43,8 +43,11 @@ public class CategoryIngredientService {
         }
 
         //
-        if (categoryIngredientCriteria.getId() == null && categoryIngredientCriteria.getName() == null
-                && categoryIngredientCriteria.getStatus() == null && categoryIngredientCriteria.getSort() == null) {
+        if (categoryIngredientCriteria.getId() == null
+                && categoryIngredientCriteria.getRestaurantId() == null
+                && categoryIngredientCriteria.getName() == null
+                && categoryIngredientCriteria.getStatus() == null
+                && categoryIngredientCriteria.getSort() == null) {
             return this.categoryIngredientRepository.findAll(sort);
         }
         //
@@ -54,6 +57,14 @@ public class CategoryIngredientService {
                 Specification<CategoryIngredient> currentSpec = CategoryIngredientSpecification
                         .idEqual(categoryIngredientCriteria.getId().get());
                 combinedSpec = combinedSpec.or(currentSpec);
+            }
+        }
+        if (categoryIngredientCriteria.getRestaurantId() != null
+                && categoryIngredientCriteria.getRestaurantId().isPresent()) {
+            if (categoryIngredientCriteria.getRestaurantId().get().matches("\\d+")) {
+                Specification<CategoryIngredient> currentSpec = CategoryIngredientSpecification
+                        .restaurantIdEqual(categoryIngredientCriteria.getRestaurantId().get());
+                combinedSpec = combinedSpec.and(currentSpec);
             }
         }
         if (categoryIngredientCriteria.getName() != null && categoryIngredientCriteria.getName().isPresent()) {

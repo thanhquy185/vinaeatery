@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.tuhoc.vinaeatery.domain.RoleDetailForCrud;
+import vn.tuhoc.vinaeatery.domain.entity.RoleDetailForCrud;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,6 +21,6 @@ public class RoleUpdateDTO {
     @NotNull(message = "Lương cơ bản không được để trống !")
     private Long salary;
     @NotNull(message = "Thời gian cập nhật không được để trống !")
-    private LocalDateTime timeUpdate;
+    private LocalDateTime updateAt;
     private List<RoleDetailForCrud> roleDetails;
 }

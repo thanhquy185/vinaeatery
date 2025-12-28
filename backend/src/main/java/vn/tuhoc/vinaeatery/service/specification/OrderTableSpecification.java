@@ -5,8 +5,8 @@ import java.time.format.DateTimeFormatter;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import vn.tuhoc.vinaeatery.domain.OrderTable;
-import vn.tuhoc.vinaeatery.domain.OrderTable_;
+import vn.tuhoc.vinaeatery.domain.entity.OrderTable;
+import vn.tuhoc.vinaeatery.domain.entity.OrderTable_;
 
 public class OrderTableSpecification {
     // Methods
@@ -14,28 +14,9 @@ public class OrderTableSpecification {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(OrderTable_.ID), id);
     }
 
-    public static Specification<OrderTable> timeOrderAfter(String timeOrderStart) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder
-                .greaterThanOrEqualTo(root.get(OrderTable_.TIME_ORDER),
-                        LocalDateTime.parse(timeOrderStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-    }
-
-    public static Specification<OrderTable> timeOrderBefore(String timeOrderEnd) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder
-                .lessThanOrEqualTo(root.get(OrderTable_.TIME_ORDER),
-                        LocalDateTime.parse(timeOrderEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-    }
-
-    public static Specification<OrderTable> timeArriveAfter(String timeArriveStart) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder
-                .greaterThanOrEqualTo(root.get(OrderTable_.TIME_ARRIVE),
-                        LocalDateTime.parse(timeArriveStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-    }
-
-    public static Specification<OrderTable> timeArriveBefore(String timeArriveEnd) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder
-                .lessThanOrEqualTo(root.get(OrderTable_.TIME_ARRIVE),
-                        LocalDateTime.parse(timeArriveEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    public static Specification<OrderTable> restaurantIdEqual(String restaurantId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(OrderTable_.RESTAURANT_ID),
+                restaurantId);
     }
 
     public static Specification<OrderTable> employeeIdEqual(String employeeId) {
@@ -43,20 +24,49 @@ public class OrderTableSpecification {
                 employeeId);
     }
 
-    public static Specification<OrderTable> fullnameLike(String fullname) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get(OrderTable_.FULLNAME),
-                "%" + fullname + "%");
+    public static Specification<OrderTable> customerIdEqual(String customerId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(OrderTable_.CUSTOMER_ID),
+                customerId);
     }
 
-    public static Specification<OrderTable> phoneLike(String phone) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get(OrderTable_.PHONE), phone + "%");
+    public static Specification<OrderTable> createAtAfter(String createAtStart) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .greaterThanOrEqualTo(root.get(OrderTable_.CREATE_AT),
+                        LocalDateTime.parse(createAtStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
-    public static Specification<OrderTable> emailLike(String email) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get(OrderTable_.EMAIL), email + "%");
+    public static Specification<OrderTable> createAtBefore(String createAtEnd) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .lessThanOrEqualTo(root.get(OrderTable_.CREATE_AT),
+                        LocalDateTime.parse(createAtEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
-    public static Specification<OrderTable> statusEqual(Boolean status) {
+    public static Specification<OrderTable> arriveAtAfter(String arriveAtStart) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .greaterThanOrEqualTo(root.get(OrderTable_.ARRIVE_AT), arriveAtStart);
+    }
+
+    public static Specification<OrderTable> arriveAtBefore(String arriveAtEnd) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .lessThanOrEqualTo(root.get(OrderTable_.ARRIVE_AT), arriveAtEnd);
+    }
+
+    public static Specification<OrderTable> customerFullnameLike(String customerFullname) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get(OrderTable_.CUSTOMER_FULLNAME),
+                "%" + customerFullname + "%");
+    }
+
+    public static Specification<OrderTable> customerPhoneLike(String customerPhone) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get(OrderTable_.CUSTOMER_PHONE),
+                customerPhone + "%");
+    }
+
+    public static Specification<OrderTable> customerEmailLike(String customerEmail) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get(OrderTable_.CUSTOMER_EMAIL),
+                customerEmail + "%");
+    }
+
+    public static Specification<OrderTable> statusEqual(Integer status) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(OrderTable_.STATUS), status);
     }
 }

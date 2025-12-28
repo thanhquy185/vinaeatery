@@ -25,10 +25,11 @@ public class OrderSheetDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private Integer restaurantId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timeCreate;
+    private LocalDateTime createAt;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timeService;
+    private LocalDateTime serviceAt;
     private EmployeeDTO employee;
     private TableDTO table;
     private Long totalPrice;

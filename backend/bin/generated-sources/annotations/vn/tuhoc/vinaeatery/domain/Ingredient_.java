@@ -11,74 +11,73 @@ import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 @Generated("org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor")
 public abstract class Ingredient_ {
 
-	
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Ingredient#note
 	 **/
 	public static volatile SingularAttribute<Ingredient, String> note;
-	
+
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.Ingredient#timeUpdate
+	 * @see vn.tuhoc.vinaeatery.domain.Ingredient#updateAt
 	 **/
-	public static volatile SingularAttribute<Ingredient, LocalDateTime> timeUpdate;
-	
+	public static volatile SingularAttribute<Ingredient, LocalDateTime> updateAt;
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Ingredient#dateCreate
 	 **/
 	public static volatile SingularAttribute<Ingredient, String> dateCreate;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Ingredient#inventory
 	 **/
 	public static volatile SingularAttribute<Ingredient, Long> inventory;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Ingredient#inputPrice
 	 **/
 	public static volatile SingularAttribute<Ingredient, Long> inputPrice;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Ingredient#capacity
 	 **/
 	public static volatile SingularAttribute<Ingredient, Long> capacity;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Ingredient#unit
 	 **/
 	public static volatile SingularAttribute<Ingredient, String> unit;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Ingredient#name
 	 **/
 	public static volatile SingularAttribute<Ingredient, String> name;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Ingredient#dateRemove
 	 **/
 	public static volatile SingularAttribute<Ingredient, String> dateRemove;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Ingredient#id
 	 **/
 	public static volatile SingularAttribute<Ingredient, Integer> id;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Ingredient#categoryIngredientId
 	 **/
 	public static volatile SingularAttribute<Ingredient, Integer> categoryIngredientId;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Ingredient
 	 **/
 	public static volatile EntityType<Ingredient> class_;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Ingredient#status
 	 **/
 	public static volatile SingularAttribute<Ingredient, CommonStatusEnum> status;
 
 	public static final String NOTE = "note";
-	public static final String TIME_UPDATE = "timeUpdate";
+	public static final String TIME_UPDATE = "updateAt";
 	public static final String DATE_CREATE = "dateCreate";
 	public static final String INVENTORY = "inventory";
 	public static final String INPUT_PRICE = "inputPrice";
@@ -91,4 +90,3 @@ public abstract class Ingredient_ {
 	public static final String STATUS = "status";
 
 }
-

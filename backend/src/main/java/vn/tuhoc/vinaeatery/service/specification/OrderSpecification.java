@@ -5,8 +5,8 @@ import java.time.format.DateTimeFormatter;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import vn.tuhoc.vinaeatery.domain.Order;
-import vn.tuhoc.vinaeatery.domain.Order_;
+import vn.tuhoc.vinaeatery.domain.entity.Order;
+import vn.tuhoc.vinaeatery.domain.entity.Order_;
 
 public class OrderSpecification {
     // Methods
@@ -14,17 +14,9 @@ public class OrderSpecification {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Order_.ID), id);
     }
 
-    public static Specification<Order> timeCreateAfter(String timeCreateStart) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder
-                .greaterThanOrEqualTo(root.get(Order_.TIME_CREATE),
-                        LocalDateTime.parse(timeCreateStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-    }
-
-    public static Specification<Order> timeCreateBefore(String timeCreateEnd) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder
-                .lessThanOrEqualTo(root.get(Order_.TIME_CREATE),
-                        LocalDateTime.parse(timeCreateEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-    }
+    public static Specification<Order> restaurantIdEqual(String restaurantId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Order_.RESTAURANT_ID), restaurantId);
+    }   
 
     public static Specification<Order> employeeIdEqual(String employeeId) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Order_.EMPLOYEE_ID),
@@ -34,6 +26,18 @@ public class OrderSpecification {
     public static Specification<Order> customerIdEqual(String customerId) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Order_.CUSTOMER_ID),
                 customerId);
+    }
+
+    public static Specification<Order> createAtAfter(String createAtStart) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .greaterThanOrEqualTo(root.get(Order_.CREATE_AT),
+                        LocalDateTime.parse(createAtStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    }
+
+    public static Specification<Order> createAtBefore(String createAtEnd) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .lessThanOrEqualTo(root.get(Order_.CREATE_AT),
+                        LocalDateTime.parse(createAtEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
     public static Specification<Order> payStatusEqual(Boolean payStatus) {

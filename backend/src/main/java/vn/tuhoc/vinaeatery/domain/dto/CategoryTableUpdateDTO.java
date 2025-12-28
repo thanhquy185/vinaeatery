@@ -2,7 +2,6 @@ package vn.tuhoc.vinaeatery.domain.dto;
 
 import java.time.LocalDateTime;
 
-
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,5 +21,5 @@ public class CategoryTableUpdateDTO {
     @Column(columnDefinition = "MEDIUMTEXT")
     private String description;
     @NotNull(message = "Thời gian cập nhật không được để trống !")
-    private LocalDateTime timeUpdate;
+    private LocalDateTime updateAt;
 }

@@ -8,9 +8,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.RoleDetail;
 import vn.tuhoc.vinaeatery.domain.criteria.RoleDetailCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.RoleDetailDTO;
+import vn.tuhoc.vinaeatery.domain.entity.RoleDetail;
 import vn.tuhoc.vinaeatery.repository.RoleDetailRepository;
 import vn.tuhoc.vinaeatery.service.specification.RoleDetailSpecification;
 

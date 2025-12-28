@@ -24,5 +24,5 @@ public class IngredientUpdateDTO {
     private Long inputPrice;
     private String note;
     @NotNull(message = "Thời gian cập nhật không được để trống !")
-    private LocalDateTime timeUpdate;
+    private LocalDateTime updateAt;
 }

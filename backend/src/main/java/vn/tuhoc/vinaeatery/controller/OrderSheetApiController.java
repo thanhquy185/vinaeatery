@@ -16,17 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-// import vn.tuhoc.vinaeatery.domain.Food;
-import vn.tuhoc.vinaeatery.domain.Ingredient;
-import vn.tuhoc.vinaeatery.domain.OrderSheet;
-import vn.tuhoc.vinaeatery.domain.OrderSheetDetail;
-import vn.tuhoc.vinaeatery.domain.OrderSheetDetailForCrud;
-import vn.tuhoc.vinaeatery.domain.OrderSheetDetailId;
-import vn.tuhoc.vinaeatery.domain.Recipe;
 import vn.tuhoc.vinaeatery.domain.criteria.OrderSheetCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderSheetDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderSheetUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.entity.Ingredient;
+import vn.tuhoc.vinaeatery.domain.entity.OrderSheet;
+import vn.tuhoc.vinaeatery.domain.entity.OrderSheetDetail;
+import vn.tuhoc.vinaeatery.domain.entity.OrderSheetDetailForCrud;
+import vn.tuhoc.vinaeatery.domain.entity.OrderSheetDetailId;
+import vn.tuhoc.vinaeatery.domain.entity.Recipe;
 import vn.tuhoc.vinaeatery.domain.enumm.OrderSheetStatusEnum;
 // import vn.tuhoc.vinaeatery.service.FoodService;
 // import vn.tuhoc.vinaeatery.service.EmployeeService;
@@ -109,7 +108,7 @@ public class OrderSheetApiController {
         }
 
         // Cập nhật theo giờ Việt Nam
-        orderSheet.setTimeCreate(this.timeService.getDateTimeVN(orderSheet.getTimeCreate()));
+        orderSheet.setCreateAt(this.timeService.getDateTimeVN(orderSheet.getCreateAt()));
 
         // // Mặc định là Chưa thanh toán
         // orderSheet.setPayStatus(PayStatusEnum.NOTPAY);
@@ -143,7 +142,7 @@ public class OrderSheetApiController {
         OrderSheet orderSheetUpdated = this.orderSheetService.getOneById(id);
         if (orderSheet.getStatus() != null) {
             if (orderSheet.getStatus() == OrderSheetStatusEnum.SERVICED) {
-                orderSheetUpdated.setTimeService(this.timeService.getDateTimeVN(orderSheet.getTimeService()));
+                orderSheetUpdated.setServiceAt(this.timeService.getDateTimeVN(orderSheet.getServiceAt()));
             }
             if (orderSheet.getStatus() == OrderSheetStatusEnum.CONFIRM
                     || orderSheet.getStatus() == OrderSheetStatusEnum.CANCELLED) {

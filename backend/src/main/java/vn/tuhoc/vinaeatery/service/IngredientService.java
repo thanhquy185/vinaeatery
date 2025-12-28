@@ -8,10 +8,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Ingredient_;
-import vn.tuhoc.vinaeatery.domain.Ingredient;
 import vn.tuhoc.vinaeatery.domain.criteria.IngredientCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.IngredientDTO;
+import vn.tuhoc.vinaeatery.domain.entity.Ingredient;
+import vn.tuhoc.vinaeatery.domain.entity.Ingredient_;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.CategoryIngredientRepository;
 import vn.tuhoc.vinaeatery.repository.IngredientRepository;
@@ -34,6 +34,7 @@ public class IngredientService {
         Ingredient ingredient = getOneById(id);
         if (ingredient != null) {
             ingredientDTO.setId(ingredient.getId());
+            ingredientDTO.setRestaurantId(ingredient.getRestaurantId());
             ingredientDTO.setName(ingredient.getName());
             if (ingredient.getCategoryIngredientId() != null) {
                 ingredientDTO.setCategoryIngredient(
@@ -47,7 +48,7 @@ public class IngredientService {
             ingredientDTO.setInventory(ingredient.getInventory());
             ingredientDTO.setNote(ingredient.getNote());
             ingredientDTO.setStatus(ingredient.getStatus());
-            ingredientDTO.setTimeUpdate(ingredient.getTimeUpdate());
+            ingredientDTO.setUpdateAt(ingredient.getUpdateAt());
         }
 
         return ingredientDTO;
@@ -71,7 +72,9 @@ public class IngredientService {
         }
 
         //
-        if (ingredientCriteria.getId() == null && ingredientCriteria.getName() == null
+        if (ingredientCriteria.getId() == null
+                && ingredientCriteria.getRestaurantId() == null
+                && ingredientCriteria.getName() == null
                 && ingredientCriteria.getCategoryIngredientId() == null
                 && ingredientCriteria.getStatus() == null
                 && ingredientCriteria.getSort() == null) {
@@ -84,6 +87,13 @@ public class IngredientService {
                 Specification<Ingredient> currentSpec = IngredientSpecification
                         .idEqual(ingredientCriteria.getId().get());
                 combinedSpec = combinedSpec.or(currentSpec);
+            }
+        }
+        if (ingredientCriteria.getRestaurantId() != null && ingredientCriteria.getRestaurantId().isPresent()) {
+            if (ingredientCriteria.getRestaurantId().get().matches("\\d+")) {
+                Specification<Ingredient> currentSpec = IngredientSpecification
+                        .restaurantIdEqual(ingredientCriteria.getRestaurantId().get());
+                combinedSpec = combinedSpec.and(currentSpec);
             }
         }
         if (ingredientCriteria.getName() != null && ingredientCriteria.getName().isPresent()) {
@@ -136,7 +146,7 @@ public class IngredientService {
             ingredientDTO.setInventory(ingredient.getInventory());
             ingredientDTO.setNote(ingredient.getNote());
             ingredientDTO.setStatus(ingredient.getStatus());
-            ingredientDTO.setTimeUpdate(ingredient.getTimeUpdate());
+            ingredientDTO.setUpdateAt(ingredient.getUpdateAt());
 
             listFormat.add(ingredientDTO);
         }

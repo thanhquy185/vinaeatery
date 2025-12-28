@@ -8,24 +8,24 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Employee;
-import vn.tuhoc.vinaeatery.domain.Employee_;
-import vn.tuhoc.vinaeatery.domain.RoleHistory;
 import vn.tuhoc.vinaeatery.domain.criteria.EmployeeCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.EmployeeDTO;
-import vn.tuhoc.vinaeatery.domain.dto.RestLoginDTO;
 import vn.tuhoc.vinaeatery.domain.dto.RoleHistoryDTO;
+import vn.tuhoc.vinaeatery.domain.entity.Employee;
+import vn.tuhoc.vinaeatery.domain.entity.Employee_;
+import vn.tuhoc.vinaeatery.domain.entity.RoleHistory;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.EmployeeRepository;
 import vn.tuhoc.vinaeatery.repository.RoleHistoryRepository;
 import vn.tuhoc.vinaeatery.repository.RoleRepository;
 import vn.tuhoc.vinaeatery.service.specification.EmployeeSpecification;
-import vn.tuhoc.vinaeatery.util.SecurityUtil;
 
 @Service
 @RequiredArgsConstructor
 public class EmployeeService {
     // Properties
+    private final RestaurantService restaurantService;
+    private final UserService userService;
     private final RoleService roleService;
     private final RoleRepository roleRepository;
     private final RoleHistoryRepository roleHistoryRepository;
@@ -34,6 +34,10 @@ public class EmployeeService {
     // Methods
     public Employee getOneById(Integer id) {
         return this.employeeRepository.findOneById(id);
+    }
+
+    public EmployeeDTO getOneByUserId(Integer userid) {
+        return getOneFormatById(this.employeeRepository.findOneByUserId(userid).getId());
     }
 
     public EmployeeDTO getOneFormatById(Integer id) {
@@ -46,12 +50,15 @@ public class EmployeeService {
                 roleHistories.add(new RoleHistoryDTO(
                         employee.getId(),
                         roleHistory.getId().getRoleId(),
-                        roleRepository.findOneById(roleHistory.getId().getRoleId()).getName(),
+                        this.roleRepository.findOneById(roleHistory.getId().getRoleId()).getName(),
                         roleHistory.getId().getDateBegin(),
                         roleHistory.getDateEnd()));
             }
 
             employeeDTO.setId(employee.getId());
+            // employeeDTO.setRestaurant(this.restaurantService.getOneFormatById(employee.getRestaurantId()));
+            employeeDTO.setRestaurantId(employee.getRestaurantId());
+            employeeDTO.setUser(this.userService.getOneById(employee.getUserId()));
             employeeDTO.setImage(employee.getImage());
             employeeDTO.setFullname(employee.getFullname());
             employeeDTO.setBirthday(employee.getBirthday());
@@ -61,63 +68,19 @@ public class EmployeeService {
             employeeDTO.setAddress(employee.getAddress());
             employeeDTO.setDateBegin(employee.getDateBegin());
             employeeDTO.setDateEnd(employee.getDateEnd());
-            if (roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId() != null) {
+            if (this.roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId() != null) {
                 // employeeDTO.setCurrentRole(roleRepository
-                // .findOneById(roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId()));
+                // .findOneById(this.roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId()));
                 employeeDTO.setCurrentRole(roleService.getOneFormatById(
-                        roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId()));
+                        this.roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId()));
             }
             employeeDTO.setRoleHistories(roleHistories);
-            employeeDTO.setUsername(employee.getUsername());
+            // employeeDTO.setUsername(employee.getUsername());
             employeeDTO.setStatus(employee.getStatus());
-            employeeDTO.setTimeUpdate(employee.getTimeUpdate());
+            employeeDTO.setUpdateAt(employee.getUpdateAt());
         }
 
         return employeeDTO;
-    }
-
-    public Employee getOneByUsername(String username) {
-        return this.employeeRepository.findOneByUsername(username);
-    }
-
-    public Employee getOneByUsernameAndPassword(String username, String password) {
-        return this.employeeRepository.findOneByUsernameAndPassword(username, password);
-    }
-
-    public Employee getOneByUsernameAndRefreshToken(String username, String refreshToken) {
-        return this.employeeRepository.findOneByUsernameAndRefreshToken(username, refreshToken);
-    }
-
-    public Employee getLastOne() {
-        return this.employeeRepository.findLastOne();
-    }
-
-    public RestLoginDTO getEmployeeLogin() {
-        String username = SecurityUtil.getCurrentEmployeeLogin().isPresent()
-                ? SecurityUtil.getCurrentEmployeeLogin().get()
-                : "";
-
-        RestLoginDTO restLogin = new RestLoginDTO();
-        Employee currentEmployee = getOneByUsername(username);
-        if (currentEmployee != null) {
-            RestLoginDTO.EmployeeLogin employeeLogin = new RestLoginDTO().getEmployeeLogin();
-            employeeLogin.setId(currentEmployee.getId());
-            employeeLogin.setImage(currentEmployee.getImage());
-            employeeLogin.setFullname(currentEmployee.getFullname());
-            employeeLogin.setBirthday(currentEmployee.getBirthday());
-            employeeLogin.setGender(currentEmployee.getGender());
-            employeeLogin.setPhone(currentEmployee.getPhone());
-            employeeLogin.setEmail(currentEmployee.getEmail());
-            employeeLogin.setAddress(currentEmployee.getAddress());
-            employeeLogin.setUsername(currentEmployee.getUsername());
-            employeeLogin.setRole(roleRepository
-                    .findOneById(
-                            roleHistoryRepository.findNewByEmployeeId(currentEmployee.getId()).getId().getRoleId()));
-
-            restLogin.setEmployeeLogin(employeeLogin);
-        }
-
-        return restLogin;
     }
 
     public List<Employee> getAll() {
@@ -138,10 +101,13 @@ public class EmployeeService {
         }
 
         //
-        if (employeeCriteria.getId() == null && employeeCriteria.getFullname() == null
-                && employeeCriteria.getUsername() == null
-                && employeeCriteria.getPhone() == null && employeeCriteria.getEmail() == null
-                && employeeCriteria.getRoleId() == null && employeeCriteria.getStatus() == null
+        if (employeeCriteria.getId() == null
+                && employeeCriteria.getRestaurantId() == null
+                && employeeCriteria.getFullname() == null
+                && employeeCriteria.getPhone() == null
+                && employeeCriteria.getEmail() == null
+                && employeeCriteria.getRoleId() == null
+                && employeeCriteria.getStatus() == null
                 && employeeCriteria.getSort() == null) {
             return this.employeeRepository.findAll(sort);
         }
@@ -154,10 +120,12 @@ public class EmployeeService {
                 combinedSpec = combinedSpec.and(currentSpec);
             }
         }
-        if (employeeCriteria.getUsername() != null && employeeCriteria.getUsername().isPresent()) {
-            Specification<Employee> currentSpec = EmployeeSpecification
-                    .usernameEqual(employeeCriteria.getUsername().get());
-            combinedSpec = combinedSpec.or(currentSpec);
+        if (employeeCriteria.getRestaurantId() != null && employeeCriteria.getRestaurantId().isPresent()) {
+            if (employeeCriteria.getRestaurantId().get().matches("\\d+")) {
+                Specification<Employee> currentSpec = EmployeeSpecification
+                        .restaurantIdEqual(employeeCriteria.getRestaurantId().get());
+                combinedSpec = combinedSpec.and(currentSpec);
+            }
         }
         if (employeeCriteria.getFullname() != null && employeeCriteria.getFullname().isPresent()) {
             Specification<Employee> currentSpec = EmployeeSpecification
@@ -205,38 +173,7 @@ public class EmployeeService {
     public List<EmployeeDTO> getAllFormat(EmployeeCriteria employeeCriteria) {
         List<EmployeeDTO> listFormat = new ArrayList<>();
         for (Employee employee : getAll(employeeCriteria)) {
-            List<RoleHistoryDTO> roleHistories = new ArrayList<>();
-            for (RoleHistory roleHistory : roleHistoryRepository.findAllByEmployeeId(employee.getId())) {
-                roleHistories.add(new RoleHistoryDTO(
-                        employee.getId(),
-                        roleHistory.getId().getRoleId(),
-                        roleRepository.findOneById(roleHistory.getId().getRoleId()).getName(),
-                        roleHistory.getId().getDateBegin(),
-                        roleHistory.getDateEnd()));
-            }
-
-            EmployeeDTO employeeDTO = new EmployeeDTO();
-            employeeDTO.setId(employee.getId());
-            employeeDTO.setImage(employee.getImage());
-            employeeDTO.setFullname(employee.getFullname());
-            employeeDTO.setBirthday(employee.getBirthday());
-            employeeDTO.setGender(employee.getGender());
-            employeeDTO.setPhone(employee.getPhone());
-            employeeDTO.setEmail(employee.getEmail());
-            employeeDTO.setAddress(employee.getAddress());
-            employeeDTO.setDateBegin(employee.getDateBegin());
-            employeeDTO.setDateEnd(employee.getDateEnd());
-            if (roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId() != null) {
-                // employeeDTO.setCurrentRole(roleRepository
-                // .findOneById(roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId()));
-                employeeDTO.setCurrentRole(roleService.getOneFormatById(
-                        roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId()));
-            }
-            employeeDTO.setRoleHistories(roleHistories);
-            employeeDTO.setUsername(employee.getUsername());
-            employeeDTO.setStatus(employee.getStatus());
-            employeeDTO.setTimeUpdate(employee.getTimeUpdate());
-
+            EmployeeDTO employeeDTO = getOneFormatById(employee.getId());
             listFormat.add(employeeDTO);
         }
 
@@ -253,13 +190,5 @@ public class EmployeeService {
 
     public void lock(Employee employeeLocked) {
         this.employeeRepository.save(employeeLocked);
-    }
-
-    public void changeRefreshToken(String username, String refreshToken) {
-        Employee employeeChange = getOneByUsername(username);
-        if (employeeChange != null) {
-            employeeChange.setRefreshToken(refreshToken);
-            upsert(employeeChange);
-        }
     }
 }

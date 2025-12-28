@@ -42,7 +42,7 @@ public class ZalopayService {
         return fmt.format(cal.getTime());
     }
     
-    public JSONObject handleCreateOrder() throws Exception {
+    public JSONObject handleCreateOrder(Integer handlePaymentId) throws Exception {
         String appTransID = getCurrentDateYYMMDD() + "_" + new Random().nextInt(1000000);
         Long appTime = System.currentTimeMillis();
         String appUser = "user123";
@@ -56,7 +56,7 @@ public class ZalopayService {
         // item.put("itemquantity", 1);
         // items.put(item);
         String description = "Thanh toán hoá đơn " + appTransID;
-        Long amount = handlePaymentService.getOneFormat().getPayTotalPrice();
+        Long amount = handlePaymentService.getOneFormatById(handlePaymentId).getPayTotalPrice();
 
         // Tạo mac
         String macData = String.join("|",

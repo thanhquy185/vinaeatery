@@ -10,9 +10,9 @@ import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
-import vn.tuhoc.vinaeatery.domain.OrderSheet;
-import vn.tuhoc.vinaeatery.domain.OrderSheet_;
-import vn.tuhoc.vinaeatery.domain.TableE;
+import vn.tuhoc.vinaeatery.domain.entity.OrderSheet;
+import vn.tuhoc.vinaeatery.domain.entity.OrderSheet_;
+import vn.tuhoc.vinaeatery.domain.entity.TableE;
 
 public class OrderSheetSpecification {
     // Methods
@@ -20,28 +20,32 @@ public class OrderSheetSpecification {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(OrderSheet_.ID), id);
     }
 
-    public static Specification<OrderSheet> timeCreateAfter(String timeCreateStart) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder
-                .greaterThanOrEqualTo(root.get(OrderSheet_.TIME_CREATE),
-                        LocalDateTime.parse(timeCreateStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    public static Specification<OrderSheet> restaurantIdEqual(String restaurantId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(OrderSheet_.RESTAURANT_ID), restaurantId);
     }
 
-    public static Specification<OrderSheet> timeCreateBefore(String timeCreateEnd) {
+    public static Specification<OrderSheet> createAtAfter(String createAtStart) {
         return (root, query, criteriaBuilder) -> criteriaBuilder
-                .lessThanOrEqualTo(root.get(OrderSheet_.TIME_CREATE),
-                        LocalDateTime.parse(timeCreateEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                .greaterThanOrEqualTo(root.get(OrderSheet_.CREATE_AT),
+                        LocalDateTime.parse(createAtStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
-    public static Specification<OrderSheet> timeServiceAfter(String timeServiceStart) {
+    public static Specification<OrderSheet> createAtBefore(String createAtEnd) {
         return (root, query, criteriaBuilder) -> criteriaBuilder
-                .greaterThanOrEqualTo(root.get(OrderSheet_.TIME_SERVICE),
-                        LocalDateTime.parse(timeServiceStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                .lessThanOrEqualTo(root.get(OrderSheet_.CREATE_AT),
+                        LocalDateTime.parse(createAtEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
-    public static Specification<OrderSheet> timeServiceBefore(String timeServiceEnd) {
+    public static Specification<OrderSheet> serviceAtAfter(String serviceAtStart) {
         return (root, query, criteriaBuilder) -> criteriaBuilder
-                .lessThanOrEqualTo(root.get(OrderSheet_.TIME_SERVICE),
-                        LocalDateTime.parse(timeServiceEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                .greaterThanOrEqualTo(root.get(OrderSheet_.SERVICE_AT),
+                        LocalDateTime.parse(serviceAtStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    }
+
+    public static Specification<OrderSheet> serviceAtBefore(String serviceAtEnd) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .lessThanOrEqualTo(root.get(OrderSheet_.SERVICE_AT),
+                        LocalDateTime.parse(serviceAtEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
     public static Specification<OrderSheet> currentDate() {
@@ -50,7 +54,7 @@ public class OrderSheetSpecification {
             LocalDateTime endOfDay = startOfDay.plusDays(1); // ngày mai 00:00:00 (exclusive)
 
             return criteriaBuilder.between(
-                    root.get(OrderSheet_.TIME_CREATE),
+                    root.get(OrderSheet_.CREATE_AT),
                     startOfDay,
                     endOfDay);
         };

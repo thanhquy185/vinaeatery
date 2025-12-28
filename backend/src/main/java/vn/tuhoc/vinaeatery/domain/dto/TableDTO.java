@@ -9,8 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.tuhoc.vinaeatery.domain.CategoryTable;
-import vn.tuhoc.vinaeatery.domain.Floor;
+import vn.tuhoc.vinaeatery.domain.entity.CategoryTable;
+import vn.tuhoc.vinaeatery.domain.entity.Floor;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.converter.CommonStatusConverter;
 
@@ -21,6 +21,7 @@ import vn.tuhoc.vinaeatery.repository.converter.CommonStatusConverter;
 public class TableDTO {
     // Properties
     private Integer id;
+    private Integer restaurantId;
     private String name;
     private CategoryTable categoryTable;
     private Floor floor;
@@ -29,5 +30,5 @@ public class TableDTO {
     @Convert(converter = CommonStatusConverter.class)
     private CommonStatusEnum status;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timeUpdate;
+    private LocalDateTime updateAt;
 }

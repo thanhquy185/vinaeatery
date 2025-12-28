@@ -1,5 +1,6 @@
 package vn.tuhoc.vinaeatery.controller;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,16 +19,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.CategoryFood;
 import vn.tuhoc.vinaeatery.domain.criteria.CategoryFoodCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
+import vn.tuhoc.vinaeatery.domain.entity.CategoryFood;
+import vn.tuhoc.vinaeatery.domain.entity.Food;
 import vn.tuhoc.vinaeatery.domain.dto.CategoryFoodUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.service.CategoryFoodService;
+import vn.tuhoc.vinaeatery.service.CloudinaryService;
 import vn.tuhoc.vinaeatery.service.FoodService;
 import vn.tuhoc.vinaeatery.service.TimeService;
-import vn.tuhoc.vinaeatery.service.UploadService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -38,7 +40,7 @@ public class CategoryFoodApiController {
     // Properties
     private final CategoryFoodService categoryFoodService;
     private final FoodService foodService;
-    private final UploadService uploadService;
+    private final CloudinaryService cloudinaryService;
     private final TimeService timeService;
 
     // Methods
@@ -72,7 +74,8 @@ public class CategoryFoodApiController {
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> handleCreateCategoryFood(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
             @RequestPart("category-food") @Valid CategoryFood categoryFood,
-            @RequestPart(value = "image-file", required = false) MultipartFile imageFile, BindingResult bindingResult) {
+            @RequestPart(value = "image-file", required = false) MultipartFile imageFile, BindingResult bindingResult)
+            throws IOException {
         if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "category-foods", "create")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
@@ -87,8 +90,7 @@ public class CategoryFoodApiController {
         // Cập nhật file ảnh vào source code và lấy ra tên file để lưu vào csdl
         String image = null;
         if (imageFile != null && !imageFile.isEmpty()) {
-            image = this.uploadService.uploadImageFiles(imageFile, "category-foods",
-                    String.valueOf(this.categoryFoodService.getLastOne().getId() + 1));
+            image = this.cloudinaryService.uploadImage(imageFile);
         }
         categoryFood.setImage(image);
 
@@ -100,7 +102,8 @@ public class CategoryFoodApiController {
     public ResponseEntity<?> handleUpdateCategoryFood(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
             @PathVariable("id") Integer id,
             @RequestPart("category-food") @Valid CategoryFoodUpdateDTO categoryFood,
-            @RequestPart(value = "image-file", required = false) MultipartFile imageFile, BindingResult bindingResult) {
+            @RequestPart(value = "image-file", required = false) MultipartFile imageFile, BindingResult bindingResult)
+            throws IOException {
         if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "category-foods", "update")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
@@ -115,7 +118,7 @@ public class CategoryFoodApiController {
         // Cập nhật file ảnh vào source code và lấy ra tên file để lưu vào csdl
         String image = null;
         if (imageFile != null && !imageFile.isEmpty()) {
-            image = this.uploadService.uploadImageFiles(imageFile, "category-foods", String.valueOf(id));
+            image = this.cloudinaryService.uploadImage(imageFile);
         }
         categoryFood.setImage(image);
 
@@ -126,7 +129,7 @@ public class CategoryFoodApiController {
             }
             categoryFoodUpdated.setName(categoryFood.getName());
             categoryFoodUpdated.setDescription(categoryFood.getDescription());
-            categoryFoodUpdated.setTimeUpdate(this.timeService.getDateTimeVN(categoryFood.getTimeUpdate()));
+            categoryFoodUpdated.setUpdateAt(this.timeService.getDateTimeVN(categoryFood.getUpdateAt()));
             this.categoryFoodService.upsert(categoryFoodUpdated);
         }
 
@@ -136,7 +139,8 @@ public class CategoryFoodApiController {
     @PutMapping(value = "/lock/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> handleLockCategoryFood(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
             @PathVariable("id") Integer id,
-            @RequestPart("category-food") @Valid CommonStatusUpdateDTO commonStatusUpdate, BindingResult bindingResult) {
+            @RequestPart("category-food") @Valid CommonStatusUpdateDTO commonStatusUpdate,
+            BindingResult bindingResult) {
         if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "category-foods", "lock")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
@@ -148,8 +152,8 @@ public class CategoryFoodApiController {
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
         }
 
-        if (foodService.getAllByCategoryFoodId(id) != null
-                && !foodService.getAllByCategoryFoodId(id).isEmpty()) {
+        List<Food> foodListIsUsing = foodService.getAllByCategoryFoodId(id);
+        if (foodListIsUsing != null && !foodListIsUsing.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
                             .buildRestResponseWithStr("Loại món ăn này đang được ít nhất 1 món ăn sử dụng !"));
@@ -158,12 +162,13 @@ public class CategoryFoodApiController {
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
                 ? CommonStatusEnum.INACTIVE
                 : CommonStatusEnum.ACTIVE;
-        LocalDateTime handleTimeUpdate = this.timeService.getDateTimeVN(commonStatusUpdate.getTimeUpdate());
+        // LocalDateTime handleUpdateAt =
+        // this.timeService.getDateTimeVN(commonStatusUpdate.getUpdateAt());
 
         CategoryFood categoryFoodLocked = this.categoryFoodService.getOneById(id);
         if (categoryFoodLocked != null) {
             categoryFoodLocked.setStatus(handleStatus);
-            categoryFoodLocked.setTimeUpdate(handleTimeUpdate);
+            categoryFoodLocked.setUpdateAt(categoryFoodLocked.getUpdateAt());
             this.categoryFoodService.lock(categoryFoodLocked);
         }
 

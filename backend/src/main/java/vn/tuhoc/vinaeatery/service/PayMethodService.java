@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.PayMethod;
+import vn.tuhoc.vinaeatery.domain.entity.PayMethod;
 import vn.tuhoc.vinaeatery.repository.PayMethodRepository;
 
 @Service

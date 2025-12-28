@@ -7,9 +7,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.CategoryTable_;
-import vn.tuhoc.vinaeatery.domain.CategoryTable;
 import vn.tuhoc.vinaeatery.domain.criteria.CategoryTableCriteria;
+import vn.tuhoc.vinaeatery.domain.entity.CategoryTable_;
+import vn.tuhoc.vinaeatery.domain.entity.CategoryTable;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.CategoryTableRepository;
 import vn.tuhoc.vinaeatery.service.specification.CategoryTableSpecification;
@@ -43,7 +43,9 @@ public class CategoryTableService {
         }
 
         //
-        if (categoryTableCriteria.getId() == null && categoryTableCriteria.getName() == null
+        if (categoryTableCriteria.getId() == null
+                && categoryTableCriteria.getRestaurantId() == null
+                && categoryTableCriteria.getName() == null
                 && categoryTableCriteria.getSurchargeType() == null
                 && categoryTableCriteria.getStatus() == null
                 && categoryTableCriteria.getSort() == null) {
@@ -58,12 +60,19 @@ public class CategoryTableService {
                 combinedSpec = combinedSpec.or(currentSpec);
             }
         }
+        if (categoryTableCriteria.getRestaurantId() != null && categoryTableCriteria.getRestaurantId().isPresent()) {
+            if (categoryTableCriteria.getRestaurantId().get().matches("\\d+")) {
+                Specification<CategoryTable> currentSpec = CategoryTableSpecification
+                        .restaurantIdEqual(categoryTableCriteria.getRestaurantId().get());
+                combinedSpec = combinedSpec.and(currentSpec);
+            }
+        }
         if (categoryTableCriteria.getName() != null && categoryTableCriteria.getName().isPresent()) {
             Specification<CategoryTable> currentSpec = CategoryTableSpecification
                     .nameLike(categoryTableCriteria.getName().get());
             combinedSpec = combinedSpec.or(currentSpec);
         }
-         if (categoryTableCriteria.getSurchargeType() != null && categoryTableCriteria.getSurchargeType().isPresent()) {
+        if (categoryTableCriteria.getSurchargeType() != null && categoryTableCriteria.getSurchargeType().isPresent()) {
             Specification<CategoryTable> currentSpec = CategoryTableSpecification
                     .surchargeTypeEqual(categoryTableCriteria.getSurchargeType().get());
             combinedSpec = combinedSpec.or(currentSpec);

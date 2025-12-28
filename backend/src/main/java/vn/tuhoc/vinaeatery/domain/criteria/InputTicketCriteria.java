@@ -14,8 +14,9 @@ import lombok.Setter;
 public class InputTicketCriteria {
     // Properties
     private Optional<String> id;
-    private Optional<String> timeCreateStart;
-    private Optional<String> timeCreateEnd;
+    private Optional<String> restaurantId;
+    private Optional<String> createAtStart;
+    private Optional<String> createAtEnd;
     private Optional<String> employeeId;
     private Optional<String> supplierId;
     private Optional<String> statusMerge;

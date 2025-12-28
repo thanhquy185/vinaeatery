@@ -8,13 +8,13 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Food_;
-import vn.tuhoc.vinaeatery.domain.Recipe;
-import vn.tuhoc.vinaeatery.domain.Food;
-import vn.tuhoc.vinaeatery.domain.Ingredient;
 import vn.tuhoc.vinaeatery.domain.criteria.FoodCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.FoodDTO;
 import vn.tuhoc.vinaeatery.domain.dto.RecipeDTO;
+import vn.tuhoc.vinaeatery.domain.entity.Food;
+import vn.tuhoc.vinaeatery.domain.entity.Food_;
+import vn.tuhoc.vinaeatery.domain.entity.Ingredient;
+import vn.tuhoc.vinaeatery.domain.entity.Recipe;
 import vn.tuhoc.vinaeatery.domain.enumm.FoodStatusEnum;
 import vn.tuhoc.vinaeatery.repository.CategoryFoodRepository;
 import vn.tuhoc.vinaeatery.repository.FoodRepository;
@@ -47,17 +47,18 @@ public class FoodService {
                         recipe.getQuantity(), ingredient.getNote()));
             }
 
+            foodDTO.setRestaurantId(food.getRestaurantId());
             foodDTO.setId(food.getId());
             foodDTO.setImage(food.getImage());
             foodDTO.setName(food.getName());
-            if(food.getCategoryFoodId() != null) {
+            if (food.getCategoryFoodId() != null) {
                 foodDTO.setCategoryFood(categoryFoodRepository.findOneById(food.getCategoryFoodId()));
             }
             foodDTO.setPrice(food.getPrice());
             foodDTO.setUnit(food.getUnit());
             foodDTO.setDescription(food.getDescription());
             foodDTO.setStatus(food.getStatus());
-            foodDTO.setTimeUpdate(food.getTimeUpdate());
+            foodDTO.setUpdateAt(food.getUpdateAt());
             foodDTO.setRecipe(recipeDTO);
         }
 
@@ -86,7 +87,9 @@ public class FoodService {
         }
 
         //
-        if (foodCriteria.getId() == null && foodCriteria.getName() == null
+        if (foodCriteria.getId() == null
+                && foodCriteria.getRestaurantId() == null
+                && foodCriteria.getName() == null
                 && foodCriteria.getCategoryFoodId() == null
                 && foodCriteria.getStatus() == null
                 && foodCriteria.getSort() == null) {
@@ -99,6 +102,13 @@ public class FoodService {
                 Specification<Food> currentSpec = FoodSpecification
                         .idEqual(foodCriteria.getId().get());
                 combinedSpec = combinedSpec.or(currentSpec);
+            }
+        }
+        if (foodCriteria.getRestaurantId() != null && foodCriteria.getRestaurantId().isPresent()) {
+            if (foodCriteria.getRestaurantId().get().matches("\\d+")) {
+                Specification<Food> currentSpec = FoodSpecification
+                        .restaurantIdEqual(foodCriteria.getRestaurantId().get());
+                combinedSpec = combinedSpec.and(currentSpec);
             }
         }
         if (foodCriteria.getName() != null && foodCriteria.getName().isPresent()) {
@@ -147,7 +157,7 @@ public class FoodService {
             foodDTO.setId(food.getId());
             foodDTO.setImage(food.getImage());
             foodDTO.setName(food.getName());
-            if(food.getCategoryFoodId() != null) {
+            if (food.getCategoryFoodId() != null) {
 
             }
             foodDTO.setCategoryFood(categoryFoodRepository.findOneById(food.getCategoryFoodId()));
@@ -155,7 +165,7 @@ public class FoodService {
             foodDTO.setUnit(food.getUnit());
             foodDTO.setDescription(food.getDescription());
             foodDTO.setStatus(food.getStatus());
-            foodDTO.setTimeUpdate(food.getTimeUpdate());
+            foodDTO.setUpdateAt(food.getUpdateAt());
             foodDTO.setRecipe(recipeDTO);
 
             listFormat.add(foodDTO);

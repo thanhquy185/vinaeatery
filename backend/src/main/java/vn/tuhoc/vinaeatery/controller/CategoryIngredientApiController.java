@@ -7,22 +7,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.CategoryIngredient;
 import vn.tuhoc.vinaeatery.domain.criteria.CategoryIngredientCriteria;
-import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
-import vn.tuhoc.vinaeatery.domain.dto.CategoryIngredientUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.entity.CategoryIngredient;
+import vn.tuhoc.vinaeatery.domain.entity.Ingredient;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
+import vn.tuhoc.vinaeatery.domain.request.CategoryIngredientCreateRequest;
+import vn.tuhoc.vinaeatery.domain.request.CategoryIngredientLockRequest;
+import vn.tuhoc.vinaeatery.domain.request.CategoryIngredientUpdateRequest;
 import vn.tuhoc.vinaeatery.service.CategoryIngredientService;
 import vn.tuhoc.vinaeatery.service.IngredientService;
 import vn.tuhoc.vinaeatery.service.TimeService;
@@ -33,123 +35,158 @@ import vn.tuhoc.vinaeatery.util.ValidationUtil;
 @RequestMapping("/api/category-ingredients")
 @RequiredArgsConstructor
 public class CategoryIngredientApiController {
-    // Properties
-    private final CategoryIngredientService categoryIngredientService;
-    private final IngredientService ingredientService;
-    private final TimeService timeService;
+        // Properties
+        private final CategoryIngredientService categoryIngredientService;
+        private final IngredientService ingredientService;
+        private final TimeService timeService;
 
-    // Methods
-    @PostMapping("/list")
-    public ResponseEntity<?> listCategoryIngredient(@RequestBody FormSecurityDTO formSecurityDTO,
-            CategoryIngredientCriteria categoryIngredientCriteria) {
-        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "category-ingredients", "read")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil
-                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        // Methods
+        @PostMapping("/list")
+        public ResponseEntity<?> listCategoryIngredient(@RequestBody FormSecurityDTO formSecurityDTO,
+                        CategoryIngredientCriteria categoryIngredientCriteria) {
+                if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "category-ingredients", "read")) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(ValidationUtil
+                                                        .buildRestResponseWithStr(HandleFormSecurity
+                                                                        .getErrorMessageByHandleFormData()));
+                }
+
+                List<CategoryIngredient> listCategoryIngredient = this.categoryIngredientService
+                                .getAll(categoryIngredientCriteria);
+                return ResponseEntity.status(HttpStatus.OK).body(listCategoryIngredient);
         }
 
-        List<CategoryIngredient> listCategoryIngredient = this.categoryIngredientService
-                .getAll(categoryIngredientCriteria);
-        return ResponseEntity.status(HttpStatus.OK).body(listCategoryIngredient);
-    }
+        @PostMapping("/detail/{id}")
+        public ResponseEntity<?> detailCategoryIngredient(@RequestBody FormSecurityDTO formSecurityDTO,
+                        @PathVariable("id") Integer id) {
+                if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "category-ingredients", "read")) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(ValidationUtil
+                                                        .buildRestResponseWithStr(HandleFormSecurity
+                                                                        .getErrorMessageByHandleFormData()));
+                }
 
-    @PostMapping("/detail/{id}")
-    public ResponseEntity<?> detailCategoryIngredient(@RequestBody FormSecurityDTO formSecurityDTO,
-            @PathVariable("id") Integer id) {
-        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "category-ingredients", "read")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil
-                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+                CategoryIngredient categoryIngredientSelected = this.categoryIngredientService.getOneById(id);
+                return ResponseEntity.status(HttpStatus.OK).body(categoryIngredientSelected);
         }
 
-        CategoryIngredient categoryIngredientSelected = this.categoryIngredientService.getOneById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(categoryIngredientSelected);
-    }
+        @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
+        public ResponseEntity<?> handleCreateCategoryIngredient(
+                        @RequestBody @Valid CategoryIngredientCreateRequest categoryIngredientCreateRequest,
+                        BindingResult bindingResult) {
+                if (!HandleFormSecurity.isValidFormData(categoryIngredientCreateRequest.getFormSecurity(),
+                                "category-ingredients", "create")) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(ValidationUtil
+                                                        .buildRestResponseWithStr(HandleFormSecurity
+                                                                        .getErrorMessageByHandleFormData()));
+                }
 
-    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleCreateCategoryIngredient(
-            @RequestPart("form-security") FormSecurityDTO formSecurityDTO,
-            @RequestPart("category-ingredient") @Valid CategoryIngredient categoryIngredient,
-            BindingResult bindingResult) {
-        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "category-ingredients", "create")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil
-                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+                if (categoryIngredientCreateRequest.getCategoryIngredient() == null) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(ValidationUtil
+                                                        .buildRestResponseWithStr(
+                                                                        "Dữ liệu loại nguyên liệu không được để trống !"));
+                }
+
+                if (bindingResult.hasErrors()) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
+                }
+
+                CategoryIngredient categoryIngredientCreate = this.categoryIngredientService
+                                .upsert(categoryIngredientCreateRequest.getCategoryIngredient());
+                return ResponseEntity.status(HttpStatus.OK).body(categoryIngredientCreate);
         }
 
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
+        @PutMapping(value = "/update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+        public ResponseEntity<?> handleUpdateCategoryIngredient(@PathVariable("id") Integer id,
+                        @RequestBody @Valid CategoryIngredientUpdateRequest categoryIngredientUpdateRequest,
+                        BindingResult bindingResult) {
+                if (!HandleFormSecurity.isValidFormData(categoryIngredientUpdateRequest.getFormSecurity(),
+                                "category-ingredients", "update")) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(ValidationUtil
+                                                        .buildRestResponseWithStr(HandleFormSecurity
+                                                                        .getErrorMessageByHandleFormData()));
+                }
+
+                if (categoryIngredientUpdateRequest.getCategoryIngredient() == null) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(ValidationUtil
+                                                        .buildRestResponseWithStr(
+                                                                        "Dữ liệu loại nguyên liệu không được để trống !"));
+                }
+
+                if (bindingResult.hasErrors()) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
+                }
+
+                CategoryIngredient categoryIngredientUpdated = this.categoryIngredientService.getOneById(id);
+                if (categoryIngredientUpdated != null) {
+                        categoryIngredientUpdated
+                                        .setName(categoryIngredientUpdateRequest.getCategoryIngredient().getName());
+                        categoryIngredientUpdated
+                                        .setDescription(categoryIngredientUpdateRequest.getCategoryIngredient()
+                                                        .getDescription());
+                        // categoryIngredientUpdated.setUpdateAt(this.timeService.getDateTimeVN(categoryIngredientUpdateRequest.getCategoryIngredient().getUpdateAt()));
+                        categoryIngredientUpdated.setUpdateAt(this.timeService.getDateTimeVN(LocalDateTime.now()));
+
+                        this.categoryIngredientService.upsert(categoryIngredientUpdated);
+                }
+
+                return ResponseEntity.status(HttpStatus.OK).body(categoryIngredientUpdated);
         }
 
-        CategoryIngredient categoryIngredientCreate = this.categoryIngredientService.upsert(categoryIngredient);
-        return ResponseEntity.status(HttpStatus.OK).body(categoryIngredientCreate);
-    }
+        @PatchMapping(value = "/lock/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+        public ResponseEntity<?> handleLockCategoryIngredient(@PathVariable("id") Integer id,
+                        @RequestBody @Valid CategoryIngredientLockRequest categoryIngredientLockRequest,
+                        BindingResult bindingResult) {
+                if (!HandleFormSecurity.isValidFormData(categoryIngredientLockRequest.getFormSecurity(),
+                                "category-ingredients",
+                                "lock")) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(ValidationUtil
+                                                        .buildRestResponseWithStr(HandleFormSecurity
+                                                                        .getErrorMessageByHandleFormData()));
+                }
 
-    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleUpdateCategoryIngredient(
-            @RequestPart("form-security") FormSecurityDTO formSecurityDTO,
-            @PathVariable("id") Integer id,
-            @RequestPart("category-ingredient") @Valid CategoryIngredientUpdateDTO categoryIngredient,
-            BindingResult bindingResult) {
-        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "category-ingredients", "update")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil
-                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+                if (categoryIngredientLockRequest.getCategoryIngredient() == null) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(ValidationUtil
+                                                        .buildRestResponseWithStr(
+                                                                        "Dữ liệu loại nguyên liệu không được để trống !"));
+                }
+
+                if (bindingResult.hasErrors()) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
+                }
+
+                List<Ingredient> categoryIngredientListIsUsing = ingredientService.getAllByCategoryIngredientId(id);
+                if (categoryIngredientListIsUsing != null && !categoryIngredientListIsUsing.isEmpty()) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(ValidationUtil.buildRestResponseWithStr(
+                                                        "Loại nguyên liệu này đang được ít nhất 1 nguyên liệu sử dụng !"));
+                }
+
+                CommonStatusEnum handleStatus = categoryIngredientLockRequest.getCategoryIngredient()
+                                .getStatus() == CommonStatusEnum.ACTIVE
+                                                ? CommonStatusEnum.INACTIVE
+                                                : CommonStatusEnum.ACTIVE;
+                // LocalDateTime handleUpdateAt = this.serviceAt
+                // .getDateTimeVN(categoryIngredientLockRequest.getCategoryIngredient().getUpdateAt());
+                LocalDateTime handleUpdateAt = this.timeService.getDateTimeVN(LocalDateTime.now());
+
+                CategoryIngredient categoryIngredientLocked = this.categoryIngredientService.getOneById(id);
+                if (categoryIngredientLocked != null) {
+                        categoryIngredientLocked.setStatus(handleStatus);
+                        categoryIngredientLocked.setUpdateAt(handleUpdateAt);
+
+                        this.categoryIngredientService.lock(categoryIngredientLocked);
+                }
+
+                return ResponseEntity.status(HttpStatus.OK).body(categoryIngredientLocked);
         }
-
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
-        }
-
-        CategoryIngredient categoryIngredientUpdated = this.categoryIngredientService.getOneById(id);
-        if (categoryIngredientUpdated != null) {
-            categoryIngredientUpdated.setName(categoryIngredient.getName());
-            categoryIngredientUpdated.setDescription(categoryIngredient.getDescription());
-            categoryIngredientUpdated.setTimeUpdate(this.timeService.getDateTimeVN(categoryIngredient.getTimeUpdate()));
-            this.categoryIngredientService.upsert(categoryIngredientUpdated);
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(categoryIngredientUpdated);
-    }
-
-    @PutMapping(value = "/lock/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleLockCategoryIngredient(
-            @RequestPart("form-security") FormSecurityDTO formSecurityDTO,
-            @PathVariable("id") Integer id,
-            @RequestPart("category-ingredient") @Valid CommonStatusUpdateDTO commonStatusUpdate,
-            BindingResult bindingResult) {
-        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "category-ingredients", "lock")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil
-                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
-        }
-
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
-        }
-
-        if (ingredientService.getAllByCategoryIngredientId(id) != null
-                && !ingredientService.getAllByCategoryIngredientId(id).isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil.buildRestResponseWithStr(
-                            "Loại nguyên liệu này đang được ít nhất 1 nguyên liệu sử dụng !"));
-        }
-
-        CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
-                ? CommonStatusEnum.INACTIVE
-                : CommonStatusEnum.ACTIVE;
-        LocalDateTime handleTimeUpdate = this.timeService.getDateTimeVN(commonStatusUpdate.getTimeUpdate());
-
-        CategoryIngredient categoryIngredientLocked = this.categoryIngredientService.getOneById(id);
-        if (categoryIngredientLocked != null) {
-            categoryIngredientLocked.setStatus(handleStatus);
-            categoryIngredientLocked.setTimeUpdate(handleTimeUpdate);
-            this.categoryIngredientService.lock(categoryIngredientLocked);
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(categoryIngredientLocked);
-    }
 }

@@ -12,48 +12,47 @@ import vn.tuhoc.vinaeatery.domain.enumm.PayStatusEnum;
 @Generated("org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor")
 public abstract class InputTicket_ {
 
-	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.InputTicket#timeCreate
+	 * @see vn.tuhoc.vinaeatery.domain.InputTicket#createAt
 	 **/
-	public static volatile SingularAttribute<InputTicket, LocalDateTime> timeCreate;
-	
+	public static volatile SingularAttribute<InputTicket, LocalDateTime> createAt;
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.InputTicket#supplierId
 	 **/
 	public static volatile SingularAttribute<InputTicket, Integer> supplierId;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.InputTicket#totalPrice
 	 **/
 	public static volatile SingularAttribute<InputTicket, Long> totalPrice;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.InputTicket#employeeId
 	 **/
 	public static volatile SingularAttribute<InputTicket, Integer> employeeId;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.InputTicket#id
 	 **/
 	public static volatile SingularAttribute<InputTicket, Integer> id;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.InputTicket
 	 **/
 	public static volatile EntityType<InputTicket> class_;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.InputTicket#payStatus
 	 **/
 	public static volatile SingularAttribute<InputTicket, PayStatusEnum> payStatus;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.InputTicket#status
 	 **/
 	public static volatile SingularAttribute<InputTicket, InputTicketStatusEnum> status;
 
-	public static final String TIME_CREATE = "timeCreate";
+	public static final String TIME_CREATE = "createAt";
 	public static final String SUPPLIER_ID = "supplierId";
 	public static final String TOTAL_PRICE = "totalPrice";
 	public static final String EMPLOYEE_ID = "employeeId";
@@ -62,4 +61,3 @@ public abstract class InputTicket_ {
 	public static final String STATUS = "status";
 
 }
-

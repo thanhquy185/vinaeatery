@@ -8,14 +8,38 @@ import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
-import vn.tuhoc.vinaeatery.domain.TableE;
-import vn.tuhoc.vinaeatery.domain.UseTable;
-import vn.tuhoc.vinaeatery.domain.UseTable_;
+import vn.tuhoc.vinaeatery.domain.entity.TableE;
+import vn.tuhoc.vinaeatery.domain.entity.UseTable;
+import vn.tuhoc.vinaeatery.domain.entity.UseTable_;
 
 public class UseTableSpecification {
     // Methods
     public static Specification<UseTable> idEqual(String id) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(UseTable_.ID), id);
+    }
+
+    public static Specification<UseTable> restaurantIdEqual(String restaurantId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(UseTable_.RESTAURANT_ID), restaurantId);
+    }
+
+     public static Specification<UseTable> employeeIdEqual(String employeeId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(UseTable_.EMPLOYEE_ID),
+                employeeId);
+    }
+
+    public static Specification<UseTable> customerIdEqual(String customerId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(UseTable_.CUSTOMER_ID),
+                customerId);
+    }
+
+    public static Specification<UseTable> orderIdEqual(String orderId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(UseTable_.ORDER_ID),
+                orderId);
+    }
+
+    public static Specification<UseTable> orderTableIdEqual(String orderTableId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(UseTable_.ORDER_TABLE_ID),
+                orderTableId);
     }
 
     public static Specification<UseTable> timeAfter(String timeStart) {
@@ -67,26 +91,6 @@ public class UseTableSpecification {
             // WHERE tableId IN (SELECT id FROM Table WHERE floorId = ...)
             return root.get("tableId").in(subquery);
         };
-    }
-
-    public static Specification<UseTable> employeeIdEqual(String employeeId) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(UseTable_.EMPLOYEE_ID),
-                employeeId);
-    }
-
-    public static Specification<UseTable> customerIdEqual(String customerId) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(UseTable_.CUSTOMER_ID),
-                customerId);
-    }
-
-    public static Specification<UseTable> orderIdEqual(String orderId) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(UseTable_.ORDER_ID),
-                orderId);
-    }
-
-    public static Specification<UseTable> orderTableIdEqual(String orderTableId) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(UseTable_.ORDER_TABLE_ID),
-                orderTableId);
     }
 
     public static Specification<UseTable> statusEqual(Integer status) {

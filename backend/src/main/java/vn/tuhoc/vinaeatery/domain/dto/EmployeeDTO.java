@@ -6,8 +6,10 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Convert;
-import vn.tuhoc.vinaeatery.domain.Role;
+import vn.tuhoc.vinaeatery.domain.entity.User;
+import vn.tuhoc.vinaeatery.domain.enumm.CommonGenderEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
+import vn.tuhoc.vinaeatery.repository.converter.CommonGenderConverter;
 import vn.tuhoc.vinaeatery.repository.converter.CommonStatusConverter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,10 +23,14 @@ import lombok.Setter;
 public class EmployeeDTO {
     // Properties
     private Integer id;
+    private User user;
+    // private RestaurantDTO restaurant;
+    private Integer restaurantId;
     private String image;
     private String fullname;
     private String birthday;
-    private String gender;
+    @Convert(converter = CommonGenderConverter.class)
+    private CommonGenderEnum gender;
     private String phone;
     private String email;
     private String address;
@@ -32,9 +38,7 @@ public class EmployeeDTO {
     private String dateEnd;
     private RoleDTO currentRole;
     private List<RoleHistoryDTO> roleHistories;
-    private String username;
     @Convert(converter = CommonStatusConverter.class)
     private CommonStatusEnum status;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timeUpdate;
+    private String updateAt;
 }

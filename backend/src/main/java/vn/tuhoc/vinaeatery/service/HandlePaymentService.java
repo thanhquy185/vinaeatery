@@ -9,19 +9,19 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.CategoryTable;
-import vn.tuhoc.vinaeatery.domain.HandlePayment;
-import vn.tuhoc.vinaeatery.domain.HandlePayment_;
-import vn.tuhoc.vinaeatery.domain.Order;
-import vn.tuhoc.vinaeatery.domain.OrderDetail;
-import vn.tuhoc.vinaeatery.domain.OrderDetailId;
-import vn.tuhoc.vinaeatery.domain.OrderSheetDetail;
-import vn.tuhoc.vinaeatery.domain.OrderSheetDetailId;
-import vn.tuhoc.vinaeatery.domain.UseTable;
 import vn.tuhoc.vinaeatery.domain.criteria.HandlePaymentCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.HandlePaymentDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderSheetDTO;
 import vn.tuhoc.vinaeatery.domain.dto.UseTableDTO;
+import vn.tuhoc.vinaeatery.domain.entity.CategoryTable;
+import vn.tuhoc.vinaeatery.domain.entity.HandlePayment;
+import vn.tuhoc.vinaeatery.domain.entity.HandlePayment_;
+import vn.tuhoc.vinaeatery.domain.entity.Order;
+import vn.tuhoc.vinaeatery.domain.entity.OrderDetail;
+import vn.tuhoc.vinaeatery.domain.entity.OrderDetailId;
+import vn.tuhoc.vinaeatery.domain.entity.OrderSheetDetail;
+import vn.tuhoc.vinaeatery.domain.entity.OrderSheetDetailId;
+import vn.tuhoc.vinaeatery.domain.entity.UseTable;
 import vn.tuhoc.vinaeatery.domain.enumm.HandlePaymentStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.OrderSheetStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.OrderStatusEnum;
@@ -59,6 +59,7 @@ public class HandlePaymentService {
         HandlePaymentDTO handlePaymentDTO = new HandlePaymentDTO();
         HandlePayment handlePayment = this.handlePaymentRepository.findOneById(id);
         if (handlePayment != null) {
+            handlePaymentDTO.setId(handlePayment.getId());
             handlePaymentDTO.setUseTable(useTableService.getOneFormatById(handlePayment.getUseTableId()));
             handlePaymentDTO.setEmployee(employeeService.getOneFormatById(handlePayment.getEmployeeId()));
             handlePaymentDTO.setPayMethod(payMethodService.getOneById(handlePayment.getPayMethodId()));
@@ -69,8 +70,8 @@ public class HandlePaymentService {
         return handlePaymentDTO;
     }
 
-    public HandlePaymentDTO getOneFormat() {
-        return getOneFormatById(this.handlePaymentRepository.findAll().get(0).getId());
+    public HandlePaymentDTO getOneFormatByUseTableId(Long useTableId) {
+        return getOneFormatById(this.handlePaymentRepository.findOneByUseTableId(useTableId).getId());
     }
 
     public List<HandlePayment> getAll() {
@@ -90,6 +91,7 @@ public class HandlePaymentService {
 
         //
         if (handlePaymentCriteria.getId() == null
+                && handlePaymentCriteria.getUseTableId() == null
                 && handlePaymentCriteria.getStatus() == null
                 && handlePaymentCriteria.getSort() == null) {
             return this.handlePaymentRepository.findAll();
@@ -101,6 +103,13 @@ public class HandlePaymentService {
             if (handlePaymentCriteria.getId().get().matches("\\d+")) {
                 Specification<HandlePayment> currentSpec = HandlePaymentSpecification
                         .idEqual(handlePaymentCriteria.getId().get());
+                combinedSpec = combinedSpec.and(currentSpec);
+            }
+        }
+        if (handlePaymentCriteria.getUseTableId() != null && handlePaymentCriteria.getUseTableId().isPresent()) {
+            if (handlePaymentCriteria.getUseTableId().get().matches("\\d+")) {
+                Specification<HandlePayment> currentSpec = HandlePaymentSpecification
+                        .useTableIdEqual(handlePaymentCriteria.getUseTableId().get());
                 combinedSpec = combinedSpec.and(currentSpec);
             }
         }
@@ -178,11 +187,6 @@ public class HandlePaymentService {
             for (OrderSheetDetail orderSheetDetail : orderSheetDetailsFormat) {
                 totalFoodPrice += orderSheetDetail.getPrice() * orderSheetDetail.getQuantity();
             }
-            // - Giảm giá khách hàng
-            Double customerDiscount = 1.0 * totalFoodPrice
-                    * (customerService.getOneFormatById(useTable.getCustomer().getId()).getCustomerCard()
-                            .getDiscount())
-                    / 100;
             // - Phụ thu loại bàn ăn
             CategoryTable categoryTable = this.categoryTableService
                     .getOneById(useTable.getTable().getCategoryTable().getId());
@@ -198,10 +202,12 @@ public class HandlePaymentService {
             // Đơn món ăn (Đã xác nhận - Đã thanh toán)
             Order newOrder = new Order();
             // - Thông tin cơ bản
-            newOrder.setTimeCreate(LocalDateTime.now());
+            newOrder.setCreateAt(LocalDateTime.now());
+            newOrder.setRestaurantId(
+                    this.useTableService.getOneById(handlePaymentUpdated.getUseTableId()).getRestaurantId());
             newOrder.setEmployeeId(handlePaymentUpdated.getEmployeeId());
             newOrder.setCustomerId(useTable.getCustomer().getId());
-            newOrder.setTotalPrice(Math.round(totalFoodPrice + (-1 * customerDiscount) + surchargeCategoryTable));
+            newOrder.setTotalPrice(Math.round(totalFoodPrice + surchargeCategoryTable));
             newOrder.setStatus(OrderStatusEnum.CONFIRM);
             // - Thông tin thanh toán
             newOrder.setPayId(orderId);
@@ -230,6 +236,7 @@ public class HandlePaymentService {
                 useTableUpdated.setOrderId(newOrderAfterHandle.getId());
 
                 UseTable newUseTable = new UseTable();
+                newUseTable.setRestaurantId(useTableUpdated.getRestaurantId());
                 newUseTable.setTimeStart(LocalDateTime.now());
                 // newUseTable.setTimeEnd(null);
                 newUseTable.setTableId(useTableUpdated.getTableId());

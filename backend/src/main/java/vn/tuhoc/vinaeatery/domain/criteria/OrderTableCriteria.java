@@ -14,14 +14,16 @@ import lombok.Setter;
 public class OrderTableCriteria {
     // Properties
     private Optional<String> id;
-    private Optional<String> timeOrderStart;
-    private Optional<String> timeOrderEnd;
-    private Optional<String> timeArriveStart;
-    private Optional<String> timeArriveEnd;
+    private Optional<String> restaurantId;
     private Optional<String> employeeId;
-    private Optional<String> fullname;
-    private Optional<String> phone;
-    private Optional<String> email;
+    private Optional<String> customerId;
+    private Optional<String> createAtStart;
+    private Optional<String> createAtEnd;
+    private Optional<String> arriveAtStart;
+    private Optional<String> arriveAtEnd;
+    private Optional<String> customerFullname;
+    private Optional<String> customerPhone;
+    private Optional<String> customerEmail;
     private Optional<String> status;
     private Optional<String> sort;
 }

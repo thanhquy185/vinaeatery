@@ -1,6 +1,44 @@
 import { useState, useMemo, useEffect } from "react";
 import type { TablePaginationConfig } from "antd/es/table";
 import type { SorterResult } from "antd/es/table/interface";
+import type { RcFile } from "antd/es/upload";
+import type { EmployeesFormatType, ManagersFormatType } from "./types";
+
+// React Query Mutation Props
+export type ReactQueryMutationProps<T> = {
+  type: "create" | "update" | "lock" | "unlock" | "change-password";
+  values?: T;
+  objectId?: string | number;
+  imageFile?: File | RcFile;
+  imageFiles?: File[] | RcFile[];
+  details?: any[];
+  // totalPrice?: number;
+  // details?: OrderDetailsFormatType | InputTicketDetailsFormatType;
+}
+
+// Filter Data Props
+export type FilterDataProps = {
+  findType?: string;
+  findValue?: string;
+  timeValue?: [string, string];
+  arriveAtValue?: [string, string];
+  floorValue?: string[];
+  categoryValue?: string[];
+  customerCardValue?: string[];
+  surchargeTypeValue?: string[];
+  statusValue?: string[];
+  restaurantId?: number;
+  roleValue?: string[];
+  methodValue?: string;
+  isUsingValue?: string[];
+}
+
+// Manager Page Props
+export type ManagerPageProps = {
+  infoLogin?: EmployeesFormatType,
+  functionId: number,
+  nameEN?: string
+}
 
 // Dashboard Filter Time Props
 export type DashboardFilterTimeProps = { timeline: string, timeDetail: string }
@@ -8,78 +46,78 @@ export type DashboardFilterTimeProps = { timeline: string, timeDetail: string }
 // Pie Chart Props
 export type PieChartProps = { id: number, value: number, label: string }
 
-// Custom Pagination Props
-export function CustomPaginationProps<T>(
-  data: T[],
-  pageSize: number = 10,
-  pageSizeOptions: number[] = [1, 10, 20, 30, 40, 50],
-  sortThreshold: number = 1000 // ngưỡng chuyển sang gọi API
-) {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(pageSize);
+// // Custom Pagination Props
+// export function CustomPaginationProps<T>(
+//   data: T[],
+//   pageSize: number = 10,
+//   pageSizeOptions: number[] = [1, 10, 20, 30, 40, 50],
+//   sortThreshold: number = 1000 // ngưỡng chuyển sang gọi API
+// ) {
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [itemsPerPage, setItemsPerPage] = useState(pageSize);
 
-  const [sortField, setSortField] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<"ascend" | "descend" | null>(null);
+//   const [sortField, setSortField] = useState<string | null>(null);
+//   const [sortOrder, setSortOrder] = useState<"ascend" | "descend" | null>(null);
 
-  const currentItems = useMemo(() => {
-    let items = [...data];
+//   const currentItems = useMemo(() => {
+//     let items = [...data];
 
-    const shouldSortLocally = data.length < sortThreshold;
+//     const shouldSortLocally = data.length < sortThreshold;
 
-    if (shouldSortLocally && sortField && sortOrder) {
-      items.sort((a, b) => {
-        const aValue = (a as any)[sortField];
-        const bValue = (b as any)[sortField];
+//     if (shouldSortLocally && sortField && sortOrder) {
+//       items.sort((a, b) => {
+//         const aValue = (a as any)[sortField];
+//         const bValue = (b as any)[sortField];
 
-        if (typeof aValue === "string") {
-          return sortOrder === "ascend"
-            ? aValue.localeCompare(bValue)
-            : bValue.localeCompare(aValue);
-        }
+//         if (typeof aValue === "string") {
+//           return sortOrder === "ascend"
+//             ? aValue.localeCompare(bValue)
+//             : bValue.localeCompare(aValue);
+//         }
 
-        return sortOrder === "ascend" ? aValue - bValue : bValue - aValue;
-      });
-    }
+//         return sortOrder === "ascend" ? aValue - bValue : bValue - aValue;
+//       });
+//     }
 
-    const start = (currentPage - 1) * itemsPerPage;
-    return items.slice(start, start + itemsPerPage);
-  }, [data, currentPage, itemsPerPage, sortField, sortOrder]);
+//     const start = (currentPage - 1) * itemsPerPage;
+//     return items.slice(start, start + itemsPerPage);
+//   }, [data, currentPage, itemsPerPage, sortField, sortOrder]);
 
-  const handleTableChange = (
-    pagination: TablePaginationConfig,
-    _filters: any,
-    sorter: SorterResult<T> | SorterResult<T>[]
-  ) => {
-    if (!Array.isArray(sorter)) {
-      setSortField((sorter.field as string) || null);
-      setSortOrder(sorter.order || null);
-    }
+//   const handleTableChange = (
+//     pagination: TablePaginationConfig,
+//     _filters: any,
+//     sorter: SorterResult<T> | SorterResult<T>[]
+//   ) => {
+//     if (!Array.isArray(sorter)) {
+//       setSortField((sorter.field as string) || null);
+//       setSortOrder(sorter.order || null);
+//     }
 
-    if (pagination.current !== currentPage) {
-      setCurrentPage(pagination.current!);
-    }
+//     if (pagination.current !== currentPage) {
+//       setCurrentPage(pagination.current!);
+//     }
 
-    if (pagination.pageSize !== itemsPerPage) {
-      setItemsPerPage(pagination.pageSize!);
-      setCurrentPage(1);
-    }
-  };
+//     if (pagination.pageSize !== itemsPerPage) {
+//       setItemsPerPage(pagination.pageSize!);
+//       setCurrentPage(1);
+//     }
+//   };
 
-  // useEffect(() => {
-  //   setCurrentPage(1);
-  // }, [data]);
+//   // useEffect(() => {
+//   //   setCurrentPage(1);
+//   // }, [data]);
 
-  return {
-    currentItems,
-    handleTableChange,
-    paginationProps: {
-      current: currentPage,
-      pageSize: itemsPerPage,
-      total: data.length,
-      showSizeChanger: true,
-      pageSizeOptions: pageSizeOptions,
-    },
-    sortField,
-    sortOrder,
-  };
-}
+//   return {
+//     currentItems,
+//     handleTableChange,
+//     paginationProps: {
+//       current: currentPage,
+//       pageSize: itemsPerPage,
+//       total: data.length,
+//       showSizeChanger: true,
+//       pageSizeOptions: pageSizeOptions,
+//     },
+//     sortField,
+//     sortOrder,
+//   };
+// }

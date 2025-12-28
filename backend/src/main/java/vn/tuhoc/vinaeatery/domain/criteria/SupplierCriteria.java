@@ -14,6 +14,7 @@ import lombok.Setter;
 public class SupplierCriteria {
     // Properties
     private Optional<String> id;
+    private Optional<String> restaurantId;
     private Optional<String> name;
     private Optional<String> phone;
     private Optional<String> email;

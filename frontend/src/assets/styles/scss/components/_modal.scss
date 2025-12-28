@@ -84,7 +84,8 @@
     color: $red-secondary-btn-color;
   }
 
-  &:where(.table-histories, .use-tables, .order-sheets) .ant-modal-content {
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets)
+    .ant-modal-content {
     padding-top: 20px !important;
     border: 3px dashed #c14400;
     background: #fffcf7;
@@ -133,22 +134,37 @@
   //   font-size: 2.8rem;
   // }
 
-  &:where(.table-histories, .use-tables, .order-sheets) .ant-modal-title {
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets)
+    .ant-modal-title {
     margin-bottom: 16px;
     // color: $primary-color;
     color: #b30000;
     font-size: 2.8rem;
   }
 
-  &:where(.table-histories, .use-tables, .order-sheets) .ant-modal-close {
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets)
+    .ant-modal-close {
     color: #000;
   }
 
-  &:where(.table-histories, .use-tables, .order-sheets) .ant-modal-close:hover {
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets)
+    .ant-modal-close:hover {
     color: $red-secondary-btn-color;
   }
 
-  &:where(.table-histories, .use-tables, .order-sheets) .info {
+  & .ant-modal-body {
+    position: relative;
+  }
+
+  &.use-foods :where(.ant-image, .ant-image-img, .ant-image-mask) {
+    border-radius: 8px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    @include size(280px, 200px);
+  }
+
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets) .info {
     width: 100%;
     margin-top: 4px;
     font-size: 1.8rem;
@@ -163,7 +179,7 @@
     font-size: 1.6rem;
   }
 
-  &:where(.table-histories, .use-tables, .order-sheets) .info > b {
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets) .info > b {
     width: 25%;
     display: inline-block;
     font-weight: 600;
@@ -213,61 +229,68 @@
     background: #bbb;
   }
 
-  &:where(.table-histories, .use-tables, .order-sheets) table {
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets) table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 4px;
   }
 
-  &:where(.table-histories, .use-tables, .order-sheets) table th,
-  &:where(.table-histories, .use-tables, .order-sheets) table td {
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets) table th,
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets) table td {
     border: 1px solid #ccc;
     padding: 10px;
     font-size: 1.4rem;
     text-align: center;
   }
 
-  &:where(.table-histories, .use-tables, .order-sheets) table th {
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets) table th {
     background-color: #ffe0cc;
     font-weight: 600;
   }
 
-  &:where(.table-histories, .use-tables, .order-sheets) table td {
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets) table td {
     background-color: #fff;
   }
 
-  &:where(.table-histories, .use-tables, .order-sheets) table td.left {
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets)
+    table
+    td.left {
     text-align: left;
   }
 
-  &:where(.table-histories, .use-tables, .order-sheets) .note {
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets) .note {
     margin-top: 20px;
     color: #444;
     font-size: 1.8rem;
     font-style: italic;
   }
 
-  &:where(.table-histories, .use-tables, .order-sheets) .status.purple {
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets)
+    .status.purple {
     font-weight: 600;
     color: purple;
   }
 
-  &:where(.table-histories, .use-tables, .order-sheets) .status.green {
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets)
+    .status.green {
     font-weight: 600;
     color: green;
   }
 
-  &:where(.table-histories, .use-tables, .order-sheets) .status.yellow {
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets)
+    .status.yellow {
     font-weight: 600;
     color: orange;
   }
 
-  &:where(.table-histories, .use-tables, .order-sheets) .status.red {
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets)
+    .status.red {
     font-weight: 600;
     color: red;
   }
 
-  &:where(.table-histories, .use-tables, .order-sheets) .status.gray {
+  &:where(.table-histories, .use-tables, .use-foods, .order-sheets)
+    .status.gray {
     font-weight: 600;
     color: gray;
   }
@@ -408,9 +431,12 @@
   & .ant-form-item-control :is(.ant-image-img, .ant-image-mask) {
     @include size(180px);
     margin-top: -14px;
+    border: 1px solid #dedede;
+    padding: 2px;
+    border-radius: 6px;
   }
 
-  &
+  &:not(.restaurants)
     .ant-form-item-control:has(.ant-image-img)
     .ant-form-item-control-input-content {
     @include flexCenter();
@@ -440,10 +466,17 @@
     margin-top: calc($form-item-height + $margin-bottom);
   }
 
-  &.ant-modal.employees
+  // &.ant-modal.managers
+  //   .ant-form-item-control
+  //   :is(.ant-image-img, .ant-image-mask) {
+  //   @include size(calc(150px * 3 / 4), 150px);
+  // }
+
+  &.ant-modal:is(.managers, .customers, .employees)
     .ant-form-item-control
     :is(.ant-image-img, .ant-image-mask) {
-    width: calc(180px * 3 / 4);
+    // width: calc(180px * 3 / 4);
+    @include size(calc(170px * 3 / 4), 170px);
   }
 
   &.ant-modal.foods
@@ -461,6 +494,15 @@
       calc($form-item-height * 3) + calc($form-label-height * 3) +
         calc($margin-bottom * 3)
     );
+  }
+
+  &.restaurants .images-upload-warper {
+    max-height: calc(calc(134px + 8px) * 4);
+    overflow-y: auto;
+  }
+
+  &.restaurants .ant-upload-list > * {
+    @include size(calc(100% / 2 - calc(8px * 1 / 2)) !important, 134px !important)
   }
 
   &__form.ant-form &__form-group-item button.secondary-btn {
@@ -560,7 +602,7 @@
   & .info.diff .ant-input-number {
     width: 100% !important;
   }
-  
+
   & .info.diff input {
     height: 45px;
     font-size: 1.8rem;

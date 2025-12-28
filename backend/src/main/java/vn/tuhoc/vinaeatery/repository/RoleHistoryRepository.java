@@ -9,8 +9,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import jakarta.transaction.Transactional;
-import vn.tuhoc.vinaeatery.domain.RoleHistory;
-import vn.tuhoc.vinaeatery.domain.RoleHistoryId;
+import vn.tuhoc.vinaeatery.domain.entity.RoleHistory;
+import vn.tuhoc.vinaeatery.domain.entity.RoleHistoryId;
 
 @Repository
 public interface RoleHistoryRepository

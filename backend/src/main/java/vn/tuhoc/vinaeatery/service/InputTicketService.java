@@ -8,12 +8,12 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.InputTicket;
-import vn.tuhoc.vinaeatery.domain.InputTicketDetail;
-import vn.tuhoc.vinaeatery.domain.InputTicket_;
 import vn.tuhoc.vinaeatery.domain.criteria.InputTicketCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.InputTicketDTO;
 import vn.tuhoc.vinaeatery.domain.dto.InputTicketDetailDTO;
+import vn.tuhoc.vinaeatery.domain.entity.InputTicket;
+import vn.tuhoc.vinaeatery.domain.entity.InputTicket_;
+import vn.tuhoc.vinaeatery.domain.entity.InputTicketDetail;
 import vn.tuhoc.vinaeatery.domain.enumm.InputTicketStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.PayStatusEnum;
 import vn.tuhoc.vinaeatery.repository.InputTicketDetailRepository;
@@ -49,11 +49,12 @@ public class InputTicketService {
             }
 
             inputTicketDTO.setId(inputTicket.getId());
-            inputTicketDTO.setTimeCreate(inputTicket.getTimeCreate());
-            if(inputTicket.getEmployeeId() != null) {
+            inputTicketDTO.setRestaurantId(inputTicket.getRestaurantId());
+            inputTicketDTO.setCreateAt(inputTicket.getCreateAt());
+            if (inputTicket.getEmployeeId() != null) {
                 inputTicketDTO.setEmployee(employeeService.getOneFormatById(inputTicket.getEmployeeId()));
             }
-            if(inputTicket.getSupplierId() != null) {
+            if (inputTicket.getSupplierId() != null) {
                 inputTicketDTO.setSupplier(supplierRepository.findOneById(inputTicket.getSupplierId()));
             }
             inputTicketDTO.setTotalPrice(inputTicket.getTotalPrice());
@@ -77,16 +78,18 @@ public class InputTicketService {
             switch (sortStr) {
                 case "ID tăng dần" -> sort = Sort.by(InputTicket_.ID).ascending();
                 case "ID giảm dần" -> sort = Sort.by(InputTicket_.ID).descending();
-                case "Thời gian tạo phiếu tăng dần" -> sort = Sort.by(InputTicket_.TIME_CREATE).ascending();
-                case "Thời gian tạo phiếu giảm dần" -> sort = Sort.by(InputTicket_.TIME_CREATE).descending();
+                case "Thời gian tạo phiếu tăng dần" -> sort = Sort.by(InputTicket_.CREATE_AT).ascending();
+                case "Thời gian tạo phiếu giảm dần" -> sort = Sort.by(InputTicket_.CREATE_AT).descending();
                 case "Tổng thanh toán tăng dần" -> sort = Sort.by(InputTicket_.TOTAL_PRICE).ascending();
                 case "Tổng thanh toán giảm dần" -> sort = Sort.by(InputTicket_.TOTAL_PRICE).descending();
             }
         }
 
         //
-        if (inputTicketCriteria.getId() == null && inputTicketCriteria.getTimeCreateStart() == null
-                && inputTicketCriteria.getTimeCreateEnd() == null
+        if (inputTicketCriteria.getId() == null
+                && inputTicketCriteria.getRestaurantId() == null
+                && inputTicketCriteria.getCreateAtStart() == null
+                && inputTicketCriteria.getCreateAtEnd() == null
                 && inputTicketCriteria.getEmployeeId() == null
                 && inputTicketCriteria.getSupplierId() == null
                 && inputTicketCriteria.getStatusMerge() == null
@@ -105,14 +108,21 @@ public class InputTicketService {
                 combinedSpec = combinedSpec.and(currentSpec);
             }
         }
-        if (inputTicketCriteria.getTimeCreateStart() != null && inputTicketCriteria.getTimeCreateStart().isPresent()) {
+        if(inputTicketCriteria.getRestaurantId() != null && inputTicketCriteria.getRestaurantId().isPresent()) {
+            if (inputTicketCriteria.getRestaurantId().get().matches("\\d+")) {
+                Specification<InputTicket> currentSpec = InputTicketSpecification
+                        .restaurantIdEqual(inputTicketCriteria.getRestaurantId().get());
+                combinedSpec = combinedSpec.and(currentSpec);
+            }
+        }
+        if (inputTicketCriteria.getCreateAtStart() != null && inputTicketCriteria.getCreateAtStart().isPresent()) {
             Specification<InputTicket> currentSpec = InputTicketSpecification
-                    .timeCreateAfter(inputTicketCriteria.getTimeCreateStart().get());
+                    .createAtAfter(inputTicketCriteria.getCreateAtStart().get());
             combinedSpec = combinedSpec.and(currentSpec);
         }
-        if (inputTicketCriteria.getTimeCreateEnd() != null && inputTicketCriteria.getTimeCreateEnd().isPresent()) {
+        if (inputTicketCriteria.getCreateAtEnd() != null && inputTicketCriteria.getCreateAtEnd().isPresent()) {
             Specification<InputTicket> currentSpec = InputTicketSpecification
-                    .timeCreateBefore(inputTicketCriteria.getTimeCreateEnd().get());
+                    .createAtBefore(inputTicketCriteria.getCreateAtEnd().get());
             combinedSpec = combinedSpec.and(currentSpec);
         }
         if (inputTicketCriteria.getEmployeeId() != null && inputTicketCriteria.getEmployeeId().isPresent()) {
@@ -196,11 +206,11 @@ public class InputTicketService {
 
             InputTicketDTO inputTicketDTO = new InputTicketDTO();
             inputTicketDTO.setId(inputTicket.getId());
-            inputTicketDTO.setTimeCreate(inputTicket.getTimeCreate());
-            if(inputTicket.getEmployeeId() != null) {
+            inputTicketDTO.setCreateAt(inputTicket.getCreateAt());
+            if (inputTicket.getEmployeeId() != null) {
                 inputTicketDTO.setEmployee(employeeService.getOneFormatById(inputTicket.getEmployeeId()));
             }
-            if(inputTicket.getSupplierId() != null) {
+            if (inputTicket.getSupplierId() != null) {
                 inputTicketDTO.setSupplier(supplierRepository.findOneById(inputTicket.getSupplierId()));
             }
             inputTicketDTO.setTotalPrice(inputTicket.getTotalPrice());

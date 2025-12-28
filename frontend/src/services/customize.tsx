@@ -31,6 +31,6 @@ instance.interceptors.response.use(
 );
 
 // Alter defaults after instance has been created
-// instance.defaults.headers.common["Authorization"] = AUTH_TOKEN;
+// instance.defaults.headers.common["Authorization"] = "XJvVeX4befworCdrEN8c0cEvg31ePhFO1zTIAvK8UfboZzmlS7A9cuWO5LKlVcfU7lJrR1WVJypseGylxREqBg";
 
 export default instance;

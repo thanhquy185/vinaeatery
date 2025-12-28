@@ -18,7 +18,7 @@ public class UploadService {
     private final ServletContext servletContext;
 
     // Methods
-    public String uploadImageFiles(MultipartFile file, String folder, String id) {
+    public String uploadImage(MultipartFile file, String folder, String id) {
         String rootPath = System.getProperty("user.dir") + File.separator + "frontend" + File.separator + "src"
                 + File.separator + "assets" + File.separator + "images";
         String filename = "";

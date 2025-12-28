@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.tuhoc.vinaeatery.domain.PayMethod;
+import vn.tuhoc.vinaeatery.domain.entity.PayMethod;
 import vn.tuhoc.vinaeatery.domain.enumm.HandlePaymentStatusEnum;
 import vn.tuhoc.vinaeatery.repository.converter.HandlePaymentStatusConverter;
 

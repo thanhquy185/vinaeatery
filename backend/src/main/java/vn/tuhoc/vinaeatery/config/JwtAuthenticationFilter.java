@@ -34,6 +34,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
+    // @Override
+    // protected boolean shouldNotFilter(HttpServletRequest request) {
+    //     String path = request.getServletPath();
+    //     System.out.println("====================== JWT filter path: " + path);
+
+    //     if (path.equals("")) {
+    //         return false; // filter chạy
+    //     }
+
+    //     return true; // còn lại bỏ qua filter
+    // }
+
     private JwtDecoder getDecoder() {
         byte[] keyBytes = Base64.from(jwtKey).decode();
         SecretKey secretKey = new javax.crypto.spec.SecretKeySpec(keyBytes, 0, keyBytes.length, "HmacSHA512");

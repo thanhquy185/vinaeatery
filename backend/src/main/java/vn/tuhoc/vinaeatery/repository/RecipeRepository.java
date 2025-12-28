@@ -10,8 +10,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import jakarta.transaction.Transactional;
-import vn.tuhoc.vinaeatery.domain.Recipe;
-import vn.tuhoc.vinaeatery.domain.RecipeId;
+import vn.tuhoc.vinaeatery.domain.entity.Recipe;
+import vn.tuhoc.vinaeatery.domain.entity.RecipeId;
 
 @Repository
 public interface RecipeRepository

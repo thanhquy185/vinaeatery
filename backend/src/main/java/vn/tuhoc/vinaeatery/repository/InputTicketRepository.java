@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import vn.tuhoc.vinaeatery.domain.InputTicket;
+import vn.tuhoc.vinaeatery.domain.entity.InputTicket;
 
 @Repository
 public interface InputTicketRepository  extends JpaRepository<InputTicket, Integer>, JpaSpecificationExecutor<InputTicket> {

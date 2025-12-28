@@ -20,6 +20,7 @@ import vn.tuhoc.vinaeatery.repository.converter.UseTableStatusConverter;
 public class UseTableDTO {
     // Properties
     private Long id;
+    private Integer restaurantId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timeStart;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -32,4 +33,5 @@ public class UseTableDTO {
     @Convert(converter = UseTableStatusConverter.class)
     private UseTableStatusEnum status;
     List<OrderSheetDTO> orderSheets;
+    MessageDTO message;
 }

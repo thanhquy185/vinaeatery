@@ -8,10 +8,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.UseTable;
-import vn.tuhoc.vinaeatery.domain.UseTable_;
 import vn.tuhoc.vinaeatery.domain.criteria.UseTableCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.UseTableDTO;
+import vn.tuhoc.vinaeatery.domain.entity.UseTable;
+import vn.tuhoc.vinaeatery.domain.entity.UseTable_;
 import vn.tuhoc.vinaeatery.domain.enumm.UseTableStatusEnum;
 import vn.tuhoc.vinaeatery.repository.UseTableRepository;
 import vn.tuhoc.vinaeatery.service.specification.UseTableSpecification;
@@ -20,12 +20,13 @@ import vn.tuhoc.vinaeatery.service.specification.UseTableSpecification;
 @RequiredArgsConstructor
 public class UseTableService {
     // Properties
+    private final MessageService messageService;
     private final OrderSheetService orderSheetService;
     private final OrderService orderService;
     private final OrderTableService orderTableService;
-    private final CustomerService customerService;
     private final TableService tableService;
     private final EmployeeService employeeService;
+    private final CustomerService customerService;
     private final UseTableRepository useTableRepository;
 
     // Methods
@@ -33,11 +34,12 @@ public class UseTableService {
         return this.useTableRepository.findOneById(id);
     }
 
-    public UseTableDTO getNewOneFormatByTableId(Integer tableId) {
+    public UseTableDTO getNewOneFormatByRestaurantIdAndTableId(Integer restaurantId, Integer tableId) {
         UseTableDTO useTableDTO = new UseTableDTO();
-        UseTable useTable = this.useTableRepository.findNewOneByTableId(tableId);
+        UseTable useTable = this.useTableRepository.findNewOneByRestaurantIdAndTableId(restaurantId, tableId);
         if (useTable != null) {
             useTableDTO.setId(useTable.getId());
+            useTableDTO.setRestaurantId(useTable.getRestaurantId());
             useTableDTO.setTimeStart(useTable.getTimeStart());
             useTableDTO.setTimeEnd(useTable.getTimeEnd());
             if (useTable.getTableId() != null) {
@@ -58,6 +60,7 @@ public class UseTableService {
             useTableDTO.setStatus(useTable.getStatus());
             useTableDTO.setOrderSheets(
                     orderSheetService.getAllFormatWithUseTable(useTable.getId(), useTable.getTableId()));
+            useTableDTO.setMessage(messageService.getOneFormatByUseTableId(useTable.getId()));
         }
 
         return useTableDTO.getId() != null ? useTableDTO : null;
@@ -68,6 +71,7 @@ public class UseTableService {
         UseTable useTable = this.useTableRepository.findOneById(id);
         if (useTable != null) {
             useTableDTO.setId(useTable.getId());
+            useTableDTO.setRestaurantId(useTable.getRestaurantId());
             useTableDTO.setTimeStart(useTable.getTimeStart());
             useTableDTO.setTimeEnd(useTable.getTimeEnd());
             if (useTable.getTableId() != null) {
@@ -93,16 +97,16 @@ public class UseTableService {
         return useTableDTO;
     }
 
-    public List<UseTable> getAll() {
-        return this.useTableRepository.findAll();
-    }
-
     public UseTable getNewOneByCustomerId(Integer customerId) {
         return this.useTableRepository.findNewOneByCustomerId(customerId);
     }
 
     public UseTable getNewOneByOrderTableId(Integer orderTableId) {
         return this.useTableRepository.findNewOneByOrderTableId(orderTableId);
+    }
+
+    public List<UseTable> getAll() {
+        return this.useTableRepository.findAll();
     }
 
     public List<UseTable> getAll(UseTableCriteria useTableCriteria) {
@@ -121,7 +125,9 @@ public class UseTableService {
         }
 
         //
-        if (useTableCriteria.getId() == null && useTableCriteria.getTimeStart() == null
+        if (useTableCriteria.getId() == null
+                && useTableCriteria.getRestaurantId() == null
+                && useTableCriteria.getTimeStart() == null
                 && useTableCriteria.getTimeEnd() == null
                 && useTableCriteria.getTableId() == null
                 && useTableCriteria.getTableName() == null
@@ -141,6 +147,13 @@ public class UseTableService {
             if (useTableCriteria.getId().get().matches("\\d+")) {
                 Specification<UseTable> currentSpec = UseTableSpecification
                         .idEqual(useTableCriteria.getId().get());
+                combinedSpec = combinedSpec.and(currentSpec);
+            }
+        }
+        if (useTableCriteria.getRestaurantId() != null && useTableCriteria.getRestaurantId().isPresent()) {
+            if (useTableCriteria.getRestaurantId().get().matches("\\d+")) {
+                Specification<UseTable> currentSpec = UseTableSpecification
+                        .restaurantIdEqual(useTableCriteria.getRestaurantId().get());
                 combinedSpec = combinedSpec.and(currentSpec);
             }
         }
@@ -226,30 +239,7 @@ public class UseTableService {
     public List<UseTableDTO> getAllFormat(UseTableCriteria useTableCriteria) {
         List<UseTableDTO> listFormat = new ArrayList<>();
         for (UseTable useTable : getAll(useTableCriteria)) {
-            UseTableDTO useTableDTO = new UseTableDTO();
-            useTableDTO.setId(useTable.getId());
-            useTableDTO.setTimeStart(useTable.getTimeStart());
-            useTableDTO.setTimeEnd(useTable.getTimeEnd());
-            if (useTable.getTableId() != null) {
-                useTableDTO.setTable(tableService.getOneFormatById(useTable.getTableId()));
-            }
-            if (useTable.getEmployeeId() != null) {
-                useTableDTO.setEmployee(employeeService.getOneFormatById(useTable.getEmployeeId()));
-            }
-            if (useTable.getCustomerId() != null) {
-                useTableDTO.setCustomer(customerService.getOneFormatById(useTable.getCustomerId()));
-            }
-            if (useTable.getOrderId() != null) {
-                useTableDTO.setOrder(orderService.getOneFormatById(useTable.getOrderId()));
-            }
-            if (useTable.getOrderTableId() != null) {
-                useTableDTO.setOrderTable(orderTableService.getOneFormatById(useTable.getOrderTableId()));
-            }
-            useTableDTO.setStatus(useTable.getStatus());
-            useTableDTO.setOrderSheets(
-                    orderSheetService.getAllFormatWithUseTable(useTable.getId(), useTable.getTableId()));
-
-            listFormat.add(useTableDTO);
+            listFormat.add(getOneFormatById(useTable.getId()));
         }
 
         return listFormat;

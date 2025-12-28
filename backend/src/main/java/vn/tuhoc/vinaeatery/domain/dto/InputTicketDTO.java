@@ -5,13 +5,12 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.tuhoc.vinaeatery.domain.Supplier;
+import vn.tuhoc.vinaeatery.domain.entity.Supplier;
 import vn.tuhoc.vinaeatery.domain.enumm.InputTicketStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.PayStatusEnum;
 import vn.tuhoc.vinaeatery.repository.converter.InputTicketStatusConverter;
@@ -24,8 +23,9 @@ import vn.tuhoc.vinaeatery.repository.converter.PayStatusConverter;
 public class InputTicketDTO {
     // Properties
     private Integer id;
+    private Integer restaurantId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timeCreate;
+    private LocalDateTime createAt;
     private EmployeeDTO employee;
     private Supplier supplier;
     private Long totalPrice;

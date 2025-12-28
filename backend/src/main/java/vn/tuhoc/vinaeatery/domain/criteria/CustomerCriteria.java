@@ -14,7 +14,6 @@ import lombok.Setter;
 public class CustomerCriteria {
     // Properties
     private Optional<String> id;
-    private Optional<String> customerCardId;
     private Optional<String> fullname;
     private Optional<String> phone;
     private Optional<String> email;

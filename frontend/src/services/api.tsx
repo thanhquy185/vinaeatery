@@ -1,5 +1,6 @@
 import type { AxiosResponse } from "axios";
 import instance from "./customize";
+import type { FilterDataProps } from "../common/props";
 import type {
   CategoryFoodsType,
   CategoryIngredientsType,
@@ -9,7 +10,6 @@ import type {
   CustomersType,
   EmployeesFormatType,
   EmployeesType,
-  FilterDataProps,
   FloorsType,
   FoodsFormatType,
   FoodsType,
@@ -20,6 +20,10 @@ import type {
   IngredientsType,
   InputTicketsFormatType,
   InputTicketsType,
+  ManagersFormatType,
+  ManagersType,
+  MessagesFormatType,
+  MessagesType,
   OrdersFormatType,
   OrderSheetsFormatType,
   OrderSheetsType,
@@ -27,12 +31,17 @@ import type {
   OrderTablesFormatType,
   OrderTablesType,
   PayMethodsType,
+  RestaurantsFormatType,
+  RestaurantsType,
   RestResponseType,
   RolesFormatType,
   RolesType,
   SuppliersType,
   TablesFormatType,
   TablesType,
+  UseFoodsFormatType,
+  UseFoodsType,
+  UsersType,
   UseTablesFormatType,
   UseTablesType,
 } from "../common/types";
@@ -42,12 +51,17 @@ const keys = {
   auth: "auth",
   momo: "momo",
   zalopay: "zalopay",
+  messages: "messages",
   handlePayments: "handle-payments",
+  users: "users",
+  restaurants: "restaurants",
+  managers: "managers",
+  customers: "customers",
   categoryFoods: "category-foods",
   categoryIngredients: "category-ingredients",
   categoryTables: "category-tables",
-  customers: "customers",
-  customerCards: "customer-cards",
+  // customers: "customers",
+  // customerCards: "customer-cards",
   employees: "employees",
   floors: "floors",
   foods: "foods",
@@ -60,6 +74,7 @@ const keys = {
   roleDetails: "role-details",
   suppliers: "suppliers",
   tables: "tables",
+  useFoods: "use-foods",
   useTables: "use-tables",
   functions: "functions",
   payMethods: "pay-methods",
@@ -93,6 +108,66 @@ const getNewFormSecurityValue = ({
 };
 
 // Các api của đối tượng xác thực (Auth)
+export const HandleSignUp = ({
+  createAt,
+  fullname,
+  phone,
+  email,
+  username,
+  password,
+  authPassword,
+}: {
+  createAt: string;
+  fullname: string;
+  phone: string;
+  email: string;
+  username: string;
+  password: string;
+  authPassword: string;
+}): Promise<AxiosResponse<RestResponseType, any>> => {
+  // Form data
+  const formData = new FormData();
+
+  // Trường form data bảo mật
+  formData.append(
+    "form-security",
+    new Blob(
+      [
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.auth,
+            fieldAction: "sign-up",
+          })
+        ),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Đối tượng xử lý
+  formData.append(
+    "sign-up",
+    new Blob(
+      [
+        JSON.stringify({
+          createAt,
+          fullname,
+          phone,
+          email,
+          username,
+          password,
+          authPassword,
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+
+  return instance.post(`/api/${keys.auth}/customer-sign-up`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
 export const HandleLogin = ({
   username,
   password,
@@ -157,9 +232,9 @@ export const HandleAccount = (): Promise<
 
 // Các api thanh toán hoá đơn
 // - Momo
-export const HandleCreateMomoOrder = (): Promise<
-  AxiosResponse<RestResponseType, any>
-> => {
+export const HandleCreateMomoOrder = (
+  handlePaymentId: number
+): Promise<AxiosResponse<RestResponseType, any>> => {
   const formData = new FormData();
   formData.append(
     "form-security",
@@ -176,11 +251,15 @@ export const HandleCreateMomoOrder = (): Promise<
     )
   );
 
-  return instance.post(`/api/${keys.momo}/create`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  return instance.post(
+    `/api/${keys.momo}/create/${handlePaymentId}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 };
 export const HandleCancelMomoOrder = ({
   orderId,
@@ -217,9 +296,9 @@ export const HandleCancelMomoOrder = ({
   });
 };
 // - Zalopay
-export const HandleCreateZalopayOrder = (): Promise<
-  AxiosResponse<RestResponseType, any>
-> => {
+export const HandleCreateZalopayOrder = (
+  handlePaymentId: number
+): Promise<AxiosResponse<RestResponseType, any>> => {
   const formData = new FormData();
   formData.append(
     "form-security",
@@ -236,11 +315,15 @@ export const HandleCreateZalopayOrder = (): Promise<
     )
   );
 
-  return instance.post(`/api/${keys.zalopay}/create`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  return instance.post(
+    `/api/${keys.zalopay}/create/${handlePaymentId}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 };
 
 // Các api xử lý thanh toán hoá đơn
@@ -278,7 +361,7 @@ export const GetHandlePaymentByUseTableId = (
   );
 };
 export const GetHandlePaymentFormatByUseTableId = (
-  useTableId: string
+  useTableId: number
 ): Promise<AxiosResponse<HandlePaymentsFormatType, any>> => {
   return instance.post(
     `/api/${keys.handlePayments}/get-format/${useTableId}`,
@@ -289,6 +372,7 @@ export const GetHandlePaymentFormatByUseTableId = (
   );
 };
 export const HandleUpdateHandlePayment = ({
+  id,
   useTableId,
   employeeId,
   payMethodId,
@@ -330,7 +414,794 @@ export const HandleUpdateHandlePayment = ({
     )
   );
 
-  return instance.put(`/api/${keys.handlePayments}/update`, formData, {
+  return instance.put(`/api/${keys.handlePayments}/update/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+// Các api của đối tượng Tài khoản (User)
+export const FindAllUser = ({
+  findType,
+  findValue,
+  roleValue,
+  isUsingValue,
+  statusValue,
+}: FilterDataProps): Promise<AxiosResponse<UsersType[], any>> => {
+  // Tham số để lọc dữ liệu
+  const params: Record<string, string> = {};
+  if (findValue! !== "") {
+    if (findType! === "id") params.id = findValue!;
+    if (findType! === "username") params.username = findValue!;
+  }
+  if (roleValue! && roleValue!.length > 0) params.role = roleValue![0];
+  if (isUsingValue! && isUsingValue!.length > 0)
+    params.isUsing = isUsingValue![0];
+  if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+
+  return instance.post<UsersType[]>(
+    `/api/${keys.users}/list`,
+    getNewFormSecurityValue({
+      fieldName: keys.users,
+      fieldAction: "read",
+    }),
+    { params }
+  );
+};
+export const FindOneUser = (
+  id: string
+): Promise<AxiosResponse<UsersType, any>> => {
+  return instance.post(
+    `/api/${keys.users}/detail/${id}`,
+    getNewFormSecurityValue({ fieldName: keys.users, fieldAction: "read" })
+  );
+};
+export const HandleCreateUser = ({
+  createAt,
+  role,
+  username,
+  password,
+  method,
+  isUsing,
+  status,
+}: UsersType): Promise<AxiosResponse<RestResponseType, any>> => {
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.users,
+      fieldAction: "create",
+    }),
+    user: {
+      createAt,
+      role,
+      username,
+      password,
+      method,
+      isUsing,
+      status,
+    },
+  };
+  console.log(formData);
+
+  return instance.post(`/api/${keys.users}/create`, formData, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+export const HandleUpdateUser = ({
+  id,
+  role,
+  // method,
+  updateAt,
+}: UsersType): Promise<AxiosResponse<RestResponseType, any>> => {
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.users,
+      fieldAction: "update",
+    }),
+    user: {
+      role,
+      // method,
+      updateAt,
+    },
+  };
+
+  return instance.put(`/api/${keys.users}/update/${id}`, formData, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+export const HandleLockUser = ({
+  id,
+  status,
+}: UsersType): Promise<AxiosResponse<RestResponseType, any>> => {
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.users,
+      fieldAction: "lock",
+    }),
+    user: {
+      status,
+    },
+  };
+
+  return instance.patch(`/api/${keys.users}/lock/${id}`, formData, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+export const HandleChangePasswordUser = ({
+  id,
+  newPassword,
+  authNewPassword,
+  updateAt,
+}: {
+  id?: number;
+  newPassword?: string;
+  authNewPassword?: string;
+  updateAt?: string;
+}): Promise<AxiosResponse<RestResponseType, any>> => {
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.users,
+      fieldAction: "change-password",
+    }),
+    user: {
+      newPassword,
+      authNewPassword,
+      updateAt,
+    },
+  };
+
+  return instance.put(`/api/${keys.users}/change-password/${id}`, formData, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+// Các api của đối tượng Nhà hàng (Restaurant)
+export const FindAllRestaurant = ({
+  findType,
+  findValue,
+  statusValue,
+}: FilterDataProps): Promise<AxiosResponse<RestaurantsFormatType[], any>> => {
+  // Tham số để lọc dữ liệu
+  const params: Record<string, string> = {};
+  if (findValue! !== "") {
+    if (findType! === "id") params.id = findValue!;
+    if (findType! === "name") params.name = findValue!;
+  }
+  if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+
+  return instance.post<RestaurantsFormatType[]>(
+    `/api/${keys.restaurants}/list-format`,
+    getNewFormSecurityValue({
+      fieldName: keys.restaurants,
+      fieldAction: "read",
+    })
+  );
+};
+export const FindAllRestaurantByManagerId = ({
+  managerId,
+}: {
+  managerId: number;
+}): Promise<AxiosResponse<RestaurantsFormatType[], any>> => {
+  // Tham số để lọc dữ liệu
+  // const params: Record<string, string> = {};
+  // if (findValue! !== "") {
+  //   if (findType! === "table") params.tableName = findValue!;
+  // }
+  // if (timeValue! && timeValue!.length > 0) {
+  //   if (timeValue![0] !== "") params.timeStart = timeValue![0];
+  //   if (timeValue![1] !== "") params.timeEnd = timeValue![1];
+  // }
+  // if (floorValue! && floorValue!.length > 0) params.floorId = floorValue![0];
+  // if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+
+  return instance.post<RestaurantsFormatType[]>(
+    `/api/${keys.restaurants}/list-format-by-manager-id/${managerId}`,
+    getNewFormSecurityValue({
+      fieldName: keys.restaurants,
+      fieldAction: "read",
+    })
+  );
+};
+export const FindAllRestaurantForPublicPage = ({
+  findType,
+  findValue,
+  statusValue,
+}: FilterDataProps): Promise<AxiosResponse<RestaurantsFormatType[], any>> => {
+  // Tham số để lọc dữ liệu
+  const params: Record<string, string> = {};
+  if (findValue! !== "") {
+    if (findType! === "id") params.id = findValue!;
+    if (findType! === "name") params.name = findValue!;
+  }
+  if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+
+  return instance.post<RestaurantsFormatType[]>(
+    `/api/${keys.restaurants}/list-format-for-public-page`,
+    getNewFormSecurityValue({
+      fieldName: keys.restaurants,
+      fieldAction: "read",
+    })
+  );
+};
+export const HandleCreateRestaurant = ({
+  managerId,
+  createAt,
+  restaurantImages,
+  name,
+  phone,
+  email,
+  address,
+  description,
+  rating,
+  status,
+}: RestaurantsType): Promise<AxiosResponse<RestResponseType, any>> => {
+  // Form data
+  const formData = new FormData();
+
+  // Form bảo mật
+  formData.append(
+    "form-security",
+    new Blob(
+      [
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.restaurants,
+            fieldAction: "create",
+          })
+        ),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Thông tin cơ bản
+  formData.append(
+    "restaurant",
+    new Blob(
+      [
+        JSON.stringify({
+          managerId,
+          createAt,
+          name,
+          phone,
+          email,
+          address,
+          description,
+          rating,
+          status,
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Hình ảnh
+  if (restaurantImages) {
+    restaurantImages?.forEach((restaurantImage) =>
+      formData.append("restaurant-images", restaurantImage)
+    );
+  }
+
+  return instance.post(`/api/${keys.restaurants}/create`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+export const HandleUpdateRestaurant = ({
+  id,
+  managerId,
+  restaurantImages,
+  name,
+  phone,
+  email,
+  address,
+  description,
+  rating,
+  updateAt,
+}: RestaurantsType): Promise<AxiosResponse<RestResponseType, any>> => {
+  // Form data
+  const formData = new FormData();
+
+  // Form bảo mật
+  formData.append(
+    "form-security",
+    new Blob(
+      [
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.restaurants,
+            fieldAction: "update",
+          })
+        ),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Thông tin cơ bản
+  formData.append(
+    "restaurant",
+    new Blob(
+      [
+        JSON.stringify({
+          managerId,
+          name,
+          phone,
+          email,
+          address,
+          description,
+          rating,
+          updateAt,
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Hình ảnh
+  if (restaurantImages) {
+    restaurantImages?.forEach((restaurantImage) =>
+      formData.append("restaurant-images", restaurantImage)
+    );
+  }
+
+  return instance.put(`/api/${keys.restaurants}/update/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+export const HandleLockRestaurant = ({
+  id,
+  status,
+  updateAt,
+}: RestaurantsType): Promise<AxiosResponse<RestResponseType, any>> => {
+  // Form data
+  const formData = new FormData();
+
+  // Form bảo mật
+  formData.append(
+    "form-security",
+    new Blob(
+      [
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.restaurants,
+            fieldAction: "lock",
+          })
+        ),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Thông tin cơ bản
+  formData.append(
+    "restaurant",
+    new Blob(
+      [
+        JSON.stringify({
+          status,
+          updateAt,
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+
+  return instance.patch(`/api/${keys.restaurants}/lock/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+// Các api của đối tượng Chủ nhà hàng (Manager)
+export const FindAllManager = ({
+  findType,
+  findValue,
+  statusValue,
+}: FilterDataProps): Promise<AxiosResponse<ManagersFormatType[], any>> => {
+  // Tham số để lọc dữ liệu
+  const params: Record<string, string> = {};
+  if (findValue! !== "") {
+    if (findType! === "id") params.id = findValue!;
+    if (findType! === "fullname") params.fullname = findValue!;
+    if (findType! === "phone") params.phone = findValue!;
+    if (findType! === "email") params.email = findValue!;
+  }
+  if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+
+  return instance.post<ManagersFormatType[]>(
+    `/api/${keys.managers}/list-format`,
+    getNewFormSecurityValue({ fieldName: keys.managers, fieldAction: "read" }),
+    {
+      params,
+    }
+  );
+};
+export const FindOneManager = (
+  id: string
+): Promise<AxiosResponse<ManagersFormatType, any>> => {
+  return instance.post(
+    `/api/${keys.managers}/detail/${id}`,
+    getNewFormSecurityValue({ fieldName: keys.managers, fieldAction: "read" })
+  );
+};
+// export const FindOneManagerByUserId = (
+//   id: number
+// ): Promise<AxiosResponse<ManagersFormatType, any>> => {
+//   return instance.post(
+//     `/api/${keys.managers}/detail-by-user-id/${id}`,
+//     getNewFormSecurityValue({ fieldName: keys.managers, fieldAction: "read" })
+//   );
+// };
+export const HandleCreateManager = ({
+  userId,
+  createAt,
+  image,
+  fullname,
+  birthday,
+  gender,
+  phone,
+  email,
+  address,
+  description,
+  status,
+}: ManagersType): Promise<AxiosResponse<RestResponseType, any>> => {
+  // Form data
+  const formData = new FormData();
+
+  // Form bảo mật
+  formData.append(
+    "form-security",
+    new Blob(
+      [
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.managers,
+            fieldAction: "create",
+          })
+        ),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Thông tin cơ bản
+  formData.append(
+    "manager",
+    new Blob(
+      [
+        JSON.stringify({
+          userId,
+          createAt,
+          fullname,
+          birthday,
+          gender,
+          phone,
+          email,
+          address,
+          description,
+          status,
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Hình ảnh
+  if (image) formData.append("image-file", image);
+
+  return instance.post(`/api/${keys.managers}/create`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+export const HandleUpdateManager = ({
+  id,
+  userId,
+  image,
+  fullname,
+  birthday,
+  gender,
+  phone,
+  email,
+  address,
+  description,
+  updateAt,
+}: ManagersType): Promise<AxiosResponse<RestResponseType, any>> => {
+  // Form data
+  const formData = new FormData();
+
+  // Form bảo mật
+  formData.append(
+    "form-security",
+    new Blob(
+      [
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.managers,
+            fieldAction: "update",
+          })
+        ),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Thông tin cơ bản
+  formData.append(
+    "manager",
+    new Blob(
+      [
+        JSON.stringify({
+          userId,
+          fullname,
+          birthday,
+          gender,
+          phone,
+          email,
+          address,
+          description,
+          updateAt,
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+  if (image) formData.append("image-file", image);
+
+  return instance.put(`/api/${keys.managers}/update/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+export const HandleLockManager = ({
+  id,
+  status,
+  updateAt,
+}: ManagersType): Promise<AxiosResponse<RestResponseType, any>> => {
+  // Form data
+  const formData = new FormData();
+
+  // Form bảo mật
+  formData.append(
+    "form-security",
+    new Blob(
+      [
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.managers,
+            fieldAction: "lock",
+          })
+        ),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Thông tin cơ bản
+  formData.append(
+    "manager",
+    new Blob(
+      [
+        JSON.stringify({
+          status,
+          updateAt,
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+
+  return instance.patch(`/api/${keys.managers}/lock/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+// Các api của đối tượng Khách hàng (Customer)
+export const FindAllCustomer = ({
+  findType,
+  findValue,
+  statusValue,
+}: FilterDataProps): Promise<AxiosResponse<CustomersFormatType[], any>> => {
+  // Tham số để lọc dữ liệu
+  const params: Record<string, string> = {};
+  if (findValue! !== "") {
+    if (findType! === "id") params.id = findValue!;
+    if (findType! === "fullname") params.fullname = findValue!;
+    if (findType! === "phone") params.phone = findValue!;
+    if (findType! === "email") params.email = findValue!;
+  }
+  if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+
+  return instance.post<CustomersFormatType[]>(
+    `/api/${keys.customers}/list-format`,
+    getNewFormSecurityValue({ fieldName: keys.customers, fieldAction: "read" }),
+    {
+      params,
+    }
+  );
+};
+export const FindOneCustomer = (
+  id: string
+): Promise<AxiosResponse<CustomersFormatType, any>> => {
+  return instance.post(
+    `/api/${keys.customers}/detail/${id}`,
+    getNewFormSecurityValue({ fieldName: keys.customers, fieldAction: "read" })
+  );
+};
+// export const FindOneCustomerByUserId = (
+//   id: number
+// ): Promise<AxiosResponse<CustomersFormatType, any>> => {
+//   return instance.post(
+//     `/api/${keys.customers}/detail-by-user-id/${id}`,
+//     getNewFormSecurityValue({ fieldName: keys.customers, fieldAction: "read" })
+//   );
+// };
+export const HandleCreateCustomer = ({
+  userId,
+  createAt,
+  image,
+  fullname,
+  birthday,
+  gender,
+  phone,
+  email,
+  address,
+  description,
+  status,
+}: CustomersType): Promise<AxiosResponse<RestResponseType, any>> => {
+  // Form data
+  const formData = new FormData();
+
+  // Form bảo mật
+  formData.append(
+    "form-security",
+    new Blob(
+      [
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.customers,
+            fieldAction: "create",
+          })
+        ),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Thông tin cơ bản
+  formData.append(
+    "customer",
+    new Blob(
+      [
+        JSON.stringify({
+          userId,
+          createAt,
+          fullname,
+          birthday,
+          gender,
+          phone,
+          email,
+          address,
+          description,
+          status,
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Hình ảnh
+  if (image) formData.append("image-file", image);
+
+  return instance.post(`/api/${keys.customers}/create`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+export const HandleUpdateCustomer = ({
+  id,
+  userId,
+  image,
+  fullname,
+  birthday,
+  gender,
+  phone,
+  email,
+  address,
+  description,
+  updateAt,
+}: CustomersType): Promise<AxiosResponse<RestResponseType, any>> => {
+  // Form data
+  const formData = new FormData();
+
+  // Form bảo mật
+  formData.append(
+    "form-security",
+    new Blob(
+      [
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.customers,
+            fieldAction: "update",
+          })
+        ),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Thông tin cơ bản
+  formData.append(
+    "customer",
+    new Blob(
+      [
+        JSON.stringify({
+          userId,
+          fullname,
+          birthday,
+          gender,
+          phone,
+          email,
+          address,
+          description,
+          updateAt,
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+  if (image) formData.append("image-file", image);
+
+  return instance.put(`/api/${keys.customers}/update/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+export const HandleLockCustomer = ({
+  id,
+  status,
+  updateAt,
+}: CustomersType): Promise<AxiosResponse<RestResponseType, any>> => {
+  // Form data
+  const formData = new FormData();
+
+  // Form bảo mật
+  formData.append(
+    "form-security",
+    new Blob(
+      [
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.customers,
+            fieldAction: "lock",
+          })
+        ),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Thông tin cơ bản
+  formData.append(
+    "customer",
+    new Blob(
+      [
+        JSON.stringify({
+          status,
+          updateAt,
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+
+  return instance.patch(`/api/${keys.customers}/lock/${id}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -339,12 +1210,14 @@ export const HandleUpdateHandlePayment = ({
 
 // Các api của đối tượng Sử dụng bàn ăn (Use Table)
 export const FindOneNewUseTableByTableId = ({
+  restaurantId,
   tableId,
 }: {
+  restaurantId: string;
   tableId: string;
 }): Promise<AxiosResponse<UseTablesFormatType, any>> => {
   return instance.post(
-    `/api/${keys.useTables}/${tableId}`,
+    `/api/${keys.useTables}/${restaurantId}/${tableId}`,
     getNewFormSecurityValue({ fieldName: keys.useTables, fieldAction: "read" })
   );
 };
@@ -354,6 +1227,7 @@ export const FindAllUseTable = ({
   timeValue,
   floorValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<UseTablesFormatType[], any>> => {
   // Tham số để lọc dữ liệu
   const params: Record<string, string> = {};
@@ -366,6 +1240,8 @@ export const FindAllUseTable = ({
   }
   if (floorValue! && floorValue!.length > 0) params.floorId = floorValue![0];
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<UseTablesFormatType[]>(
     `/api/${keys.useTables}/list-format`,
@@ -380,6 +1256,7 @@ export const FindAllUseTableTimeEndIsNull = ({
   findValue,
   floorValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<UseTablesFormatType[], any>> => {
   // Tham số để lọc dữ liệu
   const params: Record<string, string> = {};
@@ -388,6 +1265,8 @@ export const FindAllUseTableTimeEndIsNull = ({
   }
   if (floorValue! && floorValue!.length > 0) params.floorId = floorValue![0];
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<UseTablesFormatType[]>(
     `/api/${keys.useTables}/list-format?timeEnd=null`,
@@ -459,12 +1338,162 @@ export const HandleUpdateUseTable = ({
   });
 };
 
+// Các api liên quan đến nhắn tin
+export const FindMessage = (): Promise<AxiosResponse<MessagesType[], any>> => {
+  return instance.post(
+    `/api/${keys.messages}/list`,
+    getNewFormSecurityValue({
+      fieldName: keys.messages,
+      fieldAction: "read",
+    })
+  );
+};
+export const FindMessageFormat = ({
+  restaurantId,
+}: FilterDataProps): Promise<AxiosResponse<MessagesFormatType[], any>> => {
+  // Tham số để lọc dữ liệu
+  const params: Record<string, string> = {};
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
+
+  return instance.post(
+    `/api/${keys.messages}/list-format`,
+    getNewFormSecurityValue({
+      fieldName: keys.messages,
+      fieldAction: "read",
+    }),
+    { params }
+  );
+};
+export const FindMessageFormatUseTableIsNull = ({
+  restaurantId,
+}: FilterDataProps): Promise<AxiosResponse<MessagesFormatType[], any>> => {
+  // Tham số để lọc dữ liệu
+  const params: Record<string, string> = {};
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
+
+  return instance.post(
+    `/api/${keys.messages}/list-format?useTableTimeEnd=null`,
+    getNewFormSecurityValue({
+      fieldName: keys.messages,
+      fieldAction: "read",
+    }),
+    { params }
+  );
+};
+
+// Các api của đối tượng Sử dụng món ăn (Use Food)
+export const FindAllUseFood = ({
+  findType,
+  findValue,
+  timeValue,
+  categoryValue,
+  statusValue,
+  restaurantId,
+}: FilterDataProps): Promise<AxiosResponse<UseFoodsFormatType[], any>> => {
+  // Tham số để lọc dữ liệu
+  const params: Record<string, string> = {};
+  if (findValue! !== "") {
+    if (findType! === "food") params.foodName = findValue!;
+  }
+  if (timeValue! && timeValue!.length > 0) {
+    if (timeValue![0] !== "") params.timeStart = timeValue![0];
+    if (timeValue![1] !== "") params.timeEnd = timeValue![1];
+  }
+  if (categoryValue! && categoryValue!.length > 0)
+    params.categoryFoodId = categoryValue![0];
+  if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
+
+  return instance.post<UseFoodsFormatType[]>(
+    `/api/${keys.useFoods}/list-format`,
+    getNewFormSecurityValue({ fieldName: keys.useFoods, fieldAction: "read" }),
+    {
+      params,
+    }
+  );
+};
+export const FindAllUseFoodTimeEndIsNull = ({
+  findType,
+  findValue,
+  categoryValue,
+  statusValue,
+  restaurantId,
+}: FilterDataProps): Promise<AxiosResponse<UseFoodsFormatType[], any>> => {
+  // Tham số để lọc dữ liệu
+  const params: Record<string, string> = {};
+  if (findValue! !== "") {
+    if (findType! === "food") params.foodName = findValue!;
+  }
+  if (categoryValue! && categoryValue!.length > 0)
+    params.categoryFoodId = categoryValue![0];
+  if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
+
+  return instance.post<UseFoodsFormatType[]>(
+    `/api/${keys.useFoods}/list-format?timeEnd=null`,
+    getNewFormSecurityValue({ fieldName: keys.useFoods, fieldAction: "read" }),
+    {
+      params,
+    }
+  );
+};
+export const HandleUpdateUseFood = ({
+  id,
+  timeEnd,
+  employeeId,
+  status,
+}: UseFoodsType): Promise<AxiosResponse<RestResponseType, any>> => {
+  // Form data
+  const formData = new FormData();
+
+  // Form bảo mật
+  formData.append(
+    "form-security",
+    new Blob(
+      [
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.useFoods,
+            fieldAction: "update",
+          })
+        ),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Đối tượng
+  formData.append(
+    "use-food",
+    new Blob(
+      [
+        JSON.stringify({
+          timeEnd,
+          employeeId,
+          status,
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+
+  return instance.put(`/api/${keys.useFoods}/update/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
 // Các api của đối tượng Gọi món ăn (Order Sheet)
 export const FindAllOrderSheet = ({
   findType,
   findValue,
   floorValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<OrderSheetsFormatType[], any>> => {
   const params: Record<string, string> = {};
 
@@ -473,11 +1502,13 @@ export const FindAllOrderSheet = ({
   //   if (findType! === "table") params.tableName = findValue!;
   // }
   // if (timeValue! && timeValue!.length > 0) {
-  //   if (timeValue![0] !== "") params.timeCreateStart = timeValue![0];
-  //   if (timeValue![1] !== "") params.timeCreateEnd = timeValue![1];
+  //   if (timeValue![0] !== "") params.createAtStart = timeValue![0];
+  //   if (timeValue![1] !== "") params.createAtEnd = timeValue![1];
   // }
   if (floorValue! && floorValue!.length > 0) params.floorId = floorValue![0];
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<OrderSheetsFormatType[]>(
     `/api/${keys.orderSheets}/list-format`,
@@ -495,6 +1526,7 @@ export const FindAllOrderSheetCurrentDate = ({
   findValue,
   floorValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<OrderSheetsFormatType[], any>> => {
   const params: Record<string, string> = {};
 
@@ -504,6 +1536,8 @@ export const FindAllOrderSheetCurrentDate = ({
   }
   if (floorValue! && floorValue!.length > 0) params.floorId = floorValue![0];
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<OrderSheetsFormatType[]>(
     `/api/${keys.orderSheets}/list-format?currentDate`,
@@ -528,7 +1562,8 @@ export const FindOneOrderSheet = (
   );
 };
 export const HandleCreateOrderSheet = ({
-  timeCreate,
+  restaurantId,
+  createAt,
   employeeId,
   tableId,
   totalPrice,
@@ -560,7 +1595,8 @@ export const HandleCreateOrderSheet = ({
     new Blob(
       [
         JSON.stringify({
-          timeCreate,
+          restaurantId,
+          createAt,
           employeeId,
           tableId,
           totalPrice,
@@ -588,7 +1624,7 @@ export const HandleCreateOrderSheet = ({
 };
 export const HandleUpdateOrderSheet = ({
   id,
-  timeService,
+  serviceAt,
   employeeId,
   message,
   status,
@@ -617,7 +1653,7 @@ export const HandleUpdateOrderSheet = ({
     new Blob(
       [
         JSON.stringify({
-          timeService,
+          serviceAt,
           employeeId,
           message,
           status,
@@ -648,8 +1684,8 @@ export const FindAllOrder = ({
     if (findType! === "customer") params.customerId = findValue!;
   }
   if (timeValue! && timeValue!.length > 0) {
-    if (timeValue![0] !== "") params.timeCreateStart = timeValue![0];
-    if (timeValue![1] !== "") params.timeCreateEnd = timeValue![1];
+    if (timeValue![0] !== "") params.createAtStart = timeValue![0];
+    if (timeValue![1] !== "") params.createAtEnd = timeValue![1];
   }
   if (statusValue! && statusValue!.length > 0)
     params.statusMerge = statusValue!.join(",");
@@ -671,10 +1707,15 @@ export const FindOneOrder = (
   );
 };
 export const HandleCreateOrder = ({
-  timeCreate,
+  restaurantId,
+  createAt,
   employeeId,
   customerId,
   totalPrice,
+  payId,
+  payTime,
+  payMethodId,
+  payTotalPrice,
   payStatus,
   status,
   orderDetails,
@@ -703,10 +1744,15 @@ export const HandleCreateOrder = ({
     new Blob(
       [
         JSON.stringify({
-          timeCreate,
+          restaurantId,
+          createAt,
           employeeId,
           customerId,
           totalPrice,
+          payId,
+          payTime,
+          payMethodId,
+          payTotalPrice,
           payStatus,
           status,
         }),
@@ -729,9 +1775,8 @@ export const HandleCreateOrder = ({
     },
   });
 };
-export const HandleUpdateOrder = ({
+export const HandleUpdateOrderStatus = ({
   id,
-  payStatus,
   status,
 }: OrdersType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
@@ -758,7 +1803,6 @@ export const HandleUpdateOrder = ({
     new Blob(
       [
         JSON.stringify({
-          payStatus,
           status,
         }),
       ],
@@ -766,7 +1810,48 @@ export const HandleUpdateOrder = ({
     )
   );
 
-  return instance.put(`/api/${keys.orders}/update/${id}`, formData, {
+  return instance.put(`/api/${keys.orders}/update-status/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+export const HandleUpdateOrderPayStatus = ({
+  id,
+  payStatus,
+}: OrdersType): Promise<AxiosResponse<RestResponseType, any>> => {
+  // Form data
+  const formData = new FormData();
+
+  // Form bảo mật
+  formData.append(
+    "form-security",
+    new Blob(
+      [
+        JSON.stringify(
+          getNewFormSecurityValue({
+            fieldName: keys.orders,
+            fieldAction: "update",
+          })
+        ),
+      ],
+      { type: "application/json" }
+    )
+  );
+  // Đối tượng
+  formData.append(
+    "order",
+    new Blob(
+      [
+        JSON.stringify({
+          payStatus,
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+
+  return instance.put(`/api/${keys.orders}/update-payment/${id}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -777,21 +1862,26 @@ export const HandleUpdateOrder = ({
 export const FindAllOrderTable = ({
   findType,
   findValue,
-  timeValue,
+  arriveAtValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<OrderTablesFormatType[], any>> => {
   // Tham số để lọc dữ liệu
   const params: Record<string, string> = {};
   if (findValue! !== "") {
     if (findType! === "id") params.id = findValue!;
-    if (findType! === "fullname") params.fullname = findValue!;
-    if (findType! === "phone") params.phone = findValue!;
+    if (findType! === "customer-id") params.customerId = findValue!;
+    if (findType! === "customer-fullname") params.customerFullname = findValue!;
+    if (findType! === "customer-phone") params.customerPhone = findValue!;
+    if (findType! === "customer-email") params.customerEmail = findValue!;
   }
-  if (timeValue! && timeValue!.length > 0) {
-    if (timeValue![0] !== "") params.timeOrderStart = timeValue![0];
-    if (timeValue![1] !== "") params.timeOrderEnd = timeValue![1];
+  if (arriveAtValue! && arriveAtValue!.length > 0) {
+    if (arriveAtValue![0] !== "") params.arriveAtStart = arriveAtValue![0];
+    if (arriveAtValue![1] !== "") params.arriveAtEnd = arriveAtValue![1];
   }
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<OrderTablesFormatType[]>(
     `/api/${keys.orderTables}/list-format`,
@@ -816,20 +1906,22 @@ export const FindOneOrderTable = (
   );
 };
 export const HandleCreateOrderTable = ({
-  timeOrder,
-  timeArrive,
+  restaurantId,
   employeeId,
-  note,
-  fullname,
-  phone,
-  email,
-  address,
+  customerId,
+  createAt,
+  arriveAt,
+  customerFullname,
+  customerPhone,
+  customerEmail,
+  customerNote,
+  guests,
   status,
 }: OrderTablesType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
 
-  // Trường form data bảo mật
+  // Form bảo mật
   formData.append(
     "form-security",
     new Blob(
@@ -844,20 +1936,22 @@ export const HandleCreateOrderTable = ({
       { type: "application/json" }
     )
   );
-  // Đối tượng xử lý
+  // Thông tin cơ bản
   formData.append(
     "order-table",
     new Blob(
       [
         JSON.stringify({
-          timeOrder,
-          timeArrive,
+          restaurantId,
           employeeId,
-          note,
-          fullname,
-          phone,
-          email,
-          address,
+          customerId,
+          createAt,
+          arriveAt,
+          customerFullname,
+          customerPhone,
+          customerEmail,
+          customerNote,
+          guests,
           status,
         }),
       ],
@@ -873,19 +1967,14 @@ export const HandleCreateOrderTable = ({
 };
 export const HandleUpdateOrderTable = ({
   id,
-  timeOrder,
-  timeArrive,
-  note,
-  fullname,
-  phone,
-  email,
-  address,
-  timeUpdate,
+  employeeId,
+  status,
+  updateAt,
 }: OrderTablesType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
 
-  // Trường form data bảo mật
+  // Form bảo mật
   formData.append(
     "form-security",
     new Blob(
@@ -900,451 +1989,30 @@ export const HandleUpdateOrderTable = ({
       { type: "application/json" }
     )
   );
-  // Đối tượng xử lý
+  // Đối tượng
   formData.append(
     "order-table",
     new Blob(
       [
         JSON.stringify({
-          timeOrder,
-          timeArrive,
-          note,
-          fullname,
-          phone,
-          email,
-          address,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
-
-  return instance.put(`/api/${keys.orderTables}/update/${id}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-};
-export const HandleLockOrderTable = ({
-  id,
-  status,
-  timeUpdate,
-}: OrderTablesType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.orderTables,
-            fieldAction: "lock",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "order-table",
-    new Blob(
-      [
-        JSON.stringify({
+          employeeId,
           status,
-          timeUpdate,
+          updateAt,
         }),
       ],
       { type: "application/json" }
     )
   );
 
-  return instance.put(`/api/${keys.orderTables}/lock/${id}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-};
-
-// Các api của đối tượng Thẻ khách hàng (Customer Card)
-export const FindAllCustomerCard = ({
-  findType,
-  findValue,
-  statusValue,
-}: FilterDataProps): Promise<AxiosResponse<CustomerCardsType[], any>> => {
-  // Tham số để lọc dữ liệu
-  const params: Record<string, string> = {};
-  if (findValue! !== "") {
-    if (findType! === "id") params.id = findValue!;
-    if (findType! === "name") params.name = findValue!;
-  }
-  if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
-
-  return instance.post<CustomerCardsType[]>(
-    `/api/${keys.customerCards}/list`,
-    getNewFormSecurityValue({
-      fieldName: keys.customerCards,
-      fieldAction: "read",
-    }),
+  return instance.put(
+    `/api/${keys.orderTables}/update-status/${id}`,
+    formData,
     {
-      params,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     }
   );
-};
-export const FindOneCustomerCard = (
-  id: string
-): Promise<AxiosResponse<CustomerCardsType, any>> => {
-  return instance.post(
-    `/api/${keys.customerCards}/detail/${id}`,
-    getNewFormSecurityValue({
-      fieldName: keys.customerCards,
-      fieldAction: "read",
-    })
-  );
-};
-export const HandleCreateCustomerCard = ({
-  image,
-  name,
-  threshold,
-  discount,
-  description,
-  status,
-}: CustomerCardsType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Form bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.customerCards,
-            fieldAction: "create",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Thông tin cơ bản
-  formData.append(
-    "customer-card",
-    new Blob(
-      [
-        JSON.stringify({
-          name,
-          threshold,
-          discount,
-          description,
-          status,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Hình ảnh
-  if (image) formData.append("image-file", image);
-
-  return instance.post(`/api/${keys.customerCards}/create`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-};
-export const HandleUpdateCustomerCard = ({
-  id,
-  image,
-  name,
-  threshold,
-  discount,
-  description,
-  timeUpdate,
-}: CustomerCardsType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Form bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.customerCards,
-            fieldAction: "update",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Thông tin cơ bản
-  formData.append(
-    "customer-card",
-    new Blob(
-      [
-        JSON.stringify({
-          name,
-          threshold,
-          discount,
-          description,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Hình ảnh
-  if (image) formData.append("image-file", image);
-
-  return instance.put(`/api/${keys.customerCards}/update/${id}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-};
-export const HandleLockCustomerCard = ({
-  id,
-  status,
-  timeUpdate,
-}: CustomerCardsType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.customerCards,
-            fieldAction: "lock",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "customer-card",
-    new Blob(
-      [
-        JSON.stringify({
-          status,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
-
-  return instance.put(`/api/${keys.customerCards}/lock/${id}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-};
-
-// Các api của đối tượng Khách hàng (Customer)
-export const FindAllCustomer = ({
-  findType,
-  findValue,
-  customerCardValue,
-  statusValue,
-}: FilterDataProps): Promise<AxiosResponse<CustomersFormatType[], any>> => {
-  // Tham số để lọc dữ liệu
-  const params: Record<string, string> = {};
-  if (findValue! !== "") {
-    if (findType! === "id") params.id = findValue!;
-    if (findType! === "fullname") params.fullname = findValue!;
-    if (findType! === "phone") params.phone = findValue!;
-    if (findType! === "email") params.email = findValue!;
-  }
-  if (customerCardValue! && customerCardValue!.length > 0)
-    params.customerCardId = customerCardValue!.join(",");
-  if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
-
-  return instance.post<CustomersFormatType[]>(
-    `/api/${keys.customers}/list-format`,
-    getNewFormSecurityValue({ fieldName: keys.customers, fieldAction: "read" }),
-    {
-      params,
-    }
-  );
-};
-export const FindOneCustomer = (
-  id: string
-): Promise<AxiosResponse<CustomersFormatType, any>> => {
-  return instance.post(
-    `/api/${keys.customers}/detail/${id}`,
-    getNewFormSecurityValue({ fieldName: keys.customers, fieldAction: "read" })
-  );
-};
-export const HandleCreateCustomer = ({
-  customerCardId,
-  totalThreshold,
-  fullname,
-  birthday,
-  gender,
-  phone,
-  email,
-  address,
-  description,
-  status,
-}: CustomersType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.customers,
-            fieldAction: "create",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "customer",
-    new Blob(
-      [
-        JSON.stringify({
-          customerCardId,
-          totalThreshold,
-          fullname,
-          birthday,
-          gender,
-          phone,
-          email,
-          address,
-          description,
-          status,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
-
-  return instance.post(`/api/${keys.customers}/create`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-};
-export const HandleUpdateCustomer = ({
-  id,
-  customerCardId,
-  fullname,
-  birthday,
-  gender,
-  phone,
-  email,
-  address,
-  description,
-  timeUpdate,
-}: CustomersType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.customers,
-            fieldAction: "update",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "customer",
-    new Blob(
-      [
-        JSON.stringify({
-          customerCardId,
-          fullname,
-          birthday,
-          gender,
-          phone,
-          email,
-          address,
-          description,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
-
-  return instance.put(`/api/${keys.customers}/update/${id}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-};
-export const HandleLockCustomer = ({
-  id,
-  status,
-  timeUpdate,
-}: CustomersType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.customers,
-            fieldAction: "lock",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "customer",
-    new Blob(
-      [
-        JSON.stringify({
-          status,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
-
-  return instance.put(`/api/${keys.customers}/lock/${id}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
 };
 
 // Các api của đối tượng Tầng (Floor)
@@ -1352,6 +2020,7 @@ export const FindAllFloor = ({
   findType,
   findValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<FloorsType[], any>> => {
   // Tham số để lọc dữ liệu
   const params: Record<string, string> = {};
@@ -1360,6 +2029,8 @@ export const FindAllFloor = ({
     if (findType! === "name") params.name = findValue!;
   }
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<FloorsType[]>(
     `/api/${keys.floors}/list`,
@@ -1378,46 +2049,27 @@ export const FindOneFloor = (
   );
 };
 export const HandleCreateFloor = ({
+  restaurantId,
   name,
   description,
   status,
 }: FloorsType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.floors,
-            fieldAction: "create",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "floor",
-    new Blob(
-      [
-        JSON.stringify({
-          name,
-          description,
-          status,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.floors,
+      fieldAction: "create",
+    }),
+    floor: {
+      restaurantId,
+      name,
+      description,
+      status,
+    },
+  };
 
   return instance.post(`/api/${keys.floors}/create`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
@@ -1425,87 +2077,41 @@ export const HandleUpdateFloor = ({
   id,
   name,
   description,
-  timeUpdate,
 }: FloorsType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.floors,
-            fieldAction: "update",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "floor",
-    new Blob(
-      [
-        JSON.stringify({
-          name,
-          description,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.floors,
+      fieldAction: "update",
+    }),
+    floor: {
+      name,
+      description,
+    },
+  };
 
   return instance.put(`/api/${keys.floors}/update/${id}`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
 export const HandleLockFloor = ({
   id,
   status,
-  timeUpdate,
 }: FloorsType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.floors,
+      fieldAction: "lock",
+    }),
+    floor: {
+      status,
+    },
+  };
 
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.floors,
-            fieldAction: "lock",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "floor",
-    new Blob(
-      [
-        JSON.stringify({
-          status,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
-
-  return instance.put(`/api/${keys.floors}/lock/${id}`, formData, {
+  return instance.patch(`/api/${keys.floors}/lock/${id}`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
@@ -1516,6 +2122,7 @@ export const FindAllCategoryTable = ({
   findValue,
   surchargeTypeValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<CategoryTablesType[], any>> => {
   // Tham số để lọc dữ liệu
   const params: Record<string, string> = {};
@@ -1526,6 +2133,8 @@ export const FindAllCategoryTable = ({
   if (surchargeTypeValue! && surchargeTypeValue!.length > 0)
     params.surchargeType = surchargeTypeValue![0];
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<CategoryTablesType[]>(
     `/api/${keys.categoryTables}/list`,
@@ -1550,50 +2159,31 @@ export const FindOneCategoryTable = (
   );
 };
 export const HandleCreateCategoryTable = ({
+  restaurantId,
   name,
   surchargeType,
   surchargeValue,
   description,
   status,
 }: CategoryTablesType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.categoryTables,
-            fieldAction: "create",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "category-table",
-    new Blob(
-      [
-        JSON.stringify({
-          name,
-          surchargeType,
-          surchargeValue,
-          description,
-          status,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.categoryTables,
+      fieldAction: "create",
+    }),
+    categoryTable: {
+      restaurantId,
+      name,
+      surchargeType,
+      surchargeValue,
+      description,
+      status,
+    },
+  };
 
   return instance.post(`/api/${keys.categoryTables}/create`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
@@ -1603,89 +2193,43 @@ export const HandleUpdateCategoryTable = ({
   surchargeType,
   surchargeValue,
   description,
-  timeUpdate,
 }: CategoryTablesType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.categoryTables,
-            fieldAction: "update",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "category-table",
-    new Blob(
-      [
-        JSON.stringify({
-          name,
-          surchargeType,
-          surchargeValue,
-          description,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.categoryTables,
+      fieldAction: "update",
+    }),
+    categoryTable: {
+      name,
+      surchargeType,
+      surchargeValue,
+      description,
+    },
+  };
 
   return instance.put(`/api/${keys.categoryTables}/update/${id}`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
 export const HandleLockCategoryTable = ({
   id,
   status,
-  timeUpdate,
 }: CategoryTablesType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.categoryTables,
+      fieldAction: "lock",
+    }),
+    categoryTable: {
+      status,
+    },
+  };
 
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.categoryTables,
-            fieldAction: "lock",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "category-table",
-    new Blob(
-      [
-        JSON.stringify({
-          status,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
-
-  return instance.put(`/api/${keys.categoryTables}/lock/${id}`, formData, {
+  return instance.patch(`/api/${keys.categoryTables}/lock/${id}`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
@@ -1696,6 +2240,7 @@ export const FindAllTable = ({
   findValue,
   categoryValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<TablesFormatType[], any>> => {
   // Tham số để lọc dữ liệu
   const params: Record<string, string> = {};
@@ -1706,6 +2251,8 @@ export const FindAllTable = ({
   if (categoryValue! && categoryValue!.length > 0)
     params.categoryTableId = categoryValue!.join(",");
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<TablesFormatType[]>(
     `/api/${keys.tables}/list-format`,
@@ -1724,6 +2271,7 @@ export const FindOneTable = (
   );
 };
 export const HandleCreateTable = ({
+  restaurantId,
   name,
   categoryTableId,
   floorId,
@@ -1731,45 +2279,25 @@ export const HandleCreateTable = ({
   description,
   status,
 }: TablesType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.tables,
-            fieldAction: "create",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "table",
-    new Blob(
-      [
-        JSON.stringify({
-          name,
-          categoryTableId,
-          floorId,
-          seats,
-          description,
-          status,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.tables,
+      fieldAction: "create",
+    }),
+    table: {
+      restaurantId,
+      name,
+      categoryTableId,
+      floorId,
+      seats,
+      description,
+      status,
+    },
+  };
 
   return instance.post(`/api/${keys.tables}/create`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
@@ -1780,92 +2308,44 @@ export const HandleUpdateTable = ({
   floorId,
   seats,
   description,
-  timeUpdate,
 }: TablesType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.tables,
-            fieldAction: "update",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "table",
-    new Blob(
-      [
-        JSON.stringify({
-          id,
-          name,
-          categoryTableId,
-          floorId,
-          seats,
-          description,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.tables,
+      fieldAction: "update",
+    }),
+    table: {
+      name,
+      categoryTableId,
+      floorId,
+      seats,
+      description,
+    },
+  };
 
   return instance.put(`/api/${keys.tables}/update/${id}`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
 export const HandleLockTable = ({
   id,
   status,
-  timeUpdate,
 }: TablesType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.tables,
+      fieldAction: "lock",
+    }),
+    table: {
+      status,
+    },
+  };
 
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.tables,
-            fieldAction: "lock",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "table",
-    new Blob(
-      [
-        JSON.stringify({
-          id,
-          status,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
-
-  return instance.put(`/api/${keys.tables}/lock/${id}`, formData, {
+  return instance.patch(`/api/${keys.tables}/lock/${id}`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
@@ -1876,6 +2356,7 @@ export const FindAllInputTicket = ({
   findValue,
   timeValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<InputTicketsFormatType[], any>> => {
   // Tham số để lọc dữ liệu
   const params: Record<string, string> = {};
@@ -1884,11 +2365,13 @@ export const FindAllInputTicket = ({
     if (findType! === "supplier") params.supplierId = findValue!;
   }
   if (timeValue! && timeValue!.length > 0) {
-    if (timeValue![0] !== "") params.timeCreateStart = timeValue![0];
-    if (timeValue![1] !== "") params.timeCreateEnd = timeValue![1];
+    if (timeValue![0] !== "") params.createAtStart = timeValue![0];
+    if (timeValue![1] !== "") params.createAtEnd = timeValue![1];
   }
   if (statusValue! && statusValue!.length > 0)
     params.statusMerge = statusValue!.join(",");
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<InputTicketsFormatType[]>(
     `/api/${keys.inputTickets}/list-format`,
@@ -1913,7 +2396,7 @@ export const FindOneInputTicket = (
   );
 };
 export const HandleCreateInputTicket = ({
-  timeCreate,
+  restaurantId,
   employeeId,
   supplierId,
   totalPrice,
@@ -1921,53 +2404,25 @@ export const HandleCreateInputTicket = ({
   status,
   inputTicketDetails,
 }: InputTicketsType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Form bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.inputTickets,
-            fieldAction: "create",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Thông tin cơ bản
-  formData.append(
-    "input-ticket",
-    new Blob(
-      [
-        JSON.stringify({
-          timeCreate,
-          employeeId,
-          supplierId,
-          totalPrice,
-          payStatus,
-          status,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Chi tiết phiếu nhập
-  if (inputTicketDetails)
-    formData.append(
-      "input-ticket-details",
-      new Blob([JSON.stringify(inputTicketDetails)], {
-        type: "application/json",
-      })
-    );
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.inputTickets,
+      fieldAction: "create",
+    }),
+    inputTicket: {
+      restaurantId,
+      employeeId,
+      supplierId,
+      totalPrice,
+      payStatus,
+      status,
+    },
+    inputTicketDetails,
+  };
 
   return instance.post(`/api/${keys.inputTickets}/create`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
@@ -1976,41 +2431,20 @@ export const HandleUpdateInputTicket = ({
   payStatus,
   status,
 }: InputTicketsType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Form bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.inputTickets,
-            fieldAction: "update",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng
-  formData.append(
-    "input-ticket",
-    new Blob(
-      [
-        JSON.stringify({
-          payStatus,
-          status,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.inputTickets,
+      fieldAction: "update",
+    }),
+    inputTicket: {
+      payStatus,
+      status,
+    },
+  };
 
   return instance.put(`/api/${keys.inputTickets}/update/${id}`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
@@ -2020,6 +2454,7 @@ export const FindAllSupplier = ({
   findType,
   findValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<SuppliersType[], any>> => {
   // Tham số để lọc dữ liệu
   const params: Record<string, string> = {};
@@ -2030,6 +2465,8 @@ export const FindAllSupplier = ({
     if (findType! === "email") params.email = findValue!;
   }
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<SuppliersType[]>(
     `/api/${keys.suppliers}/list`,
@@ -2048,50 +2485,31 @@ export const FindOneSupplier = (
   );
 };
 export const HandleCreateSupplier = ({
+  restaurantId,
   name,
   phone,
   email,
   address,
   status,
 }: SuppliersType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.suppliers,
-            fieldAction: "create",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "supplier",
-    new Blob(
-      [
-        JSON.stringify({
-          name,
-          phone,
-          email,
-          address,
-          status,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.suppliers,
+      fieldAction: "create",
+    }),
+    supplier: {
+      restaurantId,
+      name,
+      phone,
+      email,
+      address,
+      status,
+    },
+  };
 
   return instance.post(`/api/${keys.suppliers}/create`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
@@ -2101,89 +2519,43 @@ export const HandleUpdateSupplier = ({
   phone,
   email,
   address,
-  timeUpdate,
 }: SuppliersType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.suppliers,
-            fieldAction: "update",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "supplier",
-    new Blob(
-      [
-        JSON.stringify({
-          name,
-          phone,
-          email,
-          address,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.suppliers,
+      fieldAction: "update",
+    }),
+    supplier: {
+      name,
+      phone,
+      email,
+      address,
+    },
+  };
 
   return instance.put(`/api/${keys.suppliers}/update/${id}`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
 export const HandleLockSupplier = ({
   id,
   status,
-  timeUpdate,
 }: SuppliersType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.suppliers,
+      fieldAction: "lock",
+    }),
+    supplier: {
+      status,
+    },
+  };
 
-  // Form bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.suppliers,
-            fieldAction: "lock",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng
-  formData.append(
-    "supplier",
-    new Blob(
-      [
-        JSON.stringify({
-          status,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
-
-  return instance.put(`/api/${keys.suppliers}/lock/${id}`, formData, {
+  return instance.patch(`/api/${keys.suppliers}/lock/${id}`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
@@ -2193,6 +2565,7 @@ export const FindAllCategoryIngredient = ({
   findType,
   findValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<CategoryIngredientsType[], any>> => {
   // Tham số để lọc dữ liệu
   const params: Record<string, string> = {};
@@ -2201,6 +2574,8 @@ export const FindAllCategoryIngredient = ({
     if (findType! === "name") params.name = findValue!;
   }
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<CategoryIngredientsType[]>(
     `/api/${keys.categoryIngredients}/list`,
@@ -2225,46 +2600,27 @@ export const FindOneCategoryIngredient = (
   );
 };
 export const HandleCreateCategoryIngredient = ({
+  restaurantId,
   name,
   description,
   status,
 }: CategoryIngredientsType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.categoryIngredients,
-            fieldAction: "create",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "category-ingredient",
-    new Blob(
-      [
-        JSON.stringify({
-          name,
-          description,
-          status,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.categoryIngredients,
+      fieldAction: "create",
+    }),
+    categoryIngredient: {
+      restaurantId,
+      name,
+      description,
+      status,
+    },
+  };
 
   return instance.post(`/api/${keys.categoryIngredients}/create`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
@@ -2272,47 +2628,24 @@ export const HandleUpdateCategoryIngredient = ({
   id,
   name,
   description,
-  timeUpdate,
 }: CategoryIngredientsType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.categoryIngredients,
-            fieldAction: "update",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "category-ingredient",
-    new Blob(
-      [
-        JSON.stringify({
-          name,
-          description,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.categoryIngredients,
+      fieldAction: "update",
+    }),
+    categoryIngredient: {
+      name,
+      description,
+    },
+  };
 
   return instance.put(
     `/api/${keys.categoryIngredients}/update/${id}`,
     formData,
     {
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
       },
     }
   );
@@ -2320,45 +2653,26 @@ export const HandleUpdateCategoryIngredient = ({
 export const HandleLockCategoryIngredient = ({
   id,
   status,
-  timeUpdate,
 }: CategoryIngredientsType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Form bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.categoryIngredients,
-            fieldAction: "lock",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng
-  formData.append(
-    "category-ingredient",
-    new Blob(
-      [
-        JSON.stringify({
-          status,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
-
-  return instance.put(`/api/${keys.categoryIngredients}/lock/${id}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.categoryIngredients,
+      fieldAction: "lock",
+    }),
+    categoryIngredient: {
+      status,
     },
-  });
+  };
+
+  return instance.patch(
+    `/api/${keys.categoryIngredients}/lock/${id}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
 };
 
 // Các api của đối tượng Nguyên liệu (Ingredient)
@@ -2367,6 +2681,7 @@ export const FindAllIngredient = ({
   findValue,
   categoryValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<IngredientsFormatType[], any>> => {
   // Tham số đẻ lọc dữ liệu
   const params: Record<string, string> = {};
@@ -2377,6 +2692,8 @@ export const FindAllIngredient = ({
   if (categoryValue! && categoryValue!.length > 0)
     params.categoryIngredientId = categoryValue!.join(",");
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<IngredientsFormatType[]>(
     `/api/${keys.ingredients}/list-format`,
@@ -2401,6 +2718,7 @@ export const FindOneIngredient = (
   );
 };
 export const HandleCreateIngredient = ({
+  restaurantId,
   name,
   categoryIngredientId,
   unit,
@@ -2412,49 +2730,29 @@ export const HandleCreateIngredient = ({
   note,
   status,
 }: IngredientsType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.ingredients,
-            fieldAction: "create",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "ingredient",
-    new Blob(
-      [
-        JSON.stringify({
-          name,
-          categoryIngredientId,
-          unit,
-          capacity,
-          dateCreate,
-          dateRemove,
-          inputPrice,
-          inventory,
-          note,
-          status,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.ingredients,
+      fieldAction: "create",
+    }),
+    ingredient: {
+      restaurantId,
+      name,
+      categoryIngredientId,
+      unit,
+      capacity,
+      dateCreate,
+      dateRemove,
+      inputPrice,
+      inventory,
+      note,
+      status,
+    },
+  };
 
   return instance.post(`/api/${keys.ingredients}/create`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
@@ -2468,93 +2766,49 @@ export const HandleUpdateIngredient = ({
   dateRemove,
   inputPrice,
   note,
-  timeUpdate,
+  updateAt,
 }: IngredientsType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
-
-  // Trường form data bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.ingredients,
-            fieldAction: "update",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng xử lý
-  formData.append(
-    "ingredient",
-    new Blob(
-      [
-        JSON.stringify({
-          name,
-          categoryIngredientId,
-          unit,
-          capacity,
-          dateCreate,
-          dateRemove,
-          inputPrice,
-          note,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.ingredients,
+      fieldAction: "update",
+    }),
+    ingredient: {
+      name,
+      categoryIngredientId,
+      unit,
+      capacity,
+      dateCreate,
+      dateRemove,
+      inputPrice,
+      note,
+      updateAt,
+    },
+  };
 
   return instance.put(`/api/${keys.ingredients}/update/${id}`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
 export const HandleLockIngredient = ({
   id,
   status,
-  timeUpdate,
 }: IngredientsType): Promise<AxiosResponse<RestResponseType, any>> => {
-  // Form data
-  const formData = new FormData();
+  const formData = {
+    formSecurity: getNewFormSecurityValue({
+      fieldName: keys.ingredients,
+      fieldAction: "lock",
+    }),
+    ingredient: {
+      status,
+    },
+  };
 
-  // Form bảo mật
-  formData.append(
-    "form-security",
-    new Blob(
-      [
-        JSON.stringify(
-          getNewFormSecurityValue({
-            fieldName: keys.ingredients,
-            fieldAction: "lock",
-          })
-        ),
-      ],
-      { type: "application/json" }
-    )
-  );
-  // Đối tượng
-  formData.append(
-    "ingredient",
-    new Blob(
-      [
-        JSON.stringify({
-          status,
-          timeUpdate,
-        }),
-      ],
-      { type: "application/json" }
-    )
-  );
-
-  return instance.put(`/api/${keys.ingredients}/lock/${id}`, formData, {
+  return instance.patch(`/api/${keys.ingredients}/lock/${id}`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
   });
 };
@@ -2564,6 +2818,7 @@ export const FindAllCategoryFood = ({
   findType,
   findValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<CategoryFoodsType[], any>> => {
   // Tham số để lọc dữ liệu
   const params: Record<string, string> = {};
@@ -2572,6 +2827,8 @@ export const FindAllCategoryFood = ({
     if (findType! === "name") params.name = findValue!;
   }
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<CategoryFoodsType[]>(
     `/api/${keys.categoryFoods}/list`,
@@ -2596,6 +2853,7 @@ export const FindOneCategoryFood = (
   );
 };
 export const HandleCreateCategoryFood = ({
+  restaurantId,
   name,
   image,
   description,
@@ -2625,6 +2883,7 @@ export const HandleCreateCategoryFood = ({
     new Blob(
       [
         JSON.stringify({
+          restaurantId,
           name,
           description,
           status,
@@ -2647,7 +2906,7 @@ export const HandleUpdateCategoryFood = ({
   name,
   image,
   description,
-  timeUpdate,
+  updateAt,
 }: CategoryFoodsType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -2675,7 +2934,7 @@ export const HandleUpdateCategoryFood = ({
         JSON.stringify({
           name,
           description,
-          timeUpdate,
+          updateAt,
         }),
       ],
       { type: "application/json" }
@@ -2693,7 +2952,7 @@ export const HandleUpdateCategoryFood = ({
 export const HandleLockCategoryFood = ({
   id,
   status,
-  timeUpdate,
+  updateAt,
 }: CategoryFoodsType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -2720,7 +2979,7 @@ export const HandleLockCategoryFood = ({
       [
         JSON.stringify({
           status,
-          timeUpdate,
+          updateAt,
         }),
       ],
       { type: "application/json" }
@@ -2740,6 +2999,7 @@ export const FindAllFood = ({
   findValue,
   categoryValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<FoodsFormatType[], any>> => {
   // Tham số để lọc dữ liệu
   const params: Record<string, string> = {};
@@ -2750,6 +3010,8 @@ export const FindAllFood = ({
   if (categoryValue! && categoryValue!.length > 0)
     params.categoryFoodId = categoryValue!.join(",");
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<FoodsFormatType[]>(
     `/api/${keys.foods}/list-format`,
@@ -2768,6 +3030,7 @@ export const FindOneFood = (
   );
 };
 export const HandleCreateFood = ({
+  restaurantId,
   name,
   image,
   categoryFoodId,
@@ -2801,6 +3064,7 @@ export const HandleCreateFood = ({
     new Blob(
       [
         JSON.stringify({
+          restaurantId,
           name,
           categoryFoodId,
           unit,
@@ -2835,7 +3099,7 @@ export const HandleUpdateFood = ({
   unit,
   price,
   description,
-  timeUpdate,
+  updateAt,
   recipe,
 }: FoodsType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
@@ -2867,7 +3131,7 @@ export const HandleUpdateFood = ({
           unit,
           price,
           description,
-          timeUpdate,
+          updateAt,
         }),
       ],
       { type: "application/json" }
@@ -2891,7 +3155,7 @@ export const HandleUpdateFood = ({
 export const HandleLockFood = ({
   id,
   status,
-  timeUpdate,
+  updateAt,
 }: FoodsType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -2918,7 +3182,7 @@ export const HandleLockFood = ({
       [
         JSON.stringify({
           status,
-          timeUpdate,
+          updateAt,
         }),
       ],
       { type: "application/json" }
@@ -2937,6 +3201,7 @@ export const FindAllRole = ({
   findType,
   findValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<RolesFormatType[], any>> => {
   // Tham số để lọc dữ liệu
   const params: Record<string, string> = {};
@@ -2945,6 +3210,8 @@ export const FindAllRole = ({
     if (findType! === "name") params.name = findValue!;
   }
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<RolesFormatType[]>(
     `/api/${keys.roles}/list-format`,
@@ -2963,6 +3230,7 @@ export const FindOneRole = (
   );
 };
 export const HandleCreateRole = ({
+  restaurantId,
   name,
   salary,
   status,
@@ -2992,6 +3260,7 @@ export const HandleCreateRole = ({
     new Blob(
       [
         JSON.stringify({
+          restaurantId,
           name,
           salary,
           status,
@@ -3012,7 +3281,7 @@ export const HandleUpdateRole = ({
   id,
   name,
   salary,
-  timeUpdate,
+  updateAt,
   roleDetails,
 }: RolesType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
@@ -3041,7 +3310,7 @@ export const HandleUpdateRole = ({
         JSON.stringify({
           name,
           salary,
-          timeUpdate,
+          updateAt,
           roleDetails,
         }),
       ],
@@ -3058,7 +3327,7 @@ export const HandleUpdateRole = ({
 export const HandleLockRole = ({
   id,
   status,
-  timeUpdate,
+  updateAt,
 }: RolesType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -3085,7 +3354,7 @@ export const HandleLockRole = ({
       [
         JSON.stringify({
           status,
-          timeUpdate,
+          updateAt,
         }),
       ],
       { type: "application/json" }
@@ -3105,6 +3374,7 @@ export const FindAllEmployee = ({
   findValue,
   roleValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<EmployeesFormatType[], any>> => {
   // Tham số để lọc dữ liệu
   const params: Record<string, string> = {};
@@ -3116,6 +3386,8 @@ export const FindAllEmployee = ({
   }
   if (roleValue! && roleValue!.length > 0) params.roleId = roleValue!.join(",");
   if (statusValue! && statusValue!.length > 0) params.status = statusValue![0];
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<EmployeesFormatType[]>(
     `/api/${keys.employees}/list-format`,
@@ -3133,7 +3405,17 @@ export const FindOneEmployee = (
     getNewFormSecurityValue({ fieldName: keys.employees, fieldAction: "read" })
   );
 };
+// export const FindOneEmployeeByUserId = (
+//   id: number
+// ): Promise<AxiosResponse<EmployeesFormatType, any>> => {
+//   return instance.post(
+//     `/api/${keys.employees}/detail-by-user-id/${id}`,
+//     getNewFormSecurityValue({ fieldName: keys.employees, fieldAction: "read" })
+//   );
+// };
 export const HandleCreateEmployee = ({
+  restaurantId,
+  createAt,
   image,
   fullname,
   birthday,
@@ -3172,6 +3454,8 @@ export const HandleCreateEmployee = ({
     new Blob(
       [
         JSON.stringify({
+          restaurantId,
+          createAt,
           fullname,
           birthday,
           gender,
@@ -3210,7 +3494,7 @@ export const HandleUpdateEmployee = ({
   dateBegin,
   dateEnd,
   roleId,
-  timeUpdate,
+  updateAt,
 }: EmployeesType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -3245,7 +3529,7 @@ export const HandleUpdateEmployee = ({
           dateBegin,
           dateEnd,
           roleId,
-          timeUpdate,
+          updateAt,
         }),
       ],
       { type: "application/json" }
@@ -3262,7 +3546,7 @@ export const HandleUpdateEmployee = ({
 export const HandleLockEmployee = ({
   id,
   status,
-  timeUpdate,
+  updateAt,
 }: EmployeesType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -3289,7 +3573,7 @@ export const HandleLockEmployee = ({
       [
         JSON.stringify({
           status,
-          timeUpdate,
+          updateAt,
         }),
       ],
       { type: "application/json" }
@@ -3307,13 +3591,13 @@ export const HandleChangePasswordEmployee = ({
   currentPassword,
   newPassword,
   authNewPassword,
-  timeUpdate,
+  updateAt,
 }: {
   id?: number;
   currentPassword?: string;
   newPassword?: string;
   authNewPassword?: string;
-  timeUpdate?: string;
+  updateAt?: string;
 }): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -3342,7 +3626,7 @@ export const HandleChangePasswordEmployee = ({
           currentPassword,
           newPassword,
           authNewPassword,
-          timeUpdate,
+          updateAt,
         }),
       ],
       { type: "application/json" }

@@ -14,6 +14,7 @@ import lombok.Setter;
 public class UseTableCriteria {
     // Properties
     private Optional<String> id;
+    private Optional<String> restaurantId;
     private Optional<String> timeStart;
     private Optional<String> timeEnd;
     private Optional<String> employeeId;

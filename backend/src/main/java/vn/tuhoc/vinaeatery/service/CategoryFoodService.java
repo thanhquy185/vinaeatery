@@ -7,9 +7,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.CategoryFood_;
-import vn.tuhoc.vinaeatery.domain.CategoryFood;
 import vn.tuhoc.vinaeatery.domain.criteria.CategoryFoodCriteria;
+import vn.tuhoc.vinaeatery.domain.entity.CategoryFood_;
+import vn.tuhoc.vinaeatery.domain.entity.CategoryFood;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.CategoryFoodRepository;
 import vn.tuhoc.vinaeatery.service.specification.CategoryFoodSpecification;
@@ -47,8 +47,11 @@ public class CategoryFoodService {
         }
 
         //
-        if (categoryFoodCriteria.getId() == null && categoryFoodCriteria.getName() == null
-                && categoryFoodCriteria.getStatus() == null && categoryFoodCriteria.getSort() == null) {
+        if (categoryFoodCriteria.getId() == null
+                && categoryFoodCriteria.getRestaurantId() == null
+                && categoryFoodCriteria.getName() == null
+                && categoryFoodCriteria.getStatus() == null
+                && categoryFoodCriteria.getSort() == null) {
             return this.categoryFoodRepository.findAll(sort);
         }
         //
@@ -58,6 +61,13 @@ public class CategoryFoodService {
                 Specification<CategoryFood> currentSpec = CategoryFoodSpecification
                         .idEqual(categoryFoodCriteria.getId().get());
                 combinedSpec = combinedSpec.or(currentSpec);
+            }
+        }
+        if(categoryFoodCriteria.getRestaurantId() != null && categoryFoodCriteria.getRestaurantId().isPresent()) {
+            if (categoryFoodCriteria.getRestaurantId().get().matches("\\d+")) {
+                Specification<CategoryFood> currentSpec = CategoryFoodSpecification
+                        .restaurantIdEqual(categoryFoodCriteria.getRestaurantId().get());
+                combinedSpec = combinedSpec.and(currentSpec);
             }
         }
         if (categoryFoodCriteria.getName() != null && categoryFoodCriteria.getName().isPresent()) {

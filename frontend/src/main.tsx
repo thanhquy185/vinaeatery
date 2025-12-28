@@ -34,6 +34,10 @@ const App = () => {
     loadRouter();
   }, []);
 
+  useEffect(() => {
+    console.log("Router loaded:", router);
+  }, []);
+
   return router ? (
     <ConfigProvider
       theme={{

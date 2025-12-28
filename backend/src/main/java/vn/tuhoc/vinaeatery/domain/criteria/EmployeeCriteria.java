@@ -14,11 +14,11 @@ import lombok.Setter;
 public class EmployeeCriteria {
     // Properties
     private Optional<String> id;
+    private Optional<String> restaurantId;
     private Optional<String> fullname;
     private Optional<String> phone;
     private Optional<String> email;
     private Optional<String> roleId;
-    private Optional<String> username;
     private Optional<String> status;
     private Optional<String> sort;
 }

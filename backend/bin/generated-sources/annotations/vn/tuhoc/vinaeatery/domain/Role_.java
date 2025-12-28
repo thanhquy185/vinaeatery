@@ -11,42 +11,40 @@ import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 @Generated("org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor")
 public abstract class Role_ {
 
-	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.Role#timeUpdate
+	 * @see vn.tuhoc.vinaeatery.domain.Role#updateAt
 	 **/
-	public static volatile SingularAttribute<Role, LocalDateTime> timeUpdate;
-	
+	public static volatile SingularAttribute<Role, LocalDateTime> updateAt;
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Role#name
 	 **/
 	public static volatile SingularAttribute<Role, String> name;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Role#id
 	 **/
 	public static volatile SingularAttribute<Role, Integer> id;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Role#salary
 	 **/
 	public static volatile SingularAttribute<Role, Long> salary;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Role
 	 **/
 	public static volatile EntityType<Role> class_;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Role#status
 	 **/
 	public static volatile SingularAttribute<Role, CommonStatusEnum> status;
 
-	public static final String TIME_UPDATE = "timeUpdate";
+	public static final String TIME_UPDATE = "updateAt";
 	public static final String NAME = "name";
 	public static final String ID = "id";
 	public static final String SALARY = "salary";
 	public static final String STATUS = "status";
 
 }
-

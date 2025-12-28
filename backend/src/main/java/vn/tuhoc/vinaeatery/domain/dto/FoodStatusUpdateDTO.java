@@ -21,5 +21,5 @@ public class FoodStatusUpdateDTO {
     @NotNull(message = "Trạng thái không được để trống !")
     private FoodStatusEnum status;
     @NotNull(message = "Thời gian cập nhật không được để trống !")
-    private LocalDateTime timeUpdate;
+    private LocalDateTime updateAt;
 }

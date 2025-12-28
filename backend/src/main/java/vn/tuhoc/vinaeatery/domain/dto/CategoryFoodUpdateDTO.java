@@ -19,5 +19,5 @@ public class CategoryFoodUpdateDTO {
     private String name;
     private String description;
     @NotNull(message = "Thời gian cập nhật không được để trống !")
-    private LocalDateTime timeUpdate;
+    private LocalDateTime updateAt;
 }

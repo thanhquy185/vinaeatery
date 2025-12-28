@@ -1,4 +1,10 @@
-import { filterMonth, filterQuarter, filterYear } from "../components/admin/filter-dashboard";
+import type { UploadFile } from "antd";
+import {
+  filterMonth,
+  filterQuarter,
+  filterYear,
+} from "../components/admin-manager/filter-dashboard";
+import type { RcFile } from "antd/es/upload";
 
 // Hàm định dạng việc hiển thị tiền VNĐ
 export function vietnamMoneyFormat(money: number) {
@@ -155,10 +161,10 @@ export function getWeeksInMonth(year: number, month: number) {
 // Hàm lấy ra danh sách các tuần trong quý
 export function getWeeksInQuarter(year: number, quarter: number) {
   const startMonth = (quarter - 1) * 3; // Tháng bắt đầu quý (0-based)
-  const endMonth = startMonth + 2;      // Tháng kết thúc quý
+  const endMonth = startMonth + 2; // Tháng kết thúc quý
 
-  const firstDay = new Date(year, startMonth, 1);           // Ngày đầu quý
-  const lastDay = new Date(year, endMonth + 1, 0);          // Ngày cuối quý (ngày 0 của tháng tiếp theo)
+  const firstDay = new Date(year, startMonth, 1); // Ngày đầu quý
+  const lastDay = new Date(year, endMonth + 1, 0); // Ngày cuối quý (ngày 0 của tháng tiếp theo)
 
   const weeks = [];
   let current = new Date(firstDay);
@@ -206,15 +212,27 @@ export function getMonthsInYear(year: number) {
 }
 
 // Hàm lấy ra loại thời gian tương ứng ở chức năng thống kê
-export function getFilterTimesForDashboard(timeline: string, timeDetail: string) {
-  if (timeline === filterYear && timeDetail.toLocaleLowerCase().includes("năm")) {
+export function getFilterTimesForDashboard(
+  timeline: string,
+  timeDetail: string
+) {
+  if (
+    timeline === filterYear &&
+    timeDetail.toLocaleLowerCase().includes("năm")
+  ) {
     const months = getMonthsInYear(Number(timeDetail.split(" ")[1]));
     return months;
-  } else if (timeline === filterQuarter && timeDetail.toLocaleLowerCase().includes("quý")) {
+  } else if (
+    timeline === filterQuarter &&
+    timeDetail.toLocaleLowerCase().includes("quý")
+  ) {
     const variables = timeDetail.split(" ")[1].split("/");
     const weeks = getWeeksInQuarter(Number(variables[1]), Number(variables[0]));
     return weeks;
-  } else if (timeline === filterMonth && timeDetail.toLocaleLowerCase().includes("tháng")) {
+  } else if (
+    timeline === filterMonth &&
+    timeDetail.toLocaleLowerCase().includes("tháng")
+  ) {
     const variables = timeDetail.split(" ")[1].split("/");
     const weeks = getWeeksInMonth(Number(variables[1]), Number(variables[0]));
     return weeks;
@@ -222,3 +240,30 @@ export function getFilterTimesForDashboard(timeline: string, timeDetail: string)
 
   return null;
 }
+
+// Hàm chuyển đường dẫn ảnh thành kiểu upload file
+export const convertUrlsToUploadFiles = async (urls: string[]): Promise<UploadFile[]> => {
+  const results: UploadFile[] = [];
+
+  for (let i = 0; i < urls.length; i++) {
+    const url = urls[i];
+
+    // fetch ảnh
+    const response = await fetch(url);
+    const blob = await response.blob();
+
+    // tạo file (RcFile)
+    const file = new File([blob], `image-${i}.jpg`, { type: blob.type }) as RcFile;
+
+    results.push({
+      uid: `${i}`,
+      name: file.name,
+      url,
+      status: "done",
+      originFileObj: file, // <--- QUAN TRỌNG
+    });
+  }
+
+  return results;
+};
+

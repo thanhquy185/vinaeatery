@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.InputTicketDetail;
-import vn.tuhoc.vinaeatery.domain.InputTicketDetailId;
+import vn.tuhoc.vinaeatery.domain.entity.InputTicketDetail;
+import vn.tuhoc.vinaeatery.domain.entity.InputTicketDetailId;
 import vn.tuhoc.vinaeatery.repository.InputTicketDetailRepository;
 
 @Service

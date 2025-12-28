@@ -6,34 +6,25 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Employee;
-import vn.tuhoc.vinaeatery.repository.RoleHistoryRepository;
-import vn.tuhoc.vinaeatery.repository.RoleRepository;
+import vn.tuhoc.vinaeatery.domain.entity.User;
 
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
     // Properties
-    private final EmployeeService employeeService;
-    private final RoleRepository roleRepository;
-    private final RoleHistoryRepository roleHistoryRepository;
-    
+    private final UserService userService;
 
     // Methods
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Employee employee = employeeService.getOneByUsername(username);
-        if (employee == null) {
-            throw new UsernameNotFoundException("User not found");
+        User user = userService.getOneByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("Không tìm thấy người dùng !");
         }
         return org.springframework.security.core.userdetails.User
-                .withUsername(employee.getUsername())
-                .password(employee.getPassword())
-                .authorities("ROLE_" + roleRepository
-                        .findOneById(roleHistoryRepository.findNewByEmployeeId(employee.getId()).getId().getRoleId())) // tuỳ
-                                                                                                                       // quyền
-                                                                                                                       // của
-                                                                                                                       // bạn
+                .withUsername(user.getUsername())
+                .password(user.getPassword())
+                .authorities("ROLE_" + user.getRole())
                 .build();
     }
 }

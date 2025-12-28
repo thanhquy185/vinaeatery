@@ -2,8 +2,8 @@ package vn.tuhoc.vinaeatery.service.specification;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import vn.tuhoc.vinaeatery.domain.RoleDetail;
-import vn.tuhoc.vinaeatery.domain.RoleDetail_;
+import vn.tuhoc.vinaeatery.domain.entity.RoleDetail;
+import vn.tuhoc.vinaeatery.domain.entity.RoleDetail_;
 
 public class RoleDetailSpecification {
     // Methods

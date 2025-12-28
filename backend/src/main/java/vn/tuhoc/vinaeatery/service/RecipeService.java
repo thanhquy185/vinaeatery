@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Recipe;
-import vn.tuhoc.vinaeatery.domain.RecipeId;
+import vn.tuhoc.vinaeatery.domain.entity.Recipe;
+import vn.tuhoc.vinaeatery.domain.entity.RecipeId;
 import vn.tuhoc.vinaeatery.repository.RecipeRepository;
 
 @Service

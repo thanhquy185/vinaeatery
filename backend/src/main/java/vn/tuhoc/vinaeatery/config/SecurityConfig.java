@@ -30,6 +30,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
 
+import lombok.RequiredArgsConstructor;
+import vn.tuhoc.vinaeatery.service.CustomOAuth2FailureHandler;
+import vn.tuhoc.vinaeatery.service.CustomOAuth2SuccessHandler;
+import vn.tuhoc.vinaeatery.service.CustomOAuth2UserService;
 import vn.tuhoc.vinaeatery.service.CustomUserDetailsService;
 import vn.tuhoc.vinaeatery.util.SecurityUtil;
 
@@ -38,11 +42,18 @@ import vn.tuhoc.vinaeatery.util.SecurityUtil;
 @Configuration
 // @EnableMethodSecurity(securedEnabled = true)
 @EnableWebSecurity
+// @RequiredArgsConstructor
 public class SecurityConfig {
     // Properties
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     @Value("${jwt.base64-secret}")
     private String jwtKey;
+    @Autowired
+    CustomOAuth2UserService customOAuth2UserService;
+    @Autowired
+    CustomOAuth2FailureHandler customOAuth2FailureHandler;
+    @Autowired
+    CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 
     // Controllers
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
@@ -50,12 +61,10 @@ public class SecurityConfig {
     }
 
     // Methods
-    // @Bean
-    // public AuthenticationManager
-    // authenticationManager(AuthenticationConfiguration authConfig) throws
-    // Exception {
-    // return authConfig.getAuthenticationManager();
-    // }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -99,47 +108,45 @@ public class SecurityConfig {
     }
 
     @Bean
+    public JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint() {
+        return new JwtAuthenticationEntryPoint();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
-            JwtAuthenticationFilter jwtAuthenticationFilter,
-            CustomAuthenticationEntryPoint customEntryPoint) throws Exception {
+            CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
+            JwtAuthenticationFilter jsAuthenticationFilter) throws Exception {
         http
                 .csrf(c -> c.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authz -> authz
-                //         .requestMatchers("/", "/api/auth/**", "/api/functions/list",
-                //                 "/api/category-foods/list",
-                //                 "/api/foods/list", "/api/momo/**", "/client/**",
-                //                 "/assets/**", "/js/**")
-                //         .permitAll()
-                //         .anyRequest().authenticated())
-                .requestMatchers("/**").permitAll()
-                .anyRequest().permitAll());
-                // .oauth2ResourceServer((oauth2) -> oauth2
-                // .jwt(Customizer.withDefaults())
-                // .authenticationEntryPoint(customAuthenticationEntryPoint))
-                // .formLogin(f -> f.disable())
-                // .addFilterBefore(jwtAuthenticationFilter,
-                // UsernamePasswordAuthenticationFilter.class)
-                // .sessionManagement(session ->
-                // session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-                // .formLogin(login -> login.disable())
-                // // JWT filter custom
-                // .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                // // EntryPoint cho unauthorized
-                // .exceptionHandling(ex -> ex.authenticationEntryPoint(customEntryPoint))
-                // .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                        // .requestMatchers("/**").permitAll()
+                        // .anyRequest().permitAll());
+                        .requestMatchers("/", "/api/auth/**", "/api/functions/list",
+                                "/api/restaurants/list-format-for-public-page",
+                                "/api/momo/**", "/zalopay/**",
+                                "/assets/**", "/js/**",
+                                "/oauth2/**",
+                                "/login/oauth2/**")
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService))
+                        .failureHandler(customOAuth2FailureHandler)
+                        .successHandler(customOAuth2SuccessHandler))
+                .oauth2ResourceServer((oauth2) -> oauth2
+                        .jwt(Customizer.withDefaults())
+                        .authenticationEntryPoint(customAuthenticationEntryPoint))
+                .formLogin(f -> f.disable())
+                // JWT filter custom
+                .addFilterBefore(jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class)
+                // EntryPoint cho unauthorized
+                // .exceptionHandling(ex -> ex.authenticationEntryPoint(customAuthenticationEntryPoint))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
 
-    // @Bean
-    // public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    // http
-    // .cors() // Kích hoạt CORS
-    // .and()
-    // .csrf().disable() // Nếu bạn dùng API REST
-    // .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
-
-    // return http.build();
-    // }
 }

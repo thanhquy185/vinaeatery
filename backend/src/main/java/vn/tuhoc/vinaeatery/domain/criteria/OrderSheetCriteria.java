@@ -14,10 +14,11 @@ import lombok.Setter;
 public class OrderSheetCriteria {
     // Properties
     private Optional<String> id;
-    private Optional<String> timeCreateStart;
-    private Optional<String> timeCreateEnd;
-    private Optional<String> timeServiceStart;
-    private Optional<String> timeServiceEnd;
+    private Optional<String> restaurantId;
+    private Optional<String> createAtStart;
+    private Optional<String> createAtEnd;
+    private Optional<String> serviceAtStart;
+    private Optional<String> serviceAtEnd;
     private Optional<String> currentDate;
     private Optional<String> employeeId;
     private Optional<String> tableId;

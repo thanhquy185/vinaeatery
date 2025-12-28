@@ -14,6 +14,7 @@ import lombok.Setter;
 public class IngredientCriteria {
     // Properties
     private Optional<String> id;
+    private Optional<String> restaurantId;
     private Optional<String> name;
     private Optional<String> categoryIngredientId;
     private Optional<String> unit;

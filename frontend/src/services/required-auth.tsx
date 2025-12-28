@@ -14,15 +14,15 @@ const RequireAuth = ({
   const location = useLocation();
 
   // Nhân viên đang đăng nhập hiện tại
-  const employeeLogin = useRouteLoaderData("admin")!.employeeLogin;
+  const infoLogin = useRouteLoaderData("manager-info-login")!.infoLogin;
 
   // Nếu chưa đăng nhập thì đẩy về trang đăng nhập
-  if (!employeeLogin!.id) {
+  if (!infoLogin!.id) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Chuỗi chứa mã các chức năng của nhân viên
-  const functionIdsString = getFunctionIdsString({ currentEmployeeLogin: employeeLogin });  
+  const functionIdsString = getFunctionIdsString({ currentEmployeeLogin: infoLogin });  
   if (!requireFunctionId || !functionIdsString || (requireFunctionId && functionIdsString
     && !functionIdsString.split("|").some(
       (functionIdString) => functionIdString === String(requireFunctionId)

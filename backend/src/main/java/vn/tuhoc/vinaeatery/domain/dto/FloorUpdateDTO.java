@@ -13,10 +13,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FloorUpdateDTO {
-     // Properties
+    // Properties
     @NotNull(message = "Tên tầng không được để trống !")
     private String name;
     private String description;
     @NotNull(message = "Thời gian cập nhật không được để trống !")
-    private LocalDateTime timeUpdate;
+    private LocalDateTime updateAt;
 }

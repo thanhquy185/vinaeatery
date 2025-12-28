@@ -192,18 +192,24 @@ textarea.ant-input {
   }
 }
 
-/* Ghi đè animation của notification */
-.ant-notification-fade-enter,
-.ant-notification-fade-appear {
-  opacity: 0;
-  transform: translateX(100%); /* Slide từ bên phải vào */
-}
+.ant-notification {
+  &-fade-enter,
+  &-fade-appear {
+    opacity: 0;
+    transform: translateX(100%); /* Slide từ bên phải vào */
+  }
 
-.ant-notification-fade-enter-active,
-.ant-notification-fade-appear-active {
-  opacity: 1;
-  transform: translateX(0);
-  transition: all 3s ease;
+  &-fade-enter-active,
+  &-fade-appear-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 3s ease;
+  }
+
+  &-notice-icon .anticon-loading {
+    color: #1890ff;
+    @include size(30px);
+  }
 }
 
 // .ant-input-suffix {
@@ -253,6 +259,10 @@ textarea.ant-input {
 .ant-dropdown {
   z-index: 9999;
 
+  body &-menu-item-only-child:not(:has(button)) {
+    display: none !important;
+  }
+
   &:has(.user-login) {
     width: 20%;
   }
@@ -266,13 +276,13 @@ textarea.ant-input {
   }
 
   & .user-login .avatar {
-    @include size(45px);
+    @include size(50px);
   }
 
   & .user-login .info {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
   }
 
   & .user-login .info b {
@@ -289,6 +299,19 @@ textarea.ant-input {
 
   &:has(.user-login) .ant-dropdown-menu-item {
     font-size: 1.6rem !important;
+  }
+  
+  
+  &:has(.user-login) .ant-dropdown-menu-item:hover {
+    color: $primary-color;
+  }
+  
+  &-menu-title-content a.active {
+    color: $primary-color !important;
+  }
+
+  &-menu-item:has(&-menu-title-content a.active) .ant-dropdown-menu-item-icon {
+    color: $primary-color !important;
   }
 
   & .ant-dropdown-menu-item.logout:hover {

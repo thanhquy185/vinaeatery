@@ -3,7 +3,7 @@
 @use "../abstracts/mixins" as *;
 
 .table-actions {
-  $big-height-image: 100px;
+  $big-height-image: 140px;
   $small-height-image: 45px;
   $cell-padding: 16px;
 
@@ -114,22 +114,25 @@
   &.ant-table-wrapper .ant-pagination {
   }
 
+  &.restaurants td
   &.customer-cards td,
   &.category-foods td,
   &.foods td {
     line-height: $big-height-image;
   }
 
+  &.restaurants td .ant-image,
   &.customer-cards td .ant-image,
   &.category-foods td .ant-image,
   &.foods td .ant-image {
     width: 100%;
   }
 
+  &.restaurants td img,
   &.customer-cards td img,
   &.category-foods td img,
   &.foods td img,
-  &.employees td img {
+  &:is(.managers, .customers, .employees) td img {
     height: $big-height-image;
     border: 4px solid #fff;
     border-radius: 12px;
@@ -139,12 +142,14 @@
     transition: border-color 0.3s ease-in-out;
   }
 
+  &.restaurants td :is(.ant-image, .ant-image-mask),
   &.customer-cards td :is(.ant-image, .ant-image-mask),
   &.category-foods td :is(.ant-image, .ant-image-mask),
   &.foods td :is(.ant-image, .ant-image-mask) {
     height: $big-height-image;
   }
 
+  &.restaurants td.buttons,
   &.customer-cards td.buttons,
   &.category-foods td.buttons,
   &.foods td.buttons {
@@ -155,25 +160,26 @@
   //   object-fit: contain;
   // }
 
-  &.employees td img {
+  &:is(.managers, .customers, .employees) td img {
     @include size($small-height-image);
     border-width: 3px;
     border-radius: 50%;
     object-fit: cover;
   }
 
-  &.employees td :is(.ant-image, .ant-image-mask) {
+  &:is(.managers, .customers, .employees) td :is(.ant-image, .ant-image-mask) {
     height: $small-height-image;
   }
 
-  &.employees td.buttons {
+  &:is(.managers, .customers, .employees) td.buttons {
     height: calc($small-height-image + calc($cell-padding * 2));
   }
 
+  &.restaurants td tr:hover img,
   &.customer-cards tr:hover img,
   &.category-foods tr:hover img,
   &.foods tr:hover img,
-  &.employees tr:hover img {
+  &:is(.managers, .customers, .employees) tr:hover img {
     border-color: $primary-color;
   }
 }

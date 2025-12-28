@@ -1,5 +1,6 @@
 package vn.tuhoc.vinaeatery.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -16,16 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Ingredient;
-import vn.tuhoc.vinaeatery.domain.InputTicket;
-import vn.tuhoc.vinaeatery.domain.InputTicketDetail;
-import vn.tuhoc.vinaeatery.domain.InputTicketDetailForCrud;
-import vn.tuhoc.vinaeatery.domain.InputTicketDetailId;
 import vn.tuhoc.vinaeatery.domain.criteria.InputTicketCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.InputTicketDTO;
 import vn.tuhoc.vinaeatery.domain.dto.InputTicketUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.entity.Ingredient;
+import vn.tuhoc.vinaeatery.domain.entity.InputTicket;
+import vn.tuhoc.vinaeatery.domain.entity.InputTicketDetail;
+import vn.tuhoc.vinaeatery.domain.entity.InputTicketDetailForCrud;
+import vn.tuhoc.vinaeatery.domain.entity.InputTicketDetailId;
 import vn.tuhoc.vinaeatery.domain.enumm.InputTicketStatusEnum;
+import vn.tuhoc.vinaeatery.domain.request.InputTicketCreateRequest;
+import vn.tuhoc.vinaeatery.domain.request.InputTicketUpdateRequest;
 // import vn.tuhoc.vinaeatery.domain.enumm.PayStatusEnum;
 // import vn.tuhoc.vinaeatery.service.EmployeeService;
 import vn.tuhoc.vinaeatery.service.IngredientService;
@@ -86,15 +89,20 @@ public class InputTicketApiController {
         return ResponseEntity.status(HttpStatus.OK).body(inputTicketSelected);
     }
 
-    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleCreateInputTicket(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
-            @RequestPart("input-ticket") @Valid InputTicket inputTicket,
-            @RequestPart("input-ticket-details") @Valid List<InputTicketDetailForCrud> inputTicketDetails,
+    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> handleCreateInputTicket(
+            @RequestBody @Valid InputTicketCreateRequest inputTicketCreateRequest,
             BindingResult bindingResult) {
-        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "input-tickets", "create")) {
+        if (!HandleFormSecurity.isValidFormData(inputTicketCreateRequest.getFormSecurity(), "input-tickets",
+                "create")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
                             .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+        if (inputTicketCreateRequest.getInputTicket() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr("Dữ liệu phiếu nhập không được để trống !"));
         }
 
         if (bindingResult.hasErrors()) {
@@ -103,16 +111,12 @@ public class InputTicketApiController {
         }
 
         // Cập nhật theo giờ Việt Nam
-        inputTicket.setTimeCreate(this.timeService.getDateTimeVN(inputTicket.getTimeCreate()));
+        inputTicketCreateRequest.getInputTicket().setCreateAt(LocalDateTime.now());
 
-        // // Mặc định là Chưa thanh toán
-        // inputTicket.setPayStatus(PayStatusEnum.NOTPAY);
-        // // Mặc định là Đang chờ xác nhận
-        // inputTicket.setStatus(InputTicketStatusEnum.PENDING);
-
-        InputTicket inputTicketCreated = this.inputTicketService.upsert(inputTicket);
-        if (inputTicketCreated != null && inputTicketDetails != null && !inputTicketDetails.isEmpty()) {
-            for (InputTicketDetailForCrud inputTicketDetailForCrud : inputTicketDetails) {
+        InputTicket inputTicketCreated = this.inputTicketService.upsert(inputTicketCreateRequest.getInputTicket());
+        if (inputTicketCreated != null && inputTicketCreateRequest.getInputTicketDetails() != null
+                && !inputTicketCreateRequest.getInputTicketDetails().isEmpty()) {
+            for (InputTicketDetailForCrud inputTicketDetailForCrud : inputTicketCreateRequest.getInputTicketDetails()) {
                 InputTicketDetail newInputTicketDetail = new InputTicketDetail(
                         new InputTicketDetailId(inputTicketCreated.getId(),
                                 inputTicketDetailForCrud.getIngredientId()),
@@ -124,24 +128,24 @@ public class InputTicketApiController {
         return ResponseEntity.status(HttpStatus.OK).body(inputTicketCreated);
     }
 
-    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleUpdateInputTicket(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
-            @PathVariable("id") Integer id,
-            @RequestPart("input-ticket") InputTicketUpdateDTO inputTicket) {
-        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "input-tickets", "update")) {
+    @PutMapping(value = "/update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> handleUpdateInputTicket(@PathVariable("id") Integer id,
+            @RequestBody @Valid InputTicketUpdateRequest inputTicketUpdateRequest) {
+        if (!HandleFormSecurity.isValidFormData(inputTicketUpdateRequest.getFormSecurity(), "input-tickets",
+                "update")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
                             .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
         InputTicket inputTicketUpdated = this.inputTicketService.getOneById(id);
-        if (inputTicket.getPayStatus() != null) {
-            inputTicketUpdated.setPayStatus(inputTicket.getPayStatus());
+        if (inputTicketUpdateRequest.getInputTicket().getPayStatus() != null) {
+            inputTicketUpdated.setPayStatus(inputTicketUpdateRequest.getInputTicket().getPayStatus());
         }
-        if (inputTicket.getStatus() != null) {
+        if (inputTicketUpdateRequest.getInputTicket().getStatus() != null) {
             List<InputTicketDetail> inputTicketDetails = inputTicketDetailService.getAllByInputTicketId(id);
             if (!inputTicketDetails.isEmpty() && !inputTicketDetails.isEmpty()) {
-                if (inputTicket.getStatus() == InputTicketStatusEnum.GIVEBACK) {
+                if (inputTicketUpdateRequest.getInputTicket().getStatus() == InputTicketStatusEnum.GIVEBACK) {
                     // - So số lượng trong kho với số lượng trả
                     for (InputTicketDetail inputTicketDetail : inputTicketDetails) {
                         Ingredient ingredient = ingredientService
@@ -167,7 +171,7 @@ public class InputTicketApiController {
                             this.ingredientService.upsert(ingredientUpdateInventory);
                         }
                     }
-                } else if (inputTicket.getStatus() == InputTicketStatusEnum.CONFIRM) {
+                } else if (inputTicketUpdateRequest.getInputTicket().getStatus() == InputTicketStatusEnum.CONFIRM) {
                     // - Tăng số lượng trong kho vì nhập hàng
                     for (InputTicketDetail inputTicketDetail : inputTicketDetails) {
                         Ingredient ingredientUpdateInventory = this.ingredientService
@@ -185,7 +189,7 @@ public class InputTicketApiController {
                 }
             }
 
-            inputTicketUpdated.setStatus(inputTicket.getStatus());
+            inputTicketUpdated.setStatus(inputTicketUpdateRequest.getInputTicket().getStatus());
         }
         this.inputTicketService.upsert(inputTicketUpdated);
 

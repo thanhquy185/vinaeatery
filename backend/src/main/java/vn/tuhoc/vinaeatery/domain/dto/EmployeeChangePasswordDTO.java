@@ -20,5 +20,5 @@ public class EmployeeChangePasswordDTO {
     private String newPassword;
     @NotNull(message = "Xác nhận mật khẩu mới không được để trống !")
     private String authNewPassword;
-    private LocalDateTime timeUpdate;
+    private LocalDateTime updateAt;
 }

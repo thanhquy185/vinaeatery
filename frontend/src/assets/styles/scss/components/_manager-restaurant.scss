@@ -1,0 +1,60 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/colors" as *;
+@use "../abstracts/mixins" as *;
+
+.manager-restaurant {
+    position: relative;
+
+    & .ant-card {
+        border-color: transparent;
+        border-width: 4px;
+        border-radius: 8px;
+        transition: border-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    }
+    
+    &:hover .ant-card {
+        border-color: $primary-color;
+        transform: translateY(-4px);
+    }
+
+    & .ant-card-cover {
+        border-radius: 8px 8px 0 0;
+    }
+
+    &__image {
+        height: 240px;
+        border: none !important;
+    }
+
+    .ant-list:has(&) {
+        position: absolute;
+        top: 64px;
+        width: 100%;
+        padding: $admin-space
+    }
+
+    & .ant-card-meta-avatar {
+        font-size: 2.4rem;
+    }
+
+    & .name {
+        font-size: 1.8rem;
+    }
+
+    & .ant-card-meta-description {
+        font-size: 1.5rem;
+    }
+
+    & .status {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 2px 8px;
+        margin-right: 0;
+        font-size: 1.4rem;
+    }
+    
+    & button {
+        font-weight: 600;
+    }
+}

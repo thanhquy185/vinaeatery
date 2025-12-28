@@ -14,6 +14,6 @@ export default defineConfig({
     },
   },
   define: {
-    global: {},
+    global: 'window', // fix lỗi undefined cho SockJS mới kết nối được
   },
 });

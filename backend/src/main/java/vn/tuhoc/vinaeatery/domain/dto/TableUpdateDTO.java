@@ -18,5 +18,5 @@ public class TableUpdateDTO {
     private Integer floorId;
     private Integer seats;
     private String description;
-    private LocalDateTime timeUpdate;
+    private LocalDateTime updateAt;
 }

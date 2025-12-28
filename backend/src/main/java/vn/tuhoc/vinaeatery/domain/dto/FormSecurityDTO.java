@@ -1,6 +1,7 @@
 package vn.tuhoc.vinaeatery.domain.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class FormSecurityDTO {
     // Properties
     private Project project;
@@ -20,6 +22,7 @@ public class FormSecurityDTO {
     @NoArgsConstructor
     @Getter
     @Setter
+    @Builder
     public static class Project {
         // Class-Properties
         private String name;
@@ -32,6 +35,7 @@ public class FormSecurityDTO {
     @NoArgsConstructor
     @Getter
     @Setter
+    @Builder
     public static class Developer {
         // Class-Properties
         private String fullname;
@@ -43,6 +47,7 @@ public class FormSecurityDTO {
     @NoArgsConstructor
     @Getter
     @Setter
+    @Builder
     public static class Field {
         // Class-Properties
         private String name;

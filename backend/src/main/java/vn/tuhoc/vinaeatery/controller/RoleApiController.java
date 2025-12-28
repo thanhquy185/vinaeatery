@@ -17,15 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Role;
-import vn.tuhoc.vinaeatery.domain.RoleDetail;
-import vn.tuhoc.vinaeatery.domain.RoleDetailForCrud;
-import vn.tuhoc.vinaeatery.domain.RoleDetailId;
 import vn.tuhoc.vinaeatery.domain.criteria.RoleCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.RoleDTO;
 import vn.tuhoc.vinaeatery.domain.dto.RoleUpdateDTO;
+import vn.tuhoc.vinaeatery.domain.entity.Role;
+import vn.tuhoc.vinaeatery.domain.entity.RoleDetail;
+import vn.tuhoc.vinaeatery.domain.entity.RoleDetailForCrud;
+import vn.tuhoc.vinaeatery.domain.entity.RoleDetailId;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 // import vn.tuhoc.vinaeatery.service.EmployeeService;
 import vn.tuhoc.vinaeatery.service.RoleDetailService;
@@ -135,7 +135,7 @@ public class RoleApiController {
         if (roleUpdated != null) {
             roleUpdated.setName(role.getName());
             roleUpdated.setSalary(role.getSalary());
-            roleUpdated.setTimeUpdate(this.timeService.getDateTimeVN(role.getTimeUpdate()));
+            roleUpdated.setUpdateAt(this.timeService.getDateTimeVN(role.getUpdateAt()));
             this.roleService.upsert(roleUpdated);
 
             roleDetailService.clearAllByRoleId(roleUpdated.getId());
@@ -178,12 +178,12 @@ public class RoleApiController {
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
                 ? CommonStatusEnum.INACTIVE
                 : CommonStatusEnum.ACTIVE;
-        LocalDateTime handleTimeUpdate = this.timeService.getDateTimeVN(commonStatusUpdate.getTimeUpdate());
+        LocalDateTime handleUpdateAt = this.timeService.getDateTimeVN(commonStatusUpdate.getUpdateAt());
 
         Role roleLocked = this.roleService.getOneById(id);
         if (roleLocked != null) {
             roleLocked.setStatus(handleStatus);
-            roleLocked.setTimeUpdate(handleTimeUpdate);
+            roleLocked.setUpdateAt(handleUpdateAt);
             this.roleService.lock(roleLocked);
         }
 

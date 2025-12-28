@@ -41,66 +41,53 @@
 
   &__message-content-warper {
     height: 700px;
-    background: #ffefef;
-    border: 1px solid $primary-color;
-    padding: 12px;
+    background: #f9f9f9;
+    padding: 20px;
+    border: 1px solid #dedede;
     border-radius: $border-radius;
-    overflow: scroll;
+    overflow-y: scroll;
   }
 
-  &__message-chat {
-    width: 70%;
-    // background: red;
+  &__message-content {
     display: flex;
-    gap: 8px;
+    flex-direction: column;
+    flex: 1;
+    gap: 10px;
   }
 
-  &__message-chat:not(:first-of-type) {
-    margin-top: 20px;
+  &__message-bubble {
+    max-width: 60%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    position: relative;
+    word-wrap: break-word;
+    font-size: 1.4rem;
+    line-height: 1.4;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   }
 
-  &__message-chat .avatar {
-    @include size(30px);
+  &__message-bubble.admin {
+    background: #f2f2f2;
+    align-self: flex-start;
+    border-bottom-left-radius: 0;
   }
 
-  &__message-chat .info {
-    width: 100%;
-    padding-top: 6px;
+  &__message-bubble.customer {
+    align-self: flex-end;
+    background: #1e90ff;
+    color: white;
+    border-bottom-right-radius: 0;
   }
 
-  &__message-chat .name {
-    display: inline-block;
-    width: 100%;
-    color: $primary-color;
-    font-size: 1.8rem;
+  &__message-bubble span {
+    display: block;
+    font-size: 1.2rem;
+    margin-top: 5px;
+    color: rgba(255, 255, 255, 0.7);
   }
 
-  &__message-chat .content {
-    background: #ffe0e0;
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 4px;
-    color: #4e4e4e;
-  }
-
-  &__message-chat.guest {
-    flex-direction: row-reverse;
-    margin-left: auto;
-  }
-
-  &__message-chat.guest .avatar {
-    @include flexCenter();
-    background: $primary-color;
-    border-radius: 50%;
-    color: #fff;
-  }
-
-  &__message-chat.guest .avatar svg {
-    @include size(12px);
-  }
-
-  &__message-chat.guest .name {
-    text-align: right;
+  &__message-bubble.admin span {
+    color: #555;
   }
 
   &__message-action {
@@ -111,22 +98,33 @@
   }
 
   &__message-action :is(input, button) {
-    border-radius: $border-radius;
     font-size: 1.7rem;
   }
 
   &__message-action input {
     @include size(80%, 50px);
-    padding-left: 10px;
-    border: 1px solid #d9d9d9;
-    transition: 0.2s ease-in-out;
-  }
-
-  &__message-action input:is(:hover, :focus, :not(:placeholder-shown)) {
-    border-color: $primary-color;
   }
 
   &__message-action button {
     @include size(20%, 50px);
+  }
+
+  &__message-inform {
+    @include flexCenter();
+    flex-direction: column;
+    height: 100%;
+  }
+
+  &__message-inform img {
+    @include size(240px);
+  }
+
+  &__message-inform p {
+    margin-top: 32px;
+    color: #333;
+    font-size: 2.4rem;
+    font-weight: 600;
+    line-height: 1.1;
+    text-align: center;
   }
 }

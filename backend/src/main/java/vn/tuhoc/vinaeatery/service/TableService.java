@@ -8,10 +8,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.TableE_;
-import vn.tuhoc.vinaeatery.domain.TableE;
+import lombok.extern.slf4j.Slf4j;
 import vn.tuhoc.vinaeatery.domain.criteria.TableCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.TableDTO;
+import vn.tuhoc.vinaeatery.domain.entity.TableE;
+import vn.tuhoc.vinaeatery.domain.entity.TableE_;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.CategoryTableRepository;
 import vn.tuhoc.vinaeatery.repository.FloorRepository;
@@ -20,6 +21,7 @@ import vn.tuhoc.vinaeatery.service.specification.TableSpecification;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TableService {
     // Properties
     private final FloorRepository floorRepository;
@@ -36,6 +38,7 @@ public class TableService {
         TableE table = getOneById(id);
         if (table != null) {
             tableDTO.setId(table.getId());
+            tableDTO.setRestaurantId(table.getRestaurantId());
             tableDTO.setName(table.getName());
             if (table.getCategoryTableId() != null) {
                 tableDTO.setCategoryTable(categoryTableRepository.findOneById(table.getCategoryTableId()));
@@ -46,7 +49,7 @@ public class TableService {
             tableDTO.setSeats(table.getSeats());
             tableDTO.setDescription(table.getDescription());
             tableDTO.setStatus(table.getStatus());
-            tableDTO.setTimeUpdate(table.getTimeUpdate());
+            tableDTO.setUpdateAt(table.getUpdateAt());
         }
 
         return tableDTO;
@@ -70,8 +73,11 @@ public class TableService {
         }
 
         //
-        if (tableCriteria.getId() == null && tableCriteria.getName() == null
+        if (tableCriteria.getId() == null
+                && tableCriteria.getRestaurantId() == null
+                && tableCriteria.getName() == null
                 && tableCriteria.getCategoryTableId() == null
+                && tableCriteria.getFloorId() == null
                 && tableCriteria.getStatus() == null
                 && tableCriteria.getSort() == null) {
             return this.tableRepository.findAll(sort);
@@ -83,6 +89,13 @@ public class TableService {
                 Specification<TableE> currentSpec = TableSpecification
                         .idEqual(tableCriteria.getId().get());
                 combinedSpec = combinedSpec.or(currentSpec);
+            }
+        }
+        if (tableCriteria.getRestaurantId() != null && tableCriteria.getRestaurantId().isPresent()) {
+            if (tableCriteria.getRestaurantId().get().matches("\\d+")) {
+                Specification<TableE> currentSpec = TableSpecification
+                        .restaurantIdEqual(tableCriteria.getRestaurantId().get());
+                combinedSpec = combinedSpec.and(currentSpec);
             }
         }
         if (tableCriteria.getName() != null && tableCriteria.getName().isPresent()) {
@@ -142,7 +155,7 @@ public class TableService {
             tableDTO.setSeats(table.getSeats());
             tableDTO.setDescription(table.getDescription());
             tableDTO.setStatus(table.getStatus());
-            tableDTO.setTimeUpdate(table.getTimeUpdate());
+            tableDTO.setUpdateAt(table.getUpdateAt());
 
             listFormat.add(tableDTO);
         }
@@ -155,6 +168,8 @@ public class TableService {
     }
 
     public TableE upsert(TableE Table) {
+        log.info("Service: Upsert Table");
+
         return this.tableRepository.save(Table);
     }
 

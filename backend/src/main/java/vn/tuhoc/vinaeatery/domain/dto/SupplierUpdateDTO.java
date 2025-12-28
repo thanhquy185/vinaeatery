@@ -26,5 +26,5 @@ public class SupplierUpdateDTO {
     private String email;
     private String address;
     @NotNull(message = "Thời gian cập nhật không được để trống !")
-    private LocalDateTime timeUpdate;
+    private LocalDateTime updateAt;
 }

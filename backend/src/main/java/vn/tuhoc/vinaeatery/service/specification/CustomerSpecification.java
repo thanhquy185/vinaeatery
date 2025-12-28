@@ -2,18 +2,13 @@ package vn.tuhoc.vinaeatery.service.specification;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import vn.tuhoc.vinaeatery.domain.Customer;
-import vn.tuhoc.vinaeatery.domain.Customer_;
+import vn.tuhoc.vinaeatery.domain.entity.Customer;
+import vn.tuhoc.vinaeatery.domain.entity.Customer_;
 
 public class CustomerSpecification {
     // Methods
     public static Specification<Customer> idEqual(String id) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Customer_.ID), id);
-    }
-
-    public static Specification<Customer> customerCardIdEqual(String customerCardId) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Customer_.CUSTOMER_CARD_ID),
-                customerCardId);
     }
 
     public static Specification<Customer> fullnameLike(String fullname) {

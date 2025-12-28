@@ -16,18 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-// import vn.tuhoc.vinaeatery.domain.Food;
-import vn.tuhoc.vinaeatery.domain.Ingredient;
-import vn.tuhoc.vinaeatery.domain.Order;
-import vn.tuhoc.vinaeatery.domain.OrderDetail;
-import vn.tuhoc.vinaeatery.domain.OrderDetailForCrud;
-import vn.tuhoc.vinaeatery.domain.OrderDetailId;
-import vn.tuhoc.vinaeatery.domain.Recipe;
 import vn.tuhoc.vinaeatery.domain.criteria.OrderCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderUpdatePaymentDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderUpdateStatusDTO;
+import vn.tuhoc.vinaeatery.domain.entity.Ingredient;
+import vn.tuhoc.vinaeatery.domain.entity.Order;
+import vn.tuhoc.vinaeatery.domain.entity.OrderDetail;
+import vn.tuhoc.vinaeatery.domain.entity.OrderDetailForCrud;
+import vn.tuhoc.vinaeatery.domain.entity.OrderDetailId;
+import vn.tuhoc.vinaeatery.domain.entity.Recipe;
 import vn.tuhoc.vinaeatery.domain.enumm.OrderStatusEnum;
 // import vn.tuhoc.vinaeatery.service.FoodService;
 // import vn.tuhoc.vinaeatery.service.EmployeeService;
@@ -110,7 +109,7 @@ public class OrderApiController {
         }
 
         // Cập nhật theo giờ Việt Nam
-        order.setTimeCreate(this.timeService.getDateTimeVN(order.getTimeCreate()));
+        order.setCreateAt(this.timeService.getDateTimeVN(order.getCreateAt()));
 
         // // Mặc định là Chưa thanh toán
         // order.setPayStatus(PayStatusEnum.NOTPAY);
@@ -195,12 +194,15 @@ public class OrderApiController {
         }
 
         Order orderUpdated = this.orderService.getOneById(id);
-        if(!orderUpdated.getStatus().equals(OrderStatusEnum.CONFIRM.getDescription())) {
-           return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        if (!orderUpdated.getStatus().equals(OrderStatusEnum.CONFIRM)
+                && !orderUpdated.getStatus().equals(OrderStatusEnum.CANCELLED)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
-                            .buildRestResponseWithStr("Đơn hàng này chưa được xác nhận nên không thể thanh toán !")); 
+                            .buildRestResponseWithStr("Đơn hàng này chưa được xác nhận nên không thể thanh toán !"));
         }
+        orderUpdated.setPayStatus(order.getPayStatus());
+        this.orderService.upsert(orderUpdated);
 
-        return null;
+        return ResponseEntity.status(HttpStatus.OK).body(orderUpdated);
     }
 }

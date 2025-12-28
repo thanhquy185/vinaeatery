@@ -19,19 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.CategoryTable;
-import vn.tuhoc.vinaeatery.domain.Employee;
-import vn.tuhoc.vinaeatery.domain.HandlePayment;
-import vn.tuhoc.vinaeatery.domain.Order;
-import vn.tuhoc.vinaeatery.domain.OrderDetail;
-import vn.tuhoc.vinaeatery.domain.OrderDetailId;
-import vn.tuhoc.vinaeatery.domain.OrderSheet;
-import vn.tuhoc.vinaeatery.domain.OrderSheetDetail;
-import vn.tuhoc.vinaeatery.domain.OrderSheetDetailId;
-import vn.tuhoc.vinaeatery.domain.UseTable;
 import vn.tuhoc.vinaeatery.domain.dto.HandlePaymentUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderSheetDTO;
 import vn.tuhoc.vinaeatery.domain.dto.UseTableDTO;
+import vn.tuhoc.vinaeatery.domain.entity.CategoryTable;
+import vn.tuhoc.vinaeatery.domain.entity.Employee;
+import vn.tuhoc.vinaeatery.domain.entity.HandlePayment;
+import vn.tuhoc.vinaeatery.domain.entity.Order;
+import vn.tuhoc.vinaeatery.domain.entity.OrderDetail;
+import vn.tuhoc.vinaeatery.domain.entity.OrderDetailId;
+import vn.tuhoc.vinaeatery.domain.entity.OrderSheet;
+import vn.tuhoc.vinaeatery.domain.entity.OrderSheetDetail;
+import vn.tuhoc.vinaeatery.domain.entity.OrderSheetDetailId;
+import vn.tuhoc.vinaeatery.domain.entity.UseTable;
 import vn.tuhoc.vinaeatery.domain.enumm.HandlePaymentStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.OrderSheetStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.OrderStatusEnum;
@@ -84,20 +84,22 @@ public class HandlePaymentApiController {
         return ResponseEntity.status(HttpStatus.OK).body(handlePaymentSelected);
     }
 
-    @PostMapping("/get-format")
-    public ResponseEntity<?> getHandlePaymentFormat(@RequestBody FormSecurityDTO formSecurityDTO) {
+    @PostMapping("/get-format/{use-table-id}")
+    public ResponseEntity<?> getHandlePaymentFormatByUseTableId(@PathVariable("use-table-id") Long useTableId,
+            @RequestBody FormSecurityDTO formSecurityDTO) {
         if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "handle-payments", "read")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil
                             .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
-        HandlePaymentDTO handlePaymentSelected = this.handlePaymentService.getOneFormat();
+        HandlePaymentDTO handlePaymentSelected = this.handlePaymentService.getOneFormatByUseTableId(useTableId);
         return ResponseEntity.status(HttpStatus.OK).body(handlePaymentSelected);
     }
 
-    @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> handleUpdateHandlePayment(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> handleUpdateHandlePayment(@PathVariable("id") Integer id,
+            @RequestPart("form-security") FormSecurityDTO formSecurityDTO,
             @RequestPart("handle-payment") @Valid HandlePaymentUpdateDTO handlePayment,
             BindingResult bindingResult) {
         if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "handle-payments", "update")) {
@@ -111,7 +113,7 @@ public class HandlePaymentApiController {
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
         }
 
-        HandlePayment handlePaymentUpdated = this.handlePaymentService.getOne();
+        HandlePayment handlePaymentUpdated = this.handlePaymentService.getOneById(id);
         if (handlePaymentUpdated != null) {
             handlePaymentUpdated.setUseTableId(handlePayment.getUseTableId());
             if (handlePayment.getEmployeeId() != null
@@ -162,11 +164,6 @@ public class HandlePaymentApiController {
                 for (OrderSheetDetail orderSheetDetail : orderSheetDetailsFormat) {
                     totalFoodPrice += orderSheetDetail.getPrice() * orderSheetDetail.getQuantity();
                 }
-                // - Giảm giá khách hàng
-                Double customerDiscount = 1.0 * totalFoodPrice
-                        * (customerService.getOneFormatById(useTable.getCustomer().getId()).getCustomerCard()
-                                .getDiscount())
-                        / 100;
                 // - Phụ thu loại bàn ăn
                 CategoryTable categoryTable = this.categoryTableService
                         .getOneById(useTable.getTable().getCategoryTable().getId());
@@ -182,10 +179,12 @@ public class HandlePaymentApiController {
                 // Đơn món ăn (Đã xác nhận - Đã thanh toán)
                 Order newOrder = new Order();
                 // - Thông tin cơ bản
-                newOrder.setTimeCreate(LocalDateTime.now());
+                newOrder.setCreateAt(LocalDateTime.now());
+                newOrder.setRestaurantId(
+                        this.useTableService.getOneById(handlePayment.getUseTableId()).getRestaurantId());
                 newOrder.setEmployeeId(handlePayment.getEmployeeId());
                 newOrder.setCustomerId(useTable.getCustomer().getId());
-                newOrder.setTotalPrice(Math.round(totalFoodPrice + (-1 * customerDiscount) + surchargeCategoryTable));
+                newOrder.setTotalPrice(Math.round(totalFoodPrice + surchargeCategoryTable));
                 newOrder.setStatus(OrderStatusEnum.CONFIRM);
                 // - Thông tin thanh toán
                 newOrder.setPayTime(LocalDateTime.now());
@@ -222,6 +221,7 @@ public class HandlePaymentApiController {
                     UseTable newUseTable = new UseTable();
                     newUseTable.setTimeStart(LocalDateTime.now());
                     // newUseTable.setTimeEnd(null);
+                    newUseTable.setRestaurantId(useTableUpdated.getRestaurantId());
                     newUseTable.setTableId(useTableUpdated.getTableId());
                     // newUseTable.setEmployeeId(null);
                     // newUseTable.setOrderId(null);

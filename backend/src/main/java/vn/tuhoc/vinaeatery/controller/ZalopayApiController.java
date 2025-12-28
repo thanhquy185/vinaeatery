@@ -31,8 +31,9 @@ public class ZalopayApiController {
     private final HandlePaymentService handlePaymentService;
 
     // Methods
-    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> createOrder(@RequestPart("form-security") FormSecurityDTO formSecurityDTO)
+    @PostMapping(value = "/create/{handle-payment-id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createOrder(@PathVariable("handle-payment-id") Integer handlePaymentId,
+            @RequestPart("form-security") FormSecurityDTO formSecurityDTO)
             throws Exception {
         if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "zalopay", "create")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -40,7 +41,7 @@ public class ZalopayApiController {
                             .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(zalopayService.handleCreateOrder().toMap());
+        return ResponseEntity.status(HttpStatus.OK).body(zalopayService.handleCreateOrder(handlePaymentId).toMap());
     }
 
     @PostMapping("/callback")

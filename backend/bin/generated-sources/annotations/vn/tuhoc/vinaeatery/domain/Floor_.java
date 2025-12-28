@@ -11,42 +11,40 @@ import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 @Generated("org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor")
 public abstract class Floor_ {
 
-	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.Floor#timeUpdate
+	 * @see vn.tuhoc.vinaeatery.domain.Floor#updateAt
 	 **/
-	public static volatile SingularAttribute<Floor, LocalDateTime> timeUpdate;
-	
+	public static volatile SingularAttribute<Floor, LocalDateTime> updateAt;
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Floor#name
 	 **/
 	public static volatile SingularAttribute<Floor, String> name;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Floor#description
 	 **/
 	public static volatile SingularAttribute<Floor, String> description;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Floor#id
 	 **/
 	public static volatile SingularAttribute<Floor, Integer> id;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Floor
 	 **/
 	public static volatile EntityType<Floor> class_;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Floor#status
 	 **/
 	public static volatile SingularAttribute<Floor, CommonStatusEnum> status;
 
-	public static final String TIME_UPDATE = "timeUpdate";
+	public static final String TIME_UPDATE = "updateAt";
 	public static final String NAME = "name";
 	public static final String DESCRIPTION = "description";
 	public static final String ID = "id";
 	public static final String STATUS = "status";
 
 }
-

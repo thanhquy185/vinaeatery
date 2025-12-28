@@ -12,48 +12,47 @@ import vn.tuhoc.vinaeatery.domain.enumm.PayStatusEnum;
 @Generated("org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor")
 public abstract class Order_ {
 
-	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.Order#timeCreate
+	 * @see vn.tuhoc.vinaeatery.domain.Order#createAt
 	 **/
-	public static volatile SingularAttribute<Order, LocalDateTime> timeCreate;
-	
+	public static volatile SingularAttribute<Order, LocalDateTime> createAt;
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Order#totalPrice
 	 **/
 	public static volatile SingularAttribute<Order, Long> totalPrice;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Order#customerId
 	 **/
 	public static volatile SingularAttribute<Order, Integer> customerId;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Order#employeeId
 	 **/
 	public static volatile SingularAttribute<Order, Integer> employeeId;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Order#id
 	 **/
 	public static volatile SingularAttribute<Order, Integer> id;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Order
 	 **/
 	public static volatile EntityType<Order> class_;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Order#payStatus
 	 **/
 	public static volatile SingularAttribute<Order, PayStatusEnum> payStatus;
-	
+
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.Order#status
 	 **/
 	public static volatile SingularAttribute<Order, OrderStatusEnum> status;
 
-	public static final String TIME_CREATE = "timeCreate";
+	public static final String TIME_CREATE = "createAt";
 	public static final String TOTAL_PRICE = "totalPrice";
 	public static final String CUSTOMER_ID = "customerId";
 	public static final String EMPLOYEE_ID = "employeeId";
@@ -62,4 +61,3 @@ public abstract class Order_ {
 	public static final String STATUS = "status";
 
 }
-

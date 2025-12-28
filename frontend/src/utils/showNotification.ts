@@ -4,10 +4,12 @@ import type { ReactNode } from "react";
 
 // Kiểu dữ liệu các tham số truyền vào
 type openNotificationWithIconProps = {
+  key?: string
   type: "success" | "info" | "warning" | "error";
+  icon?: ReactNode;
   message?: string;
   description?: string | ReactNode[];
-  duration?: number;
+  duration?: number | null | undefined;
   placement?:
     | "topLeft"
     | "topRight"
@@ -20,14 +22,18 @@ type openNotificationWithIconProps = {
 };
 
 export const openNotification = ({
+  key,
   type,
+  icon = null,
   message,
   description,
   duration = 1,
   placement = "topRight",
   className = "notification",
 }: openNotificationWithIconProps) => {
-  notification[type]({
+  notification[type!]({
+    key: key,
+    icon: icon,
     message: message!,
     description: description!,
     duration: duration!,

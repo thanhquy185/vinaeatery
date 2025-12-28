@@ -7,9 +7,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Supplier_;
-import vn.tuhoc.vinaeatery.domain.Supplier;
 import vn.tuhoc.vinaeatery.domain.criteria.SupplierCriteria;
+import vn.tuhoc.vinaeatery.domain.entity.Supplier;
+import vn.tuhoc.vinaeatery.domain.entity.Supplier_;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.SupplierRepository;
 import vn.tuhoc.vinaeatery.service.specification.SupplierSpecification;
@@ -43,9 +43,13 @@ public class SupplierService {
         }
 
         //
-        if (supplierCriteria.getId() == null && supplierCriteria.getName() == null
-                && supplierCriteria.getPhone() == null && supplierCriteria.getEmail() == null
-                && supplierCriteria.getStatus() == null && supplierCriteria.getSort() == null) {
+        if (supplierCriteria.getId() == null
+                && supplierCriteria.getRestaurantId() == null
+                && supplierCriteria.getName() == null
+                && supplierCriteria.getPhone() == null
+                && supplierCriteria.getEmail() == null
+                && supplierCriteria.getStatus() == null
+                && supplierCriteria.getSort() == null) {
             return this.supplierRepository.findAll(sort);
         }
         //
@@ -54,6 +58,13 @@ public class SupplierService {
             if (supplierCriteria.getId().get().matches("\\d+")) {
                 Specification<Supplier> currentSpec = SupplierSpecification.idEqual(supplierCriteria.getId().get());
                 combinedSpec = combinedSpec.or(currentSpec);
+            }
+        }
+        if (supplierCriteria.getRestaurantId() != null && supplierCriteria.getRestaurantId().isPresent()) {
+            if (supplierCriteria.getRestaurantId().get().matches("\\d+")) {
+                Specification<Supplier> currentSpec = SupplierSpecification
+                        .restaurantIdEqual(supplierCriteria.getRestaurantId().get());
+                combinedSpec = combinedSpec.and(currentSpec);
             }
         }
         if (supplierCriteria.getName() != null && supplierCriteria.getName().isPresent()) {

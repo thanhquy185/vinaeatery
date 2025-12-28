@@ -8,12 +8,12 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Role;
-import vn.tuhoc.vinaeatery.domain.RoleDetail;
-import vn.tuhoc.vinaeatery.domain.Role_;
 import vn.tuhoc.vinaeatery.domain.criteria.RoleCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.RoleDTO;
 import vn.tuhoc.vinaeatery.domain.dto.RoleDetailDTO;
+import vn.tuhoc.vinaeatery.domain.entity.Role;
+import vn.tuhoc.vinaeatery.domain.entity.Role_;
+import vn.tuhoc.vinaeatery.domain.entity.RoleDetail;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.RoleDetailRepository;
 import vn.tuhoc.vinaeatery.repository.RoleRepository;
@@ -42,10 +42,11 @@ public class RoleService {
             }
 
             roleDTO.setId(role.getId());
+            roleDTO.setRestaurantId(role.getRestaurantId());
             roleDTO.setName(role.getName());
             roleDTO.setSalary(role.getSalary());
             roleDTO.setStatus(role.getStatus());
-            roleDTO.setTimeUpdate(role.getTimeUpdate());
+            roleDTO.setUpdateAt(role.getUpdateAt());
             roleDTO.setRoleDetails(listRoleDetail);
         }
 
@@ -70,8 +71,11 @@ public class RoleService {
         }
 
         //
-        if (roleCriteria.getId() == null && roleCriteria.getName() == null
-                && roleCriteria.getSort() == null && roleCriteria.getStatus() == null) {
+        if (roleCriteria.getId() == null 
+        && roleCriteria.getRestaurantId() == null
+        && roleCriteria.getName() == null
+                && roleCriteria.getSort() == null
+                 && roleCriteria.getStatus() == null) {
             return this.roleRepository.findAll(sort);
         }
         //
@@ -80,6 +84,13 @@ public class RoleService {
             if (roleCriteria.getId().get().matches("\\d+")) {
                 Specification<Role> currentSpec = RoleSpecification.idEqual(roleCriteria.getId().get());
                 combinedSpec = combinedSpec.or(currentSpec);
+            }
+        }
+        if(roleCriteria.getRestaurantId() != null && roleCriteria.getRestaurantId().isPresent()) {
+            if (roleCriteria.getRestaurantId().get().matches("\\d+")) {
+                Specification<Role> currentSpec = RoleSpecification
+                        .restaurantIdEqual(roleCriteria.getRestaurantId().get());
+                combinedSpec = combinedSpec.and(currentSpec);
             }
         }
         if (roleCriteria.getName() != null && roleCriteria.getName().isPresent()) {
@@ -116,7 +127,7 @@ public class RoleService {
             roleDTO.setName(role.getName());
             roleDTO.setSalary(role.getSalary());
             roleDTO.setStatus(role.getStatus());
-            roleDTO.setTimeUpdate(role.getTimeUpdate());
+            roleDTO.setUpdateAt(role.getUpdateAt());
             roleDTO.setRoleDetails(listRoleDetail);
 
             listFormat.add(roleDTO);

@@ -15,6 +15,27 @@ export const TitleModalCommon = {
   changePassword: (objectName: string) => "Thay đổi mật khẩu " + objectName,
 };
 
+// Quyền tài khoản người dùng
+export const UserRoleValue = {
+  admin: "Quản trị hệ thống",
+  manager: "Chủ nhà hàng",
+  employee: "Nhân viên nhà hàng",
+  customer: "Khách hàng"
+}
+
+// Phương thức tạo tài khoản người dùng
+export const UserMethodValue = {
+  facebook: "Tạo tài khoản bằng Facebook",
+  google: "Tạo tài khoản bằng Google",
+  handmade: "Tạo tài khoản thủ công",
+}
+
+// Trạng thái sử dụng tài khoản người dùng
+export const UserIsUsingValue = {
+  notUsing: "Chưa sử dụng",
+  using: "Đang sử dụng"
+}
+
 // Giới tính chung
 export const CommonGender = {
   male: "Nam",
@@ -48,13 +69,19 @@ export const HandlePaymentStatus = {
   completed: "Đã hoàn tất thanh toán hoá đơn",
 };
 
-// Trạng thái chung cho đối tượng sử dụng bàn
+// Trạng thái chung cho đối tượng sử dụng bàn ăn
 export const UseTableStatus = {
   occupied: "Đang có khách",
   reserved: "Đã đặt bàn",
   empty: "Đang trống",
   repair: "Đang bảo trì",
 };
+
+// Trạng thái crung cho đối tượng sử dụng món ăn
+export const UseFoodStatus = {
+  canOrder: "Còn phục vụ",
+  canNotOrder: "Hết phục vụ"
+}
 
 // Trạng thái chung cho đối tượng phiếu gọi món
 export const OrderSheetStatus = {

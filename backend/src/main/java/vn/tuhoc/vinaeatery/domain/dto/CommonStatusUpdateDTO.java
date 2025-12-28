@@ -21,5 +21,5 @@ public class CommonStatusUpdateDTO {
     @NotNull(message = "Trạng thái không được để trống !")
     private CommonStatusEnum status;
     @NotNull(message = "Thời gian cập nhật không được để trống !")
-    private LocalDateTime timeUpdate;
+    private LocalDateTime updateAt;
 }

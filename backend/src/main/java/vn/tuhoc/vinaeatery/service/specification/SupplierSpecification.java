@@ -2,13 +2,17 @@ package vn.tuhoc.vinaeatery.service.specification;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import vn.tuhoc.vinaeatery.domain.Supplier;
-import vn.tuhoc.vinaeatery.domain.Supplier_;
+import vn.tuhoc.vinaeatery.domain.entity.Supplier;
+import vn.tuhoc.vinaeatery.domain.entity.Supplier_;
 
 public class SupplierSpecification {
     // Methods
     public static Specification<Supplier> idEqual(String id) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Supplier_.ID), id);
+    }
+
+    public static Specification<Supplier> restaurantIdEqual(String restaurantId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Supplier_.RESTAURANT_ID), restaurantId);
     }
 
     public static Specification<Supplier> nameLike(String name) {

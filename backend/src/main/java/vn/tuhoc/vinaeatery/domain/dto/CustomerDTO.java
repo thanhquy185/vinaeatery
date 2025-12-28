@@ -9,8 +9,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.tuhoc.vinaeatery.domain.CustomerCard;
+import vn.tuhoc.vinaeatery.domain.entity.User;
+import vn.tuhoc.vinaeatery.domain.enumm.CommonGenderEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
+import vn.tuhoc.vinaeatery.repository.converter.CommonGenderConverter;
 import vn.tuhoc.vinaeatery.repository.converter.CommonStatusConverter;
 
 @NoArgsConstructor
@@ -20,18 +22,19 @@ import vn.tuhoc.vinaeatery.repository.converter.CommonStatusConverter;
 public class CustomerDTO {
     // Properties
     private Integer id;
-    private CustomerCard customerCard;
-    private Long totalThreshold;
+    private User user;
+    private String createAt;
+    private String image;
     private String fullname;
     private String birthday;
-    private String gender;
+    @Convert(converter = CommonGenderConverter.class)
+    private CommonGenderEnum gender;
     private String phone;
     private String email;
     private String address;
     private String description;
     @Convert(converter = CommonStatusConverter.class)
     private CommonStatusEnum status;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timeUpdate;
+    private String updateAt;
 
 }

@@ -7,9 +7,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Floor;
-import vn.tuhoc.vinaeatery.domain.Floor_;
 import vn.tuhoc.vinaeatery.domain.criteria.FloorCriteria;
+import vn.tuhoc.vinaeatery.domain.entity.Floor;
+import vn.tuhoc.vinaeatery.domain.entity.Floor_;
+import vn.tuhoc.vinaeatery.domain.entity.TableE;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.FloorRepository;
 import vn.tuhoc.vinaeatery.service.specification.FloorSpecification;
@@ -21,6 +22,11 @@ public class FloorService {
     private final FloorRepository floorRepository;
 
     // Methods
+    public Boolean isUsingByOneTable(Integer id) {
+        List<TableE> tableListIsUsing = this.floorRepository.findAllTableUsing(id);
+        return tableListIsUsing != null && !tableListIsUsing.isEmpty();
+    }
+
     public Floor getOneById(Integer id) {
         return this.floorRepository.findOneById(id);
     }
@@ -43,8 +49,11 @@ public class FloorService {
         }
 
         //
-        if (floorCriteria.getId() == null && floorCriteria.getName() == null
-                && floorCriteria.getStatus() == null && floorCriteria.getSort() == null) {
+        if (floorCriteria.getId() == null
+                && floorCriteria.getRestaurantId() == null
+                && floorCriteria.getName() == null
+                && floorCriteria.getStatus() == null
+                && floorCriteria.getSort() == null) {
             return this.floorRepository.findAll(sort);
         }
         //
@@ -54,6 +63,13 @@ public class FloorService {
                 Specification<Floor> currentSpec = FloorSpecification
                         .idEqual(floorCriteria.getId().get());
                 combinedSpec = combinedSpec.or(currentSpec);
+            }
+        }
+        if(floorCriteria.getRestaurantId() != null && floorCriteria.getRestaurantId().isPresent()) {
+            if (floorCriteria.getRestaurantId().get().matches("\\d+")) {
+                Specification<Floor> currentSpec = FloorSpecification
+                        .restaurantIdEqual(floorCriteria.getRestaurantId().get());
+                combinedSpec = combinedSpec.and(currentSpec);
             }
         }
         if (floorCriteria.getName() != null && floorCriteria.getName().isPresent()) {

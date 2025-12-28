@@ -1,7 +1,5 @@
 package vn.tuhoc.vinaeatery.domain.dto;
 
-import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Convert;
@@ -9,8 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
-import vn.tuhoc.vinaeatery.repository.converter.CommonStatusConverter;
+import vn.tuhoc.vinaeatery.domain.enumm.OrderStatusEnum;
+import vn.tuhoc.vinaeatery.repository.converter.OrderStatusConverter;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,18 +16,21 @@ import vn.tuhoc.vinaeatery.repository.converter.CommonStatusConverter;
 @Setter
 public class OrderTableDTO {
     private Integer id;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timeOrder;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timeArrive;
+    private Integer restaurantId;
+    private RestaurantDTO restaurant;
     private EmployeeDTO employee;
-    private String note;
-    private String fullname;
-    private String phone;
-    private String email;
-    private String address;
-    @Convert(converter = CommonStatusConverter.class)
-    private CommonStatusEnum status;
+    private CustomerDTO customer;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timeUpdate;
+    private String createAt;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private String arriveAt;
+    private String customerFullname;
+    private String customerPhone;
+    private String customerEmail;
+    private String customerNote;
+    private Integer guests;
+    @Convert(converter = OrderStatusConverter.class)
+    private OrderStatusEnum status;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private String updateAt;
 }

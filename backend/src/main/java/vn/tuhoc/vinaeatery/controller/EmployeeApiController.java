@@ -1,5 +1,6 @@
 package vn.tuhoc.vinaeatery.controller;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -20,21 +21,26 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Employee;
-import vn.tuhoc.vinaeatery.domain.RoleHistory;
-import vn.tuhoc.vinaeatery.domain.RoleHistoryId;
 import vn.tuhoc.vinaeatery.domain.criteria.EmployeeCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.EmployeeChangePasswordDTO;
 import vn.tuhoc.vinaeatery.domain.dto.EmployeeDTO;
 import vn.tuhoc.vinaeatery.domain.dto.EmployeeUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
+import vn.tuhoc.vinaeatery.domain.entity.Employee;
+import vn.tuhoc.vinaeatery.domain.entity.RoleHistory;
+import vn.tuhoc.vinaeatery.domain.entity.RoleHistoryId;
+import vn.tuhoc.vinaeatery.domain.entity.User;
 // import vn.tuhoc.vinaeatery.domain.dto.EmployeeUpdateFromClientDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
+import vn.tuhoc.vinaeatery.domain.enumm.UserIsUsingEnum;
+import vn.tuhoc.vinaeatery.domain.enumm.UserMethodEnum;
+import vn.tuhoc.vinaeatery.domain.enumm.UserRoleEnum;
 import vn.tuhoc.vinaeatery.service.TimeService;
-import vn.tuhoc.vinaeatery.service.UploadService;
+import vn.tuhoc.vinaeatery.service.UserService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
+import vn.tuhoc.vinaeatery.service.CloudinaryService;
 import vn.tuhoc.vinaeatery.service.EmployeeService;
 import vn.tuhoc.vinaeatery.service.RoleHistoryService;
 
@@ -43,9 +49,10 @@ import vn.tuhoc.vinaeatery.service.RoleHistoryService;
 @RequiredArgsConstructor
 public class EmployeeApiController {
         // Properties
+        private final UserService userService;
         private final RoleHistoryService roleHistoryService;
         private final EmployeeService employeeService;
-        private final UploadService uploadService;
+        private final CloudinaryService cloudinaryService;
         private final PasswordEncoder passwordEncoder;
         private final TimeService timeService;
 
@@ -92,12 +99,27 @@ public class EmployeeApiController {
                 return ResponseEntity.status(HttpStatus.OK).body(employeeSelected);
         }
 
+        @PostMapping("/detail-by-user-id/{id}")
+        public ResponseEntity<?> detailEmployeeByUserId(@RequestBody FormSecurityDTO formSecurityDTO,
+                        @PathVariable("id") Integer userId) {
+                if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "employees", "read")) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(ValidationUtil
+                                                        .buildRestResponseWithStr(HandleFormSecurity
+                                                                        .getErrorMessageByHandleFormData()));
+                }
+
+                EmployeeDTO employeeSelected = this.employeeService.getOneByUserId(userId);
+                return ResponseEntity.status(HttpStatus.OK).body(employeeSelected);
+        }
+
         @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
         public ResponseEntity<?> handleCreateEmployee(@RequestPart("form-security") FormSecurityDTO formSecurityDTO,
                         @RequestPart("employee") @Valid Employee employee,
                         @RequestPart(value = "image-file", required = false) MultipartFile imageFile,
-                        BindingResult bindingResult) {
-                if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "employees", "create")) {
+                        BindingResult bindingResult) throws IOException {
+                if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "employees",
+                                "create")) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                         .body(ValidationUtil
                                                         .buildRestResponseWithStr(HandleFormSecurity
@@ -111,35 +133,48 @@ public class EmployeeApiController {
                 }
 
                 // Nếu tên tài khoản đã tồn tại thì báo lỗi
-                Employee employeeExistsByUsername = employeeService.getOneByUsername(employee.getUsername());
-                if (employeeExistsByUsername != null && employeeExistsByUsername.getId() > 0) {
+                User userExistsByUsername = userService.getOneByUsername(employee.getPassword());
+                if (userExistsByUsername != null && userExistsByUsername.getId() > 0) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                         .body(ValidationUtil
                                                         .buildRestResponseWithStr("Tên tài khoản đã tồn tại !"));
                 }
 
-                // Cập nhật file ảnh vào source code và lấy ra tên file để lưu vào csdl
-                String image = null;
-                if (imageFile != null && !imageFile.isEmpty()) {
-                        image = this.uploadService.uploadImageFiles(imageFile, "employees",
-                                        String.valueOf(this.employeeService.getLastOne().getId() + 1));
-                }
-                employee.setImage(image);
-
-                // Mã hoá mật khẩu
+                // Tạo tài khoản mới
                 String hashPassword = this.passwordEncoder.encode(employee.getPassword());
-                employee.setPassword(hashPassword);
+                User newUser = new User();
+                newUser.setCreateAt(employee.getCreateAt());
+                newUser.setRole(UserRoleEnum.EMPLOYEE);
+                newUser.setUsername(employee.getUsername());
+                newUser.setPassword(hashPassword);
+                newUser.setMethod(UserMethodEnum.HANDMADE);
+                newUser.setIsUsing(UserIsUsingEnum.USING);
+                newUser.setStatus(CommonStatusEnum.ACTIVE);
+                User handleCreateNewUser = this.userService.upsert(newUser);
 
-                //
-                Employee employeeCreated = this.employeeService.upsert(employee);
-                if (employeeCreated != null) {
-                        roleHistoryService.upsert(new RoleHistory(
-                                        new RoleHistoryId(employeeCreated.getId(), employee.getRoleId(),
-                                                        this.timeService
-                                                                        .getDateTimeVN(LocalDateTime.now())
-                                                                        .format(DateTimeFormatter
-                                                                                        .ofPattern("yyyy-MM-dd"))),
-                                        null));
+                Employee employeeCreated = null;
+                if (handleCreateNewUser != null) {
+                        // Cập nhật mã tài khoản
+                        employee.setUserId(handleCreateNewUser.getId());
+
+                        // Cập nhật file ảnh vào source code và lấy ra tên file để lưu vào csdl
+                        String image = null;
+                        if (imageFile != null && !imageFile.isEmpty()) {
+                                image = this.cloudinaryService.uploadImage(imageFile);
+                        }
+                        employee.setImage(image);
+
+                        //
+                        employeeCreated = this.employeeService.upsert(employee);
+                        if (employeeCreated != null) {
+                                roleHistoryService.upsert(new RoleHistory(
+                                                new RoleHistoryId(employeeCreated.getId(), employee.getRoleId(),
+                                                                this.timeService
+                                                                                .getDateTimeVN(LocalDateTime.now())
+                                                                                .format(DateTimeFormatter
+                                                                                                .ofPattern("yyyy-MM-dd"))),
+                                                null));
+                        }
                 }
 
                 return ResponseEntity.status(HttpStatus.OK).body(employeeCreated);
@@ -150,8 +185,9 @@ public class EmployeeApiController {
                         @PathVariable("id") Integer id,
                         @RequestPart("employee") @Valid EmployeeUpdateDTO employee,
                         @RequestPart(value = "image-file", required = false) MultipartFile imageFile,
-                        BindingResult bindingResult) {
-                if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "employees", "update")) {
+                        BindingResult bindingResult) throws IOException {
+                if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "employees",
+                                "update")) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                         .body(ValidationUtil
                                                         .buildRestResponseWithStr(HandleFormSecurity
@@ -167,7 +203,7 @@ public class EmployeeApiController {
                 // Cập nhật file ảnh vào source code và lấy ra tên file để lưu vào csdl
                 String image = null;
                 if (imageFile != null && !imageFile.isEmpty()) {
-                        image = this.uploadService.uploadImageFiles(imageFile, "employees", String.valueOf(id));
+                        image = this.cloudinaryService.uploadImage(imageFile);
                 }
                 employee.setImage(image);
 
@@ -185,7 +221,7 @@ public class EmployeeApiController {
                         employeeUpdate.setAddress(employee.getAddress());
                         employeeUpdate.setDateBegin(employee.getDateBegin());
                         employeeUpdate.setDateEnd(employee.getDateEnd());
-                        employeeUpdate.setTimeUpdate(this.timeService.getDateTimeVN(employee.getTimeUpdate()));
+                        employeeUpdate.setUpdateAt(employee.getUpdateAt());
 
                         RoleHistory currentRoleHistory = roleHistoryService.getNewByEmployeeId(id);
                         if (currentRoleHistory != null
@@ -238,13 +274,12 @@ public class EmployeeApiController {
                 CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
                                 ? CommonStatusEnum.INACTIVE
                                 : CommonStatusEnum.ACTIVE;
-                LocalDateTime handleTimeUpdate = this.timeService.getDateTimeVN(commonStatusUpdate.getTimeUpdate());
+                LocalDateTime handleUpdateAt = this.timeService.getDateTimeVN(commonStatusUpdate.getUpdateAt());
 
                 Employee employeeLocked = this.employeeService.getOneById(id);
                 if (employeeLocked != null) {
                         employeeLocked.setStatus(handleStatus);
-                        employeeLocked.setTimeUpdate(handleTimeUpdate);
-                        this.employeeService.lock(employeeLocked);
+                        // employeeLocked.setUpdateAt(commonStatusUpdate.getUpdateAt());
                 }
 
                 return ResponseEntity.status(HttpStatus.OK).body(employeeLocked);
@@ -271,7 +306,7 @@ public class EmployeeApiController {
         // Employee.setImage(image);
 
         // // Cập nhật lại theo giờ Việt Nam
-        // Employee.setTimeUpdate(this.timeService.getTimeVN(Employee.getTimeUpdate()));
+        // Employee.setUpdateAt(this.timeService.getTimeVN(Employee.getUpdateAt()));
 
         // // Cập nhật lại dữ liệu
         // Employee EmployeeUpdate = this.employeeService.getOneById(id);
@@ -285,55 +320,60 @@ public class EmployeeApiController {
         // EmployeeUpdate.setPhone(Employee.getPhone());
         // EmployeeUpdate.setEmail(Employee.getEmail());
         // EmployeeUpdate.setAddress(Employee.getAddress());
-        // EmployeeUpdate.setTimeUpdate(Employee.getTimeUpdate());
+        // EmployeeUpdate.setUpdateAt(Employee.getUpdateAt());
         // this.employeeService.upsertEmployee(EmployeeUpdate);
         // }
 
         // return ResponseEntity.status(HttpStatus.CREATED).body(EmployeeUpdate);
         // }
 
-        @PutMapping(value = "/change-password/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-        public ResponseEntity<?> handleChangeEmployeePassword(
-                        @RequestPart("form-security") FormSecurityDTO formSecurityDTO,
-                        @PathVariable("id") Integer id,
-                        @RequestPart("employee") @Valid EmployeeChangePasswordDTO employeeChangePassword,
-                        BindingResult bindingResult) {
-                if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "employees", "change-password")) {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                        .body(ValidationUtil
-                                                        .buildRestResponseWithStr(HandleFormSecurity
-                                                                        .getErrorMessageByHandleFormData()));
-                }
+        // @PutMapping(value = "/change-password/{id}", consumes =
+        // MediaType.MULTIPART_FORM_DATA_VALUE)
+        // public ResponseEntity<?> handleChangeEmployeePassword(
+        // @RequestPart("form-security") FormSecurityDTO formSecurityDTO,
+        // @PathVariable("id") Integer id,
+        // @RequestPart("employee") @Valid EmployeeChangePasswordDTO
+        // employeeChangePassword,
+        // BindingResult bindingResult) {
+        // if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "employees",
+        // "change-password")) {
+        // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        // .body(ValidationUtil
+        // .buildRestResponseWithStr(HandleFormSecurity
+        // .getErrorMessageByHandleFormData()));
+        // }
 
-                if (bindingResult.hasErrors()) {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                        .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
-                }
+        // if (bindingResult.hasErrors()) {
+        // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        // .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
+        // }
 
-                Employee employeeUpdatePassword = this.employeeService.getOneById(id);
-                if (employeeUpdatePassword != null) {
-                        if (!this.passwordEncoder.matches(employeeChangePassword.getCurrentPassword(),
-                                        employeeUpdatePassword.getPassword())) {
-                                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                                .body(ValidationUtil.buildRestResponseWithStr(
-                                                                "Mật khẩu hiện tại không đúng !"));
-                        }
-                        if (!employeeChangePassword.getNewPassword()
-                                        .equals(employeeChangePassword.getAuthNewPassword())) {
-                                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                                .body(ValidationUtil.buildRestResponseWithStr(
-                                                                "Xác nhận mật khẩu mới không đúng !"));
-                        }
+        // Employee employeeUpdatePassword = this.employeeService.getOneById(id);
+        // if (employeeUpdatePassword != null) {
+        // if
+        // (!this.passwordEncoder.matches(employeeChangePassword.getCurrentPassword(),
+        // employeeUpdatePassword.getPassword())) {
+        // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        // .body(ValidationUtil.buildRestResponseWithStr(
+        // "Mật khẩu hiện tại không đúng !"));
+        // }
+        // if (!employeeChangePassword.getNewPassword()
+        // .equals(employeeChangePassword.getAuthNewPassword())) {
+        // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        // .body(ValidationUtil.buildRestResponseWithStr(
+        // "Xác nhận mật khẩu mới không đúng !"));
+        // }
 
-                        employeeUpdatePassword.setPassword(
-                                        this.passwordEncoder.encode(employeeChangePassword.getNewPassword()));
-                        employeeUpdatePassword
-                                        .setTimeUpdate(this.timeService
-                                                        .getDateTimeVN(employeeChangePassword.getTimeUpdate()));
-                        // employeeUpdatePassword.setTimeUpdate(this.timeService.getDateTimeVN(LocalDateTime.now()));
-                        this.employeeService.upsert(employeeUpdatePassword);
-                }
+        // employeeUpdatePassword.setPassword(
+        // this.passwordEncoder.encode(employeeChangePassword.getNewPassword()));
+        // employeeUpdatePassword
+        // .setUpdateAt(this.timeService
+        // .getDateTimeVN(employeeChangePassword.getUpdateAt()));
+        // //
+        // employeeUpdatePassword.setUpdateAt(this.timeService.getDateTimeVN(LocalDateTime.now()));
+        // this.employeeService.upsert(employeeUpdatePassword);
+        // }
 
-                return ResponseEntity.status(HttpStatus.OK).body(employeeUpdatePassword);
-        }
+        // return ResponseEntity.status(HttpStatus.OK).body(employeeUpdatePassword);
+        // }
 }

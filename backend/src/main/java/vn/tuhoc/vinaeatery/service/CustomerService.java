@@ -8,12 +8,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.domain.Customer_;
-import vn.tuhoc.vinaeatery.domain.Customer;
 import vn.tuhoc.vinaeatery.domain.criteria.CustomerCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.CustomerDTO;
+import vn.tuhoc.vinaeatery.domain.entity.Customer_;
+import vn.tuhoc.vinaeatery.domain.entity.Customer;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
-import vn.tuhoc.vinaeatery.repository.CustomerCardRepository;
 import vn.tuhoc.vinaeatery.repository.CustomerRepository;
 import vn.tuhoc.vinaeatery.service.specification.CustomerSpecification;
 
@@ -21,7 +20,7 @@ import vn.tuhoc.vinaeatery.service.specification.CustomerSpecification;
 @RequiredArgsConstructor
 public class CustomerService {
     // Properties
-    private final CustomerCardRepository customerCardRepository;
+    private final UserService userService;
     private final CustomerRepository customerRepository;
 
     // Methods
@@ -29,11 +28,28 @@ public class CustomerService {
         return this.customerRepository.findOneById(id);
     }
 
+    public Customer getOneByEmail(String email) {
+        return this.customerRepository.findOneByEmail(email);
+    }
+
+     public Customer getOneByPhone(String phone) {
+        return this.customerRepository.findOneByPhone(phone);
+    }
+
+    public CustomerDTO getOneByUserId(Integer userid) {
+        return getOneFormatById(this.customerRepository.findOneByUserId(userid).getId());
+    }
+
     public CustomerDTO getOneFormatById(Integer id) {
         CustomerDTO customerDTO = new CustomerDTO();
         Customer customer = getOneById(id);
         if (customer != null) {
             customerDTO.setId(customer.getId());
+            if (customer.getUserId() != null) {
+                customerDTO.setUser(userService.getOneById(customer.getUserId()));
+            }
+            customerDTO.setCreateAt(customer.getCreateAt());
+            customerDTO.setImage(customer.getImage());
             customerDTO.setFullname(customer.getFullname());
             customerDTO.setBirthday(customer.getBirthday());
             customerDTO.setGender(customer.getGender());
@@ -41,12 +57,8 @@ public class CustomerService {
             customerDTO.setEmail(customer.getEmail());
             customerDTO.setAddress(customer.getAddress());
             customerDTO.setDescription(customer.getDescription());
-            if (customer.getCustomerCardId() != null) {
-                customerDTO.setCustomerCard(customerCardRepository.findOneById(customer.getCustomerCardId()));
-            }
-            customerDTO.setTotalThreshold(customer.getTotalThreshold());
             customerDTO.setStatus(customer.getStatus());
-            customerDTO.setTimeUpdate(customer.getTimeUpdate());
+            customerDTO.setUpdateAt(customer.getUpdateAt());
         }
 
         return customerDTO;
@@ -64,15 +76,16 @@ public class CustomerService {
             switch (sortStr) {
                 case "Mã khách hàng tăng dần" -> sort = Sort.by(Customer_.ID).ascending();
                 case "Mã khách hàng giảm dần" -> sort = Sort.by(Customer_.ID).descending();
-                case "Tên khách hàng tăng dần" -> sort = Sort.by(Customer_.FULLNAME).ascending();
-                case "Tên khách hàng giảm dần" -> sort = Sort.by(Customer_.FULLNAME).descending();
+                case "Họ tên khách hàng tăng dần" -> sort = Sort.by(Customer_.FULLNAME).ascending();
+                case "Họ tên khách hàng giảm dần" -> sort = Sort.by(Customer_.FULLNAME).descending();
             }
         }
 
         //
         if (customerCriteria.getId() == null && customerCriteria.getFullname() == null
-                && customerCriteria.getCustomerCardId() == null && customerCriteria.getPhone() == null
-                && customerCriteria.getEmail() == null && customerCriteria.getStatus() == null
+                && customerCriteria.getPhone() == null
+                && customerCriteria.getEmail() == null
+                && customerCriteria.getStatus() == null
                 && customerCriteria.getSort() == null) {
             return this.customerRepository.findAll(sort);
         }
@@ -82,15 +95,6 @@ public class CustomerService {
             if (customerCriteria.getId().get().matches("\\d+")) {
                 Specification<Customer> currentSpec = CustomerSpecification.idEqual(customerCriteria.getId().get());
                 combinedSpec = combinedSpec.or(currentSpec);
-            }
-        }
-        if (customerCriteria.getCustomerCardId() != null && customerCriteria.getCustomerCardId().isPresent()) {
-            String[] listCustomerCardId = customerCriteria.getCustomerCardId().get().split(",");
-            for (String customerCardId : listCustomerCardId) {
-                if (customerCardId.matches("\\d+")) {
-                    Specification<Customer> currentSpec = CustomerSpecification.customerCardIdEqual(customerCardId);
-                    combinedSpec = combinedSpec.or(currentSpec);
-                }
             }
         }
         if (customerCriteria.getFullname() != null && customerCriteria.getFullname().isPresent()) {
@@ -128,30 +132,26 @@ public class CustomerService {
     public List<CustomerDTO> getAllFormat(CustomerCriteria customerCriteria) {
         List<CustomerDTO> listFormat = new ArrayList<>();
         for (Customer customer : getAll(customerCriteria)) {
-            CustomerDTO customerDTO = new CustomerDTO();
-            customerDTO.setId(customer.getId());
-            customerDTO.setFullname(customer.getFullname());
-            customerDTO.setBirthday(customer.getBirthday());
-            customerDTO.setGender(customer.getGender());
-            customerDTO.setPhone(customer.getPhone());
-            customerDTO.setEmail(customer.getEmail());
-            customerDTO.setAddress(customer.getAddress());
-            customerDTO.setDescription(customer.getDescription());
-            if (customer.getCustomerCardId() != null) {
-                customerDTO.setCustomerCard(customerCardRepository.findOneById(customer.getCustomerCardId()));
-            }
-            customerDTO.setTotalThreshold(customer.getTotalThreshold());
-            customerDTO.setStatus(customer.getStatus());
-            customerDTO.setTimeUpdate(customer.getTimeUpdate());
+            // CustomerDTO customerDTO = new CustomerDTO();
+            // customerDTO.setId(customer.getId());
+            // customerDTO.setFullname(customer.getFullname());
+            // customerDTO.setBirthday(customer.getBirthday());
+            // customerDTO.setGender(customer.getGender());
+            // customerDTO.setPhone(customer.getPhone());
+            // customerDTO.setEmail(customer.getEmail());
+            // customerDTO.setAddress(customer.getAddress());
+            // customerDTO.setDescription(customer.getDescription());
+            // if (customer.getCustomerCardId() != null) {
+            // customerDTO.setCustomerCard(customerCardRepository.findOneById(customer.getCustomerCardId()));
+            // }
+            // customerDTO.setTotalThreshold(customer.getTotalThreshold());
+            // customerDTO.setStatus(customer.getStatus());
+            // customerDTO.setUpdateAt(customer.getUpdateAt());
 
-            listFormat.add(customerDTO);
+            listFormat.add(getOneFormatById(customer.getId()));
         }
 
         return listFormat;
-    }
-
-    public List<Customer> getAllByCustomerCardId(Integer customerCardId) {
-        return this.customerRepository.findAllByCustomerCardId(customerCardId);
     }
 
     public Customer upsert(Customer customer) {

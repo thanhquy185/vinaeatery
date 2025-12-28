@@ -47,7 +47,7 @@ public class MomoService {
         return hexString.toString();
     }
 
-    public MomoResponseDTO handleCreateOrder() {
+    public MomoResponseDTO handleCreateOrder(Integer handlePaymentId) {
         MomoPropertiesDTO.EnvConfig config = momoProperties.getActiveConfig();
         // log.info("PartnerCode: {}", config.getPartnerCode());
         // log.info("Endpoint: {}", config.getEndpoint());
@@ -56,7 +56,7 @@ public class MomoService {
         String requestId = UUID.randomUUID().toString();
         String orderInfo = "Thanh toán hoá đơn: " + orderId;
         String extraData = "Không có khuyến mãi gì hết";
-        Long amount = handlePaymentService.getOneFormat().getPayTotalPrice();
+        Long amount = handlePaymentService.getOneFormatById(handlePaymentId).getPayTotalPrice();
         Long orderExpire = System.currentTimeMillis() + 15 * 60 * 1000; // 15 phút
 
         String rawSignature = String.format(

@@ -21,11 +21,12 @@ import lombok.Setter;
 public class RoleDTO {
     // Properties
     private Integer id;
+    private Integer restaurantId;
     private String name;
     private Long salary;
     @Convert(converter = CommonStatusConverter.class)
     private CommonStatusEnum status;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timeUpdate;
+    private LocalDateTime updateAt;
     private List<RoleDetailDTO> roleDetails;
 }

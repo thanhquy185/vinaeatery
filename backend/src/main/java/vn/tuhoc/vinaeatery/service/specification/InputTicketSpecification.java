@@ -5,8 +5,8 @@ import java.time.format.DateTimeFormatter;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import vn.tuhoc.vinaeatery.domain.InputTicket;
-import vn.tuhoc.vinaeatery.domain.InputTicket_;
+import vn.tuhoc.vinaeatery.domain.entity.InputTicket;
+import vn.tuhoc.vinaeatery.domain.entity.InputTicket_;
 
 public class InputTicketSpecification {
     // Methods
@@ -14,16 +14,20 @@ public class InputTicketSpecification {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(InputTicket_.ID), id);
     }
 
-    public static Specification<InputTicket> timeCreateAfter(String timeCreateStart) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder
-                .greaterThanOrEqualTo(root.get(InputTicket_.TIME_CREATE),
-                        LocalDateTime.parse(timeCreateStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    public static Specification<InputTicket> restaurantIdEqual(String restaurantId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(InputTicket_.RESTAURANT_ID), restaurantId);
     }
 
-    public static Specification<InputTicket> timeCreateBefore(String timeCreateEnd) {
+    public static Specification<InputTicket> createAtAfter(String createAtStart) {
         return (root, query, criteriaBuilder) -> criteriaBuilder
-                .lessThanOrEqualTo(root.get(InputTicket_.TIME_CREATE),
-                        LocalDateTime.parse(timeCreateEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                .greaterThanOrEqualTo(root.get(InputTicket_.CREATE_AT),
+                        LocalDateTime.parse(createAtStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    }
+
+    public static Specification<InputTicket> createAtBefore(String createAtEnd) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .lessThanOrEqualTo(root.get(InputTicket_.CREATE_AT),
+                        LocalDateTime.parse(createAtEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
     public static Specification<InputTicket> employeeIdEqual(String employeeId) {
