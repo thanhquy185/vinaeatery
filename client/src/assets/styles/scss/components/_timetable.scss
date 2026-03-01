@@ -1,0 +1,281 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/colors" as *;
+@use "../abstracts/mixins" as *;
+
+.timetable {
+  $background-color: #000;
+  $row-height: 40px;
+  $cell-today-background: #ffdc2826;
+  $cell-active-background: #fee2e2;
+
+  border-collapse: collapse;
+  width: 100%;
+
+  &-header {
+    $header-button-height: 40px;
+    $header-button-radius: 4px;
+
+    @include flex(space-between, center);
+    margin-bottom: 10px;
+
+    & h3 {
+      font-size: 2.2rem;
+      font-weight: 600;
+    }
+
+    & .buttons {
+      display: flex;
+      align-items: center;
+
+      & button {
+        @include flexCenter();
+        gap: 4px;
+        @include size(calc($header-button-height * 2), $header-button-height);
+        background: $background-color;
+        border-radius: 0;
+        color: #fff;
+        font-size: 1.4rem;
+        font-weight: 600;
+        opacity: 0.8;
+        transition: 0.2s ease;
+        cursor: pointer;
+
+        &:is(:hover, .active) {
+          opacity: 1;
+        }
+
+        & svg.lucide {
+          @include size(18px);
+        }
+      }
+
+      &:is(.prev-next, .view-switch) button {
+        &:first-of-type {
+          border-radius: $header-button-radius 0 0 $header-button-radius;
+        }
+
+        &:last-of-type {
+          border-radius: 0 $header-button-radius $header-button-radius 0;
+        }
+      }
+
+      &.prev-next button {
+        @include size($header-button-height);
+
+        &:nth-of-type(2) {
+          border-radius: 0 $header-button-radius $header-button-radius 0;
+        }
+
+        &.current {
+          width: calc($header-button-height * 2);
+          border-radius: $header-button-radius;
+          margin-left: 6px;
+        }
+      }
+    }
+  }
+
+  & :is(th, td) {
+    height: $row-height;
+    // background: #f3f3f3;
+    font-size: 1.4rem;
+    text-align: center;
+  }
+
+  & :is(th, td:first-of-type) {
+    font-weight: 500;
+  }
+
+  & th {
+    background: $background-color;
+    color: #fff;
+  }
+
+  & td {
+    cursor: pointer;
+
+    &:first-of-type {
+      width: 20%;
+      background: #f3f3f3;
+    }
+
+    &:not(:first-of-type) {
+      border: 1px solid #f3f3f3;
+    }
+
+    &.today {
+      background: $cell-today-background;
+    }
+  }
+
+  &:is(.date, .week, .month) {
+    & td {
+      &.shift-cell {
+        padding: 0;
+
+        & .shift-block {
+          height: 100%;
+          padding: 8px;
+          background: transparent;
+          color: #fff;
+          border-radius: 6px;
+          text-align: center;
+          cursor: pointer;
+
+          &:hover {
+            opacity: 0.9;
+          }
+
+          & h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+          }
+
+          & p {
+            color: #f5f5f5;
+            font-size: 1.2rem;
+
+            &.time {
+              color: #dedede;
+            }
+
+            & b {
+              color: #fff;
+              font-weight: 500;
+            }
+          }
+        }
+
+        & :is(.shift-block, .shift-dot) {
+          &[data-shift="1"] {
+            background: linear-gradient(135deg, #1677ff, #69b1ff);
+          }
+
+          &[data-shift="2"] {
+            background: linear-gradient(135deg, #52c41a, #95de64);
+          }
+
+          &[data-shift="3"] {
+            background: linear-gradient(135deg, #fa8c16, #ffd666);
+          }
+
+          &[data-shift="4"] {
+            background: linear-gradient(135deg, #ff4d4f, #ff7875);
+          }
+
+          &[data-shift="5"] {
+            background: linear-gradient(135deg, #722ed1, #b37feb);
+          }
+
+          &[data-shift="6"] {
+            background: linear-gradient(135deg, #ad6800, #ffd591);
+          }
+
+          &[data-shift="7"] {
+            background: linear-gradient(135deg, #13c2c2, #5cdbd3);
+          }
+
+          &[data-shift="8"] {
+            background: linear-gradient(135deg, #eb2f96, #ff85c0);
+          }
+
+          &[data-shift="9"] {
+            background: linear-gradient(135deg, #2f54eb, #85a5ff);
+          }
+
+          &[data-shift="10"] {
+            background: linear-gradient(135deg, #597ef7, #adc6ff);
+          }
+
+          &[data-shift="11"] {
+            background: linear-gradient(135deg, #08979c, #87e8de);
+          }
+
+          &[data-shift="12"] {
+            background: linear-gradient(135deg, #531dab, #b37feb);
+          }
+
+          &[data-shift="13"] {
+            background: linear-gradient(135deg, #d4380d, #ffbb96);
+          }
+
+          &[data-shift="14"] {
+            background: linear-gradient(135deg, #7cb305, #d3f261);
+          }
+
+          &[data-shift="15"] {
+            background: linear-gradient(135deg, #434343, #8c8c8c);
+          }
+
+          &[data-shift="16"] {
+            background: linear-gradient(135deg, #003a8c, #69c0ff);
+          }
+
+          &[data-shift="17"] {
+            background: linear-gradient(135deg, #871400, #ff7875);
+          }
+
+          &[data-shift="18"] {
+            background: linear-gradient(135deg, #391085, #d3adf7);
+          }
+
+          &[data-shift="19"] {
+            background: linear-gradient(135deg, #0050b3, #bae7ff);
+          }
+
+          &[data-shift="20"] {
+            background: linear-gradient(135deg, #874d00, #ffc069);
+          }
+        }
+      }
+    }
+  }
+
+  &.week {
+    & td {
+    }
+
+    &.crud td {
+      &:is(:hover, .active) {
+        // background: $primary-color;
+        // opacity: 0.8;
+        // background: #ffe9e9;
+        background: $cell-active-background;
+      }
+    }
+  }
+
+  &.month {
+    & td {
+      &.shift-cell {
+        vertical-align: top !important;
+        padding: 10px;
+
+        & .date {
+          text-align: right;
+        }
+
+        & .shift-dot {
+          @include flexCenter();
+          gap: 4px;
+          border-radius: 2px;
+          color: #fff;
+          font-size: 1.2rem;
+          font-weight: 500;
+
+          &:not(:first-of-type) {
+            margin-top: 4px;
+          }
+
+          //   & span.dot {
+          //     display: inline-block;
+          //     @include size(6px);
+          //     border-radius: 50%;
+          //     // background: $blue-secondary-btn-color;
+          //     // background: $secondary-color;
+          //   }
+        }
+      }
+    }
+  }
+}

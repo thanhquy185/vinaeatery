@@ -1,0 +1,31 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/colors" as *;
+@use "../abstracts/mixins" as *;
+
+.qr-scanner {
+  @include flexCenter();
+  @include size(100%);
+  // @include size(320px);
+  background: #fafafa;
+  border: 1px dashed #d9d9d9;
+  border-radius: $admin-border-radius;
+
+  & .loading {
+    @include flexCenter();
+    flex-direction: column;
+
+    & .ant-spin span {
+      font-size: 4rem;
+    }
+
+    & p {
+      margin-top: 24px;
+      font-size: 1.4rem;
+    }
+  }
+
+  & #qr-scanner-camera {
+    @include flexCenter();
+    @include size(100%);
+  }
+}

@@ -1,0 +1,438 @@
+@use "../../abstracts/variables" as *;
+@use "../../abstracts/colors" as *;
+@use "../../abstracts/mixins" as *;
+
+.admin-manager-main {
+  $filter-find-width: 40%;
+  $filter-select-width: calc(
+    calc(calc(100% - $filter-find-width) / 3) - calc(
+        calc($admin-space / 2) * 2 / 3
+      )
+  );
+  $filter-create-width: 16%;
+  $card-padding: 24px; // Theo mặc định của ant
+  $calendar-border-radius: 8px;
+  $main-border-radius: 8px;
+
+  position: relative;
+  z-index: 999;
+  padding: $admin-space;
+  transition:
+    width 0.3s ease,
+    margin-left 0.3s ease;
+  overflow: visible;
+
+  & .row {
+    display: flex;
+    align-items: flex-start;
+    gap: $admin-space;
+  }
+
+  &__data,
+  &__cards,
+  &__segmented + &__filter,
+  &__chart,
+  &__calendar {
+    margin-top: calc($admin-space / 2);
+  }
+
+  // &__data.dashboard,
+  &__calendar {
+    background: #fff;
+    padding: 14px;
+    border-radius: $calendar-border-radius;
+  }
+
+  &__chart-card .card-1 .ant-card-body,
+  &__cards.dashboard-revenue .card-1 .ant-card-body {
+    background-color: #ffeccf;
+  }
+
+  &__chart-card .card-1 .ant-statistic-content span,
+  &__cards.dashboard-revenue .card-1 .ant-statistic-content span {
+    color: #f57c00;
+  }
+
+  &__chart-card .card-2 .ant-card-body,
+  &__cards.dashboard-revenue .card-2 .ant-card-body {
+    background-color: #e3f2fd;
+  }
+
+  &__chart-card .card-2 .ant-statistic-content span,
+  &__cards.dashboard-revenue .card-2 .ant-statistic-content span {
+    color: #1976d2;
+  }
+
+  &__chart-card .card-3 .ant-card-body,
+  &__cards.dashboard-revenue .card-3 .ant-card-body {
+    background-color: #e8f5e9;
+  }
+
+  &__chart-card .card-3 .ant-statistic-content span,
+  &__cards.dashboard-revenue .card-3 .ant-statistic-content span {
+    color: #388e3c;
+  }
+
+  &__chart-card .card-4 .ant-card-body,
+  &__cards.dashboard-revenue .card-4 .ant-card-body {
+    background-color: #ffe9ec;
+  }
+
+  &__chart-card .card-4 .ant-statistic-content span,
+  &__cards.dashboard-revenue .card-4 .ant-statistic-content span {
+    color: #d32f2f;
+  }
+
+  &__header {
+    @include size(100%, calc($admin-header-height - $admin-space));
+
+    & h1 {
+      font-size: 3.2rem;
+      font-weight: 400;
+      text-align: center;
+    }
+  }
+
+  &__segmented {
+    @include size(100%, $admin-segmented-height !important);
+  }
+
+  &__chart {
+    display: flex;
+    align-items: center;
+    gap: calc($admin-space / 2);
+
+    & text {
+      font-size: 2.4rem;
+    }
+  
+    &.split-2 > * {
+      width: 50%;
+      height: 100%;
+    }
+  
+    &-card {
+      // @include flex(stretch, center);
+      display: flex;
+      gap: calc($admin-space / 3);
+      flex-wrap: wrap;
+
+      & > * {
+        width: calc(100% / 2 - calc($admin-space / 4));
+        height: auto;
+        border: none;
+      }
+    
+      & .ant-card-body {
+        height: 100%;
+        border-radius: 8px;
+      }
+    
+      & .ant-statistic-title {
+        font-size: 1.6rem;
+      }
+    
+      & .ant-statistic-content {
+        font-size: 2.4rem;
+      }
+    }
+  }
+
+  &__filter {
+    @include flex(stretch, center);
+    flex-wrap: wrap;
+    gap: calc($admin-space / 2);
+    // position: relative;
+    width: 100%;
+    height: $admin-filter-height !important;
+
+    & * {
+      height: 100%;
+    }
+
+    & .filter-find .ant-select-selection-item,
+    &
+      .filter-select
+      :is(.ant-select-selection-item, .ant-select-selection-placeholder) {
+      line-height: calc($admin-filter-height - 4px) !important;
+    }
+
+    & .filter-find .ant-select-arrow,
+    & .filter-select :is(.ant-select-arrow, .ant-select-clear) {
+      margin-top: -6px;
+    }
+
+    & .filter-find {
+      width: calc($filter-find-width - calc($admin-space / 2));
+
+      & .ant-input-group-addon {
+        width: 20% !important;
+        background: $tetrad-color !important;
+        padding: 0 !important;
+      }
+
+      & .ant-select {
+        width: 100% !important;
+      }
+    }
+
+    & .filter-select {
+      width: $filter-select-width;
+
+      &.big {
+        width: calc(
+          $filter-select-width +
+            calc($filter-select-width - $filter-create-width)
+        );
+      }
+
+      &.full {
+        width: 100%;
+
+        &.employee {
+          height: 120px;
+        }
+      }
+
+      & .ant-select-selection-overflow {
+        padding: 0 0 4px;
+      }
+
+      & .ant-picker-separator {
+        height: 100%;
+      }
+    }
+
+    & .filter-reset {
+      @include flexCenter();
+      gap: 4px;
+      width: 10%;
+      font-size: 1.5rem;
+      // @include size($admin-filter-height);
+
+      & svg.lucide {
+        @include size(18px !important);
+      }
+
+      & span {
+        height: auto;
+      }
+    }
+
+    & :is(.filter-print, .filter-create) {
+      @include flexCenter();
+      gap: 4px;
+      margin-left: auto;
+      width: $filter-create-width;
+      font-size: 1.5rem;
+
+      & svg.lucide {
+        @include size(20px !important);
+      }
+
+      & span {
+        height: auto;
+      }
+    }
+
+    & .note {
+      font-size: 1.6rem;
+
+      &,
+      &s {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      &s {
+        gap: 10px;
+        // @include size(40%, 100%);
+        height: 100%;
+        margin-left: auto;
+        line-height: $admin-filter-height;
+      }
+
+      & .dot {
+        display: inline-block;
+        @include size(10px);
+        background: #000;
+        border-radius: 50%;
+
+        &.green {
+          //   background: #16a34a;
+          background: $green-secondary-btn-color;
+        }
+
+        &.yellow {
+          //   background: #f59e0b;
+          background: $yellow-secondary-btn-color;
+        }
+
+        &.red {
+          //   background: #dc2626;
+          background: $red-secondary-btn-color;
+        }
+
+        &.blue {
+          //   background: #2563eb;
+          background: $blue-secondary-btn-color;
+        }
+
+        &.gray {
+          background: #cecece;
+        }
+      }
+    }
+  }
+
+  &__data {
+    position: relative;
+    z-index: 1;
+  }
+
+  &__cards {
+    @include flex(stretch, center);
+    gap: calc($admin-space / 4);
+
+    .admin-manager-main:has(&) .admin-manager-main__data {
+      margin-top: calc($admin-space / 4);
+    }
+
+    & .ant-card {
+      width: calc(100% / 5 - calc($admin-space / 5));
+    }
+
+    &.dashboard-revenue .ant-card {
+      width: calc(100% / 4 - calc(calc($admin-space * 3) / 16));
+    }
+
+    & .ant-card-body {
+      padding: calc($card-padding - 10px) calc($card-padding - 8px);
+      border-radius: 8px;
+    }
+  }
+
+  &__schedule {
+    width: calc(60% - calc($admin-space / 2));
+    background: #fff;
+
+    & .ant-list-item {
+      padding: 14px;
+
+      &-meta-description {
+        & .info {
+          display: flex;
+          align-items: center;
+          font-size: 1.4rem;
+
+          & svg.lucide {
+            @include size(16px);
+          }
+
+          & span {
+            margin-left: 4px;
+            margin-right: 2px;
+          }
+        }
+      }
+    }
+  }
+
+  &__calendar {
+    & .notes {
+      @include flex(flex-start, center);
+      gap: 20px;
+      width: 100%;
+      margin-top: 10px;
+
+      & p {
+        color: #777;
+
+        & span {
+          display: inline-block;
+          @include size(10px);
+          border-radius: 50%;
+          background: #000;
+
+          &.green {
+            background: $green-secondary-btn-color;
+          }
+
+          &.yellow {
+            background: $yellow-secondary-btn-color;
+          }
+
+          &.red {
+            background: $red-secondary-btn-color;
+          }
+
+          &.gray {
+            background: $ternary-color;
+          }
+        }
+      }
+    }
+
+    & .fc {
+      &
+        :where(
+          .fc-daygrid-body,
+          .fc-scrollgrid-sync-table,
+          .fc-col-header,
+          .fc-timegrid-body,
+          .fc-timegrid-slots table,
+          .fc-timegrid-cols table
+        ) {
+        width: 100% !important;
+      }
+
+      & .fc-scrollgrid-sync-table td {
+        height: 100px !important;
+        cursor: pointer;
+        transition: 0.1s ease;
+      }
+
+      &
+        :where(.fc-scrollgrid-sync-table, .fc-timegrid-slots)
+        td:not(.fc-scrollgrid-shrink):hover {
+        background: #eee;
+        // color: #fff;
+      }
+
+      & .fc-timegrid-col-events {
+        margin: 0;
+      }
+    }
+
+    & .inform {
+      @include flexCenter();
+      flex-direction: column;
+      padding: 24px;
+
+      & img {
+        @include size(160px);
+      }
+
+      & :is(h2, p) {
+        text-align: center;
+      }
+
+      & h2 {
+        margin-top: 14px;
+        font-size: 2.6rem;
+        font-weight: 700;
+      }
+
+      & p {
+        margin-top: 4px;
+        color: #777;
+        font-size: 2rem;
+      }
+    }
+
+    .admin-manager-main:has(.filter-select.full.employee) & {
+      margin-top: calc($admin-space / 2 - calc($admin-filter-height - 120px));
+    }
+  }
+}

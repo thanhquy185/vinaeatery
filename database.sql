@@ -113,24 +113,73 @@ ALTER TABLE vinaeatery.recipes
 ADD CONSTRAINT FK_recipes_foods FOREIGN KEY(food_id) REFERENCES foods(id);
 ALTER TABLE vinaeatery.recipes
 ADD CONSTRAINT FK_recipes_ingredients FOREIGN KEY(ingredient_id) REFERENCES ingredients(id);
+-- attendances
+ALTER TABLE vinaeatery.attendances		
+ADD CONSTRAINT FK_attendances_restaurants FOREIGN KEY(restaurant_id) REFERENCES restaurants(id);
+ALTER TABLE vinaeatery.attendances		
+ADD CONSTRAINT FK_attendances_employees FOREIGN KEY(employee_id) REFERENCES employees(id);
+ALTER TABLE vinaeatery.attendances		
+ADD CONSTRAINT FK_attendances_shifts FOREIGN KEY(shift_id) REFERENCES shifts(id);
+-- permission tickets
+ALTER TABLE vinaeatery.permission_tickets		
+ADD CONSTRAINT FK_permissionTickets_restaurants FOREIGN KEY(restaurant_id) REFERENCES restaurants(id);
+ALTER TABLE vinaeatery.permission_tickets
+ADD CONSTRAINT FK_permissionTickets_employees_handle FOREIGN KEY(employee_handle_id) REFERENCES employees(id);
+ALTER TABLE vinaeatery.permission_tickets
+ADD CONSTRAINT FK_permissionTickets_employees_main FOREIGN KEY(employee_main_id) REFERENCES employees(id);
+ALTER TABLE vinaeatery.permission_tickets		
+ADD CONSTRAINT FK_permissionTickets_categoryPermissionTickets FOREIGN KEY(category_permission_ticket_id) REFERENCES category_permission_tickets(id);
+-- reward punishes
+ALTER TABLE vinaeatery.reward_punishes		
+ADD CONSTRAINT FK_rewardPunishes_restaurants FOREIGN KEY(restaurant_id) REFERENCES restaurants(id);
+ALTER TABLE vinaeatery.reward_punishes
+ADD CONSTRAINT FK_rewardPunishes_employees_handle FOREIGN KEY(employee_handle_id) REFERENCES employees(id);
+ALTER TABLE vinaeatery.reward_punishes
+ADD CONSTRAINT FK_rewardPunishes_employees_main FOREIGN KEY(employee_main_id) REFERENCES employees(id);
+ALTER TABLE vinaeatery.reward_punishes		
+ADD CONSTRAINT FK_rewardPunishes_categoryRewardPunishes FOREIGN KEY(category_reward_punish_id) REFERENCES category_reward_punishes(id);
+-- schedules
+ALTER TABLE vinaeatery.schedules		
+ADD CONSTRAINT FK_schedules_restaurants FOREIGN KEY(restaurant_id) REFERENCES restaurants(id);
+-- schedule_employees
+ALTER TABLE vinaeatery.schedule_employees
+ADD CONSTRAINT FK_scheduleEmployees_employees_schedule FOREIGN KEY(schedule_id) REFERENCES schedules(id);
+ALTER TABLE vinaeatery.schedule_employees
+ADD CONSTRAINT FK_scheduleEmployees_employees_employee FOREIGN KEY(employee_id) REFERENCES employees(id);
+-- schedule_shifts
+ALTER TABLE vinaeatery.schedule_shifts
+ADD CONSTRAINT FK_scheduleShifts_shifts_schedule FOREIGN KEY(schedule_id) REFERENCES schedules(id);
+ALTER TABLE vinaeatery.schedule_shifts
+ADD CONSTRAINT FK_scheduleShifts_shifts_shift FOREIGN KEY(shift_id) REFERENCES shifts(id);
+-- shifts
+ALTER TABLE vinaeatery.shifts		
+ADD CONSTRAINT FK_shifts_restaurants FOREIGN KEY(restaurant_id) REFERENCES restaurants(id);
+-- shift_details
+ALTER TABLE vinaeatery.shift_details
+ADD CONSTRAINT FK_shiftDetails_shifts FOREIGN KEY(shift_id) REFERENCES shifts(id);
 -- roles
 ALTER TABLE vinaeatery.roles		
 ADD CONSTRAINT FK_roles_restaurants FOREIGN KEY(restaurant_id) REFERENCES restaurants(id);
--- role_details
-ALTER TABLE vinaeatery.role_details
-ADD CONSTRAINT FK_roleDetails_roles FOREIGN KEY(role_id) REFERENCES roles(id);
-ALTER TABLE vinaeatery.role_details
-ADD CONSTRAINT FK_roleDetails_functions FOREIGN KEY(function_id) REFERENCES functions(id);
 -- role_histories
 ALTER TABLE vinaeatery.role_histories
 ADD CONSTRAINT FK_roleHistories_employees FOREIGN KEY(employee_id) REFERENCES employees(id);
 ALTER TABLE vinaeatery.role_histories
 ADD CONSTRAINT FK_roleHistories_roles FOREIGN KEY(role_id) REFERENCES roles(id);
+-- permissions
+ALTER TABLE vinaeatery.permissions		
+ADD CONSTRAINT FK_permissions_restaurants FOREIGN KEY(restaurant_id) REFERENCES restaurants(id);
+-- permission_details
+ALTER TABLE vinaeatery.permission_details
+ADD CONSTRAINT FK_permissionDetails_permissions FOREIGN KEY(permission_id) REFERENCES permissions(id);
+ALTER TABLE vinaeatery.permission_details
+ADD CONSTRAINT FK_permissionDetails_functions FOREIGN KEY(function_id) REFERENCES functions(id);
 -- employees
 ALTER TABLE vinaeatery.employees		
 ADD CONSTRAINT FK_employees_restaurants FOREIGN KEY(restaurant_id) REFERENCES restaurants(id);
 ALTER TABLE vinaeatery.employees		
 ADD CONSTRAINT FK_employees_users FOREIGN KEY(user_id) REFERENCES users(id);
+ALTER TABLE vinaeatery.employees		
+ADD CONSTRAINT FK_employees_permissions FOREIGN KEY(permission_id) REFERENCES permissions(id);
 -- handle_payments
 ALTER TABLE vinaeatery.handle_payments
 ADD CONSTRAINT FK_handlePayments_useTables FOREIGN KEY(use_table_id) REFERENCES use_tables(id);
@@ -152,25 +201,32 @@ VALUES (1, "Thống kê Lợi nhuận", "dashboard-profit", "dashboard", "Xem"),
 	(2, "Thống kê Đơn món ăn", "dashboard-orders", "dashboard", "Xem"),
 	(3, "Thống kê Phiếu nhập", "dashboard-input-tickets", "dashboard", "Xem"),
 	(4, "Lịch sử bàn ăn", "table-histories", "active", "Xem"),
-    (5, "Sử dụng bàn ăn", "use-tables", "active", "Xem|Cập nhật"),
-    (6, "Sử dụng món ăn", "use-foods", "active", "Xem|Cập nhật"),
-    (7, "Gọi món ăn", "order-sheets", "active", "Xem|Cập nhật"),
-    (8, "Trò chuyện", "messages", "active", "Xem|Thêm"),
-    (9, "Đơn món ăn", "orders", "active", "Xem|Thêm|Cập nhật"),
-    (10, "Đơn đặt bàn", "order-tables", "active", "Xem|Thêm|Cập nhật"),
-    (11, "Thẻ khách hàng", "customer-cards", "customer", "Xem|Thêm|Cập nhật|Khóa"),
-    (12, "Khách hàng", "customers", "customer", "Xem|Thêm|Cập nhật|Khóa"),
-    (13, "Tầng", "floors", "seat", "Xem|Thêm|Cập nhật|Khóa"),
-    (14, "Loại bàn ăn", "category-tables", "seat", "Xem|Thêm|Cập nhật|Khóa"),
-    (15, "Bàn ăn", "tables", "seat", "Xem|Thêm|Cập nhật|Khóa"),
-    (16, "Phiếu nhập", "input-tickets", "food", "Xem|Thêm|Cập nhật"),
-    (17, "Nhà cung cấp", "suppliers", "food", "Xem|Thêm|Cập nhật|Khóa"),
-    (18, "Loại nguyên liệu", "category-ingredients", "food", "Xem|Thêm|Cập nhật|Khóa"),
-    (19, "Nguyên liệu", "ingredients", "food", "Xem|Thêm|Cập nhật|Khóa"),
-    (20, "Loại món ăn", "category-foods", "food", "Xem|Thêm|Cập nhật|Khóa"),
-    (21, "Món ăn", "foods", "food", "Xem|Thêm|Cập nhật|Khóa"),
-    (22, "Chức vụ", "roles", "employee", "Xem|Thêm|Cập nhật|Khóa"),
-    (23, "Nhân viên", "employees", "employee", "Xem|Thêm|Cập nhật|Khóa");
+	(5, "Sử dụng bàn ăn", "use-tables", "active", "Xem|Cập nhật"),
+	(6, "Sử dụng món ăn", "use-foods", "active", "Xem|Cập nhật"),
+	(7, "Phiếu gọi món", "order-sheets", "active", "Xem|Cập nhật"),
+	(8, "Trò chuyện", "messages", "active", "Xem|Thêm"),
+	(9, "Đơn món ăn", "orders", "active", "Xem|Thêm|Cập nhật"),
+	(10, "Đơn đặt bàn", "order-tables", "active", "Xem|Thêm|Cập nhật"),
+	(11, "Tầng", "floors", "seat", "Xem|Thêm|Cập nhật|Khóa"),
+	(12, "Loại bàn ăn", "category-tables", "seat", "Xem|Thêm|Cập nhật|Khóa"),
+	(13, "Bàn ăn", "tables", "seat", "Xem|Thêm|Cập nhật|Khóa"),
+	(14, "Phiếu nhập", "input-tickets", "food", "Xem|Thêm|Cập nhật"),
+	(15, "Nhà cung cấp", "suppliers", "food", "Xem|Thêm|Cập nhật|Khóa"),
+	(16, "Loại nguyên liệu", "category-ingredients", "food", "Xem|Thêm|Cập nhật|Khóa"),
+	(17, "Nguyên liệu", "ingredients", "food", "Xem|Thêm|Cập nhật|Khóa"),
+	(18, "Loại món ăn", "category-foods", "food", "Xem|Thêm|Cập nhật|Khóa"),
+	(19, "Món ăn", "foods", "food", "Xem|Thêm|Cập nhật|Khóa"),
+	(20, "Bảng lương", "payslips", "employee", "Xem"),
+	(21, "Chấm công", "attendances", "employee", "Xem|Cập nhật"),
+	(22, "Lịch làm", "schedules", "employee", "Xem|Thêm|Cập nhật|Khóa"),
+	(23, "Ca làm", "shifts", "employee", "Xem|Thêm|Cập nhật|Khóa"),
+	(24, "Loại đơn xin phép", "category-permission-tickets", "employee", "Xem|Thêm|Cập nhật|Khóa"),
+	(25, "Đơn xin phép", "permission-tickets", "employee", "Xem|Thêm|Cập nhật|Khóa"),
+	(26, "Loại thưởng - phạt", "category-reward-punishes", "employee", "Xem|Thêm|Cập nhật|Khóa"),
+	(27, "Thưởng - Phạt", "reward-punishes", "employee", "Xem|Thêm|Cập nhật|Khóa"),
+	(28, "Chức vụ", "roles", "employee", "Xem|Thêm|Cập nhật|Khóa"),
+	(29, "Quyền hạn", "permissions", "employee", "Xem|Thêm|Cập nhật|Khóa"),
+	(30, "Nhân viên", "employees", "employee", "Xem|Thêm|Cập nhật|Khóa");
 
 INSERT INTO vinaeatery.users(id, create_at, role, username, password, method, refresh_token, is_using, status, update_at)
 VALUES (1, '2025-12-02 00:00:00', 'ADMIN', 'admin', '$2a$10$bhH/.jM0ks/qDcAhzFtKCO0b1LYyhTxF3lZrtxLVQ4KRWSbdhTRha', 'HANDMADE', NULL, 1, 1, NULL),
@@ -181,30 +237,42 @@ VALUES (1, '2025-12-02 00:00:00', 'ADMIN', 'admin', '$2a$10$bhH/.jM0ks/qDcAhzFtK
     (6, '2025-12-02 00:00:00', 'EMPLOYEE', 'employee2', '$2a$10$JSQaUZ2U50IrDgYQisO3heahc1xISrhtQ423EViMXJus.I5cavY9S', 'HANDMADE', NULL, 1, 1, NULL),
     (7, '2025-12-02 00:00:00', 'EMPLOYEE', 'employee3', '$2a$10$jODPwwMUJ/73.kPmHhdXguyFbdt1dHV.ypHZzqfsKLY0w2e985y0u', 'HANDMADE', NULL, 1, 1, NULL),
     (8, '2025-12-02 00:00:00', 'EMPLOYEE', 'employee4', '$2a$10$GZ43yo1RYp7Yybl7AcvP8O9aV0fLffTJvNfuJyEX.o00gGYlZ/iuC', 'HANDMADE', NULL, 1, 1, NULL),
-    (9, '2025-12-02 00:00:00', 'CUSTOMER', 'customer0', '$2a$10$aHFolHaNYoVtzX2PFL6/T.EA5Ak4ciPwkaFlFJft2HYbIrwxXtDC.', 'HANDMADE', NULL, 1, 1, NULL),
-    (10, '2025-12-02 00:00:00', 'CUSTOMER', 'customer1', '$2a$10$IhIBM99z/aZD.6pQ5Oya.O6uMNAiUmS1/6AQuyX.wDmRTBbkFb7x.', 'HANDMADE', NULL, 1, 1, NULL);
+    (9, '2025-12-02 00:00:00', 'CUSTOMER', 'customer-guest', '$2a$10$1gNzH9YaB01Cd..ucbPlI.Bdx6UdtIyu3.3jrbcQY3J4W5Qy5w1qa', 'HANDMADE', NULL, 1, 1, NULL),
+    (10, '2025-12-02 00:00:00', 'CUSTOMER', 'customer0', '$2a$10$aHFolHaNYoVtzX2PFL6/T.EA5Ak4ciPwkaFlFJft2HYbIrwxXtDC.', 'HANDMADE', NULL, 1, 1, NULL),
+    (11, '2025-12-02 00:00:00', 'CUSTOMER', 'customer1', '$2a$10$IhIBM99z/aZD.6pQ5Oya.O6uMNAiUmS1/6AQuyX.wDmRTBbkFb7x.', 'HANDMADE', NULL, 1, 1, NULL);
     
 INSERT INTO vinaeatery.managers(id, user_id, image, create_at, fullname, birthday, gender, phone, email, address, description, status, update_at)
 VALUES (1, 2, NULL, '2025-12-02 00:00:00', 'Chủ cửa hàng Thanh Quy', NULL, NULL, '0000000001', 'thanhquy@gmail.com', '', NULL, 1, NULL),
 	(2, 3, NULL, '2025-12-02 00:00:00', 'Chủ nhà hàng Phước Long', NULL, NULL, '0000000002', 'phuoclong@gmail.com', '', NULL, 1, NULL);
     
 INSERT INTO vinaeatery.customers(id, user_id, image, create_at, fullname, birthday, gender, phone, email, address, description, status, update_at)
-VALUES (1, 9, NULL, '2025-12-02 00:00:00', 'Trần Văn A', NULL, NULL, '0000000001', 'tranvana@gmail.com', '', 1, 1, NULL),
-	(2, 10, NULL, '2025-12-02 00:00:00', 'Nguyễn Thị B', NULL, NULL, '0000000002', 'nguyenthib@gmail.com', '', NULL, 1, NULL);
+VALUES (1, 9, NULL, '2025-12-02 00:00:00', 'Khách hàng', NULL, NULL, '0000000000', 'khachahang@gmail.com', '', 'Dùng để khi xử lý cho khách hàng chưa có tài khoản trên hệ thống', 1, NULL),
+	(2, 10, NULL, '2025-12-02 00:00:00', 'Trần Văn A', NULL, NULL, '0000000001', 'tranvana@gmail.com', '', NULL, 1, NULL),
+	(3, 11, NULL, '2025-12-02 00:00:00', 'Nguyễn Thị B', NULL, NULL, '0000000002', 'nguyenthib@gmail.com', '', NULL, 1, NULL);
     
 INSERT INTO vinaeatery.restaurants(id, manager_id, create_at, name, phone, email, address, description, rating, status, update_at)
 VALUES (1, 2, '2025-12-02 00:00:00', 'Nhà hàng Thanh Quy', '0000000000', 'thanhquy@gmail.com', '', NULL, 5, 1, NULL),
 	(2, 2, '2025-12-02 00:00:00', 'Nhà hàng Phước Long', '0000000001', 'phuoclong@gmail.com', '', NULL, 4.5, 1, NULL);
     
-INSERT INTO vinaeatery.roles(id, restaurant_id, name, salary, status, update_at)
-VALUES (1, 1, "Quản lý", 20000000, 1, "2025-07-07 00:00:00"),
-	(2, 1, "Quản lý vận hàng", 10000000, 1, "2025-07-07 00:00:00"),
-    (3, 1, "Quản lý chỗ ngồi", 9000000, 1, "2025-07-07 00:00:00"),
-    (4, 1, "Quản lý kho hàng", 9200000, 1, "2025-07-07 00:00:00"),
-    (5, 1, "Quản lý nhân sự", 9500000, 1, "2025-07-07 00:00:00"),
-    (6, 1, "Nhân viên phục vụ", 7000000, 1, "2025-07-07 00:00:00");
+INSERT INTO vinaeatery.roles(id, restaurant_id, name, salary_type, salary_value, status, update_at)
+VALUES (1, 1, "Quản lý", "Lương cố định", 20000000, 1, "2026-02-05 00:00:00"),
+	(2, 1, "Quản lý vận hàng", "Lương cố định", 10000000, 1, "2026-02-05 00:00:00"),
+    (3, 1, "Quản lý chỗ ngồi", "Lương cố định", 9000000, 1, "2026-02-05 00:00:00"),
+    (4, 1, "Quản lý kho hàng", "Lương cố định", 9200000, 1, "2026-02-05 00:00:00"),
+    (5, 1, "Quản lý nhân sự", "Lương cố định", 9500000, 1, "2026-02-05 00:00:00"),
+    (6, 1, "Nhân viên phục vụ", "Lương cố định", 7000000, 1, "2026-02-05 00:00:00"),
+    (7, 1, "Nhân viên thực tập", "Lương theo giờ", 22000, 1, "2026-02-05 00:00:00");
+
+INSERT INTO vinaeatery.permissions(id, restaurant_id, name, status, update_at)
+VALUES (1, 1, "Quản lý", 1, "2026-02-05 00:00:00"),
+	(2, 1, "Quản lý vận hàng", 1, "2026-02-05 00:00:00"),
+    (3, 1, "Quản lý chỗ ngồi", 1, "2026-02-05 00:00:00"),
+    (4, 1, "Quản lý kho hàng", 1, "2026-02-05 00:00:00"),
+    (5, 1, "Quản lý nhân sự", 1, "2026-02-05 00:00:00"),
+    (6, 1, "Nhân viên phục vụ", 1, "2026-02-05 00:00:00"),
+    (7, 1, "Nhân viên thực tập", 1, "2026-02-05 00:00:00");
    
-INSERT INTO vinaeatery.role_details(role_id, function_id, action)
+INSERT INTO vinaeatery.permission_details(permission_id, function_id, action)
 VALUES (1, 1, "Xem"), (1, 2, "Xem"), (1, 3, "Xem"), (1, 4, "Xem"),
 		(1, 5, "Xem"), (1, 5, "Cập nhật"),
 		(1, 6, "Xem"), (1, 6, "Cập nhật"), 
@@ -212,19 +280,26 @@ VALUES (1, 1, "Xem"), (1, 2, "Xem"), (1, 3, "Xem"), (1, 4, "Xem"),
         (1, 8, "Xem"), (1, 8, "Thêm"), 
 		(1, 9, "Xem"), (1, 9, "Thêm"), (1, 9, "Cập nhật"),
 		(1, 10, "Xem"), (1, 10, "Thêm"), (1, 10, "Cập nhật"),
-		(1, 11, "Xem"), (1, 11, "Thêm"), (1, 11, "Cập nhật"), (1, 11, "Khóa"),
-		(1, 12, "Xem"), (1, 12, "Thêm"), (1, 12, "Cập nhật"), (1, 12, "Khóa"),
+        (1, 11, "Xem"), (1, 11, "Thêm"), (1, 11, "Cập nhật"), (1, 11, "Khóa"),
+        (1, 12, "Xem"), (1, 12, "Thêm"), (1, 12, "Cập nhật"), (1, 12, "Khóa"),
         (1, 13, "Xem"), (1, 13, "Thêm"), (1, 13, "Cập nhật"), (1, 13, "Khóa"),
-        (1, 14, "Xem"), (1, 14, "Thêm"), (1, 14, "Cập nhật"), (1, 14, "Khóa"),
+        (1, 14, "Xem"), (1, 14, "Thêm"), (1, 14, "Cập nhật"), 
         (1, 15, "Xem"), (1, 15, "Thêm"), (1, 15, "Cập nhật"), (1, 15, "Khóa"),
-        (1, 16, "Xem"), (1, 16, "Thêm"), (1, 16, "Cập nhật"), 
+        (1, 16, "Xem"), (1, 16, "Thêm"), (1, 16, "Cập nhật"), (1, 16, "Khóa"),
         (1, 17, "Xem"), (1, 17, "Thêm"), (1, 17, "Cập nhật"), (1, 17, "Khóa"),
         (1, 18, "Xem"), (1, 18, "Thêm"), (1, 18, "Cập nhật"), (1, 18, "Khóa"),
         (1, 19, "Xem"), (1, 19, "Thêm"), (1, 19, "Cập nhật"), (1, 19, "Khóa"),
-        (1, 20, "Xem"), (1, 20, "Thêm"), (1, 20, "Cập nhật"), (1, 20, "Khóa"),
-        (1, 21, "Xem"), (1, 21, "Thêm"), (1, 21, "Cập nhật"), (1, 21, "Khóa"),
+        (1, 20, "Xem"),
+        (1, 21, "Xem"), (1, 21, "Cập nhật"),
         (1, 22, "Xem"), (1, 22, "Thêm"), (1, 22, "Cập nhật"), (1, 22, "Khóa"),
 		(1, 23, "Xem"), (1, 23, "Thêm"), (1, 23, "Cập nhật"), (1, 23, "Khóa"),
+		(1, 24, "Xem"), (1, 24, "Thêm"), (1, 24, "Cập nhật"), (1, 24, "Khóa"),
+		(1, 25, "Xem"), (1, 25, "Thêm"), (1, 25, "Cập nhật"), (1, 25, "Khóa"),
+		(1, 26, "Xem"), (1, 26, "Thêm"), (1, 26, "Cập nhật"), (1, 26, "Khóa"),
+		(1, 27, "Xem"), (1, 27, "Thêm"), (1, 27, "Cập nhật"), (1, 27, "Khóa"),
+		(1, 28, "Xem"), (1, 28, "Thêm"), (1, 28, "Cập nhật"), (1, 28, "Khóa"),
+        (1, 29, "Xem"), (1, 29, "Thêm"), (1, 29, "Cập nhật"), (1, 29, "Khóa"),
+        (1, 30, "Xem"), (1, 30, "Thêm"), (1, 30, "Cập nhật"), (1, 30, "Khóa"),
 	(2, 2, "Xem"), (2, 4, "Xem"),
 		(2, 5, "Xem"), (2, 5, "Cập nhật"),
 		(2, 6, "Xem"), (2, 6, "Cập nhật"), 
@@ -233,29 +308,36 @@ VALUES (1, 1, "Xem"), (1, 2, "Xem"), (1, 3, "Xem"), (1, 4, "Xem"),
 		(2, 9, "Xem"), (2, 9, "Thêm"), (2, 9, "Cập nhật"),
 		(2, 10, "Xem"), (2, 10, "Thêm"), (2, 10, "Cập nhật"),
 	(3, 11, "Xem"), (3, 11, "Thêm"), (3, 11, "Cập nhật"), (3, 11, "Khóa"),
-		(3, 12, "Xem"), (3, 12, "Thêm"), (3, 12, "Cập nhật"), (3, 12, "Khóa"),
-	(4, 13, "Xem"), (4, 13, "Thêm"), (4, 13, "Cập nhật"), (4, 13, "Khóa"),
-        (4, 14, "Xem"), (4, 14, "Thêm"), (4, 14, "Cập nhật"), (4, 14, "Khóa"),
-		(4, 15, "Xem"), (4, 15, "Thêm"), (4, 15, "Cập nhật"), (4, 15, "Khóa"),
-	(5, 3, "Xem"),
-        (5, 16, "Xem"), (5, 16, "Thêm"), (5, 16, "Cập nhật"),
-        (5, 17, "Xem"), (5, 17, "Thêm"), (5, 17, "Cập nhật"), (5, 17, "Khóa"),
-        (5, 18, "Xem"), (5, 18, "Thêm"), (5, 18, "Cập nhật"), (5, 18, "Khóa"),
-        (5, 19, "Xem"), (5, 19, "Thêm"), (5, 19, "Cập nhật"), (5, 19, "Khóa"),
-        (5, 20, "Xem"), (5, 20, "Thêm"), (5, 20, "Cập nhật"), (5, 20, "Khóa"),
-		(5, 21, "Xem"), (5, 21, "Thêm"), (5, 21, "Cập nhật"), (5, 21, "Khóa"),
-	(6, 22, "Xem"), (6, 22, "Thêm"), (6, 22, "Cập nhật"), (6, 22, "Khóa"),
-    	(6, 23, "Xem"), (6, 23, "Thêm"), (6, 23, "Cập nhật"), (6, 23, "Khóa");
+        (3, 12, "Xem"), (3, 12, "Thêm"), (3, 12, "Cập nhật"), (3, 12, "Khóa"),
+		(3, 13, "Xem"), (3, 13, "Thêm"), (3, 13, "Cập nhật"), (3, 13, "Khóa"),
+	(4, 3, "Xem"),
+        (4, 14, "Xem"), (4, 14, "Thêm"), (4, 14, "Cập nhật"),
+        (4, 15, "Xem"), (4, 15, "Thêm"), (4, 15, "Cập nhật"), (4, 15, "Khóa"),
+        (4, 16, "Xem"), (4, 16, "Thêm"), (4, 16, "Cập nhật"), (4, 16, "Khóa"),
+        (4, 17, "Xem"), (4, 17, "Thêm"), (4, 17, "Cập nhật"), (4, 17, "Khóa"),
+        (4, 18, "Xem"), (4, 18, "Thêm"), (4, 18, "Cập nhật"), (4, 18, "Khóa"),
+		(4, 19, "Xem"), (4, 19, "Thêm"), (4, 19, "Cập nhật"), (4, 19, "Khóa"),
+	(5, 20, "Xem"),
+        (5, 21, "Xem"), (5, 21, "Cập nhật"),
+        (5, 22, "Xem"), (5, 22, "Thêm"), (5, 22, "Cập nhật"), (5, 22, "Khóa"),
+		(5, 23, "Xem"), (5, 23, "Thêm"), (5, 23, "Cập nhật"), (5, 23, "Khóa"),
+		(5, 24, "Xem"), (5, 24, "Thêm"), (5, 24, "Cập nhật"), (5, 24, "Khóa"),
+		(5, 25, "Xem"), (5, 25, "Thêm"), (5, 25, "Cập nhật"), (5, 25, "Khóa"),
+		(5, 26, "Xem"), (5, 26, "Thêm"), (5, 26, "Cập nhật"), (5, 26, "Khóa"),
+		(5, 27, "Xem"), (5, 27, "Thêm"), (5, 27, "Cập nhật"), (5, 27, "Khóa"),
+		(5, 28, "Xem"), (5, 28, "Thêm"), (5, 28, "Cập nhật"), (5, 28, "Khóa"),
+        (5, 29, "Xem"), (5, 29, "Thêm"), (5, 29, "Cập nhật"), (5, 29, "Khóa"),
+        (5, 30, "Xem"), (5, 30, "Thêm"), (5, 30, "Cập nhật"), (5, 30, "Khóa");
     
-INSERT INTO vinaeatery.employees(id, restaurant_id, user_id, create_at, image, date_begin, date_end, fullname, birthday, gender, phone, email, address, status, update_at)
-VALUES (1, 1, 4, '2025-07-10', null, '2025-07-10', null, 'Quản lý', null, null, '0000000000', 'quanly@gmail.com', 'địa chỉ quản lý', 1, '2025-07-10'),
-	(2, 1, 5, '2025-07-10', null, '2025-04-01', null, 'Quản lý vận hành', null, null, '0000000001', 'qlvanhanh@gmail.com', 'địa chỉ ql vận hành', 1, '2025-07-10'),
-    (3, 1, 6, '2025-07-10', null, '2025-04-01', null, 'Quản lý chổ ngồi', null, null, '0000000002', 'qlchongoi@gmail.com', 'địa chỉ ql chổ ngồi', 1, '2025-07-10'),
-	(4, 1, 7, '2025-07-10', null, '2025-04-01', null, 'Quản lý kho hàng', null, null, '0000000003', 'qlkhohang@gmail.com', 'địa chỉ ql kho hàng', 1, '2025-07-10'),
-	(5, 1, 8, '2025-07-10', null, '2025-04-01', null, 'Quản lý nhân sự', null, null, '0000000004', 'qlnhansu@gmail.com', 'địa chỉ ql nhân sự', 1, '2025-07-10');
-    
-INSERT INTO vinaeatery.role_histories(employee_id, role_id, date_begin, date_end)
-VALUES (1, 1, '2025-07-10', null),
+INSERT INTO vinaeatery.employees(id, restaurant_id, user_id, permission_id, create_at, image, fullname, birthday, gender, phone, email, address, status, update_at)
+VALUES (1, 1, 4, 1, '2025-07-10', null, 'Quản lý', null, null, '0000000000', 'quanly@gmail.com', 'địa chỉ quản lý', 1, '2025-07-10'),
+	(2, 1, 5, 2, '2025-07-10', null,  'Quản lý vận hành', null, null, '0000000001', 'qlvanhanh@gmail.com', 'địa chỉ ql vận hành', 1, '2025-07-10'),
+    (3, 1, 6, 3, '2025-07-10', null, 'Quản lý chổ ngồi', null, null, '0000000002', 'qlchongoi@gmail.com', 'địa chỉ ql chổ ngồi', 1, '2025-07-10'),
+	(4, 1, 7, 4, '2025-07-10', null, 'Quản lý kho hàng', null, null, '0000000003', 'qlkhohang@gmail.com', 'địa chỉ ql kho hàng', 1, '2025-07-10'),
+	(5, 1, 8, 5, '2025-07-10', null, 'Quản lý nhân sự', null, null, '0000000004', 'qlnhansu@gmail.com', 'địa chỉ ql nhân sự', 1, '2025-07-10');
+
+INSERT INTO vinaeatery.role_histories(employee_id, role_id, date_start, date_end)
+VALUES (1, 7, '2026-02-01', '2026-02-10'), (1, 6, '2026-02-11', '2026-02-20'), (1, 1, '2026-02-21', null),
 	(2, 6, '2025-04-01', '2025-07-09'), (2, 2, '2025-07-10', null),
     (3, 6, '2025-05-01', '2025-07-09'), (3, 3, '2025-07-10', null),
     (4, 6, '2025-04-01', '2025-07-09'), (4, 4, '2025-07-10', null),
@@ -275,10 +357,10 @@ VALUES (1, 1, 'Tầng 1', 'Sảnh chờ, nhà bếp, kho hàng...', 0, '2025-07-
     
 INSERT INTO vinaeatery.category_tables(id, restaurant_id, name, surcharge_type, surcharge_value, description, status, update_at)
 VALUES (1, 1, 'Bàn thường', null, null, 'Bàn tiêu chuẩn không phụ thu', 1, '2025-07-03 08:30:00'),
-	(2, 1, 'Bàn gần cửa sổ', 'Tiền cố định', 5, 'View đẹp, phụ thu 5% hóa đơn', 1, '2025-07-03 08:30:00'),
-	(3, 1, 'Bàn VIP', 'Phần trăm hoá đơn', 100000, 'Không gian riêng tư, phụ thu cố định 100K', 1, '2025-07-03 08:30:00'),
-	(4, 1, 'Phòng riêng thường', 'Tiền cố định', 200000, 'Phòng kín không có máy lạnh, phụ thu 200K/lượt', 1, '2025-07-03 08:30:00'),
-	(5, 1, 'Phòng riêng Vip', 'Tiền cố định', 500000, 'Phòng kín có máy lạnh, phụ thu 500K/lượt', 1, '2025-07-03 08:30:00');
+	(2, 1, 'Bàn gần cửa sổ', 'FIXED', 5, 'View đẹp, phụ thu 5% hóa đơn', 1, '2025-07-03 08:30:00'),
+	(3, 1, 'Bàn VIP', 'PERCENT', 100000, 'Không gian riêng tư, phụ thu cố định 100K', 1, '2025-07-03 08:30:00'),
+	(4, 1, 'Phòng riêng thường', 'FIXED', 200000, 'Phòng kín không có máy lạnh, phụ thu 200K/lượt', 1, '2025-07-03 08:30:00'),
+	(5, 1, 'Phòng riêng Vip', 'FIXED', 500000, 'Phòng kín có máy lạnh, phụ thu 500K/lượt', 1, '2025-07-03 08:30:00');
 
 INSERT INTO vinaeatery.tables(id, restaurant_id, name, category_table_id, floor_id, seats, description, status, update_at)
 VALUES (1, 1, 'Bàn T2-01', 1, 2, 4, 'Bàn tiêu chuẩn tầng 1', 1, '2025-07-04 10:00:00'),
@@ -486,43 +568,43 @@ VALUES (1, 1, 1, '1kg thịt ba rọi'), (1, 28, 1, '1 cây sả'), (1, 17, 1, '
 	(16, 6, 1, '1kg tôm sú'), (16, 7, 1, '1kg mực ống'), (16, 8, 1, '1kg cá basa phi lê'), (16, 28, 2, '2 cây sả đập dập'), (16, 29, 1, '100g gừng'), (16, 12, 1, '1kg rau muống'),
 	(17, 2, 1, '1kg thịt bò thăn'), (17, 25, 1, '200g miến dong khô dùng thay bánh phở'), (17, 15, 1, '500g muối hột'), (17, 17, 1, '500ml nước mắm'), (17, 29, 1, '100g gừng nướng để làm nước dùng');
     
-INSERT INTO vinaeatery.orders(id, restaurant_id, create_at, employee_id, customer_id, total_price, status, pay_id, pay_method_id, pay_time, pay_total_price, pay_status)
-VALUES	(1, 1, '2025-07-21 10:00:00', 1, 1, 260000, 1, "thanh-toan-bang-tien-mat-1", "1", "2025-07-21 10:00:00", 260000, 1);
+INSERT INTO vinaeatery.orders(id, restaurant_id, create_at, employee_id, customer_id, customer_fullname, customer_phone, customer_email, total_price, status, pay_id, pay_method_id, pay_time, pay_total_price, pay_status)
+VALUES	(1, 1, '2025-07-21 10:00:00', 1, 1, 'Khách hàng', '0000000000', 'khachhang@gmail.com', 260000, 1, "thanh-toan-bang-tien-mat-1", "1", "2025-07-21 10:00:00", 260000, 1);
 
 INSERT INTO vinaeatery.order_details(order_id, food_id, price, quantity)
 VALUES	(1, 1, 120000, 1), (1, 3, 95000, 1), (1, 12, 45000, 1);
 
-INSERT INTO vinaeatery.use_tables (id, restaurant_id, time_start, time_end, table_id, employee_id, customer_id, order_id, order_table_id, status)
-VALUES (1, 1, '2025-07-24 00:00:00', null, 1, null, null, null, null, 1),
-    (2, 1, '2025-07-24 00:00:00', null, 2, null, null, null, null, 1),
-    (3, 1, '2025-07-24 00:00:00', null, 3, null, null, null, null, 1),
-    (4, 1, '2025-07-24 00:00:00', null, 4, null, null, null, null, 1),
-    (5, 1, '2025-07-24 00:00:00', null, 5, null, null, null, null, 1),
-    (6, 1, '2025-07-24 00:00:00', null, 6, null, null, null, null, 1),
-    (7, 1, '2025-07-24 00:00:00', null, 7, null, null, null, null, 1),
-    (8, 1, '2025-07-24 00:00:00', null, 8, null, null, null, null, 1),
-    (9, 1, '2025-07-24 00:00:00', null, 9, null, null, null, null, 1),
-    (10, 1, '2025-07-24 00:00:00', null, 10, null, null, null, null, 1),
-    (11, 1, '2025-07-24 00:00:00', null, 11, null, null, null, null, 1),
-    (12, 1, '2025-07-24 00:00:00', null, 12, null, null, null, null, 1),
-    (13, 1, '2025-07-24 00:00:00', null, 13, null, null, null, null, 1),
-    (14, 1, '2025-07-24 00:00:00', null, 14, null, null, null, null, 1),
-    (15, 1, '2025-07-24 00:00:00', null, 15, null, null, null, null, 1),
-    (16, 1, '2025-07-24 00:00:00', null, 16, null, null, null, null, 1),
-    (17, 1, '2025-07-24 00:00:00', null, 17, null, null, null, null, 1),
-    (18, 1, '2025-07-24 00:00:00', null, 18, null, null, null, null, 1),
-    (19, 1, '2025-07-24 00:00:00', null, 19, null, null, null, null, 1),
-    (20, 1, '2025-07-24 00:00:00', null, 20, null, null, null, null, 1),
-    (21, 1, '2025-07-24 00:00:00', null, 21, null, null, null, null, 1),
-    (22, 1, '2025-07-24 00:00:00', null, 22, null, null, null, null, 1),
-    (23, 1, '2025-07-24 00:00:00', null, 23, null, null, null, null, 1),
-    (24, 1, '2025-07-24 00:00:00', null, 24, null, null, null, null, 1),
-    (25, 1, '2025-07-24 00:00:00', null, 25, null, null, null, null, 1),
-    (26, 1, '2025-07-24 00:00:00', null, 26, null, null, null, null, 1),
-    (27, 1, '2025-07-24 00:00:00', null, 27, null, null, null, null, 1),
-    (28, 1, '2025-07-24 00:00:00', null, 28, null, null, null, null, 1),
-    (29, 1, '2025-07-24 00:00:00', null, 29, null, null, null, null, 1),
-    (30, 1, '2025-07-24 00:00:00', null, 30, null, null, null, null, 1);
+INSERT INTO vinaeatery.use_tables (id, restaurant_id, time_start, time_end, table_id, employee_id, customer_id, customer_fullname, customer_phone, customer_email, order_id, order_table_id, status)
+VALUES (1, 1, '2025-07-24 00:00:00', null, 1, null, null, null, null, null, null, null, 1),
+    (2, 1, '2025-07-24 00:00:00', null, 2, null, null, null, null, null, null, null, 1),
+    (3, 1, '2025-07-24 00:00:00', null, 3, null, null, null, null, null, null, null, 1),
+    (4, 1, '2025-07-24 00:00:00', null, 4, null, null, null, null, null, null, null, 1),
+    (5, 1, '2025-07-24 00:00:00', null, 5, null, null, null, null, null, null, null, 1),
+    (6, 1, '2025-07-24 00:00:00', null, 6, null, null, null, null, null, null, null, 1),
+    (7, 1, '2025-07-24 00:00:00', null, 7, null, null, null, null, null, null, null, 1),
+    (8, 1, '2025-07-24 00:00:00', null, 8, null, null, null, null, null, null, null, 1),
+    (9, 1, '2025-07-24 00:00:00', null, 9, null, null, null, null, null, null, null, 1),
+    (10, 1, '2025-07-24 00:00:00', null, 10, null, null, null, null, null, null, null, 1),
+    (11, 1, '2025-07-24 00:00:00', null, 11, null, null, null, null, null, null, null, 1),
+    (12, 1, '2025-07-24 00:00:00', null, 12, null, null, null, null, null, null, null, 1),
+    (13, 1, '2025-07-24 00:00:00', null, 13, null, null, null, null, null, null, null, 1),
+    (14, 1, '2025-07-24 00:00:00', null, 14, null, null, null, null, null, null, null, 1),
+    (15, 1, '2025-07-24 00:00:00', null, 15, null, null, null, null, null, null, null, 1),
+    (16, 1, '2025-07-24 00:00:00', null, 16, null, null, null, null, null, null, null, 1),
+    (17, 1, '2025-07-24 00:00:00', null, 17, null, null, null, null, null, null, null, 1),
+    (18, 1, '2025-07-24 00:00:00', null, 18, null, null, null, null, null, null, null, 1),
+    (19, 1, '2025-07-24 00:00:00', null, 19, null, null, null, null, null, null, null, 1),
+    (20, 1, '2025-07-24 00:00:00', null, 20, null, null, null, null, null, null, null, 1),
+    (21, 1, '2025-07-24 00:00:00', null, 21, null, null, null, null, null, null, null, 1),
+    (22, 1, '2025-07-24 00:00:00', null, 22, null, null, null, null, null, null, null, 1),
+    (23, 1, '2025-07-24 00:00:00', null, 23, null, null, null, null, null, null, null, 1),
+    (24, 1, '2025-07-24 00:00:00', null, 24, null, null, null, null, null, null, null, 1),
+    (25, 1, '2025-07-24 00:00:00', null, 25, null, null, null, null, null, null, null, 1),
+    (26, 1, '2025-07-24 00:00:00', null, 26, null, null, null, null, null, null, null, 1),
+    (27, 1, '2025-07-24 00:00:00', null, 27, null, null, null, null, null, null, null, 1),
+    (28, 1, '2025-07-24 00:00:00', null, 28, null, null, null, null, null, null, null, 1),
+    (29, 1, '2025-07-24 00:00:00', null, 29, null, null, null, null, null, null, null, 1),
+    (30, 1, '2025-07-24 00:00:00', null, 30, null, null, null, null, null, null, null, 1);
     
 INSERT INTO vinaeatery.use_foods (id, restaurant_id, time_start, time_end, food_id, employee_id, status)
 VALUES (1, 1, '2025-07-24 00:00:00', NULL, 1, NULL, 1),
@@ -542,3 +624,116 @@ VALUES (1, 1, '2025-07-24 00:00:00', NULL, 1, NULL, 1),
 	(15, 1, '2025-07-24 00:00:00', NULL, 15, NULL, 1),
 	(16, 1, '2025-07-24 00:00:00', NULL, 16, NULL, 1),
 	(17, 1, '2025-07-24 00:00:00', NULL, 17, NULL, 1);
+
+INSERT INTO vinaeatery.order_sheets (id, restaurant_id, create_at, service_at, employee_id, table_id, total_price, note, message, status)
+VALUES (1, 1, '2026-01-11 00:00:00', null, null, 1, 750000, null, null, 0);
+
+INSERT INTO vinaeatery.order_sheet_details (order_sheet_id, food_id, price, quantity)
+VALUES (1, 1, 120000, 2), (1, 4, 100000, 4), (1, 9, 110000, 1);
+
+INSERT INTO vinaeatery.category_permission_tickets (id, restaurant_id, name, description, status)
+VALUES (1, 1, 'Xin nghỉ phép', 'Nhân viên xin nghỉ làm có báo trước', 1),
+	(2, 1, 'Xin nghỉ ốm', 'Nhân viên xin nghỉ do vấn đề sức khỏe', 1),
+	(3, 1, 'Xin nghỉ việc riêng', 'Xin nghỉ để giải quyết việc cá nhân', 1),
+	(4, 1, 'Xin đi trễ', 'Xin phép đi làm trễ so với ca đăng ký', 1),
+	(5, 1, 'Xin về sớm', 'Xin phép về trước giờ kết thúc ca', 1),
+	(6, 1, 'Xin đổi ca', 'Xin đổi ca làm việc với nhân viên khác', 1),
+	(7, 1, 'Xin làm bù', 'Xin đăng ký làm bù ca đã nghỉ', 1),
+	(8, 1, 'Xin làm thêm giờ', 'Xin đăng ký làm thêm ngoài ca chính', 1),
+	(9, 1, 'Xin nghỉ không lương', 'Xin nghỉ làm và không tính lương', 1),
+	(10, 1, 'Xin nghỉ khẩn cấp', 'Xin nghỉ gấp do tình huống đột xuất', 1),
+	(11, 1, 'Xin đi công tác', 'Đi hỗ trợ hoặc làm việc tại chi nhánh khác', 1),
+	(12, 1, 'Xin điều chỉnh ca', 'Xin thay đổi giờ bắt đầu hoặc kết thúc ca', 1);
+
+INSERT INTO vinaeatery.permission_tickets(id, restaurant_id, create_at, employee_handle_id, employee_main_id, category_permission_ticket_id, date, reason, status)
+VALUES (1, 1, '2026-02-06 00:00:00', 1, 1, 3, '2026-02-01', "có việc cá nhân cần nghỉ làm", 0);
+
+INSERT INTO vinaeatery.category_reward_punishes (id, restaurant_id, name, handle, description, status)
+VALUES (1, 1, 'Thưởng đi làm đúng giờ', 'REWARD', 'Áp dụng cho nhân viên đi làm đúng giờ, không đi trễ trong ca', 1),
+	(2, 1, 'Thưởng làm đủ ca trong tháng', 'REWARD', 'Nhân viên không nghỉ ca, không đổi ca trong tháng', 1),
+	(3, 1, 'Thưởng làm thêm giờ', 'REWARD', 'Áp dụng khi nhân viên làm thêm giờ theo yêu cầu nhà hàng', 1),
+	(4, 1, 'Thưởng tăng ca cuối tuần', 'REWARD', 'Thưởng cho ca làm vào thứ 7, chủ nhật hoặc ngày lễ', 1),
+	(5, 1, 'Thưởng hiệu suất tốt', 'REWARD', 'Nhân viên hoàn thành tốt công việc, được quản lý đánh giá cao', 1),
+	(6, 1, 'Thưởng doanh thu', 'REWARD', 'Áp dụng khi doanh thu ca hoặc ngày vượt chỉ tiêu', 1),
+	(7, 1, 'Thưởng hỗ trợ đồng nghiệp', 'REWARD', 'Nhân viên hỗ trợ tốt đồng nghiệp trong ca làm', 1),
+	(8, 1, 'Thưởng chuyên cần', 'REWARD', 'Đi làm đầy đủ, không nghỉ không phép trong tháng', 1),
+    (9, 1, 'Phạt đi trễ', 'PUNISH', 'Nhân viên đi trễ so với thời gian quy định của ca làm', 1),
+	(10, 1, 'Phạt về sớm', 'PUNISH', 'Tự ý rời ca làm trước giờ kết thúc', 1),
+	(11, 1, 'Phạt nghỉ không phép', 'PUNISH', 'Nghỉ ca không báo trước hoặc không được quản lý duyệt', 1),
+	(12, 1, 'Phạt bỏ ca', 'PUNISH', 'Không đến làm việc mà không có lý do chính đáng', 1),
+	(13, 1, 'Phạt làm sai quy trình', 'PUNISH', 'Không tuân thủ quy trình phục vụ hoặc chế biến', 1),
+	(14, 1, 'Phạt thái độ phục vụ kém', 'PUNISH', 'Có phản ánh tiêu cực từ khách hàng', 1),
+	(15, 1, 'Phạt gây mất vệ sinh', 'PUNISH', 'Không đảm bảo vệ sinh khu vực làm việc', 1),
+	(16, 1, 'Phạt làm hỏng tài sản', 'PUNISH', 'Làm hư hỏng dụng cụ, thiết bị của nhà hàng', 1),
+	(17, 1, 'Phạt không mặc đồng phục', 'PUNISH', 'Không tuân thủ quy định về đồng phục và tác phong', 1),
+	(18, 1, 'Phạt vi phạm nội quy', 'PUNISH', 'Vi phạm nội quy, quy định chung của nhà hàng', 1);
+
+INSERT INTO vinaeatery.reward_punishes(id, restaurant_id, create_at, employee_handle_id, employee_main_id, category_reward_punish_id, date, money, reason, status)
+VALUES (1, 1, '2026-02-06 00:00:00', 1, 1, 3, '2026-02-01', 200000, "thấy siêng thưởng thêm", 0);
+
+INSERT INTO vinaeatery.shifts (id, restaurant_id, name, status, update_at)
+VALUES (1, 1, 'Ca sáng đủ ngày', 1, '2026-02-06 00:00:00'),
+	(2, 1, 'Ca chiều đủ ngày', 1, '2026-02-06 00:00:00'),
+	(3, 1, 'Ca tối đủ ngày', 1, '2026-02-06 00:00:00'),
+	(4, 1, 'Ca sáng thứ 2', 1, '2026-02-06 00:00:00'),
+	(5, 1, 'Ca sáng thứ 3', 1, '2026-02-06 00:00:00'),
+	(6, 1, 'Ca sáng thứ 4', 1, '2026-02-06 00:00:00'),
+	(7, 1, 'Ca sáng thứ 5', 1, '2026-02-06 00:00:00'),
+	(8, 1, 'Ca sáng thứ 6', 1, '2026-02-06 00:00:00'),
+	(9, 1, 'Ca sáng thứ 7', 1, '2026-02-06 00:00:00'),
+	(10, 1, 'Ca sáng Chủ nhật', 1, '2026-02-06 00:00:00'),
+    (11, 1, 'Ca chiều thứ 2', 1, '2026-02-06 00:00:00'),
+	(12, 1, 'Ca chiều thứ 3', 1, '2026-02-06 00:00:00'),
+	(13, 1, 'Ca chiều thứ 4', 1, '2026-02-06 00:00:00'),
+	(14, 1, 'Ca chiều thứ 5', 1, '2026-02-06 00:00:00'),
+	(15, 1, 'Ca chiều thứ 6', 1, '2026-02-06 00:00:00'),
+	(16, 1, 'Ca chiều thứ 7', 1, '2026-02-06 00:00:00'),
+	(17, 1, 'Ca chiều Chủ nhật', 1, '2026-02-06 00:00:00'),
+	(18, 1, 'Ca tối thứ 2', 1, '2026-02-06 00:00:00'),
+	(19, 1, 'Ca tối thứ 3', 1, '2026-02-06 00:00:00'),
+	(20, 1, 'Ca tối thứ 4', 1, '2026-02-06 00:00:00'),
+	(21, 1, 'Ca tối thứ 5', 1, '2026-02-06 00:00:00'),
+	(22, 1, 'Ca tối thứ 6', 1, '2026-02-06 00:00:00'),
+	(23, 1, 'Ca tối thứ 7', 1, '2026-02-06 00:00:00'),
+	(24, 1, 'Ca tối Chủ nhật', 1, '2026-02-06 00:00:00');
+
+INSERT INTO vinaeatery.shift_details (shift_id, day_of_week, time_start, time_end)
+VALUES (1, 1, '07:00', '12:00'), (1, 2, '07:00', '12:00'), (1, 3, '07:00', '12:00'), (1, 4, '07:00', '12:00'),
+		(1, 5, '07:00', '12:00'), (1, 6, '07:00', '12:00'), (1, 7, '07:00', '12:00'),
+	(2, 1, '12:00', '17:00'), (2, 2, '12:00', '17:00'), (2, 3, '12:00', '17:00'), (2, 4, '12:00', '17:00'),
+		(2, 5, '12:00', '17:00'), (2, 6, '12:00', '17:00'), (2, 7, '12:00', '17:00'),
+	(3, 1, '17:00', '22:00'), (3, 2, '17:00', '22:00'), (3, 3, '17:00', '22:00'), (3, 4, '17:00', '22:00'),
+		(3, 5, '17:00', '22:00'), (3, 6, '17:00', '22:00'), (3, 7, '17:00', '22:00'),
+	(4, 1, '07:00', '12:00'),
+    (5, 2, '07:00', '12:00'),
+    (6, 3, '07:00', '12:00'),
+    (7, 4, '07:00', '12:00'),
+	(8, 5, '07:00', '12:00'),
+    (9, 6, '07:00', '12:00'),
+    (10, 7, '07:00', '12:00'),
+    (11, 1, '12:00', '17:00'),
+    (12, 2, '12:00', '17:00'),
+    (13, 3, '12:00', '17:00'),
+    (14, 4, '12:00', '17:00'),
+	(15, 5, '12:00', '17:00'),
+    (16, 6, '12:00', '17:00'),
+    (17, 7, '12:00', '17:00'),
+    (18, 1, '17:00', '22:00'),
+    (19, 2, '17:00', '22:00'),
+    (20, 3, '17:00', '22:00'),
+    (21, 4, '17:00', '22:00'),
+	(22, 5, '17:00', '22:00'),
+    (23, 6, '17:00', '22:00'),
+    (24, 7, '17:00', '22:00');
+
+INSERT INTO vinaeatery.schedules (id, restaurant_id, name, date_start, date_end, note, status, update_at)
+VALUES (1, 1, "Lịch làm tháng 02/2026", "2026-02-01", "2026-02-28", "Lịch làm cố định dành cho tháng 2", 1, null);
+
+INSERT INTO vinaeatery.schedule_employees (schedule_id, employee_id)
+VALUES (1, 1);
+
+INSERT INTO vinaeatery.schedule_shifts (schedule_id, shift_id)
+VALUES (1, 1);
+
+INSERT INTO vinaeatery.attendances (id, restaurant_id, employee_id, shift_id, date, check_in, check_out, leave_status, status)
+VALUES (1, 1, 1, 1, "2026-02-01", "06:58", "12:02", "PAID", 3);

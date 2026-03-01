@@ -1,0 +1,218 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/colors" as *;
+@use "../abstracts/mixins" as *;
+
+.ticket {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__logo {
+    @include size(100px);
+    object-fit: cover;
+    margin-right: 24px;
+  }
+
+  &__contact {
+    & p {
+      font-size: 1.6rem;
+      font-weight: 500;
+
+      &.name {
+        color: $primary-color;
+        font-size: 2rem;
+        font-weight: 700;
+      }
+
+      &.has-icon {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        & svg.lucide {
+          @include size(1.6rem);
+        }
+      }
+    }
+  }
+
+
+  &__line {
+    @include size(100%, 1px);
+    background: #dedede;
+    margin-top: 16px;
+    border-radius: 4px;
+  }
+
+  &__body {
+    margin-top: 24px;
+  }
+
+  &__title {
+    font-size: 2.4rem;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  &__date {
+    color: #777;
+    font-size: 1.8rem;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  &__info {
+    font-size: 1.6rem;
+
+    & b {
+      display: inline-block;
+      width: 25%;
+    }
+
+    &:not(:first-of-type) {
+      margin-top: 20px;
+    }
+  }
+
+  &__chart {
+    margin-top: 6px;
+
+    & .admin-manager-main__data {
+      margin-top: 0;
+    }
+
+    &.split-2 {
+      display: flex;
+
+      & > * {
+        width: 50%;
+      }
+    }
+  }
+
+
+  &__table {
+    table-layout: fixed;
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 24px;
+    font-size: 0.9em;
+    font-family: sans-serif;
+
+    & :is(th, td) {
+      height: 35px;
+      padding: 4px 6px;
+      font-size: 1.4rem;
+      line-height: 35px;
+      text-align: center;
+    }
+
+    & th {
+      /* background-color: #303234; */
+      background: $primary-color;
+      color: #ffffff;
+      font-weight: bold;
+    }
+  
+    & tr:nth-of-type(even) {
+      background: #f7f8f9;
+    }
+  
+    & tfoot td:first-of-type {
+      background: #3597f2;
+      color: #fff;
+      font-weight: 700;
+    }
+  
+    & td.left {
+      text-align: left;
+    }
+  
+    & td.right {
+      text-align: right;
+    }
+  }
+
+
+  &__total {
+    margin-top: 6px;
+    font-size: 1.6rem;
+    text-align: right;
+
+    & span {
+      font-style: italic;
+    }
+  
+    & strong {
+      font-weight: bold;
+    }
+  }
+
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+  }
+
+  &__customer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px 0;
+    text-align: center;
+  }
+
+  &__print-btn {
+    @include flexCenter();
+    @include size(160px, 30px);
+    background: #699f4c;
+    border: 2px solid #699f4c;
+    margin: 32px 0 0 50%;
+    transform: translateX(-50%);
+    border-radius: 4px;
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    transition: 0.2s ease-in-out;
+    cursor: pointer;
+    
+    &:hover {
+      background: #fff;
+      color: #699f4c;
+    }
+  
+    & svg.lucide {
+      @include size(16px)
+    }
+  }
+
+  // &__body:where(.order, .input_ticket) &__info {
+  //   font-size: 1.6rem;
+  // }
+
+  &__body:where(.order, .input_ticket) &__date {
+    margin-bottom: 32px;
+  }
+
+  &__body:where(.order, .input_ticket) &__table {
+    margin-top: 4px;
+  }
+
+  &__footer:where(.order, .input_ticket) {
+    justify-content: space-around;
+  }
+
+  &__info b,
+  &__footer b {
+    font-weight: bold;
+  }
+
+  &__footer p {
+    text-align: center;
+    font-size: 1.6rem;
+    line-height: 1.4em;
+  }
+}

@@ -14,9 +14,9 @@ services:
     volumes:
       - ./mysql_data:/var/lib/mysql
 
-  backend:
-    build: ./backend
-    container_name: vinaeatery_backend
+  server:
+    build: ./server
+    container_name: vinaeatery_server
     depends_on:
       - mysql
     environment:
@@ -30,10 +30,10 @@ services:
     ports:
       - "8080:8080"
 
-  frontend:
-    build: ./frontend
-    container_name: vinaeatery_frontend
+  client-web:
+    build: ./client-web
+    container_name: vinaeatery_client-web
     depends_on:
-      - backend
+      - server
     ports:
       - "5173:5173"

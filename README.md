@@ -15,120 +15,120 @@ Hệ thống hỗ trợ quản lý menu, đơn hàng, bàn ăn và thanh toán, 
 <table width="100%" align="center">
   <tr>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/public-landing.png" alt="Giao diện giới thiệu nhà hàng" width="100%"/>
+      <img src="client-web/public/readme/public-landing.png" alt="Giao diện giới thiệu nhà hàng" width="100%"/>
       <br>
       <em>Hình 1: Giao diện giới thiệu nhà hàng</em>
     </td>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/public-login.png" alt="Giao diện đăng nhập" width="100%"/>
+      <img src="client-web/public/readme/public-login.png" alt="Giao diện đăng nhập" width="100%"/>
       <br>
       <em>Hình 2: Giao diện đăng nhập</em>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/admin-dashboard-profit.png" alt="Giao diện thống kê lợi nhuận (quản lý)" width="100%"/>
+      <img src="client-web/public/readme/admin-dashboard-profit.png" alt="Giao diện thống kê lợi nhuận (quản lý)" width="100%"/>
       <br>
       <em>Hình 3: Giao diện thống kê lợi nhuận (quản lý)</em>
     </td>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/admin-dashboard-orders.png" alt="Giao diện thống kê đơn món ăn (quản lý)" width="100%"/>
+      <img src="client-web/public/readme/admin-dashboard-orders.png" alt="Giao diện thống kê đơn món ăn (quản lý)" width="100%"/>
       <br>
       <em>Hình 4: Giao diện thống kê đơn món ăn (quản lý)</em>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/admin-objects.png" alt="Giao diện thông tin đối tượng (quản lý)" width="100%"/>
+      <img src="client-web/public/readme/admin-objects.png" alt="Giao diện thông tin đối tượng (quản lý)" width="100%"/>
       <br>
       <em>Hình 5: Giao diện thông tin đối tượng (quản lý)</em>
     </td>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/admin-tickets.png" alt="Giao diện thông tin phiếu (quản lý)" width="100%"/>
+      <img src="client-web/public/readme/admin-tickets.png" alt="Giao diện thông tin phiếu (quản lý)" width="100%"/>
       <br>
       <em>Hình 6: Giao diện thông tin phiếu (quản lý)</em>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/admin-table-histories.png" alt="Giao diện lịch sử bàn ăn (quản lý)" width="100%"/>
+      <img src="client-web/public/readme/admin-table-histories.png" alt="Giao diện lịch sử bàn ăn (quản lý)" width="100%"/>
       <br>
       <em>Hình 7: Giao diện lịch sử bàn ăn (quản lý)</em>
     </td>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/admin-detail-table-history.png" alt="Giao diện chi tiết lịch sử bàn ăn (quản lý)" width="100%"/>
+      <img src="client-web/public/readme/admin-detail-table-history.png" alt="Giao diện chi tiết lịch sử bàn ăn (quản lý)" width="100%"/>
       <br>
       <em>Hình 8: Giao diện chi tiết lịch sử bàn ăn (quản lý)</em>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/admin-use-tables.png" alt="Giao diện sử dụng bàn ăn (quản lý)" width="100%"/>
+      <img src="client-web/public/readme/admin-use-tables.png" alt="Giao diện sử dụng bàn ăn (quản lý)" width="100%"/>
       <br>
       <em>Hình 9: Giao diện sử dụng bàn ăn (quản lý)</em>
     </td>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/admin-table-has-customer.png" alt="Giao diện bàn ăn có khách (quản lý)" width="100%"/>
+      <img src="client-web/public/readme/admin-table-has-customer.png" alt="Giao diện bàn ăn có khách (quản lý)" width="100%"/>
       <br>
       <em>Hình 10: Giao diện bàn ăn có khách (quản lý)</em>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/admin-order-sheets.png" alt="Giao diện phiếu gọi món (quản lý)" width="100%"/>
+      <img src="client-web/public/readme/admin-order-sheets.png" alt="Giao diện phiếu gọi món (quản lý)" width="100%"/>
       <br>
       <em>Hình 11: Giao diện phiếu gọi món (quản lý)</em>
     </td>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/admin-detail-order-sheet.png" alt="Giao diện chi tiết phiếu gọi món (quản lý)" width="100%"/>
+      <img src="client-web/public/readme/admin-detail-order-sheet.png" alt="Giao diện chi tiết phiếu gọi món (quản lý)" width="100%"/>
       <br>
       <em>Hình 12: Giao diện chi tiết phiếu gọi món (quản lý)</em>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/client-main.png" alt="Giao diện gọi món ăn (khách hàng)" width="100%"/>
+      <img src="client-web/public/readme/client-main.png" alt="Giao diện gọi món ăn (khách hàng)" width="100%"/>
       <br>
       <em>Hình 13: Giao diện gọi món ăn (khách hàng)</em>
     </td>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/client-cart.png" alt="Giao diện giỏ hàng (khách hàng)" width="100%"/>
+      <img src="client-web/public/readme/client-cart.png" alt="Giao diện giỏ hàng (khách hàng)" width="100%"/>
       <br>
       <em>Hình 14: Giao diện giỏ hàng (khách hàng)</em>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/client-orders.png" alt="Giao diện lịch sử gọi món (khách hàng)" width="100%"/>
+      <img src="client-web/public/readme/client-orders.png" alt="Giao diện lịch sử gọi món (khách hàng)" width="100%"/>
       <br>
       <em>Hình 15: Giao diện lịch sử gọi món (khách hàng)</em>
     </td>
     <td width="50%" align="center">
-      <img src="frontend/src/assets/images/others/no-image.png" alt="Giao diện ..." width="100%"/>
+      <img src="client-web/src/assets/images/others/no-image.png" alt="Giao diện ..." width="100%"/>
       <br>
       <em>Hình 16: Giao diện ...</em>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/payment-info.png" alt="Giao diện thông tin hoá đơn (thanh toán)" width="100%"/>
+      <img src="client-web/public/readme/payment-info.png" alt="Giao diện thông tin hoá đơn (thanh toán)" width="100%"/>
       <br>
       <em>Hình 17: Giao diện thông tin hoá đơn (thanh toán)</em>
     </td>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/payment-methods.png" alt="Giao diện phương thức thanh toán (thanh toán)" width="100%"/>
+      <img src="client-web/public/readme/payment-methods.png" alt="Giao diện phương thức thanh toán (thanh toán)" width="100%"/>
       <br>
       <em>Hình 18: Giao diện phương thức thanh toán (thanh toán)</em>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/payment-selected.png" alt="Giao diện đã chọn phương thức (thanh toán)" width="100%"/>
+      <img src="client-web/public/readme/payment-selected.png" alt="Giao diện đã chọn phương thức (thanh toán)" width="100%"/>
       <br>
       <em>Hình 19: Giao diện đã chọn phương thức (thanh toán)</em>
     </td>
     <td width="50%" align="center">
-      <img src="frontend/public/readme/payment-feedback.png" alt="Giao diện đánh giá cảm nhận (thanh toán)" width="100%"/>
+      <img src="client-web/public/readme/payment-feedback.png" alt="Giao diện đánh giá cảm nhận (thanh toán)" width="100%"/>
       <br>
       <em>Hình 20: Giao diện đánh giá cảm nhận (thanh toán)</em>
     </td>
@@ -153,8 +153,8 @@ Hệ thống hỗ trợ quản lý menu, đơn hàng, bàn ăn và thanh toán, 
 
 ## 🛠️ Công nghệ sử dụng
 
-- **Frontend:** HTML, CSS (SASS), TypeScript, React
-- **Backend:** Java Spring (Spring Boot, Spring MVC, Spring Security, Spring Data JPA, ...)
+- **client-web:** HTML, CSS (SASS), TypeScript, React
+- **server:** Java Spring (Spring Boot, Spring MVC, Spring Security, Spring Data JPA, ...)
 - **Database:** MySQL
 
 <p><br></p>
@@ -182,17 +182,17 @@ git clone https://github.com/thanhquy185/vinaeatery.git
 docker-compose up -d
 
 ## Không dùng Docker
-# Chạy Frontend (dev mode)
-cd frontend (Di chuyển đến thư mục /frontend)
+# Chạy client-web (dev mode)
+cd client-web (Di chuyển đến thư mục /client-web)
 npm install (Tải các dependencies cần thiết)
-npm run dev (Chạy frontend)
-# Chạy Backend (dev mode)
-cd backend (Di chuyển đến thư mục /backend)
+npm run dev (Chạy client-web)
+# Chạy server (dev mode)
+cd server (Di chuyển đến thư mục /server)
 ./gradlew build (Biên dịch lại các file)
-./gradlew bootRun (Chạy backend)
+./gradlew bootRun (Chạy server)
 ```
 
-**_Ghi chú:_** _Cần thay đổi hostname, username và password tương ứng với mysql mà bạn sử dụng ở đường dẫn /backend/src/resources/application.properties (#config spring jpa) và lấy lệnh tạo db từ file database.sql_
+**_Ghi chú:_** _Cần thay đổi hostname, username và password tương ứng với mysql mà bạn sử dụng ở đường dẫn /server/src/resources/application.properties (#config spring jpa) và lấy lệnh tạo db từ file database.sql_
 
 <p align="center">
   💡 <em>Trường Đại học Sài Gòn – Khoa Công nghệ Thông tin</em>  

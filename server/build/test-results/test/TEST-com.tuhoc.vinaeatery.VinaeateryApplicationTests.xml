@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.tuhoc.vinaeatery.VinaeateryApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-02-21T20:24:40.372Z" hostname="macbooks-MacBook-Air.local" time="0.219">
+  <properties/>
+  <testcase name="contextLoads()" classname="com.tuhoc.vinaeatery.VinaeateryApplicationTests" time="0.219"/>
+  <system-out><![CDATA[Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2026-02-22T03:24:37.037+07:00  WARN 90389 --- [vinaeatery] [    Test worker] ory$DuplicateJsonObjectContextCustomizer : 
+
+Found multiple occurrences of org.json.JSONObject on the class path:
+
+	jar:file:/Users/macbook/.gradle/caches/modules-2/files-2.1/org.json/json/20230227/7a0d4aca76513d8ce81f9b044ce8126b84809ad8/json-20230227.jar!/org/json/JSONObject.class
+	jar:file:/Users/macbook/.gradle/caches/modules-2/files-2.1/com.vaadin.external.google/android-json/0.0.20131108.vaadin1/fa26d351fe62a6a17f5cda1287c1c6110dec413f/android-json-0.0.20131108.vaadin1.jar!/org/json/JSONObject.class
+
+You may wish to exclude one of them to ensure predictable runtime behavior
+
+2026-02-22T03:24:37.048+07:00  INFO 90389 --- [vinaeatery] [    Test worker] c.t.v.VinaeateryApplicationTests         : Starting VinaeateryApplicationTests using Java 17.0.15 with PID 90389 (started by macbook in /Users/macbook/Desktop/projects-src/vinaeatery/server)
+2026-02-22T03:24:37.048+07:00  INFO 90389 --- [vinaeatery] [    Test worker] c.t.v.VinaeateryApplicationTests         : No active profile set, falling back to 1 default profile: "default"
+2026-02-22T03:24:37.607+07:00  INFO 90389 --- [vinaeatery] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-22T03:24:37.670+07:00  INFO 90389 --- [vinaeatery] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 59 ms. Found 42 JPA repository interfaces.
+2026-02-22T03:24:37.782+07:00  INFO 90389 --- [vinaeatery] [    Test worker] o.s.cloud.context.scope.GenericScope     : BeanFactory id=2f5c493e-1f7f-3fc7-949b-6778f768d194
+2026-02-22T03:24:37.945+07:00  INFO 90389 --- [vinaeatery] [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-02-22T03:24:37.971+07:00  INFO 90389 --- [vinaeatery] [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.18.Final
+2026-02-22T03:24:37.990+07:00  INFO 90389 --- [vinaeatery] [    Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-02-22T03:24:38.141+07:00  INFO 90389 --- [vinaeatery] [    Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-22T03:24:38.158+07:00  INFO 90389 --- [vinaeatery] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-02-22T03:24:38.263+07:00  INFO 90389 --- [vinaeatery] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@33a9e48f
+2026-02-22T03:24:38.263+07:00  INFO 90389 --- [vinaeatery] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-02-22T03:24:38.318+07:00  INFO 90389 --- [vinaeatery] [    Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 9.3
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-22T03:24:39.102+07:00  INFO 90389 --- [vinaeatery] [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-22T03:24:39.297+07:00  INFO 90389 --- [vinaeatery] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-22T03:24:39.477+07:00  INFO 90389 --- [vinaeatery] [    Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-02-22T03:24:39.805+07:00  WARN 90389 --- [vinaeatery] [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-02-22T03:24:40.070+07:00  INFO 90389 --- [vinaeatery] [    Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-02-22T03:24:40.086+07:00  INFO 90389 --- [vinaeatery] [    Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-02-22T03:24:40.158+07:00 DEBUG 90389 --- [vinaeatery] [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, OAuth2AuthorizationRequestRedirectFilter, OAuth2LoginAuthenticationFilter, JwtAuthenticationFilter, DefaultResourcesFilter, DefaultLoginPageGeneratingFilter, DefaultLogoutPageGeneratingFilter, BearerTokenAuthenticationFilter, AuthenticationFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2026-02-22T03:24:40.338+07:00  INFO 90389 --- [vinaeatery] [    Test worker] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-02-22T03:24:40.339+07:00  INFO 90389 --- [vinaeatery] [    Test worker] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@bdc8448]]
+2026-02-22T03:24:40.339+07:00  INFO 90389 --- [vinaeatery] [    Test worker] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-02-22T03:24:40.351+07:00  INFO 90389 --- [vinaeatery] [    Test worker] c.t.v.VinaeateryApplicationTests         : Started VinaeateryApplicationTests in 3.466 seconds (process running for 4.135)
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

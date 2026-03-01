@@ -1,0 +1,190 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/colors" as *;
+@use "../abstracts/mixins" as *;
+
+/* <===== Button =====> */
+.btn {
+  @include size(120px, $admin-filter-height);
+  background: $primary-color;
+  border: 3px solid $primary-color;
+  border-radius: $admin-border-radius;
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: bold;
+  text-align: center;
+  transition: 0.2s ease-in-out;
+  cursor: pointer;
+
+  &:is(:hover, .active) {
+    background: #fff;
+    background: #fff;
+    color: $primary-color;
+  }
+
+  &.secondary-btn {
+    background: #2286e3;
+    border-color: #2286e3;
+
+    &:is(:hover, .active) {
+      background: #fff;
+      background: #fff;
+      color: #2286e3;
+    }
+  }
+
+  &:where(.red-primary, .lock) {
+    background: $red-primary-btn-color;
+    border-color: $red-primary-btn-color;
+
+    &:is(:hover, .active) {
+      background: #fff;
+      color: $red-primary-btn-color;
+    }
+  }
+
+  &.red-secondary {
+    background: $red-secondary-btn-color;
+    border-color: $red-secondary-btn-color;
+
+    &:is(:hover, .active) {
+      background: #fff;
+      color: $red-secondary-btn-color;
+    }
+  }
+
+  &:where(.blue-primary, .filter) {
+    background: $blue-primary-btn-color;
+    border-color: $blue-primary-btn-color;
+
+    &:is(:hover, .active) {
+      background: #fff;
+      color: $blue-primary-btn-color;
+    }
+  }
+
+  &.blue-secondary {
+    background: $blue-secondary-btn-color;
+    border-color: $blue-secondary-btn-color;
+
+    &:is(:hover, .active) {
+      background: #fff;
+      color: $blue-secondary-btn-color;
+    }
+  }
+
+  &:where(.green-primary, .create) {
+    background: $green-primary-btn-color;
+    border-color: $green-primary-btn-color;
+
+    &:is(:hover, .active) {
+      background: #fff;
+      color: $green-primary-btn-color;
+    }
+  }
+
+  &.green-secondary {
+    background: $green-secondary-btn-color;
+    border-color: $green-secondary-btn-color;
+
+    &:is(:hover, .active) {
+      background: #fff;
+      color: $green-secondary-btn-color;
+    }
+  }
+
+  &:where(.yellow-primary, .update) {
+    background: $yellow-primary-btn-color;
+    border-color: $yellow-primary-btn-color;
+
+    &:is(:hover, .active) {
+      background: #fff;
+      color: $yellow-primary-btn-color;
+    }
+  }
+
+  &.yellow-secondary {
+    background: $yellow-secondary-btn-color;
+    border-color: $yellow-secondary-btn-color;
+
+    &:is(:hover, .active) {
+      background: #fff;
+      color: $yellow-secondary-btn-color;
+    }
+  }
+
+  &.purple-primary {
+    background: $purple-primary-btn-color;
+    border-color: $purple-primary-btn-color;
+
+    &:is(:hover, .active) {
+      background: #fff;
+      color: $purple-primary-btn-color;
+    }
+  }
+
+  &.purple-secondary {
+    background: $purple-secondary-btn-color;
+    border-color: $purple-secondary-btn-color;
+
+    &:is(:hover, .active) {
+      background: #fff;
+      color: $purple-secondary-btn-color;
+    }
+  }
+
+  &.gray-secondary {
+    background: #bbb;
+    border-color: #bbb;
+
+    &:is(:hover, .active) {
+      background: #fff;
+      color: #bbb;
+    }
+  }
+
+  &.info {
+    background: $blue-secondary-btn-color;
+    border-color: $blue-secondary-btn-color;
+
+    &:is(:hover, .active) {
+      background: #fff;
+      color: $blue-secondary-btn-color;
+    }
+  }
+
+  &.print {
+    background: $ternary-color;
+    border-color: $ternary-color;
+
+    &:is(:hover, .active) {
+      background: #fff;
+      color: $ternary-color;
+    }
+  }
+
+  &:disabled {
+    background: #bebebe !important;
+    border-color: #bebebe !important;
+    cursor: not-allowed !important;
+
+    &.red {
+      background: $red-secondary-btn-color !important;
+      border-color: $red-secondary-btn-color !important;
+    }
+
+    &:hover {
+      color: #fff !important;
+    }
+  }
+}
+
+.comeback {
+  height: $admin-filter-height;
+  color: #777;
+  font-size: 2rem;
+  transition: 0.2s ease-in-out;
+
+  &:hover {
+    color: $primary-color;
+  }
+}

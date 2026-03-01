@@ -6,6 +6,12 @@
     "configurations": [
         {
             "type": "java",
+            "name": "VinaeateryApplication",
+            "request": "launch",
+            "mainClass": "vn.tuhoc.vinaeatery.VinaeateryApplication"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
@@ -15,7 +21,7 @@
             "name": "VinaeateryApplication",
             "request": "launch",
             "mainClass": "vn.tuhoc.vinaeatery.VinaeateryApplication",
-            "projectName": "backend"
+            "projectName": "server"
         }
     ]
 }

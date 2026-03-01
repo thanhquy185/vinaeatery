@@ -1,0 +1,110 @@
+@use "../../abstracts/variables" as *;
+@use "../../abstracts/colors" as *;
+@use "../../abstracts/mixins" as *;
+
+
+.form {
+  $height: 40px;
+  $font-size: 1.6rem;
+  
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  width: 30%;
+  background: #fff;
+  padding: 24px 26px;
+  border-radius: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  // &__title {
+  //   position: relative;
+  //   top: -24px;
+  //   left: -26px;
+  //   width: calc(100% + 26px * 2);
+  //   background: $primary-color;
+  //   padding: 20px 0;
+  //   border-radius: 20px 20px 0 0;
+  //   color: #fff;
+  //   font-size: 2.8rem;
+  //   font-weight: bold;
+  //   text-align: center;
+  // }
+
+  &__title {
+    @include flexCenter();
+    gap: 8px;
+
+    &-image {
+      @include size(40px);
+    }
+
+    &-text {
+      // padding-bottom: 32px;
+      // border-radius: 20px 20px 0 0;
+      color: $primary-color;
+      font-size: 2.6rem;
+      font-weight: 700;
+      // text-align: center;
+    }
+  }
+
+  &__line {
+    @include size(100%, 4px);
+    margin: 14px 0 24px;
+    background: $primary-color;
+    border-radius: 8px;
+  }
+
+  &__form-group {
+    position: relative;
+
+    & + & {
+      margin-top: 32px;
+    }
+
+    & .ant-input-affix-wrapper {
+      height: $height !important;
+    }
+
+    & label.ant-form-item-required,
+    & .ant-input-prefix,
+    & .ant-input-suffix,
+    & input.ant-input {
+      font-size: $font-size;
+    }
+
+    & label.ant-form-item-required {
+      padding-left: 0;
+      
+      &::before {
+        display: none !important;
+      }
+    }
+  }
+
+  &__button {
+    @include size(100%, $height);
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: $font-size;
+
+    &:hover {
+      background: #fff;
+      color: $primary-color;
+    }
+  }
+
+  &__action {
+    display: inline-block;
+    margin-top: 6px;
+    color: #0057b4;
+    font-size: calc($font-size - 0.2rem);
+    text-align: center;
+    transition: 0.2s ease-in-out;
+
+    // &:hover {
+    //   color: #ccc;
+    // }
+  }
+}

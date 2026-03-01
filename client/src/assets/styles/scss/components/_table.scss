@@ -1,0 +1,352 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/colors" as *;
+@use "../abstracts/mixins" as *;
+
+.table-actions {
+  $big-height-image: 140px;
+  $small-height-image: 45px;
+  $cell-padding: 16px;
+
+  & .ant-table {
+    border-radius: $admin-border-radius $admin-border-radius 0 0 !important;
+  }
+
+  & table {
+    table-layout: fixed !important;
+    border-radius: $admin-border-radius $admin-border-radius 0 0 !important;
+  }
+
+  & :where(th.ant-table-cell, th .ant-table-column-title, td) {
+    text-align: center !important;
+  }
+
+  & td {
+    &.ant-table-cell {
+      &.left {
+        text-align: left !important;
+      }
+
+      &.right {
+        text-align: right !important;
+      }
+
+      & .ant-tag {
+        margin-inline-end: 0 !important;
+      }
+
+      & .employee-info {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+
+        & p {
+          font-size: 1.4rem;
+
+          &.name {
+            font-weight: 600;
+          }
+
+          &.has-icon {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            color: #555;
+            font-size: 1.2rem;
+
+            & svg.lucide {
+              @include size(1.2rem);
+            }
+          }
+        }
+      }
+
+      & .schedule-conflict-info {
+        background: #fff2f0;
+        padding: 10px;
+        border: 1px dashed #dedede;
+        border-radius: $admin-border-radius;
+        font-size: 1.2rem;
+        text-align: left;
+
+        &:not(:first-of-type) {
+          margin-top: 6px;
+        }
+
+        & .schedule {
+          color: #333;
+          font-weight: 600;
+        }
+
+        & .shift {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          color: #777;
+
+          & .dot {
+            display: inline-block;
+            @include size(4px);
+            background: transparent;
+            border: 1px solid #777;
+            border-radius: 50%;
+          }
+        }
+
+        & + a {
+          font-size: 1.3rem;
+        }
+      }
+    }
+
+    & button.action {
+      @include flexCenter();
+      @include size(34px);
+      border: 2px solid #fff;
+      border-radius: $admin-border-radius;
+      color: #fff;
+      // font-size: 1.3rem;
+      cursor: pointer;
+      transition: 0.2s ease-in-out;
+
+      & svg.lucide {
+        @include size(16px !important);
+      }
+
+      &.info {
+        background: $blue-secondary-btn-color;
+        border-color: $blue-secondary-btn-color;
+      }
+
+      &.update {
+        background: $yellow-primary-btn-color;
+        border-color: $yellow-primary-btn-color;
+      }
+
+      &.lock {
+        background: $red-primary-btn-color;
+        border-color: $red-primary-btn-color;
+      }
+
+      &.print {
+        background: $ternary-color;
+        border-color: $ternary-color;
+      }
+
+      &:is(:hover, .active) {
+        background: #fff;
+      }
+
+      &.info:where(:hover, .active) {
+        color: $blue-secondary-btn-color;
+      }
+
+      &.update:where(:hover, .active) {
+        color: $yellow-primary-btn-color;
+      }
+
+      &.lock:where(:hover, .active) {
+        color: $red-primary-btn-color;
+      }
+
+      &.print:where(:hover, .active) {
+        color: $ternary-color;
+      }
+    }
+
+    &.buttons {
+      @include flexCenter();
+      gap: 4%;
+    }
+  }
+
+  &.restaurants td &.customer-cards td,
+  &.category-foods td,
+  &.foods td {
+    line-height: $big-height-image;
+  }
+
+  &.restaurants td .ant-image,
+  &.customer-cards td .ant-image,
+  &.category-foods td .ant-image,
+  &.foods td .ant-image {
+    width: 100%;
+  }
+
+  &.restaurants td img,
+  &.customer-cards td img,
+  &.category-foods td img,
+  &.foods td img,
+  &:is(.managers, .customers, .payslips, .employees) td img {
+    height: $big-height-image;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    // background: #000;
+    // object-fit: contain;
+    transition: border-color 0.3s ease-in-out;
+  }
+
+  &.restaurants td :is(.ant-image, .ant-image-mask),
+  &.customer-cards td :is(.ant-image, .ant-image-mask),
+  &.category-foods td :is(.ant-image, .ant-image-mask),
+  &.foods td :is(.ant-image, .ant-image-mask) {
+    height: $big-height-image;
+    border-radius: 12px;
+  }
+
+  &.restaurants td.buttons,
+  &.customer-cards td.buttons,
+  &.category-foods td.buttons,
+  &.foods td.buttons {
+    height: calc($big-height-image + calc($cell-padding * 2));
+  }
+
+  // &.category-foods td img {
+  //   object-fit: contain;
+  // }
+
+  &:is(.managers, .customers, .payslips, .employees) td img {
+    @include size($small-height-image);
+    border-width: 2px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  &:is(.managers, .customers, .payslips, .employees)
+    td
+    :is(.ant-image, .ant-image-mask) {
+    height: $small-height-image;
+    border-radius: 50%;
+  }
+
+  &:is(.managers, .customers, .payslips, .employees) td.buttons {
+    height: calc($small-height-image + calc($cell-padding * 2));
+  }
+
+  &.payslips td.buttons {
+    height: 94px;
+  }
+
+  &.restaurants td tr:is(.ant-table-row-selected, :hover) img,
+  &.customer-cards tr:is(.ant-table-row-selected, :hover) img,
+  &.category-foods tr:is(.ant-table-row-selected, :hover) img,
+  &.foods tr:is(.ant-table-row-selected, :hover) img,
+  &:is(.managers, .customers, .payslips, .employees)
+    tr:is(.ant-table-row-selected, :hover)
+    img {
+    border-color: $primary-color;
+  }
+}
+
+.table-no-actions,
+.table-permission-details {
+  $table-height: 45px;
+
+  & tr {
+    height: $table-height;
+    line-height: $table-height;
+    cursor: default;
+  }
+
+  & :is(th, td) {
+    padding: 0 !important;
+  }
+
+  & th:not(:first-of-type),
+  & td:first-of-type {
+    cursor: pointer;
+  }
+}
+
+.table-dashboard {
+  table-layout: fixed;
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9em;
+  font-family: sans-serif;
+
+  & :is(th, td).ant-table-cell {
+    height: 45px;
+    padding: 0 16px !important;
+    font-size: 1.4rem;
+    line-height: 45px;
+    text-align: center !important;
+  }
+
+  & tr.ant-table-row:nth-of-type(even) {
+    background-color: #f3f3f3;
+  }
+
+  & th.ant-table-cell {
+    background: $primary-color;
+    color: #fff !important;
+    font-weight: bold;
+  }
+
+  & td.ant-table-cell {
+    &.left {
+      text-align: left !important;
+    }
+
+    &.right {
+      text-align: right !important;
+    }
+  }
+
+  & tfoot.ant-table-summary {
+    & td.ant-table-cell:first-of-type {
+      background: $primary-color;
+      color: #fff;
+      // font-size: 1.8rem;
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+  }
+
+  &.profit {
+    & th.ant-table-cell {
+      background: #76b7b2;
+    }
+
+    & tfoot.ant-table-summary {
+      // & tr {
+      //   border-color: #76b7b2;
+      // }
+
+      & td.ant-table-cell:first-of-type {
+        background: #76b7b2;
+      }
+    }
+  }
+
+  &.revenue {
+    & th.ant-table-cell {
+      background: #4e79a7;
+    }
+
+    & tfoot.ant-table-summary {
+      // & tr {
+      //   border-color: #4e79a7;
+      // }
+
+      & td.ant-table-cell:first-of-type {
+        background: #4e79a7;
+      }
+    }
+  }
+
+  &.expense {
+    & th.ant-table-cell {
+      background: #e15759;
+    }
+
+    & tfoot.ant-table-summary {
+      // & tr {
+      //   border-color: #e15759;
+      // }
+
+      & td.ant-table-cell:first-of-type {
+        background: #e15759;
+      }
+    }
+  }
+}

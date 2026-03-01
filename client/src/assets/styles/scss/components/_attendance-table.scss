@@ -1,0 +1,173 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/colors" as *;
+@use "../abstracts/mixins" as *;
+
+.attendance-table {
+  & .ant-table {
+    // &-thead > tr > th {
+    //   background: #f9fafb;
+    //   padding: 10px;
+    //   text-align: center;
+    //   font-weight: 600;
+    // }
+
+    &-cell:not(th, td:first-of-type) {
+      cursor: pointer;
+
+      &:hover {
+        background: #ffdc2826 !important;
+      }
+    }
+  }
+
+  & .day-header {
+    display: flex;
+    flex-direction: column;
+
+    & .day-name {
+      color: #6b7280;
+      font-size: 1.2rem;
+    }
+
+    & .day-date {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    &.weekend :is(.day-name, .day-date) {
+      color: #dc2626;
+    }
+  }
+
+  & .employee-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    & img {
+      @include size(38px);
+      border-radius: 50%;
+    }
+
+    & p {
+      color: #555;
+      font-size: 1.2rem;
+      text-align: left;
+
+      &.name {
+        color: $primary-color;
+        font-size: 1.4rem;
+        font-weight: 600;
+      }
+
+      &.other {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        & span.dot {
+          display: inline-block;
+          @include size(6px);
+          border: 1px solid #d5d5d5;
+          background: transparent;
+          border-radius: 50%;
+        }
+
+        & span.status {
+          font-weight: 500;
+
+          &.green {
+            color: green;
+          }
+
+          &.red {
+            color: red;
+          }
+        }
+      }
+    }
+  }
+
+  & .attendance-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    & :is(.shift, .time, .leave) {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 1.3rem;
+    }
+
+    & .shift {
+      &-cell {
+        padding: 10px;
+        border-radius: 4px;
+        transition: 0.2s ease;
+
+        &:hover {
+          background: $hover-color;
+        }
+      }
+
+      & .name {
+        font-weight: 500;
+      }
+
+      & .dot {
+        @include size(8px);
+        border-radius: 50%;
+        background: #000;
+
+        &.green {
+          //   background: #16a34a;
+          background: $green-secondary-btn-color;
+        }
+
+        &.yellow {
+          //   background: #f59e0b;
+          background: $yellow-secondary-btn-color;
+        }
+
+        &.red {
+          //   background: #dc2626;
+          background: $red-secondary-btn-color;
+        }
+
+        &.blue {
+          //   background: #2563eb;
+          background: $blue-secondary-btn-color;
+        }
+
+        &.gray {
+          background: #cecece;
+        }
+      }
+    }
+
+    & .time {
+      gap: 2px;
+      color: #777;
+      font-size: 1.1rem;
+
+      & span {
+        &.hidden {
+          visibility: hidden;
+        }
+
+        &.green {
+          color: #4fa37a;
+        }
+
+        &.red {
+          color: #d36b6b;
+        }
+      }
+    }
+
+    & .leave {
+        color: #3A46B8;
+    }
+  }
+}

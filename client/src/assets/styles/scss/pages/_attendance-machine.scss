@@ -1,0 +1,45 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/colors" as *;
+@use "../abstracts/mixins" as *;
+
+.attendance-machine {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  &__header {
+    background: $primary-color;
+    padding: 20px 40px;
+    color: #fff;
+    text-align: center;
+
+    & h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+    }
+
+    & p {
+      color: #e5e5e5;
+      font-size: 1.6rem;
+    }
+  }
+
+  &__body {
+    @include flexCenter();
+    flex: 1;
+
+    & .has-qr-scanner {
+      width: 50%;
+
+      & p {
+        font-size: 2rem;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      & .qr-scanner {
+        margin-top: 14px;
+      }
+    }
+  }
+}
