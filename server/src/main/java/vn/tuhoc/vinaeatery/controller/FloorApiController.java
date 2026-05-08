@@ -1,6 +1,5 @@
 package vn.tuhoc.vinaeatery.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -25,7 +24,6 @@ import vn.tuhoc.vinaeatery.domain.request.FloorCreateRequest;
 import vn.tuhoc.vinaeatery.domain.request.FloorLockRequest;
 import vn.tuhoc.vinaeatery.domain.request.FloorUpdateRequest;
 import vn.tuhoc.vinaeatery.service.FloorService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -35,7 +33,6 @@ import vn.tuhoc.vinaeatery.util.ValidationUtil;
 public class FloorApiController {
         // Properties
         private final FloorService floorService;
-        private final TimeService timeService;
 
         // Methods
         @PostMapping("/list")
@@ -120,8 +117,7 @@ public class FloorApiController {
                 if (floorUpdated != null) {
                         floorUpdated.setName(floorUpdateRequest.getFloor().getName());
                         floorUpdated.setDescription(floorUpdateRequest.getFloor().getDescription());
-                        // floorUpdated.setUpdateAt(this.timeService.getDateTimeVN(floorUpdateRequest.getFloor().getUpdateAt()));
-                        floorUpdated.setUpdateAt(this.timeService.getDateTimeVN(LocalDateTime.now()));
+
                         this.floorService.upsert(floorUpdated);
                 }
 
@@ -161,14 +157,11 @@ public class FloorApiController {
                 CommonStatusEnum handleStatus = floorLockRequest.getFloor().getStatus() == CommonStatusEnum.ACTIVE
                                 ? CommonStatusEnum.INACTIVE
                                 : CommonStatusEnum.ACTIVE;
-                // LocalDateTime handleUpdateAt =
-                // this.timeService.getDateTimeVN(floorLockRequest.getFloor().getUpdateAt());
-                LocalDateTime handleUpdateAt = this.timeService.getDateTimeVN(LocalDateTime.now());
-
+                
                 Floor floorLocked = this.floorService.getOneById(id);
                 if (floorLocked != null) {
                         floorLocked.setStatus(handleStatus);
-                        floorLocked.setUpdateAt(handleUpdateAt);
+
                         this.floorService.lock(floorLocked);
                 }
 

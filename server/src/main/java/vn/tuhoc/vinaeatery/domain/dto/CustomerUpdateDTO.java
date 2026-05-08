@@ -1,7 +1,5 @@
 package vn.tuhoc.vinaeatery.domain.dto;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.Convert;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -35,5 +33,4 @@ public class CustomerUpdateDTO {
     // @NotNull(message = "Địa chỉ không được để trống!")
     private String address;
     private String description;
-    private String updateAt;
 }

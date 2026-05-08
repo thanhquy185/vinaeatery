@@ -21,6 +21,8 @@ import CurrentDateTime from "../../common/current-datetime";
 import { useEntityQuery } from "../../../../hook/use-entity-query";
 import { useEntityMutation } from "../../../../hook/use-entity-mutation";
 import {
+  GetHandlePaymentFormatByIsEmployeeHandle,
+  GetHandlePaymentFormatByIsEmployeeHandleAndIsHandling,
   GetHandlePaymentFormatByUseTableId,
   HandleUpdateHandlePayment,
 } from "../../../../requests/handle-payments";
@@ -45,18 +47,29 @@ const ManagerOccupiedUseTable: React.FC<CrudObjectModalProps> = ({
   closeModal,
   callApiToUpdateUseTable,
 }) => {
+  console.log(data?.id);
   // Truy vấn dữ liệu Xử lý thanh toán
+  // - Theo mã sử dụng bàn ăn
   const {
-    data: handlePayment,
+    data: handlePaymentByUseTableId,
     isLoading,
     isError,
     error,
   } = useEntityQuery<HandlePaymentType>({
-    keys: ["handle-payment"],
+    keys: ["handle-payment", data?.id],
     params: {
       useTableId: data?.id,
     },
     api: GetHandlePaymentFormatByUseTableId,
+  });
+  // - Theo nhân viên xử lý và đang xử lý
+  const {
+    data: handlePaymentByIsEmployeeHandleAndIsHandling,
+    isLoading: isLoading1,
+  } = useEntityQuery<HandlePaymentType>({
+    keys: ["handle-payment-is-employee-handle-and-is-handling"],
+    params: {},
+    api: GetHandlePaymentFormatByIsEmployeeHandleAndIsHandling,
   });
 
   // Mutation
@@ -65,7 +78,11 @@ const ManagerOccupiedUseTable: React.FC<CrudObjectModalProps> = ({
       success: `Cập nhật trạng thái thanh toán hoá đơn thành công!`,
       error: `Cập nhật trạng thái thanh toán hoá đơn thất bại!`,
     },
-    invalidateKeys: [["handle-payment"]],
+    invalidateKeys: [
+      ["use-tables"],
+      ["handle-payment", data?.id],
+      ["handle-payment-is-employee-handle-and-is-handling"],
+    ],
     api: HandleUpdateHandlePayment,
   });
 
@@ -91,11 +108,10 @@ const ManagerOccupiedUseTable: React.FC<CrudObjectModalProps> = ({
 
   //
   useEffect(() => {
-    console.log(handlePayment);
-    if (handlePayment) {
+    if (handlePaymentByUseTableId) {
       let newCurrentOrderSheetDetails: OrderSheetDetailType[] = [];
       const tempCurrentOrderSheetDetails: OrderSheetDetailType[] =
-        handlePayment?.useTable?.orderSheets
+        handlePaymentByUseTableId?.useTable?.orderSheets
           ?.filter(
             (orderSheet) => orderSheet!.status! === OrderSheetStatus.serviced,
           )
@@ -131,37 +147,38 @@ const ManagerOccupiedUseTable: React.FC<CrudObjectModalProps> = ({
         ),
       );
       // Số tiền thanh toán
-      setPayTotalPriceValue(handlePayment?.payTotalPrice!);
+      setPayTotalPriceValue(handlePaymentByUseTableId?.payTotalPrice!);
     } else {
       closeModal();
       setCurrentOrderSheetDetails([]);
       setCurrentTotalFoodPrice(0);
       setPayTotalPriceValue(0);
     }
-  }, [handlePayment]);
+  }, [handlePaymentByUseTableId]);
   useEffect(() => {
     if (currentTotalFoodPrice > 0) {
       // Phí loại bàn ăn
       if (
-        handlePayment?.useTable?.table?.categoryTable?.surchargeType ===
-        CategoryTableSurchargeType.percent
+        handlePaymentByUseTableId?.useTable?.table?.categoryTable
+          ?.surchargeType === CategoryTableSurchargeType.percent
       ) {
         setCurrentCategoryTableSurcharge(
           (currentTotalFoodPrice *
-            (handlePayment?.useTable?.table?.categoryTable?.surchargeValue ||
-              0)) /
+            (handlePaymentByUseTableId?.useTable?.table?.categoryTable
+              ?.surchargeValue || 0)) /
             100,
         );
       } else {
         setCurrentCategoryTableSurcharge(
-          handlePayment?.useTable?.table?.categoryTable?.surchargeValue || 0,
+          handlePaymentByUseTableId?.useTable?.table?.categoryTable
+            ?.surchargeValue || 0,
         );
       }
 
       // // Giảm giá khách hàng
       // setCurrentCustomerDiscount(
       //   (currentTotalFoodPrice *
-      //     (handlePayment?.useTable?.customer?.customerCard?.discount || 0)) /
+      //     (handlePaymentByUseTableId?.useTable?.customer?.customerCard?.discount || 0)) /
       //     100
       // );
     } else {
@@ -173,7 +190,7 @@ const ManagerOccupiedUseTable: React.FC<CrudObjectModalProps> = ({
 
   return (
     <>
-      {isLoading ? (
+      {isLoading && isLoading1 ? (
         <CustomSpinner />
       ) : (
         <>
@@ -238,336 +255,355 @@ const ManagerOccupiedUseTable: React.FC<CrudObjectModalProps> = ({
             </table>
           </div>
           {/* <div className="note">*Lưu ý: Khi thanh toán, các phiếu gọi món chưa được phục vụ sẽ bị huỷ !</div> */}
-          {handlePayment?.useTable?.id === data?.id &&
-          (handlePayment?.status === HandlePaymentStatus.exists ||
-            handlePayment?.status === HandlePaymentStatus.pending ||
-            handlePayment?.status === HandlePaymentStatus.selected ||
-            handlePayment?.status === HandlePaymentStatus.completed) ? (
-            <>
-              <div className="line"></div>
-              <div className="sub-title">Thanh toán bàn ăn</div>
-              <div className="info">
-                <b>Nhân viên xác nhận:</b>
-                {/* <div className="sub-info">
+          {handlePaymentByUseTableId?.useTable?.id === data?.id ? (
+            handlePaymentByUseTableId?.status === HandlePaymentStatus.exists ||
+            handlePaymentByUseTableId?.status === HandlePaymentStatus.pending ||
+            handlePaymentByUseTableId?.status ===
+              HandlePaymentStatus.selected ||
+            handlePaymentByUseTableId?.status ===
+              HandlePaymentStatus.completed ||
+            handlePaymentByUseTableId?.status ===
+              HandlePaymentStatus.feedback ? (
+              <>
+                <div className="line"></div>
+                <div className="sub-title">Thanh toán bàn ăn</div>
+                <div className="info">
+                  <b>Nhân viên xác nhận:</b>
+                  {/* <div className="sub-info">
                   <b>- Mã nhân viên:</b>#{dataForCrud?.infoLogin?.id}
                 </div> */}
-                <div className="sub-info">
-                  <b>- Họ và tên:</b>
-                  {dataForCrud?.infoLogin?.fullname}
+                  <div className="sub-info">
+                    <b>- Họ và tên:</b>
+                    {dataForCrud?.infoLogin?.fullname}
+                  </div>
+                  <div className="sub-info">
+                    <b>- Số điện thoại:</b>
+                    {dataForCrud?.infoLogin?.phone}
+                  </div>
+                  <div className="sub-info">
+                    <b>- Email:</b>
+                    {dataForCrud?.infoLogin?.email}
+                  </div>
                 </div>
-                <div className="sub-info">
-                  <b>- Số điện thoại:</b>
-                  {dataForCrud?.infoLogin?.phone}
+                <div className="info">
+                  <b>Thời gian thanh toán:</b>
+                  <CurrentDateTime />
                 </div>
-                <div className="sub-info">
-                  <b>- Email:</b>
-                  {dataForCrud?.infoLogin?.email}
-                </div>
-              </div>
-              <div className="info">
-                <b>Thời gian thanh toán:</b>
-                <CurrentDateTime />
-              </div>
-              <div className="info">
-                <b>Tổng tiền thanh toán:</b>
-                {vietnamMoneyFormat(
-                  Math.round(
-                    currentTotalFoodPrice +
-                      currentCategoryTableSurcharge +
-                      -1 * currentCustomerDiscount,
-                  ),
-                )}
-                (
-                {numberToVietnamWords(
-                  Math.round(
-                    currentTotalFoodPrice +
-                      currentCategoryTableSurcharge +
-                      -1 * currentCustomerDiscount,
-                  ),
-                )}
-                )
-                <div className="sub-info">
-                  <b>- Tổng tiền món ăn:</b>
-                  {vietnamMoneyFormat(currentTotalFoodPrice)}
-                </div>
-                <div className="sub-info">
-                  <b>- Giảm giá khách hàng:</b>
-                  {vietnamMoneyFormat(-1 * currentCustomerDiscount)}
-                </div>
-                <div className="sub-info">
-                  <b>- Phụ thu loại bàn:</b>
-                  {vietnamMoneyFormat(currentCategoryTableSurcharge)}
-                </div>
-              </div>
-              <div className="info">
-                <b>Chi tiết đã phục vụ:</b>
-                <table>
-                  <colgroup>
-                    <col width="40%" />
-                    <col width="10%" />
-                    <col width="15%" />
-                    <col width="15%" />
-                    <col width="20%" />
-                  </colgroup>
-                  <thead>
-                    <tr>
-                      <th>Tên món ăn</th>
-                      <th>Đơn vị</th>
-                      <th>Số lượng</th>
-                      <th>Đơn giá</th>
-                      <th>Thành tiền</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentOrderSheetDetails?.map((orderSheetDetail) => (
-                      <tr key={orderSheetDetail?.food?.id}>
-                        <td>{orderSheetDetail!.food!.name}</td>
-                        <td>{orderSheetDetail!.food!.unit}</td>
-                        <td>{orderSheetDetail!.quantity}</td>
-                        <td>{vietnamMoneyFormat(orderSheetDetail!.price)}</td>
-                        <td>
-                          {vietnamMoneyFormat(
-                            orderSheetDetail!.quantity *
-                              orderSheetDetail!.price,
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {/* <div className="line diff"></div> */}
-              <div className="info diff">
-                <b>Phương thức thanh toán</b>
-                <span className="content">
-                  {handlePayment?.payMethod ? (
-                    <>
-                      <img
-                        src={
-                          ImageSourcePath + "" + handlePayment?.payMethod?.image
-                        }
-                        alt=""
-                      />
-                      <p>{handlePayment?.payMethod?.name}</p>
-                    </>
-                  ) : (
-                    <>
-                      <SyncLoader className="spinner" />
-                      <p>Hãy đợi khách hàng chọn phương thức thanh toán</p>
-                    </>
+                <div className="info">
+                  <b>Tổng tiền thanh toán:</b>
+                  {vietnamMoneyFormat(
+                    Math.round(
+                      currentTotalFoodPrice +
+                        currentCategoryTableSurcharge +
+                        -1 * currentCustomerDiscount,
+                    ),
                   )}
-                </span>
-              </div>
-              {(handlePayment?.payMethod?.id === 1 ||
-                handlePayment?.payMethod?.id === 2) && (
-                <div className="info diff">
-                  <b>Số tiền thanh toán</b>
-                  <InputNumber
-                    min={0}
-                    placeholder="Nhập Số tiền thanh toán nhận được từ khách hàng"
-                    className="input-pay-total-price"
-                    value={payTotalPriceValue}
-                    onChange={(val) => setPayTotalPriceValue(val || 0)}
-                    disabled={
-                      handlePayment?.status === HandlePaymentStatus.completed
-                    }
-                  />
+                  (
+                  {numberToVietnamWords(
+                    Math.round(
+                      currentTotalFoodPrice +
+                        currentCategoryTableSurcharge +
+                        -1 * currentCustomerDiscount,
+                    ),
+                  )}
+                  )
+                  <div className="sub-info">
+                    <b>- Tổng tiền món ăn:</b>
+                    {vietnamMoneyFormat(currentTotalFoodPrice)}
+                  </div>
+                  <div className="sub-info">
+                    <b>- Giảm giá khách hàng:</b>
+                    {vietnamMoneyFormat(-1 * currentCustomerDiscount)}
+                  </div>
+                  <div className="sub-info">
+                    <b>- Phụ thu loại bàn:</b>
+                    {vietnamMoneyFormat(currentCategoryTableSurcharge)}
+                  </div>
                 </div>
-              )}
-              {handlePayment?.status === HandlePaymentStatus.completed && (
+                <div className="info">
+                  <b>Chi tiết đã phục vụ:</b>
+                  <table>
+                    <colgroup>
+                      <col width="40%" />
+                      <col width="10%" />
+                      <col width="15%" />
+                      <col width="15%" />
+                      <col width="20%" />
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th>Tên món ăn</th>
+                        <th>Đơn vị</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentOrderSheetDetails?.map((orderSheetDetail) => (
+                        <tr key={orderSheetDetail?.food?.id}>
+                          <td>{orderSheetDetail!.food!.name}</td>
+                          <td>{orderSheetDetail!.food!.unit}</td>
+                          <td>{orderSheetDetail!.quantity}</td>
+                          <td>{vietnamMoneyFormat(orderSheetDetail!.price)}</td>
+                          <td>
+                            {vietnamMoneyFormat(
+                              orderSheetDetail!.quantity *
+                                orderSheetDetail!.price,
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {/* <div className="line diff"></div> */}
                 <div className="info diff">
-                  <b>Khách hàng đánh giá</b>
+                  <b>Phương thức thanh toán</b>
                   <span className="content">
-                    <SyncLoader className="spinner" />
-                    <p>
-                      Khách hàng đã thanh toán hoá đơn thành công. Hãy đợi khách
-                      hàng hoàn tất việc đánh giá.
-                    </p>
+                    {handlePaymentByUseTableId?.payMethod ? (
+                      <>
+                        <img
+                          src={
+                            ImageSourcePath +
+                            "" +
+                            handlePaymentByUseTableId?.payMethod?.image
+                          }
+                          alt=""
+                        />
+                        <p>{handlePaymentByUseTableId?.payMethod?.name}</p>
+                      </>
+                    ) : (
+                      <>
+                        <SyncLoader className="spinner" />
+                        <p>Hãy đợi khách hàng chọn phương thức thanh toán</p>
+                      </>
+                    )}
                   </span>
                 </div>
-              )}
-              <div className="modal__buttons mg-top">
-                {handlePayment?.status !== HandlePaymentStatus.completed &&
-                  (handlePayment?.payMethod?.id === 1 ||
-                    handlePayment?.payMethod?.id === 2) && (
+                {(handlePaymentByUseTableId?.payMethod?.id === 1 ||
+                  handlePaymentByUseTableId?.payMethod?.id === 2) && (
+                  <div className="info diff">
+                    <b>Số tiền thanh toán</b>
+                    <InputNumber
+                      min={0}
+                      placeholder="Nhập Số tiền thanh toán nhận được từ khách hàng"
+                      className="input-pay-total-price"
+                      value={payTotalPriceValue}
+                      onChange={(val) => setPayTotalPriceValue(val || 0)}
+                      disabled={
+                        handlePaymentByUseTableId?.status ===
+                        HandlePaymentStatus.completed
+                      }
+                    />
+                  </div>
+                )}
+                {handlePaymentByUseTableId?.status ===
+                  HandlePaymentStatus.completed && (
+                  <div className="info diff">
+                    <b>Khách hàng đánh giá</b>
+                    <span className="content">
+                      <SyncLoader className="spinner" />
+                      <p>
+                        Khách hàng đã thanh toán hoá đơn thành công. Hãy đợi
+                        khách hàng hoàn tất việc đánh giá.
+                      </p>
+                    </span>
+                  </div>
+                )}
+                <div className="modal__buttons mg-top">
+                  {handlePaymentByUseTableId?.status !==
+                    HandlePaymentStatus.completed &&
+                    (handlePaymentByUseTableId?.payMethod?.id === 1 ||
+                      handlePaymentByUseTableId?.payMethod?.id === 2) && (
+                      <button
+                        ref={confirmPaymentButtonRef}
+                        type="button"
+                        className="modal__button secondary btn"
+                        onClick={async () => {
+                          if (!confirmPaymentButtonRef.current) return;
+
+                          confirmPaymentButtonRef.current.classList.add(
+                            "active",
+                          );
+
+                          const answer = await openConfirmation({
+                            title: `Xác nhận đã nhận tiền bàn này ?`,
+                            content:
+                              "Hãy kiểm tra lại kĩ trước khi xác nhận đã nhận tiền.",
+                          });
+                          if (answer) {
+                            if (
+                              payTotalPriceValue <
+                              currentTotalFoodPrice +
+                                -1 * currentCustomerDiscount +
+                                currentCategoryTableSurcharge
+                            ) {
+                              openNotification({
+                                type: "error",
+                                message: "Thất bại",
+                                description:
+                                  "Số tiền thanh toán phải lớn hơn hoặc bằng tổng thanh toán!",
+                              });
+                              confirmPaymentButtonRef.current.classList.remove(
+                                "active",
+                              );
+
+                              return;
+                            }
+
+                            const response = await updateMutation.mutateAsync({
+                              values: {
+                                id: handlePaymentByUseTableId?.id,
+                                useTableId:
+                                  handlePaymentByUseTableId?.useTable?.id,
+                                employeeId:
+                                  handlePaymentByUseTableId?.employee?.id,
+                                payMethodId:
+                                  handlePaymentByUseTableId?.payMethod?.id,
+                                isEmployeeHandle: true,
+                                isHandling: true,
+                                payTotalPrice: payTotalPriceValue,
+                                status: HandlePaymentStatus.completed,
+                              },
+                            });
+                            if (response) {
+                            }
+                          }
+
+                          confirmPaymentButtonRef.current.classList.remove(
+                            "active",
+                          );
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faCheck} className="icon" />
+                        <span>Xác nhận đã nhận tiền</span>
+                      </button>
+                    )}
+                  {(handlePaymentByUseTableId?.payMethod?.id === 4 ||
+                    handlePaymentByUseTableId?.payMethod?.id === 5) && (
                     <button
-                      ref={confirmPaymentButtonRef}
+                      type="button"
+                      className="modal__button secondary btn"
+                      disabled
+                    >
+                      <ClipLoader className="spinner" />
+                      <span>Đợi KH thanh toán</span>
+                    </button>
+                  )}
+                  {handlePaymentByUseTableId?.status !==
+                    HandlePaymentStatus.completed && (
+                    <button
+                      ref={cancelPaymentButtonRef}
                       type="button"
                       className="modal__button secondary btn"
                       onClick={async () => {
-                        if (!confirmPaymentButtonRef.current) return;
+                        if (!cancelPaymentButtonRef.current) return;
 
-                        confirmPaymentButtonRef.current.classList.add("active");
+                        cancelPaymentButtonRef.current.classList.add("active");
 
                         const answer = await openConfirmation({
-                          title: `Xác nhận đã nhận tiền bàn này ?`,
+                          title: `Huỷ thanh toán tiền bàn này ?`,
                           content:
-                            "Hãy kiểm tra lại kĩ trước khi xác nhận đã nhận tiền.",
+                            "Hãy hỏi lại phía khách hàng trước khi xác nhận huỷ thanh toán.",
                         });
                         if (answer) {
-                          // if (payTotalPriceValue) {
-                          //   openNotification({
-                          //     type: "error",
-                          //     message: "Thất bại",
-                          //     description:
-                          //       "Số tiền thanh toán không được để trống!",
-                          //
-                          //   });
-
-                          //   return;
-                          // }
-                          if (
-                            payTotalPriceValue <
-                            currentTotalFoodPrice +
-                              -1 * currentCustomerDiscount +
-                              currentCategoryTableSurcharge
-                          ) {
-                            openNotification({
-                              type: "error",
-                              message: "Thất bại",
-                              description:
-                                "Số tiền thanh toán phải lớn hơn hoặc bằng tổng thanh toán!",
-                            });
-                            confirmPaymentButtonRef.current.classList.remove(
-                              "active",
-                            );
-
-                            return;
-                          }
                           const response = await updateMutation.mutateAsync({
                             values: {
-                              id: handlePayment?.id,
-                              useTableId: handlePayment?.useTable?.id,
-                              employeeId: handlePayment?.employee?.id,
-                              payMethodId: handlePayment?.payMethod?.id,
-                              isEmployeeHandle: true,
-                              payTotalPrice: payTotalPriceValue,
-                              status: HandlePaymentStatus.completed,
+                              id: handlePaymentByUseTableId?.id,
+                              useTableId:
+                                handlePaymentByUseTableId?.useTable?.id,
+                              employeeId: undefined,
+                              isHandling: false,
+                              payMethodId: undefined,
+                              payTotalPrice: undefined,
+                              status: HandlePaymentStatus.nothing,
                             },
                           });
-                          if (data) {
+                          if (response) {
                           }
                         }
 
-                        confirmPaymentButtonRef.current.classList.remove(
+                        cancelPaymentButtonRef.current.classList.remove(
                           "active",
                         );
                       }}
                     >
-                      <FontAwesomeIcon icon={faCheck} className="icon" />
-                      <span>Xác nhận đã nhận tiền</span>
+                      <FontAwesomeIcon icon={faXmark} className="icon" />
+                      <span>Huỷ thanh toán tiền bàn</span>
                     </button>
                   )}
-                {(handlePayment?.payMethod?.id === 4 ||
-                  handlePayment?.payMethod?.id === 5) && (
-                  <button
-                    type="button"
-                    className="modal__button secondary btn"
-                    disabled
-                  >
-                    <ClipLoader className="spinner" />
-                    <span>Đợi KH thanh toán</span>
-                  </button>
-                )}
-                {handlePayment?.status !== HandlePaymentStatus.completed && (
-                  <button
-                    ref={cancelPaymentButtonRef}
-                    type="button"
-                    className="modal__button secondary btn"
-                    onClick={async () => {
-                      if (!cancelPaymentButtonRef.current) return;
-
-                      cancelPaymentButtonRef.current.classList.add("active");
-
-                      const answer = await openConfirmation({
-                        title: `Huỷ thanh toán tiền bàn này ?`,
-                        content:
-                          "Hãy hỏi lại phía khách hàng trước khi xác nhận huỷ thanh toán.",
-                      });
-                      if (answer) {
-                        const response = await updateMutation.mutateAsync({
-                          values: {
-                            id: handlePayment?.id,
-                            useTableId: handlePayment?.useTable?.id,
-                            employeeId: undefined,
-                            payMethodId: undefined,
-                            payTotalPrice: undefined,
-                            status: HandlePaymentStatus.nothing,
-                          },
-                        });
-                        if (data) {
-                        }
-                      }
-
-                      cancelPaymentButtonRef.current.classList.remove("active");
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faXmark} className="icon" />
-                    <span>Huỷ thanh toán tiền bàn</span>
-                  </button>
-                )}
-              </div>
-            </>
-          ) : (
-            <>
-              {hasPermission({
-                isManager: isManager!,
-                restaurantIdForCrud: restaurantId,
-                validActions,
-                requiredActionId: actionIndexes.update,
-              }) && (
-                <div className="modal__buttons mg-top">
-                  {data?.orderSheets?.length! === 0 && (
-                    <button
-                      type="button"
-                      className="modal__button secondary btn green-secondary"
-                      onClick={(e) =>
-                        callApiToUpdateUseTable!({
-                          id: data?.id,
-                          button: e.target as HTMLElement,
-                          value: UseTableStatus.empty,
-                        })
-                      }
-                    >
-                      Khách trả bàn
-                    </button>
-                  )}
-                  {handlePayment?.useTable?.id &&
-                    data?.orderSheets?.length! > 0 && (
+                </div>
+              </>
+            ) : (
+              <>
+                {hasPermission({
+                  isManager: isManager!,
+                  restaurantIdForCrud: restaurantId,
+                  validActions,
+                  requiredActionId: actionIndexes.update,
+                }) && (
+                  <div className="modal__buttons mg-top">
+                    {data?.orderSheets?.length! === 0 && (
                       <button
                         type="button"
-                        className="modal__button secondary btn"
-                        onClick={async (e) => {
-                          e.currentTarget.classList.add("active");
-
-                          const answer = await openConfirmation({
-                            title: `Thanh toán hoá tiền bàn này ?`,
-                            content:
-                              "Hãy hỏi lại phía khách hàng trước khi xác nhận thanh toán.",
-                          });
-                          if (answer) {
-                            const response = await updateMutation.mutateAsync({
-                              values: {
-                                id: handlePayment?.id,
-                                useTableId: handlePayment?.useTable?.id,
-                                employeeId: dataForCrud?.infoLogin?.id,
-                                isEmployeeHandle: true,
-                                status: HandlePaymentStatus.exists,
-                              },
-                            });
-                            if (data) {
-                            }
-                          }
-
-                          e.currentTarget.classList.remove("active");
-                        }}
+                        className="modal__button secondary btn green-secondary"
+                        onClick={(e) =>
+                          callApiToUpdateUseTable!({
+                            id: data?.id,
+                            button: e.target as HTMLElement,
+                            value: UseTableStatus.empty,
+                          })
+                        }
                       >
-                        Thanh toán tiền bàn
+                        Khách trả bàn
                       </button>
                     )}
-                </div>
-              )}
-            </>
+                    {(!handlePaymentByIsEmployeeHandleAndIsHandling ||
+                      handlePaymentByIsEmployeeHandleAndIsHandling?.useTable
+                        ?.id === data?.id) &&
+                      data?.orderSheets?.length! > 0 && (
+                        <button
+                          type="button"
+                          className="modal__button secondary btn"
+                          onClick={async (e) => {
+                            e.currentTarget.classList.add("active");
+
+                            const answer = await openConfirmation({
+                              title: `Thanh toán hoá tiền bàn này ?`,
+                              content:
+                                "Hãy hỏi lại phía khách hàng trước khi xác nhận thanh toán.",
+                            });
+                            if (answer) {
+                              const response = await updateMutation.mutateAsync(
+                                {
+                                  values: {
+                                    id: handlePaymentByUseTableId?.id,
+                                    useTableId:
+                                      handlePaymentByUseTableId?.useTable?.id,
+                                    employeeId: dataForCrud?.infoLogin?.id,
+                                    isEmployeeHandle: true,
+                                    isHandling: true,
+                                    status: HandlePaymentStatus.exists,
+                                  },
+                                },
+                              );
+                              if (response) {
+                              }
+                            }
+
+                            e.currentTarget.classList.remove("active");
+                          }}
+                        >
+                          Thanh toán tiền bàn
+                        </button>
+                      )}
+                  </div>
+                )}
+              </>
+            )
+          ) : (
+            <></>
           )}
         </>
       )}

@@ -4,7 +4,6 @@ import jakarta.annotation.Generated;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
-import java.time.LocalDateTime;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 
 @StaticMetamodel(Floor.class)
@@ -21,11 +20,6 @@ public abstract class Floor_ {
 	 * @see vn.tuhoc.vinaeatery.domain.entity.Floor#description
 	 **/
 	public static volatile SingularAttribute<Floor, String> description;
-	
-	/**
-	 * @see vn.tuhoc.vinaeatery.domain.entity.Floor#updateAt
-	 **/
-	public static volatile SingularAttribute<Floor, LocalDateTime> updateAt;
 	
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.entity.Floor#id
@@ -49,7 +43,6 @@ public abstract class Floor_ {
 
 	public static final String NAME = "name";
 	public static final String DESCRIPTION = "description";
-	public static final String UPDATE_AT = "updateAt";
 	public static final String ID = "id";
 	public static final String RESTAURANT_ID = "restaurantId";
 	public static final String STATUS = "status";

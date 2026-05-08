@@ -17,6 +17,11 @@ import {
   chartQueryDashboardInputTickets,
   tableDataQueryDashboardInputTickets,
 } from "../../../pages/manager/dashboard/dashboard-input-tickets";
+import {
+  cardsQueryDashboardHuman,
+  chartQueryDashboardHuman,
+  tableDataQueryDashboardHuman,
+} from "../../../pages/manager/dashboard/dashboard-human";
 import { useModal } from "../../../hook/use-modal";
 import { openNotification } from "../../../utils/show-notification";
 import { handlePrintTicket } from "../../../utils/print-ticket";
@@ -141,6 +146,16 @@ const AdminManagerMainFilterDashboard: React.FC<
     const tableDataDashboardInputTickets = document.querySelector(
       tableDataQueryDashboardInputTickets,
     );
+    // - Thông kê Nhân sự
+    const cardsDashboardHuman = document.querySelector(
+      cardsQueryDashboardHuman,
+    );
+    const chartDashboardHuman = document.querySelector(
+      chartQueryDashboardHuman,
+    );
+    const tableDataDashboardHuman = document.querySelector(
+      tableDataQueryDashboardHuman,
+    );
 
     return (
       <>
@@ -241,6 +256,34 @@ const AdminManagerMainFilterDashboard: React.FC<
                     className="ticket__chart"
                     dangerouslySetInnerHTML={{
                       __html: tableDataDashboardInputTickets?.outerHTML ?? "",
+                    }}
+                  ></div>
+                </>
+              )}
+            {titleDashboard === "THỐNG KÊ NHÂN SỰ" &&
+              typeDashboard === "dashboard-human" &&
+              cardsDashboardHuman &&
+              chartDashboardHuman &&
+              tableDataDashboardHuman && (
+                <>
+                  <p className="ticket__info">
+                    <b>Tóm tắt:</b>
+                  </p>
+                  <div
+                    className="ticket__chart split-2"
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        (cardsDashboardHuman?.outerHTML ?? "") +
+                        (chartDashboardHuman?.outerHTML ?? ""),
+                    }}
+                  ></div>
+                  <p className="ticket__info">
+                    <b>Bảng dữ liệu:</b>
+                  </p>
+                  <div
+                    className="ticket__chart"
+                    dangerouslySetInnerHTML={{
+                      __html: tableDataDashboardHuman?.outerHTML ?? "",
                     }}
                   ></div>
                 </>

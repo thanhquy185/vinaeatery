@@ -17,11 +17,6 @@ public abstract class Permission_ {
 	public static volatile SingularAttribute<Permission, String> name;
 	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.entity.Permission#updateAt
-	 **/
-	public static volatile SingularAttribute<Permission, String> updateAt;
-	
-	/**
 	 * @see vn.tuhoc.vinaeatery.domain.entity.Permission#id
 	 **/
 	public static volatile SingularAttribute<Permission, Integer> id;
@@ -42,7 +37,6 @@ public abstract class Permission_ {
 	public static volatile SingularAttribute<Permission, CommonStatusEnum> status;
 
 	public static final String NAME = "name";
-	public static final String UPDATE_AT = "updateAt";
 	public static final String ID = "id";
 	public static final String RESTAURANT_ID = "restaurantId";
 	public static final String STATUS = "status";

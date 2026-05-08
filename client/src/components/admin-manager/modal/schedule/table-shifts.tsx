@@ -57,7 +57,7 @@ const TableShifts: FC<TableShiftsProps> = ({
       rowKey="id"
       columns={shiftColumns}
       dataSource={shifts}
-      pagination={{ pageSize: 5 }}
+      pagination={shifts.length > 5 ? { pageSize: 5 } : false}
     />
   );
 };

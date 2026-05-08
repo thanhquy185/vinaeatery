@@ -23,8 +23,6 @@ public class ScheduleUpdateDTO {
     @NotNull(message = "Ngày kết thúc không được để trống!")
     private String dateEnd;
     private String note;
-    @NotNull(message = "Ngày cập nhật không được để trống!")
-    private String updateAt;
     private List<ScheduleEmployeeForCrud> scheduleEmployees;
     private List<ScheduleShiftForCrud> scheduleShifts;
 }

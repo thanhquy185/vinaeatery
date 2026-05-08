@@ -67,7 +67,7 @@ public class MessageApiController {
                                                                         .getErrorMessageByHandleFormData()));
                 }
 
-                Message MessageSelected = this.messageService.getOneById(id);
-                return ResponseEntity.status(HttpStatus.OK).body(MessageSelected);
+                Message messageSelected = this.messageService.getOneById(id);
+                return ResponseEntity.status(HttpStatus.OK).body(messageSelected);
         }
 }

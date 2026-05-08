@@ -1,7 +1,5 @@
 package vn.tuhoc.vinaeatery.domain.dto;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.Convert;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -37,5 +35,4 @@ public class EmployeeUpdateDTO {
     private Integer roleId;
     @NotNull(message = "Mã quyền hạn không được để trống!")
     private Integer permissionId;
-    private String updateAt;
 }

@@ -54,7 +54,7 @@ public class ZalopayApiController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Giao dịch không hợp lệ!");
 
         JSONObject dataJson = new JSONObject(data);
-        System.out.println(dataJson);
+        // System.out.println(dataJson);
         String appTransId = dataJson.getString("app_trans_id");
         Long amount = dataJson.getLong("amount");
 

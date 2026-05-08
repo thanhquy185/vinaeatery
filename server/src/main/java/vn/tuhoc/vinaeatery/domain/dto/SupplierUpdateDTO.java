@@ -1,7 +1,5 @@
 package vn.tuhoc.vinaeatery.domain.dto;
 
-import java.time.LocalDateTime;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -25,6 +23,4 @@ public class SupplierUpdateDTO {
     @Email(message = "Định dạng email không hợp lệ!", regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
     private String email;
     private String address;
-    @NotNull(message = "Thời gian cập nhật không được để trống!")
-    private LocalDateTime updateAt;
 }

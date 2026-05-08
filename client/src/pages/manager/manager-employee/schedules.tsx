@@ -40,8 +40,8 @@ import { hasPermission } from "../../../utils/has-permissions";
 import { getFilterSelectValueToShow } from "../../../utils/other-events";
 import dayjs from "dayjs";
 
-// Manager Schedule Page
-const ManagerSchedulePage: FC<ManagerPageProps> = ({
+// Manager Schedules Page
+const ManagerSchedulesPage: FC<ManagerPageProps> = ({
   infoLogin,
   functionId,
   nameVN,
@@ -94,83 +94,6 @@ const ManagerSchedulePage: FC<ManagerPageProps> = ({
     },
     api: FindAllSchedule,
   });
-  // const schedules: ScheduleType[] = [
-  //   {
-  //     id: 1,
-  //     name: "Lịch làm tháng 2",
-  //     dateStart: "2026-02-01",
-  //     dateEnd: "2026-02-28",
-  //     note: "Lịch cố định tháng 02/2026",
-  //     status: "Tạm dừng",
-  //     scheduleEmployees: [
-  //       {
-  //         // employee: {
-  //         //   id: 1,
-  //         // },
-  //         employeeId: 1,
-  //       },
-  //       {
-  //         // employee: {
-  //         //   id: 2,
-  //         // },
-  //         employeeId: 2,
-  //       },
-  //     ],
-  //     scheduleShifts: [
-  //       {
-  //         // shiftId: 1,
-  //         shift: {
-  //           id: 1,
-  //           name: "Ca sáng nguyên tuần",
-  //           shiftDetails: [
-  //             {
-  //               shiftId: 1,
-  //               dayOfWeek: 1,
-  //               timeStart: "07:00",
-  //               timeEnd: "12:00",
-  //             },
-  //             {
-  //               shiftId: 1,
-  //               dayOfWeek: 2,
-  //               timeStart: "07:00",
-  //               timeEnd: "12:00",
-  //             },
-  //             {
-  //               shiftId: 1,
-  //               dayOfWeek: 3,
-  //               timeStart: "07:00",
-  //               timeEnd: "12:00",
-  //             },
-  //             {
-  //               shiftId: 1,
-  //               dayOfWeek: 4,
-  //               timeStart: "07:00",
-  //               timeEnd: "12:00",
-  //             },
-  //             {
-  //               shiftId: 1,
-  //               dayOfWeek: 5,
-  //               timeStart: "07:00",
-  //               timeEnd: "12:00",
-  //             },
-  //             {
-  //               shiftId: 1,
-  //               dayOfWeek: 6,
-  //               timeStart: "07:00",
-  //               timeEnd: "12:00",
-  //             },
-  //             {
-  //               shiftId: 1,
-  //               dayOfWeek: 7,
-  //               timeStart: "07:00",
-  //               timeEnd: "12:00",
-  //             },
-  //           ],
-  //         },
-  //       },
-  //     ],
-  //   },
-  // ];
   // - Cột thuộc tính
   const columns: ColumnsType<ScheduleType> = [
     {
@@ -601,4 +524,4 @@ const ManagerSchedulePage: FC<ManagerPageProps> = ({
   );
 };
 
-export default ManagerSchedulePage;
+export default ManagerSchedulesPage;

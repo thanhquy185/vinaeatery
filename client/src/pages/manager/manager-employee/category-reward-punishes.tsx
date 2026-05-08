@@ -10,7 +10,6 @@ import { Eye, Lock, PenBox, Unlock } from "lucide-react";
 //   faUnlock,
 // } from "@fortawesome/free-solid-svg-icons";
 import type { ManagerPageProps } from "../../../common/props";
-import AdminManagerMainHeader from "../../../components/admin-manager/common/main-header";
 import type { CategoryRewardPunishType } from "../../../common/types";
 import {
   CategoryRewardPunishHandle,
@@ -19,6 +18,7 @@ import {
   ModalWidthValue,
 } from "../../../common/values";
 import CustomModal from "../../../components/common/modal";
+import AdminManagerMainHeader from "../../../components/admin-manager/common/main-header";
 import AdminManagerMainFilterInfo from "../../../components/admin-manager/common/main-filter-info";
 import AdminManagerMainData from "../../../components/admin-manager/common/main-data";
 import ManagerDetailCategoryRewardPunish from "../../../components/admin-manager/modal/category-reward-punish/manager-detail-category-reward-punish";

@@ -29,15 +29,15 @@ export const FindAllUser = ({
       fieldName: keys.users,
       fieldAction: "read",
     }),
-    { params }
+    { params },
   );
 };
 export const FindOneUser = (
-  id: string
+  id: string,
 ): Promise<AxiosResponse<UserType, any>> => {
   return instance.post(
     `/api/${keys.users}/detail/${id}`,
-    getNewFormSecurityValue({ fieldName: keys.users, fieldAction: "read" })
+    getNewFormSecurityValue({ fieldName: keys.users, fieldAction: "read" }),
   );
 };
 export const HandleCreateUser = ({
@@ -75,7 +75,6 @@ export const HandleUpdateUser = ({
   id,
   role,
   // method,
-  updateAt,
 }: UserType): Promise<AxiosResponse<RestResponseType, any>> => {
   const formData = {
     formSecurity: getNewFormSecurityValue({
@@ -85,7 +84,6 @@ export const HandleUpdateUser = ({
     user: {
       role,
       // method,
-      updateAt,
     },
   };
 
@@ -119,7 +117,6 @@ export const HandleChangePasswordUser = ({
   id,
   newPassword,
   authNewPassword,
-  updateAt,
 }: {
   id?: number;
   newPassword?: string;
@@ -134,7 +131,6 @@ export const HandleChangePasswordUser = ({
     user: {
       newPassword,
       authNewPassword,
-      updateAt,
     },
   };
 

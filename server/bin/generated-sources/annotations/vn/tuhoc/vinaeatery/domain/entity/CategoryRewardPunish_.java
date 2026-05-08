@@ -23,11 +23,6 @@ public abstract class CategoryRewardPunish_ {
 	public static volatile SingularAttribute<CategoryRewardPunish, String> description;
 	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.entity.CategoryRewardPunish#updateAt
-	 **/
-	public static volatile SingularAttribute<CategoryRewardPunish, String> updateAt;
-	
-	/**
 	 * @see vn.tuhoc.vinaeatery.domain.entity.CategoryRewardPunish#handle
 	 **/
 	public static volatile SingularAttribute<CategoryRewardPunish, CategoryRewardPunishHandleEnum> handle;
@@ -54,7 +49,6 @@ public abstract class CategoryRewardPunish_ {
 
 	public static final String NAME = "name";
 	public static final String DESCRIPTION = "description";
-	public static final String UPDATE_AT = "updateAt";
 	public static final String HANDLE = "handle";
 	public static final String ID = "id";
 	public static final String RESTAURANT_ID = "restaurantId";

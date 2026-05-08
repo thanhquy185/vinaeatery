@@ -81,7 +81,6 @@ public class EmployeeService {
             employeeDTO.setRoleHistories(roleHistories);
             employeeDTO.setPermission(this.permissionService.getOneFormatById(employee.getPermissionId()));
             employeeDTO.setStatus(employee.getStatus());
-            employeeDTO.setUpdateAt(employee.getUpdateAt());
         }
 
         return employeeDTO;

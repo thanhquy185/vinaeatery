@@ -1,7 +1,5 @@
 package vn.tuhoc.vinaeatery.domain.dto;
 
-import java.time.LocalDateTime;
-
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +15,4 @@ public class FloorUpdateDTO {
     @NotNull(message = "Tên tầng không được để trống!")
     private String name;
     private String description;
-    @NotNull(message = "Thời gian cập nhật không được để trống!")
-    private LocalDateTime updateAt;
 }

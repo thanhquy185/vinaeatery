@@ -1,6 +1,5 @@
 package vn.tuhoc.vinaeatery.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -24,10 +23,8 @@ import vn.tuhoc.vinaeatery.domain.dto.RoleDTO;
 import vn.tuhoc.vinaeatery.domain.dto.RoleUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.entity.Role;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
-// import vn.tuhoc.vinaeatery.service.EmployeeService;
 import vn.tuhoc.vinaeatery.service.RoleHistoryService;
 import vn.tuhoc.vinaeatery.service.RoleService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -38,8 +35,6 @@ public class RoleApiController {
     // Properties
     private final RoleService roleService;
     private final RoleHistoryService roleHistoryService;
-    // private final EmployeeService employeeService;
-    private final TimeService timeService;
 
     // Methods
     @PostMapping("/list")
@@ -151,13 +146,11 @@ public class RoleApiController {
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
                 ? CommonStatusEnum.INACTIVE
                 : CommonStatusEnum.ACTIVE;
-        // LocalDateTime handleUpdateAt =
-        // this.timeService.getDateTimeVN(commonStatusUpdate.getUpdateAt());
 
         Role roleLocked = this.roleService.getOneById(id);
         if (roleLocked != null) {
             roleLocked.setStatus(handleStatus);
-            // roleLocked.setUpdateAt(handleUpdateAt);
+            
             this.roleService.lock(roleLocked);
         }
 

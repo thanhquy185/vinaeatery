@@ -17,6 +17,5 @@ public class ShiftUpdateDTO {
     // Properties
     @NotNull(message = "Tên ca làm không được để trống!")
     private String name;
-    private String updateAt;
     private List<ShiftDetailForCrud> shiftDetails;
 }

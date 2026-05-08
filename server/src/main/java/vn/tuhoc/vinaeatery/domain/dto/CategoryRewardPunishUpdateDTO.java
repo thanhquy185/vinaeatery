@@ -1,7 +1,5 @@
 package vn.tuhoc.vinaeatery.domain.dto;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.Convert;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,5 +20,4 @@ public class CategoryRewardPunishUpdateDTO {
     @NotNull(message = "Xử lý không được để trống!")
     private CategoryRewardPunishHandleEnum handle;
     private String description;
-    private String updateAt;
 }

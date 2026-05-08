@@ -1,8 +1,5 @@
 package vn.tuhoc.vinaeatery.domain.dto;
 
-import java.time.LocalDateTime;
-
-import jakarta.persistence.Convert;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -10,8 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.tuhoc.vinaeatery.domain.enumm.CommonGenderEnum;
-import vn.tuhoc.vinaeatery.repository.converter.CommonGenderConverter;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,5 +28,4 @@ public class RestaurantUpdateDTO {
     private String description;
     @NotNull(message = "Đánh giá không được để trống!")
     private Float rating;
-    private String updateAt;
 }

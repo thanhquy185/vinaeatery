@@ -92,7 +92,7 @@ export const HandleCreatePermission = ({
 export const HandleUpdatePermission = ({
   id,
   name,
-  updateAt,
+
   permissionDetails,
 }: PermissionType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
@@ -120,7 +120,7 @@ export const HandleUpdatePermission = ({
       [
         JSON.stringify({
           name,
-          updateAt,
+
           permissionDetails,
         }),
       ],
@@ -137,7 +137,6 @@ export const HandleUpdatePermission = ({
 export const HandleLockPermission = ({
   id,
   status,
-  updateAt,
 }: PermissionType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -164,7 +163,6 @@ export const HandleLockPermission = ({
       [
         JSON.stringify({
           status,
-          updateAt,
         }),
       ],
       { type: "application/json" },

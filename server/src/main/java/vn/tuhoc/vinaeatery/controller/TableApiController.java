@@ -28,7 +28,6 @@ import vn.tuhoc.vinaeatery.domain.request.TableCreateRequest;
 import vn.tuhoc.vinaeatery.domain.request.TableLockRequest;
 import vn.tuhoc.vinaeatery.domain.request.TableUpdateRequest;
 import vn.tuhoc.vinaeatery.service.TableService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.UseTableService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
@@ -43,7 +42,6 @@ public class TableApiController {
     // Properties
     private final UseTableService useTableService;
     private final TableService tableService;
-    private final TimeService timeService;
 
     // Methods
     @PostMapping("/list")
@@ -145,8 +143,6 @@ public class TableApiController {
             tableUpdated.setFloorId(tableUpdateRequest.getTable().getFloorId());
             tableUpdated.setSeats(tableUpdateRequest.getTable().getSeats());
             tableUpdated.setDescription(tableUpdateRequest.getTable().getDescription());
-            // tableUpdated.setUpdateAt(this.timeService.getDateTimeVN(tableUpdateRequest.getTable().getUpdateAt()));
-            tableUpdated.setUpdateAt(this.timeService.getDateTimeVN(LocalDateTime.now()));
 
             this.tableService.upsert(tableUpdated);
         }
@@ -178,14 +174,10 @@ public class TableApiController {
         CommonStatusEnum handleStatus = tableLockRequest.getTable().getStatus() == CommonStatusEnum.ACTIVE
                 ? CommonStatusEnum.INACTIVE
                 : CommonStatusEnum.ACTIVE;
-        // LocalDateTime handleUpdateAt =
-        // this.timeService.getDateTimeVN(tableLockRequest.getTable().getUpdateAt());
-        LocalDateTime handleUpdateAt = this.timeService.getDateTimeVN(LocalDateTime.now());
 
         TableE tableLocked = this.tableService.getOneById(id);
         if (tableLocked != null) {
             tableLocked.setStatus(handleStatus);
-            tableLocked.setUpdateAt(handleUpdateAt);
 
             this.tableService.lock(tableLocked);
         }

@@ -51,7 +51,7 @@ const DrawerShoppingCart: FC<CallFoodLayoutProps> = ({
                   Đơn vị: {item!.food!.unit}
                 </p>
                 <p className="call-food__cart-item-paragraph price">
-                  {vietnamMoneyFormat(item!.food!.price as number)}đ
+                  {vietnamMoneyFormat(item!.food!.price as number)}
                 </p>
               </div>
               <div className="call-food__cart-item-buttons">
@@ -143,7 +143,7 @@ const DrawerShoppingCart: FC<CallFoodLayoutProps> = ({
         <div className="call-food__cart-actions">
           <p className="call-food__cart-total-price">
             Tổng tiền:
-            <span>{vietnamMoneyFormat(totalPriceValue!)}đ</span>
+            <span>{vietnamMoneyFormat(totalPriceValue!)}</span>
           </p>
           <div className="call-food__cart-buttons">
             <button

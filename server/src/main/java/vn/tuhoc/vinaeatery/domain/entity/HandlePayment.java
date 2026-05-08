@@ -31,6 +31,7 @@ public class HandlePayment {
     private Integer employeeId;
     private Integer payMethodId;
     private Boolean isEmployeeHandle;
+    private Boolean isHandling;
     private Long payTotalPrice;
     @Convert(converter = HandlePaymentStatusConverter.class)
     @NotNull(message = "Trạng thái thanh toán không được để trống!")

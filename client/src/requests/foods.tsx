@@ -29,15 +29,15 @@ export const FindAllFood = ({
     getNewFormSecurityValue({ fieldName: keys.foods, fieldAction: "read" }),
     {
       params,
-    }
+    },
   );
 };
 export const FindOneFood = (
-  id: string
+  id: string,
 ): Promise<AxiosResponse<FoodType, any>> => {
   return instance.post(
     `/api/${keys.foods}/detail/${id}`,
-    getNewFormSecurityValue({ fieldName: keys.foods, fieldAction: "read" })
+    getNewFormSecurityValue({ fieldName: keys.foods, fieldAction: "read" }),
   );
 };
 export const HandleCreateFood = ({
@@ -63,11 +63,11 @@ export const HandleCreateFood = ({
           getNewFormSecurityValue({
             fieldName: keys.foods,
             fieldAction: "create",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Thông tin cơ bản
   formData.append(
@@ -84,14 +84,14 @@ export const HandleCreateFood = ({
           status,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Công thức món ăn
   if (recipe)
     formData.append(
       "recipe",
-      new Blob([JSON.stringify(recipe)], { type: "application/json" })
+      new Blob([JSON.stringify(recipe)], { type: "application/json" }),
     );
   // Hình ảnh
   if (image) formData.append("image-file", image);
@@ -110,7 +110,6 @@ export const HandleUpdateFood = ({
   unit,
   price,
   description,
-  updateAt,
   recipe,
 }: FoodType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
@@ -125,11 +124,11 @@ export const HandleUpdateFood = ({
           getNewFormSecurityValue({
             fieldName: keys.foods,
             fieldAction: "update",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Thông tin cơ bản
   formData.append(
@@ -142,17 +141,16 @@ export const HandleUpdateFood = ({
           unit,
           price,
           description,
-          updateAt,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Công thức món ăn
   if (recipe)
     formData.append(
       "recipe",
-      new Blob([JSON.stringify(recipe)], { type: "application/json" })
+      new Blob([JSON.stringify(recipe)], { type: "application/json" }),
     );
   // Hình ảnh
   if (image) formData.append("image-file", image);
@@ -166,7 +164,6 @@ export const HandleUpdateFood = ({
 export const HandleLockFood = ({
   id,
   status,
-  updateAt,
 }: FoodType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -180,11 +177,11 @@ export const HandleLockFood = ({
           getNewFormSecurityValue({
             fieldName: keys.foods,
             fieldAction: "lock",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Đối tượng
   formData.append(
@@ -193,11 +190,10 @@ export const HandleLockFood = ({
       [
         JSON.stringify({
           status,
-          updateAt,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
 
   return instance.put(`/api/${keys.foods}/lock/${id}`, formData, {

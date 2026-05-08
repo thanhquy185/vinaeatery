@@ -91,7 +91,6 @@ const AdminUpdateCustomer: React.FC<CrudObjectModalProps> = ({
                   values?.birthday && dayjs(values?.birthday).isValid()
                     ? dayjs(values?.birthday).format("YYYY-MM-DD")
                     : undefined,
-                updateAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
               },
             });
             if (response) {

@@ -1,9 +1,5 @@
 package vn.tuhoc.vinaeatery.domain.dto;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +18,4 @@ public class RoleUpdateDTO {
     private String salaryType;
     @NotNull(message = "Tiền lương không được để trống!")
     private Long salaryValue;
-    // @NotNull(message = "Thời gian cập nhật không được để trống!")
-    private String updateAt;
 }

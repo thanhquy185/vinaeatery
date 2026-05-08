@@ -38,11 +38,6 @@ public abstract class Manager_ {
 	public static volatile SingularAttribute<Manager, String> description;
 	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.entity.Manager#updateAt
-	 **/
-	public static volatile SingularAttribute<Manager, String> updateAt;
-	
-	/**
 	 * @see vn.tuhoc.vinaeatery.domain.entity.Manager#userId
 	 **/
 	public static volatile SingularAttribute<Manager, Integer> userId;
@@ -87,7 +82,6 @@ public abstract class Manager_ {
 	public static final String ADDRESS = "address";
 	public static final String GENDER = "gender";
 	public static final String DESCRIPTION = "description";
-	public static final String UPDATE_AT = "updateAt";
 	public static final String USER_ID = "userId";
 	public static final String CREATE_AT = "createAt";
 	public static final String PHONE = "phone";

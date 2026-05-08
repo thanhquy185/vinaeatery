@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -20,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.criteria.InputTicketCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.InputTicketDTO;
-import vn.tuhoc.vinaeatery.domain.dto.InputTicketUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.entity.Ingredient;
 import vn.tuhoc.vinaeatery.domain.entity.InputTicket;
 import vn.tuhoc.vinaeatery.domain.entity.InputTicketDetail;
@@ -29,12 +27,9 @@ import vn.tuhoc.vinaeatery.domain.entity.InputTicketDetailId;
 import vn.tuhoc.vinaeatery.domain.enumm.InputTicketStatusEnum;
 import vn.tuhoc.vinaeatery.domain.request.InputTicketCreateRequest;
 import vn.tuhoc.vinaeatery.domain.request.InputTicketUpdateRequest;
-// import vn.tuhoc.vinaeatery.domain.enumm.PayStatusEnum;
-// import vn.tuhoc.vinaeatery.service.EmployeeService;
 import vn.tuhoc.vinaeatery.service.IngredientService;
 import vn.tuhoc.vinaeatery.service.InputTicketDetailService;
 import vn.tuhoc.vinaeatery.service.InputTicketService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -47,7 +42,6 @@ public class InputTicketApiController {
     private final InputTicketDetailService inputTicketDetailService;
     private final IngredientService ingredientService;
     // private final EmployeeService employeeService;
-    private final TimeService timeService;
 
     // Methods
     @PostMapping("/list")

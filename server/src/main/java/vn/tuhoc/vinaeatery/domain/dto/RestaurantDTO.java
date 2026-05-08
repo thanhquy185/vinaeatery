@@ -28,7 +28,6 @@ public class RestaurantDTO {
     private Float rating;
     @Convert(converter = CommonStatusConverter.class)
     private CommonStatusEnum status;
-    private String updateAt;
     private Integer numberOfEmployees;
     private Integer numberOfFoods;
 }

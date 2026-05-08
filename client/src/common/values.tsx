@@ -85,6 +85,7 @@ export const HandlePaymentStatus = {
   pending: "Đang chọn phương thức thanh toán",
   selected: "Đã chọn phương thức thanh toán",
   completed: "Đã hoàn tất thanh toán hoá đơn",
+  feedback: "Đã hoàn tất đánh giá cửa hàng",
 };
 
 // Trạng thái chung cho đối tượng sử dụng bàn ăn
@@ -159,6 +160,13 @@ export const AttendanceStatus = {
 export const MachineLogAction = {
   in: "Vào làm",
   out: "Rời làm",
+};
+
+// Trạng thái chung cho đối tượng ứng lương
+export const SalaryAdvanceStatus = {
+  confirm: "Đã xác nhận",
+  canceled: "Đã huỷ đơn",
+  pending: "Đang chờ xác nhận",
 };
 
 // Trạng thái chung cho đối tượng đơn xin phép

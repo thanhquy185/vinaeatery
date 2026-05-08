@@ -6,7 +6,7 @@ import {
   type SetStateAction,
 } from "react";
 import { useRouteLoaderData } from "react-router-dom";
-import { Table, Checkbox, Button, Space } from "antd";
+import { Table, Checkbox } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { FunctionType, PermissionDetailType } from "../../../common/types";
 import isEqual from "lodash/isEqual";
@@ -37,7 +37,7 @@ const actions: PermissionDetailType["action"][] = [
 const CustomTablePermissionDetails: React.FC<
   CustomTablePermissionDetailsProps
 > = ({ id, type, data = [], setPermissionDetails }) => {
-  const functions = useRouteLoaderData("build-manager-info-login")
+  const functions = useRouteLoaderData("manager-info-login")
     .functions as FunctionType[];
 
   const [checkedMap, setCheckedMap] = useState<
@@ -54,10 +54,43 @@ const CustomTablePermissionDetails: React.FC<
     });
     return initial;
   });
+  const isAllChecked = useMemo(() => {
+    return functions.every((func) =>
+      actions.every((action) =>
+        func.actions?.includes(action!)
+          ? checkedMap[func.id!]?.[action!]
+          : true,
+      ),
+    );
+  }, [checkedMap, functions]);
+  const isIndeterminate = useMemo(() => {
+    let total = 0;
+    let checked = 0;
+
+    functions.forEach((func) => {
+      actions.forEach((action) => {
+        if (func.actions?.includes(action!)) {
+          total++;
+          if (checkedMap[func.id!]?.[action!]) checked++;
+        }
+      });
+    });
+
+    return checked > 0 && checked < total;
+  }, [checkedMap, functions]);
 
   const columns: ColumnsType<TableRow> = [
     {
-      title: "Tên chức năng",
+      title: (
+        <Checkbox
+          disabled={type === "detail"}
+          checked={isAllChecked}
+          indeterminate={isIndeterminate}
+          onChange={(e) => toggleAll(e.target.checked)}
+        >
+          Chức năng
+        </Checkbox>
+      ),
       dataIndex: "nameVN",
       align: "center",
       width: "40%",
@@ -95,7 +128,6 @@ const CustomTablePermissionDetails: React.FC<
       },
     })),
   ];
-
   const dataSource: TableRow[] = useMemo(
     () =>
       functions.map((f) => ({
@@ -183,47 +215,19 @@ const CustomTablePermissionDetails: React.FC<
   }, [checkedMap]);
 
   return (
-    <>
-      {/* {type !== "detail" && (
-        <Space style={{ marginBottom: 12 }}>
-          <Button onClick={() => toggleAll(false)}>Xoá tất cả</Button>
-          <Button type="primary" onClick={() => toggleAll(true)}>
-            Chọn tất cả
-          </Button>
-        </Space>
-      )} */}
-      {type !== "detail" && (
-        <div className="buttons">
-          <button
-            type="button"
-            className="btn secondary-btn margin-r"
-            onClick={() => toggleAll(false)}
-          >
-            Xoá tất cả
-          </button>
-          <button
-            type="button"
-            className="btn secondary-btn"
-            onClick={() => toggleAll(true)}
-          >
-            Chọn tất cả
-          </button>
-        </div>
-      )}
-      <Table
-        id={id}
-        columns={columns}
-        dataSource={dataSource}
-        pagination={false}
-        onRow={(record) => ({
-          onClick: () => {
-            const func = functions.find((f) => f.id === record.id);
-            if (func) toggleRow(func);
-          },
-        })}
-        className="table-permission-details"
-      />
-    </>
+    <Table
+      id={id}
+      columns={columns}
+      dataSource={dataSource}
+      pagination={false}
+      onRow={(record) => ({
+        onClick: () => {
+          const func = functions.find((f) => f.id === record.id);
+          if (func) toggleRow(func);
+        },
+      })}
+      className="table-permission-details"
+    />
   );
 };
 

@@ -4,7 +4,6 @@ import jakarta.annotation.Generated;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
-import java.time.LocalDateTime;
 import vn.tuhoc.vinaeatery.domain.enumm.CategoryTableSurchargeTypeEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 
@@ -34,11 +33,6 @@ public abstract class CategoryTable_ {
 	public static volatile SingularAttribute<CategoryTable, String> description;
 	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.entity.CategoryTable#updateAt
-	 **/
-	public static volatile SingularAttribute<CategoryTable, LocalDateTime> updateAt;
-	
-	/**
 	 * @see vn.tuhoc.vinaeatery.domain.entity.CategoryTable#id
 	 **/
 	public static volatile SingularAttribute<CategoryTable, Integer> id;
@@ -62,7 +56,6 @@ public abstract class CategoryTable_ {
 	public static final String SURCHARGE_TYPE = "surchargeType";
 	public static final String NAME = "name";
 	public static final String DESCRIPTION = "description";
-	public static final String UPDATE_AT = "updateAt";
 	public static final String ID = "id";
 	public static final String RESTAURANT_ID = "restaurantId";
 	public static final String STATUS = "status";

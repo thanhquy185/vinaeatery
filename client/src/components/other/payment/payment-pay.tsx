@@ -121,10 +121,11 @@ const PaymentPay: FC<PaymentProps> = ({
                         useTableId: handlePayment?.useTable?.id,
                         payMethodId: undefined,
                         isEmployeeHandle: true,
+                        isHandling: true,
                         status: HandlePaymentStatus.pending,
                       },
                     });
-                    if (data) {
+                    if (response) {
                       updateMethodInfo!("", "", null);
                       updatePayInfo!("", "", "", 0, 0);
                     }
@@ -135,7 +136,7 @@ const PaymentPay: FC<PaymentProps> = ({
           )}
           <p>
             <span>Tổng thanh toán: </span>
-            <b>{vietnamMoneyFormat(payTotalPrice!)} VNĐ</b>
+            <b>{vietnamMoneyFormat(payTotalPrice!)}</b>
           </p>
           {payQRCodeUrl && (
             <QRCode

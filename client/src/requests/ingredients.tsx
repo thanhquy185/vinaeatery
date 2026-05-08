@@ -32,18 +32,18 @@ export const FindAllIngredient = ({
     }),
     {
       params,
-    }
+    },
   );
 };
 export const FindOneIngredient = (
-  id: string
+  id: string,
 ): Promise<AxiosResponse<IngredientType, any>> => {
   return instance.post(
     `/api/${keys.ingredients}/detail/${id}`,
     getNewFormSecurityValue({
       fieldName: keys.ingredients,
       fieldAction: "read",
-    })
+    }),
   );
 };
 export const HandleCreateIngredient = ({
@@ -95,7 +95,6 @@ export const HandleUpdateIngredient = ({
   dateRemove,
   inputPrice,
   note,
-  updateAt,
 }: IngredientType): Promise<AxiosResponse<RestResponseType, any>> => {
   const formData = {
     formSecurity: getNewFormSecurityValue({
@@ -111,7 +110,6 @@ export const HandleUpdateIngredient = ({
       dateRemove,
       inputPrice,
       note,
-      updateAt,
     },
   };
 

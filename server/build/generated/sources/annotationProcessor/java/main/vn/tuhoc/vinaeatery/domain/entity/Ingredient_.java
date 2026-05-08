@@ -4,7 +4,6 @@ import jakarta.annotation.Generated;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
-import java.time.LocalDateTime;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 
 @StaticMetamodel(Ingredient.class)
@@ -16,11 +15,6 @@ public abstract class Ingredient_ {
 	 * @see vn.tuhoc.vinaeatery.domain.entity.Ingredient#note
 	 **/
 	public static volatile SingularAttribute<Ingredient, String> note;
-	
-	/**
-	 * @see vn.tuhoc.vinaeatery.domain.entity.Ingredient#updateAt
-	 **/
-	public static volatile SingularAttribute<Ingredient, LocalDateTime> updateAt;
 	
 	/**
 	 * @see vn.tuhoc.vinaeatery.domain.entity.Ingredient#restaurantId
@@ -83,7 +77,6 @@ public abstract class Ingredient_ {
 	public static volatile SingularAttribute<Ingredient, CommonStatusEnum> status;
 
 	public static final String NOTE = "note";
-	public static final String UPDATE_AT = "updateAt";
 	public static final String RESTAURANT_ID = "restaurantId";
 	public static final String DATE_CREATE = "dateCreate";
 	public static final String INVENTORY = "inventory";

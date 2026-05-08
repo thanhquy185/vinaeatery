@@ -1,8 +1,10 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { RcFile } from "antd/es/upload";
 import type {
+  CategoryAllowanceType,
   CategoryFoodType,
   CategoryIngredientType,
+  CategoryInsuranceType,
   CategoryPermissionTicketType,
   CategoryRewardPunishType,
   CategoryTableType,
@@ -92,10 +94,14 @@ export type CrudObjectModalProps = {
     categoryIngredients?: CategoryIngredientType[];
     recipes?: RecipeType[];
     units?: string[];
-    categoryPermissionTickets?: CategoryPermissionTicketType[];
-    categoryRewardPunishes?: CategoryRewardPunishType[];
+    categoryAllowances?: CategoryAllowanceType[];
+    allowanceMonthIsActives?: string[];
+    categoryInsurances?: CategoryInsuranceType[];
+    insuranceMonthIsActives?: string[];
     schedules?: ScheduleType[];
     shifts?: ShiftType[];
+    categoryPermissionTickets?: CategoryPermissionTicketType[];
+    categoryRewardPunishes?: CategoryRewardPunishType[];
     roles?: RoleType[];
     roleHistories?: RoleHistoryType[];
     permissions?: PermissionType[];

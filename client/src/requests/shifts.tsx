@@ -92,7 +92,7 @@ export const HandleCreateShift = ({
 export const HandleUpdateShift = ({
   id,
   name,
-  updateAt,
+
   shiftDetails,
 }: ShiftType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
@@ -120,7 +120,7 @@ export const HandleUpdateShift = ({
       [
         JSON.stringify({
           name,
-          updateAt,
+
           shiftDetails,
         }),
       ],
@@ -137,7 +137,6 @@ export const HandleUpdateShift = ({
 export const HandleLockShift = ({
   id,
   status,
-  updateAt,
 }: ShiftType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -164,7 +163,6 @@ export const HandleLockShift = ({
       [
         JSON.stringify({
           status,
-          updateAt,
         }),
       ],
       { type: "application/json" },

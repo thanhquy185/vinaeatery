@@ -35,6 +35,4 @@ public class CategoryPermissionTicket {
     @Convert(converter = CommonStatusConverter.class)
     @NotNull(message = "Trạng thái không được để trống!")
     private CommonStatusEnum status;
-    @Column(columnDefinition = "DATETIME")
-    private String updateAt;
 }

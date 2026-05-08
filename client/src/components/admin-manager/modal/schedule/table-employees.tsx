@@ -181,7 +181,7 @@ const TableEmployees: FC<TableEmployeesProps> = ({
       columns={employeeColumns}
       dataSource={employees}
       rowSelection={employeeRowSelection}
-      pagination={{ pageSize: 5 }}
+      pagination={employees.length > 5 ? { pageSize: 5 } : false}
       className="table-actions employees"
     />
   );

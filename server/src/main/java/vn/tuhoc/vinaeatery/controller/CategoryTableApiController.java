@@ -1,6 +1,5 @@
 package vn.tuhoc.vinaeatery.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -27,7 +26,6 @@ import vn.tuhoc.vinaeatery.domain.request.CategoryTableLockRequest;
 import vn.tuhoc.vinaeatery.domain.request.CategoryTableUpdateRequest;
 import vn.tuhoc.vinaeatery.service.CategoryTableService;
 import vn.tuhoc.vinaeatery.service.TableService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -38,7 +36,6 @@ public class CategoryTableApiController {
         // Properties
         private final CategoryTableService categoryTableService;
         private final TableService tableService;
-        private final TimeService timeService;
 
         // Methods
         @PostMapping("/list")
@@ -132,8 +129,7 @@ public class CategoryTableApiController {
                                         categoryTableUpdateRequest.getCategoryTable().getSurchargeValue());
                         categoryTableUpdated
                                         .setDescription(categoryTableUpdateRequest.getCategoryTable().getDescription());
-                        // categoryTableUpdated.setUpdateAt(this.timeService.getDateTimeVN(categoryTableUpdateRequest.getCategoryTable().getUpdateAt()));
-                        categoryTableUpdated.setUpdateAt(this.timeService.getDateTimeVN(LocalDateTime.now()));
+                        
                         this.categoryTableService.upsert(categoryTableUpdated);
                 }
 
@@ -176,14 +172,11 @@ public class CategoryTableApiController {
                                 .getStatus() == CommonStatusEnum.ACTIVE
                                                 ? CommonStatusEnum.INACTIVE
                                                 : CommonStatusEnum.ACTIVE;
-                // LocalDateTime handleUpdateAt =
-                // this.timeService.getDateTimeVN(commonStatusUpdate.getUpdateAt());
-                LocalDateTime handleUpdateAt = this.timeService.getDateTimeVN(LocalDateTime.now());
-
+               
                 CategoryTable categoryTableLocked = this.categoryTableService.getOneById(id);
                 if (categoryTableLocked != null) {
                         categoryTableLocked.setStatus(handleStatus);
-                        categoryTableLocked.setUpdateAt(handleUpdateAt);
+
                         this.categoryTableService.lock(categoryTableLocked);
                 }
 

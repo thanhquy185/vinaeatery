@@ -24,10 +24,12 @@ import type { ManagerHandlePayslipProps } from "./manager-handle-payslip";
 const ProfileCard: FC<ManagerHandlePayslipProps> = ({ data }) => {
   const employee = data.employee as EmployeeType;
   const totalSalary = data.totalSalary as number;
+  const totalAllowance = data.totalAllowance as number;
+  const totalInsurance = data.totalInsurance as number;
   const totalReward = data.totalReward as number;
   const totalPunish = data.totalPunish as number;
+  const totalSalaryAdvance = data.totalSalaryAdvance as number;
   const summary = data.summary as number;
-  const settlement = data.settlement as number;
 
   return (
     <div className="profile card">
@@ -105,6 +107,14 @@ const ProfileCard: FC<ManagerHandlePayslipProps> = ({ data }) => {
           <b>{vietnamMoneyFormat(totalSalary)}</b>
         </p>
         <p className="sub">
+          <span className="has-icon">- Tiền phụ cấp:</span>
+          <b>{vietnamMoneyFormat(totalAllowance)}</b>
+        </p>
+        <p className="sub">
+          <span className="has-icon">- Tiền bảo hiểm:</span>
+          <b>{vietnamMoneyFormat(totalInsurance)}</b>
+        </p>
+        <p className="sub">
           <span className="has-icon">- Tiền thưởng:</span>
           <b>{vietnamMoneyFormat(totalReward)}</b>
         </p>
@@ -112,10 +122,9 @@ const ProfileCard: FC<ManagerHandlePayslipProps> = ({ data }) => {
           <span className="has-icon">- Tiền phạt:</span>
           <b>{vietnamMoneyFormat(totalPunish)}</b>
         </p>
-        <p>
-          <Calculator />
-          <span className="has-icon">Tổng quyết toán:</span>
-          <b>{vietnamMoneyFormat(settlement)}</b>
+        <p className="sub">
+          <span className="has-icon">- Tiền ứng lương:</span>
+          <b>{vietnamMoneyFormat(totalSalaryAdvance)}</b>
         </p>
       </div>
     </div>

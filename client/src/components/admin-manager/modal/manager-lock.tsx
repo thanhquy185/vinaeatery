@@ -21,10 +21,14 @@ import { HandleLockCategoryIngredient } from "../../../requests/category-ingredi
 import { HandleLockIngredient } from "../../../requests/ingredients";
 import { HandleLockCategoryFood } from "../../../requests/category-foods";
 import { HandleLockFood } from "../../../requests/foods";
-import { HandleLockCategoryPermissionTicket } from "../../../requests/category-permission-tickets";
-import { HandleLockCategoryRewardPunish } from "../../../requests/category-reward-punishes";
+import { HandleLockCategoryInsurance } from "../../../requests/category-insurances";
+import { HandleLockInsurance } from "../../../requests/insurances";
+import { HandleLockCategoryAllowance } from "../../../requests/category-allowances";
+import { HandleLockAllowance } from "../../../requests/allowances";
 import { HandleLockSchedule } from "../../../requests/schedule";
 import { HandleLockShift } from "../../../requests/shifts";
+import { HandleLockCategoryPermissionTicket } from "../../../requests/category-permission-tickets";
+import { HandleLockCategoryRewardPunish } from "../../../requests/category-reward-punishes";
 import { HandleLockRole } from "../../../requests/roles";
 import { HandleLockPermission } from "../../../requests/permissions";
 import { HandleLockEmployee } from "../../../requests/employees";
@@ -56,14 +60,22 @@ const getApiByObjectEN = (objectEN: string) => {
       return HandleLockCategoryFood;
     case "foods":
       return HandleLockFood;
-    case "category-permission-tickets":
-      return HandleLockCategoryPermissionTicket;
-    case "category-reward-punishes":
-      return HandleLockCategoryRewardPunish;
+    case "category-insurances":
+      return HandleLockCategoryInsurance;
+    case "insurances":
+      return HandleLockInsurance;
+    case "category-allowances":
+      return HandleLockCategoryAllowance;
+    case "allowances":
+      return HandleLockAllowance;
     case "schedules":
       return HandleLockSchedule;
     case "shifts":
       return HandleLockShift;
+    case "category-reward-punishes":
+      return HandleLockCategoryRewardPunish;
+    case "category-permission-tickets":
+      return HandleLockCategoryPermissionTicket;
     case "roles":
       return HandleLockRole;
     case "permissions":

@@ -7,8 +7,7 @@ import { vietnamMoneyFormat } from "../../../../utils/other-events";
 
 // Role History Card
 const RoleHistoryCard: FC<ManagerHandlePayslipProps> = ({ data }) => {
-  const filteredRoleHistories =
-    (data?.filteredRoleHistories as RoleHistoryType[]) || [];
+  const filteredRoleHistories = data?.filteredRoleHistories || [];
 
   return (
     <div className="role-history card">

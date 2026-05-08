@@ -18,5 +18,7 @@ public interface HandlePaymentRepository
 
     HandlePayment findOneByIsEmployeeHandle(Boolean isEmployeeHandle);
 
+    HandlePayment findOneByIsEmployeeHandleAndIsHandling(Boolean isEmployeeHandle, Boolean isHandling);
+
     void deleteById(Integer id);
 }

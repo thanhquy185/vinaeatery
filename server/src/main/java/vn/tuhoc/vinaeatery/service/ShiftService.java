@@ -48,7 +48,6 @@ public class ShiftService {
             shiftDTO.setRestaurantId(shift.getRestaurantId());
             shiftDTO.setName(shift.getName());
             shiftDTO.setStatus(shift.getStatus());
-            shiftDTO.setUpdateAt(shift.getUpdateAt());
             shiftDTO.setShiftDetails(listShiftDetail);
         }
 

@@ -14,5 +14,4 @@ import vn.tuhoc.vinaeatery.domain.enumm.UserRoleEnum;
 public class UserUpdateDTO {
     private UserRoleEnum role;
     private UserMethodEnum method;
-    private String updateAt;
 }

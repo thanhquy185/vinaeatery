@@ -87,7 +87,7 @@ const ManagerUpdateOrderSheet: React.FC<CrudObjectModalProps> = ({
           status: status! || undefined,
         },
       });
-      if (data) {
+      if (response) {
         closeModal();
       }
     } else {

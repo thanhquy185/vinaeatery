@@ -39,55 +39,6 @@
     }
   }
 
-  & .employee-cell {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    & img {
-      @include size(38px);
-      border-radius: 50%;
-    }
-
-    & p {
-      color: #555;
-      font-size: 1.2rem;
-      text-align: left;
-
-      &.name {
-        color: $primary-color;
-        font-size: 1.4rem;
-        font-weight: 600;
-      }
-
-      &.other {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-
-        & span.dot {
-          display: inline-block;
-          @include size(6px);
-          border: 1px solid #d5d5d5;
-          background: transparent;
-          border-radius: 50%;
-        }
-
-        & span.status {
-          font-weight: 500;
-
-          &.green {
-            color: green;
-          }
-
-          &.red {
-            color: red;
-          }
-        }
-      }
-    }
-  }
-
   & .attendance-cell {
     display: flex;
     flex-direction: column;
@@ -168,6 +119,57 @@
 
     & .leave {
         color: #3A46B8;
+    }
+  }
+}
+
+.attendance-table, .table-actions {
+  & .employee-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    & img {
+      @include size(38px);
+      border-radius: 50%;
+    }
+
+    & p {
+      color: #555;
+      font-size: 1.2rem;
+      text-align: left;
+
+      &.name {
+        color: $primary-color;
+        font-size: 1.4rem;
+        font-weight: 600;
+      }
+
+      &.other {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        & span.dot {
+          display: inline-block;
+          @include size(6px);
+          border: 1px solid #d5d5d5;
+          background: transparent;
+          border-radius: 50%;
+        }
+
+        & span.status {
+          font-weight: 500;
+
+          &.green {
+            color: green;
+          }
+
+          &.red {
+            color: red;
+          }
+        }
+      }
     }
   }
 }

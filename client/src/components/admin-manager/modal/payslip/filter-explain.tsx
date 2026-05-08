@@ -15,87 +15,104 @@ const FilterExplain: FC = ({}) => {
       </Paragraph>
       <Collapse defaultActiveKey={["1"]}>
         <Panel header="Bước 1: Xác định hình thức lương" key="1">
-          <Paragraph>
-            Hệ thống kiểm tra <Text strong>chức vụ</Text> và{" "}
+          <Paragraph style={{ marginBottom: 0 }}>
+            Hệ thống kiểm tra <Text strong>lịch sử chức vụ</Text> và{" "}
             <Text strong>chính sách lương</Text> để xác định hình thức áp dụng:
           </Paragraph>
           <ul>
             <li>
-              <Text strong>Lương cố định</Text>: áp dụng cho quản lý, thu ngân
+              <Text strong>- Lương cố định</Text>: áp dụng cho quản lý, thu ngân
             </li>
             <li>
-              <Text strong>Lương theo giờ</Text>: áp dụng cho phục vụ, thời vụ
+              <Text strong>- Lương theo giờ</Text>: áp dụng cho phục vụ, thời vụ
             </li>
           </ul>
         </Panel>
         <Panel header="Bước 2: Tính lương chính" key="2">
-          <Paragraph>
+          <Paragraph style={{ marginBottom: 0 }}>
             Sau khi xác định hình thức lương, hệ thống áp dụng công thức tương
             ứng:
           </Paragraph>
           <ul>
             <li>
               <Paragraph style={{ marginBottom: 3 }}>
-                <Text strong>Lương cố định:</Text>
+                <Text strong>- Lương cố định:</Text>
               </Paragraph>
               <Paragraph style={{ marginBottom: 2 }}>
-                <Text>Bước 1:</Text> Xác định tiền lương 1 ngày
+                <Text>+ Bước 1:</Text> Xác định tiền lương 1 ngày
               </Paragraph>
               <Paragraph code style={{ marginBottom: 6 }}>
                 Tiền lương 1 ngày = Lương cơ bản theo chức vụ / Tổng số ngày
                 trong tháng
               </Paragraph>
               <Paragraph style={{ marginBottom: 2 }}>
-                <Text>Bước 2:</Text> Tính hiệu suất làm việc trong ngày
+                <Text>+ Bước 2:</Text> Tính hiệu suất làm việc trong ngày
               </Paragraph>
               <Paragraph code style={{ marginBottom: 6 }}>
-                Hiệu suất = Số giờ làm thực tế / Tổng số giờ theo ca
+                Hiệu suất = Tổng số giờ làm thực tế / Tổng số giờ theo ca
               </Paragraph>
               <Paragraph style={{ marginBottom: 2 }}>
-                <Text>Bước 3:</Text> Tính lương chính trong ngày
+                <Text>+ Bước 3:</Text> Tính lương làm trong ngày
               </Paragraph>
               <Paragraph code style={{ marginBottom: 6 }}>
-                Lương chính = Tiền lương 1 ngày × Hiệu suất
+                Lương làm = Tiền lương 1 ngày × Hiệu suất
               </Paragraph>
             </li>
             <li style={{ marginTop: 8 }}>
               <Paragraph style={{ marginBottom: 3 }}>
-                <Text strong>Lương theo giờ:</Text>
+                <Text strong>- Lương theo giờ:</Text>
               </Paragraph>
               <Paragraph code>
-                Lương chính = Lương cơ bản theo chức vụ x Số giờ làm thực tế
+                Lương làm = Lương cơ bản theo chức vụ x Số giờ làm thực tế
               </Paragraph>
             </li>
           </ul>
         </Panel>
         <Panel header="Bước 3: Tính các khoản cộng thêm" key="3">
-          <Paragraph>Các khoản sau sẽ được cộng thêm nếu phát sinh:</Paragraph>
+          <Paragraph style={{ marginBottom: 0 }}>
+            Các khoản sau sẽ được cộng thêm nếu phát sinh:
+          </Paragraph>
           <ul>
             <li>
-              Làm thêm giờ:
-              <Paragraph code>Tiền OT = Giờ OT × Đơn giá × Hệ số</Paragraph>
+              <Text strong>- Phụ cấp:</Text> Các khoản phụ cấp cho nhân viên
+              theo mỗi tháng
             </li>
-            <li>Phúc lợi: ăn ca, xăng xe, gửi xe</li>
-            <li>Thưởng: chuyên cần, KPI, doanh thu</li>
+            <li>
+              <Text strong>- Thưởng:</Text> Các khoản thưởng riêng cho nhân viên
+            </li>
           </ul>
+          <Paragraph code style={{ marginTop: 4 }}>
+            Khoản cộng = Phụ cấp + Thưởng
+          </Paragraph>
         </Panel>
         <Panel header="Bước 4: Tính các khoản khấu trừ" key="4">
-          <Paragraph>Các khoản sau sẽ bị trừ khỏi lương nếu vi phạm:</Paragraph>
+          <Paragraph style={{ marginBottom: 0 }}>
+            Các khoản sau sẽ bị trừ khỏi lương nếu vi phạm:
+          </Paragraph>
           <ul>
-            <li>Đi trễ, về sớm</li>
-            <li>Nghỉ không phép</li>
-            <li>Tạm ứng hoặc bồi thường</li>
+            <li>
+              <Text strong>- Bảo hiểm:</Text> Các khoản bảo hiểm cho nhân viên
+              theo mỗi tháng
+            </li>
+            <li>
+              <Text strong>- Phạt:</Text> Các khoản phạt riêng cho nhân viên
+            </li>
+            <li>
+              <Text strong>- Ứng lương:</Text> Các khoản ứng lương riêng cho nhân viên
+            </li>
           </ul>
-          <Paragraph code>Tổng khấu trừ = Tổng các khoản phạt</Paragraph>
+          <Paragraph code style={{ marginTop: 4 }}>
+            Khoản trừ = Bảo hiểm + Phạt + Ứng lương
+          </Paragraph>
         </Panel>
         <Panel header="Bước 5: Tính tổng lương" key="5">
-          <Paragraph>
+          <Paragraph style={{marginBottom: 2}}>
             Sau khi tính đầy đủ các khoản, hệ thống tổng hợp:
           </Paragraph>
           <Paragraph code>
             Tổng lương = Lương chính + Khoản cộng − Khoản trừ
           </Paragraph>
-          <Paragraph type="secondary">
+          <Paragraph type="secondary" style={{margin: 0}}>
             Đây là số tiền cuối cùng nhân viên nhận được trong kỳ lương.
           </Paragraph>
         </Panel>

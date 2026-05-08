@@ -100,7 +100,6 @@ const AdminUpdateRestaurant: React.FC<CrudObjectModalProps> = ({
                       ? image.originFileObj
                       : (image as RcFile),
                   ) || [],
-                updateAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
               },
             });
             if (response) {

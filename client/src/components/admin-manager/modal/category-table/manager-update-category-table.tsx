@@ -12,7 +12,7 @@ import {
   CategoryTableSurchargeType,
 } from "../../../../common/values";
 
-// Manager Update CategoryTable
+// Manager Update Category Table
 const ManagerUpdateCategoryTable: React.FC<CrudObjectModalProps> = ({
   objectVN,
   objectEN,

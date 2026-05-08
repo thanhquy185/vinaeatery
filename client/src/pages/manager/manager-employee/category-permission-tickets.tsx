@@ -10,7 +10,6 @@ import { Eye, Lock, PenBox, Unlock } from "lucide-react";
 //   faUnlock,
 // } from "@fortawesome/free-solid-svg-icons";
 import type { ManagerPageProps } from "../../../common/props";
-import AdminManagerMainHeader from "../../../components/admin-manager/common/main-header";
 import type { CategoryPermissionTicketType } from "../../../common/types";
 import {
   CommonStatus,
@@ -18,6 +17,7 @@ import {
   ModalWidthValue,
 } from "../../../common/values";
 import CustomModal from "../../../components/common/modal";
+import AdminManagerMainHeader from "../../../components/admin-manager/common/main-header";
 import AdminManagerMainFilterInfo from "../../../components/admin-manager/common/main-filter-info";
 import AdminManagerMainData from "../../../components/admin-manager/common/main-data";
 import ManagerDetailCategoryPermissionTicket from "../../../components/admin-manager/modal/category-permission-ticket/manager-detail-category-permission-ticket";
@@ -32,8 +32,8 @@ import { actionIndexes, getActionNameEn } from "../../../utils/default-actions";
 import { hasPermission } from "../../../utils/has-permissions";
 import { getFilterSelectValueToShow } from "../../../utils/other-events";
 
-// Manager Category Permission Ticket Page
-const ManagerCategoryPermissionTicketPage: FC<ManagerPageProps> = ({
+// Manager Category Permission Tickets Page
+const ManagerCategoryPermissionTicketsPage: FC<ManagerPageProps> = ({
   infoLogin,
   functionId,
   nameVN,
@@ -366,4 +366,4 @@ const ManagerCategoryPermissionTicketPage: FC<ManagerPageProps> = ({
   );
 };
 
-export default ManagerCategoryPermissionTicketPage;
+export default ManagerCategoryPermissionTicketsPage;

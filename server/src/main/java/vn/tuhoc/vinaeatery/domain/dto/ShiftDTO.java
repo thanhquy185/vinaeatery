@@ -22,6 +22,5 @@ public class ShiftDTO {
     private String name;
     @Convert(converter = CommonStatusConverter.class)
     private CommonStatusEnum status;
-    private String updateAt;
     private List<ShiftDetailDTO> shiftDetails;
 }

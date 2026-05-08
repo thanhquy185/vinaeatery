@@ -10,19 +10,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.tuhoc.vinaeatery.domain.enumm.CommonGenderEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.UserMethodEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.UserRoleEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.UserIsUsingEnum;
-import vn.tuhoc.vinaeatery.repository.converter.CommonGenderConverter;
 import vn.tuhoc.vinaeatery.repository.converter.CommonStatusConverter;
 import vn.tuhoc.vinaeatery.repository.converter.UserMethodConverter;
 import vn.tuhoc.vinaeatery.repository.converter.UserRoleConverter;
@@ -62,6 +58,4 @@ public class User {
     @Convert(converter = CommonStatusConverter.class)
     @NotNull(message = "Trạng thái không được để trống!")
     private CommonStatusEnum status;
-    @Column(columnDefinition = "DATETIME")
-    private String updateAt;
 }

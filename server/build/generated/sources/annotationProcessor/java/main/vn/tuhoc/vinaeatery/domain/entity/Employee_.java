@@ -38,11 +38,6 @@ public abstract class Employee_ {
 	public static volatile SingularAttribute<Employee, CommonGenderEnum> gender;
 	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.entity.Employee#updateAt
-	 **/
-	public static volatile SingularAttribute<Employee, String> updateAt;
-	
-	/**
 	 * @see vn.tuhoc.vinaeatery.domain.entity.Employee#restaurantId
 	 **/
 	public static volatile SingularAttribute<Employee, Integer> restaurantId;
@@ -92,7 +87,6 @@ public abstract class Employee_ {
 	public static final String PERMISSION_ID = "permissionId";
 	public static final String ADDRESS = "address";
 	public static final String GENDER = "gender";
-	public static final String UPDATE_AT = "updateAt";
 	public static final String RESTAURANT_ID = "restaurantId";
 	public static final String USER_ID = "userId";
 	public static final String CREATE_AT = "createAt";

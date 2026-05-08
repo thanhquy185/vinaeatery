@@ -57,7 +57,6 @@ public class AuthApiController {
         private final ManagerService managerService;
         private final EmployeeService employeeService;
         private final CustomerService customerService;
-        private final TimeService timeService;
         private final EmailService emailService;
         @Value("${jwt.refresh-token-validity-in-seconds}")
         private Long jwtRefreshTokenExpiration;
@@ -79,7 +78,6 @@ public class AuthApiController {
                 this.managerService = managerService;
                 this.employeeService = employeeService;
                 this.customerService = customerService;
-                this.timeService = timeService;
                 this.emailService = emailService;
         }
 
@@ -230,7 +228,6 @@ public class AuthApiController {
                         userLogin.setMethod(currentUser.getMethod());
                         userLogin.setIsUsing(currentUser.getIsUsing());
                         userLogin.setStatus(currentUser.getStatus());
-                        userLogin.setUpdateAt(currentUser.getUpdateAt());
 
                         restLogin.setUserLogin(userLogin);
                 }
@@ -307,7 +304,6 @@ public class AuthApiController {
                         userLogin.setMethod(currentUser.getMethod());
                         userLogin.setIsUsing(currentUser.getIsUsing());
                         userLogin.setStatus(currentUser.getStatus());
-                        userLogin.setUpdateAt(currentUser.getUpdateAt());
 
                         restLogin.setUserLogin(userLogin);
 

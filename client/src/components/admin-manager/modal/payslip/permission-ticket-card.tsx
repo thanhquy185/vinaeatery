@@ -6,15 +6,13 @@ import {
   CloseCircleOutlined,
   FileTextOutlined,
 } from "@ant-design/icons";
-import type { PermissionTicketType } from "../../../../common/types";
 import { PermissionTicketStatus } from "../../../../common/values";
 import CustomCardStatic from "../../common/card-static";
 import { type ManagerHandlePayslipProps } from "./manager-handle-payslip";
 
 // Permission Ticket Card
 const PermissionTicketCard: FC<ManagerHandlePayslipProps> = ({ data }) => {
-  const filteredPermissionTickets =
-    (data?.filteredPermissionTickets as PermissionTicketType[]) || [];
+  const filteredPermissionTickets = data?.filteredPermissionTickets || [];
 
   const totalTicketValue = useMemo(() => {
     return filteredPermissionTickets.length;

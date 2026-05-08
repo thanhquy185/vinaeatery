@@ -23,7 +23,7 @@ export const FindAllRestaurant = ({
     getNewFormSecurityValue({
       fieldName: keys.restaurants,
       fieldAction: "read",
-    })
+    }),
   );
 };
 export const FindAllRestaurantByManagerId = ({
@@ -48,7 +48,7 @@ export const FindAllRestaurantByManagerId = ({
     getNewFormSecurityValue({
       fieldName: keys.restaurants,
       fieldAction: "read",
-    })
+    }),
   );
 };
 export const FindAllRestaurantForPublicPage = ({
@@ -69,7 +69,7 @@ export const FindAllRestaurantForPublicPage = ({
     getNewFormSecurityValue({
       fieldName: keys.restaurants,
       fieldAction: "read",
-    })
+    }),
   );
 };
 export const HandleCreateRestaurant = ({
@@ -96,11 +96,11 @@ export const HandleCreateRestaurant = ({
           getNewFormSecurityValue({
             fieldName: keys.restaurants,
             fieldAction: "create",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Thông tin cơ bản
   formData.append(
@@ -119,13 +119,13 @@ export const HandleCreateRestaurant = ({
           status,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Hình ảnh
   if (restaurantImageFiles) {
     restaurantImageFiles?.forEach((restaurantImageFile) =>
-      formData.append("restaurant-images", restaurantImageFile)
+      formData.append("restaurant-images", restaurantImageFile),
     );
   }
 
@@ -145,7 +145,6 @@ export const HandleUpdateRestaurant = ({
   address,
   description,
   rating,
-  updateAt,
 }: RestaurantType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -159,11 +158,11 @@ export const HandleUpdateRestaurant = ({
           getNewFormSecurityValue({
             fieldName: keys.restaurants,
             fieldAction: "update",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Thông tin cơ bản
   formData.append(
@@ -178,16 +177,15 @@ export const HandleUpdateRestaurant = ({
           address,
           description,
           rating,
-          updateAt,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Hình ảnh
   if (restaurantImageFiles) {
     restaurantImageFiles?.forEach((restaurantImageFile) =>
-      formData.append("restaurant-images", restaurantImageFile)
+      formData.append("restaurant-images", restaurantImageFile),
     );
   }
 
@@ -200,7 +198,6 @@ export const HandleUpdateRestaurant = ({
 export const HandleLockRestaurant = ({
   id,
   status,
-  updateAt,
 }: RestaurantType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -214,11 +211,11 @@ export const HandleLockRestaurant = ({
           getNewFormSecurityValue({
             fieldName: keys.restaurants,
             fieldAction: "lock",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Thông tin cơ bản
   formData.append(
@@ -227,11 +224,10 @@ export const HandleLockRestaurant = ({
       [
         JSON.stringify({
           status,
-          updateAt,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
 
   return instance.patch(`/api/${keys.restaurants}/lock/${id}`, formData, {

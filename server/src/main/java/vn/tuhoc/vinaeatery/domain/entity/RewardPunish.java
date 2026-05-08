@@ -29,7 +29,7 @@ public class RewardPunish {
     @NotNull(message = "Mã nhà hàng không được để trống!")
     private Integer restaurantId;
     @Column(columnDefinition = "DATETIME")
-    @NotNull(message = "Thời gian tạo đơn không được để trống!")
+    @NotNull(message = "Thời gian tạo phiếu không được để trống!")
     private String createAt;
     // @NotNull(message = "Mã nhân viên xử lý không được để trống!")
     private Integer employeeHandleId;
@@ -43,7 +43,7 @@ public class RewardPunish {
     @NotNull(message = "Số tiền không được để trống!")
     private Long money;
     @Column(columnDefinition = "MEDIUMTEXT")
-    private String reason;
+    private String reason;  
     @Column(columnDefinition = "TINYINT(2)")
     @Convert(converter = RewardPunishStatusConverter.class)
     @NotNull(message = "Trạng thái không được để trống!")

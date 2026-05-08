@@ -12,11 +12,6 @@ public abstract class OrderTable_ {
 
 	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.entity.OrderTable#updateAt
-	 **/
-	public static volatile SingularAttribute<OrderTable, String> updateAt;
-	
-	/**
 	 * @see vn.tuhoc.vinaeatery.domain.entity.OrderTable#employeeId
 	 **/
 	public static volatile SingularAttribute<OrderTable, Integer> employeeId;
@@ -81,7 +76,6 @@ public abstract class OrderTable_ {
 	 **/
 	public static volatile SingularAttribute<OrderTable, OrderStatusEnum> status;
 
-	public static final String UPDATE_AT = "updateAt";
 	public static final String EMPLOYEE_ID = "employeeId";
 	public static final String RESTAURANT_ID = "restaurantId";
 	public static final String CREATE_AT = "createAt";

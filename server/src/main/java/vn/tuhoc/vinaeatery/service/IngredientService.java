@@ -48,7 +48,6 @@ public class IngredientService {
             ingredientDTO.setInventory(ingredient.getInventory());
             ingredientDTO.setNote(ingredient.getNote());
             ingredientDTO.setStatus(ingredient.getStatus());
-            ingredientDTO.setUpdateAt(ingredient.getUpdateAt());
         }
 
         return ingredientDTO;
@@ -131,24 +130,25 @@ public class IngredientService {
     public List<IngredientDTO> getAllFormat(IngredientCriteria ingredientCriteria) {
         List<IngredientDTO> listFormat = new ArrayList<>();
         for (Ingredient ingredient : getAll(ingredientCriteria)) {
-            IngredientDTO ingredientDTO = new IngredientDTO();
-            ingredientDTO.setId(ingredient.getId());
-            ingredientDTO.setName(ingredient.getName());
-            if (ingredient.getCategoryIngredientId() != null) {
-                ingredientDTO.setCategoryIngredient(
-                        categoryIngredientRepository.findOneById(ingredient.getCategoryIngredientId()));
-            }
-            ingredientDTO.setUnit(ingredient.getUnit());
-            ingredientDTO.setCapacity(ingredient.getCapacity());
-            ingredientDTO.setDateCreate(ingredient.getDateCreate());
-            ingredientDTO.setDateRemove(ingredient.getDateRemove());
-            ingredientDTO.setInputPrice(ingredient.getInputPrice());
-            ingredientDTO.setInventory(ingredient.getInventory());
-            ingredientDTO.setNote(ingredient.getNote());
-            ingredientDTO.setStatus(ingredient.getStatus());
-            ingredientDTO.setUpdateAt(ingredient.getUpdateAt());
+            listFormat.add(getOneFormatById(ingredient.getId()));
+            // IngredientDTO ingredientDTO = new IngredientDTO();
+            // ingredientDTO.setId(ingredient.getId());
+            // ingredientDTO.setName(ingredient.getName());
+            // if (ingredient.getCategoryIngredientId() != null) {
+            //     ingredientDTO.setCategoryIngredient(
+            //             categoryIngredientRepository.findOneById(ingredient.getCategoryIngredientId()));
+            // }
+            // ingredientDTO.setUnit(ingredient.getUnit());
+            // ingredientDTO.setCapacity(ingredient.getCapacity());
+            // ingredientDTO.setDateCreate(ingredient.getDateCreate());
+            // ingredientDTO.setDateRemove(ingredient.getDateRemove());
+            // ingredientDTO.setInputPrice(ingredient.getInputPrice());
+            // ingredientDTO.setInventory(ingredient.getInventory());
+            // ingredientDTO.setNote(ingredient.getNote());
+            // ingredientDTO.setStatus(ingredient.getStatus());
+            // ingredientDTO.setUpdateAt(ingredient.getUpdateAt());
 
-            listFormat.add(ingredientDTO);
+            // listFormat.add(ingredientDTO);
         }
 
         return listFormat;

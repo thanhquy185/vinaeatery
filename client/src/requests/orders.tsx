@@ -10,6 +10,7 @@ export const FindAllOrder = ({
   findValue,
   timeValue,
   statusValue,
+  restaurantId,
 }: FilterDataProps): Promise<AxiosResponse<OrderType[], any>> => {
   // Tham số để lọc dữ liệu
   const params: Record<string, string> = {};
@@ -23,21 +24,23 @@ export const FindAllOrder = ({
   }
   if (statusValue! && statusValue!.length > 0)
     params.statusMerge = statusValue!.join(",");
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
 
   return instance.post<OrderType[]>(
     `/api/orders/list-format`,
     getNewFormSecurityValue({ fieldName: keys.orders, fieldAction: "read" }),
     {
       params,
-    }
+    },
   );
 };
 export const FindOneOrder = (
-  id: string
+  id: string,
 ): Promise<AxiosResponse<OrderType, any>> => {
   return instance.post(
     `/api/orders/detail/${id}`,
-    getNewFormSecurityValue({ fieldName: keys.orders, fieldAction: "read" })
+    getNewFormSecurityValue({ fieldName: keys.orders, fieldAction: "read" }),
   );
 };
 export const HandleCreateOrder = ({
@@ -69,11 +72,11 @@ export const HandleCreateOrder = ({
           getNewFormSecurityValue({
             fieldName: keys.orders,
             fieldAction: "create",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Thông tin cơ bản
   formData.append(
@@ -97,8 +100,8 @@ export const HandleCreateOrder = ({
           status,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Chi tiết đơn hàng
   if (orderDetails)
@@ -106,7 +109,7 @@ export const HandleCreateOrder = ({
       "order-details",
       new Blob([JSON.stringify(orderDetails)], {
         type: "application/json",
-      })
+      }),
     );
 
   return instance.post(`/api/${keys.orders}/create`, formData, {
@@ -131,11 +134,11 @@ export const HandleUpdateOrder = ({
           getNewFormSecurityValue({
             fieldName: keys.orders,
             fieldAction: "update",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Đối tượng
   formData.append(
@@ -146,8 +149,8 @@ export const HandleUpdateOrder = ({
           status,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
 
   return instance.put(`/api/${keys.orders}/update/${id}`, formData, {

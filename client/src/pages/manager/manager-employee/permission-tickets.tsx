@@ -38,8 +38,8 @@ import { hasPermission } from "../../../utils/has-permissions";
 import { getFilterSelectValueToShow } from "../../../utils/other-events";
 import dayjs from "dayjs";
 
-// Manager Permission Ticket Page
-const ManagerPermissionTicketPage: FC<ManagerPageProps> = ({
+// Manager Permission Tickets Page
+const ManagerPermissionTicketsPage: FC<ManagerPageProps> = ({
   infoLogin,
   functionId,
   nameVN,
@@ -573,4 +573,4 @@ const ManagerPermissionTicketPage: FC<ManagerPageProps> = ({
   );
 };
 
-export default ManagerPermissionTicketPage;
+export default ManagerPermissionTicketsPage;

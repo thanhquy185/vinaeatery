@@ -30,5 +30,5 @@ public class ManagerDTO {
     private String description;
     @Convert(converter = CommonStatusConverter.class)
     private CommonStatusEnum status;
-    private String updateAt;
+
 }

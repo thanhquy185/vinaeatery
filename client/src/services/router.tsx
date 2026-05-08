@@ -33,6 +33,7 @@ import ManagerRestaurantInfoPage from "../pages/manager/other/restaurant-info";
 import ManagerDashboardProfitPage from "../pages/manager/dashboard/dashboard-profit";
 import ManagerDashboardOrdersPage from "../pages/manager/dashboard/dashboard-orders";
 import ManagerDashboardInputTicketsPage from "../pages/manager/dashboard/dashboard-input-tickets";
+import ManagerDashboardHumanPage from "../pages/manager/dashboard/dashboard-human";
 import ManagerTableHistoriesPage from "../pages/manager/active/table-histories";
 import ManagerUseTablesPage from "../pages/manager/active/use-tables";
 import ManagerUseFoodsPage from "../pages/manager/active/use-foods";
@@ -51,11 +52,16 @@ import ManagerCategoryFoodsPage from "../pages/manager/manager-food/category-foo
 import ManagerFoodsPage from "../pages/manager/manager-food/foods";
 import ManagerPayslipsPage from "../pages/manager/manager-employee/payslips";
 import ManagerAttendancesPage from "../pages/manager/manager-employee/attendances";
-import ManagerCategoryPermissionTicketPage from "../pages/manager/manager-employee/category-permission-tickets";
-import ManagerPermissionTicketPage from "../pages/manager/manager-employee/permission-tickets";
+import ManagerSalaryAdvancesPage from "../pages/manager/manager-employee/salary-advances";
+import ManagerCategoryInsurancesPage from "../pages/manager/manager-employee/category-insurances";
+import ManagerInsurancesPage from "../pages/manager/manager-employee/insurances";
+import ManagerCategoryAllowancesPage from "../pages/manager/manager-employee/category-allowances";
+import ManagerAllowancesPage from "../pages/manager/manager-employee/allowances";
+import ManagerCategoryPermissionTicketsPage from "../pages/manager/manager-employee/category-permission-tickets";
+import ManagerPermissionTicketsPage from "../pages/manager/manager-employee/permission-tickets";
 import ManagerCategoryRewardPunishesPage from "../pages/manager/manager-employee/category-reward-punishes";
 import ManagerRewardPunishesPage from "../pages/manager/manager-employee/reward-punishes";
-import ManagerSchedulePage from "../pages/manager/manager-employee/schedules";
+import ManagerSchedulesPage from "../pages/manager/manager-employee/schedules";
 import ManagerShiftsPage from "../pages/manager/manager-employee/shifts";
 import ManagerPermissionsPage from "../pages/manager/manager-employee/permissions";
 import ManagerRolesPage from "../pages/manager/manager-employee/roles";
@@ -158,6 +164,7 @@ export const getRouter = async (): Promise<
     "dashboard-profit": ManagerDashboardProfitPage,
     "dashboard-orders": ManagerDashboardOrdersPage,
     "dashboard-input-tickets": ManagerDashboardInputTicketsPage,
+    "dashboard-human": ManagerDashboardHumanPage,
     "table-histories": ManagerTableHistoriesPage,
     "use-tables": ManagerUseTablesPage,
     "use-foods": ManagerUseFoodsPage,
@@ -176,10 +183,15 @@ export const getRouter = async (): Promise<
     foods: ManagerFoodsPage,
     payslips: ManagerPayslipsPage,
     attendances: ManagerAttendancesPage,
-    schedules: ManagerSchedulePage,
+    "salary-advances": ManagerSalaryAdvancesPage,
+    schedules: ManagerSchedulesPage,
     shifts: ManagerShiftsPage,
-    "category-permission-tickets": ManagerCategoryPermissionTicketPage,
-    "permission-tickets": ManagerPermissionTicketPage,
+    "category-allowances": ManagerCategoryAllowancesPage,
+    allowances: ManagerAllowancesPage,
+    "category-insurances": ManagerCategoryInsurancesPage,
+    insurances: ManagerInsurancesPage,
+    "category-permission-tickets": ManagerCategoryPermissionTicketsPage,
+    "permission-tickets": ManagerPermissionTicketsPage,
     "category-reward-punishes": ManagerCategoryRewardPunishesPage,
     "reward-punishes": ManagerRewardPunishesPage,
     roles: ManagerRolesPage,
@@ -353,101 +365,13 @@ export const getRouter = async (): Promise<
     //   },
     //   children: [
     //     {
-    //       path: "payslips",
+    //       path: "dashboard-human",
     //       element: (
-    //         <ManagerPayslipsPage
+    //         <ManagerDashboardHumanPage
     //           infoLogin={infoLogin!}
     //           functionId={11}
-    //           nameVN="Bảng lương"
-    //           nameEN="payslips"
-    //         />
-    //       ),
-    //     },
-    //     {
-    //       path: "attendances",
-    //       element: (
-    //         <ManagerAttendancesPage
-    //           infoLogin={infoLogin!}
-    //           functionId={11}
-    //           nameVN="Chấm công"
-    //           nameEN="attendances"
-    //         />
-    //       ),
-    //     },
-    //     {
-    //       path: "category-permission-tickets",
-    //       element: (
-    //         <ManagerCategoryPermissionTicketPage
-    //           infoLogin={infoLogin!}
-    //           functionId={11}
-    //           nameVN="Loại đơn xin phép"
-    //           nameEN="category-permission-tickets"
-    //         />
-    //       ),
-    //     },
-    //     {
-    //       path: "permission-tickets",
-    //       element: (
-    //         <ManagerPermissionTicketPage
-    //           infoLogin={infoLogin!}
-    //           functionId={11}
-    //           nameVN="Đơn xin phép"
-    //           nameEN="permission-tickets"
-    //         />
-    //       ),
-    //     },
-    //     {
-    //       path: "category-reward-punishes",
-    //       element: (
-    //         <ManagerCategoryRewardPunishesPage
-    //           infoLogin={infoLogin!}
-    //           functionId={11}
-    //           nameVN="Loại thưởng - phạt"
-    //           nameEN="category-reward-punishes"
-    //         />
-    //       ),
-    //     },
-    //     {
-    //       path: "reward-punishes",
-    //       element: (
-    //         <ManagerRewardPunishesPage
-    //           infoLogin={infoLogin!}
-    //           functionId={11}
-    //           nameVN="Thưởng - Phạt"
-    //           nameEN="reward-punishes"
-    //         />
-    //       ),
-    //     },
-    //     {
-    //       path: "schedules",
-    //       element: (
-    //         <ManagerSchedulePage
-    //           infoLogin={infoLogin!}
-    //           functionId={11}
-    //           nameVN="Lịch làm"
-    //           nameEN="schedules"
-    //         />
-    //       ),
-    //     },
-    //     {
-    //       path: "shifts",
-    //       element: (
-    //         <ManagerShiftsPage
-    //           infoLogin={infoLogin!}
-    //           functionId={11}
-    //           nameVN="Ca làm"
-    //           nameEN="shifts"
-    //         />
-    //       ),
-    //     },
-    //     {
-    //       path: "permissions",
-    //       element: (
-    //         <ManagerPermissionsPage
-    //           infoLogin={infoLogin!}
-    //           functionId={11}
-    //           nameVN="Quyền hạn"
-    //           nameEN="permissions"
+    //           nameVN="Thống kê Nhân sự"
+    //           nameEN="dashboard-human"
     //         />
     //       ),
     //     },

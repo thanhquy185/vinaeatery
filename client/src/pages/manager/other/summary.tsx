@@ -380,22 +380,22 @@ const ManagerSummary = () => {
                   idx === 0
                     ? "#fdd835" // vàng
                     : idx === 1
-                    ? "#c0c0c0" // bạc
-                    : idx === 2
-                    ? "#cd7f32" // đồng
-                    : "#90caf9"; // thường
+                      ? "#c0c0c0" // bạc
+                      : idx === 2
+                        ? "#cd7f32" // đồng
+                        : "#90caf9"; // thường
 
                 // Nền theo vị trí
                 let bgColor =
                   idx === 0
                     ? "#fff8e1" // vàng nhạt
                     : idx === 1
-                    ? "#f0f0f0" // bạc nhạt
-                    : idx === 2
-                    ? "#fbe9e7" // đồng nhạt
-                    : idx % 2 === 0
-                    ? "#fafafa"
-                    : "#fff";
+                      ? "#f0f0f0" // bạc nhạt
+                      : idx === 2
+                        ? "#fbe9e7" // đồng nhạt
+                        : idx % 2 === 0
+                          ? "#fafafa"
+                          : "#fff";
 
                 return (
                   <div
@@ -424,7 +424,7 @@ const ManagerSummary = () => {
                       <div style={{ color: "#666", fontSize: 13 }}>
                         Tổng chi tiêu:{" "}
                         <span style={{ fontWeight: 600, color: "#000" }}>
-                          {cust.spent.toLocaleString("vi-VN")}đ
+                          {cust.spent.toLocaleString("vi-VN")}
                         </span>
                       </div>
                     </div>

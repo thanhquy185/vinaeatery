@@ -25,15 +25,15 @@ export const FindAllCustomer = ({
     getNewFormSecurityValue({ fieldName: keys.customers, fieldAction: "read" }),
     {
       params,
-    }
+    },
   );
 };
 export const FindOneCustomer = (
-  id: string
+  id: string,
 ): Promise<AxiosResponse<CustomerType, any>> => {
   return instance.post(
     `/api/${keys.customers}/detail/${id}`,
-    getNewFormSecurityValue({ fieldName: keys.customers, fieldAction: "read" })
+    getNewFormSecurityValue({ fieldName: keys.customers, fieldAction: "read" }),
   );
 };
 // export const FindOneCustomerByUserId = (
@@ -69,11 +69,11 @@ export const HandleCreateCustomer = ({
           getNewFormSecurityValue({
             fieldName: keys.customers,
             fieldAction: "create",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Thông tin cơ bản
   formData.append(
@@ -93,8 +93,8 @@ export const HandleCreateCustomer = ({
           status,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Hình ảnh
   if (image) formData.append("image-file", image);
@@ -116,7 +116,6 @@ export const HandleUpdateCustomer = ({
   email,
   address,
   description,
-  updateAt,
 }: CustomerType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -130,11 +129,11 @@ export const HandleUpdateCustomer = ({
           getNewFormSecurityValue({
             fieldName: keys.customers,
             fieldAction: "update",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Thông tin cơ bản
   formData.append(
@@ -150,11 +149,10 @@ export const HandleUpdateCustomer = ({
           email,
           address,
           description,
-          updateAt,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   if (image) formData.append("image-file", image);
 
@@ -167,7 +165,6 @@ export const HandleUpdateCustomer = ({
 export const HandleLockCustomer = ({
   id,
   status,
-  updateAt,
 }: CustomerType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -181,11 +178,11 @@ export const HandleLockCustomer = ({
           getNewFormSecurityValue({
             fieldName: keys.customers,
             fieldAction: "lock",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Thông tin cơ bản
   formData.append(
@@ -194,11 +191,10 @@ export const HandleLockCustomer = ({
       [
         JSON.stringify({
           status,
-          updateAt,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
 
   return instance.patch(`/api/${keys.customers}/lock/${id}`, formData, {

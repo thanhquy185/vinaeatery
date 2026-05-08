@@ -6,7 +6,6 @@ import {
   FrownOutlined,
   SmileOutlined,
 } from "@ant-design/icons";
-import type { RewardPunishType } from "../../../../common/types";
 import {
   CategoryRewardPunishHandle,
   RewardPunishStatus,
@@ -17,8 +16,7 @@ import { vietnamMoneyFormat } from "../../../../utils/other-events";
 
 // Reward Punish Card
 const RewardPunishCard: FC<ManagerHandlePayslipProps> = ({ data }) => {
-  const filteredRewardPunishes =
-    (data?.filteredRewardPunishes as RewardPunishType[]) || [];
+  const filteredRewardPunishes = data?.filteredRewardPunishes || [];
 
   const totalRowValue = useMemo(() => {
     return filteredRewardPunishes.length;
@@ -44,7 +42,7 @@ const RewardPunishCard: FC<ManagerHandlePayslipProps> = ({ data }) => {
           CategoryRewardPunishHandle.punish &&
         rewardPunish?.status === RewardPunishStatus.confirm
       )
-        total += rewardPunish?.money!;
+        total -= rewardPunish?.money!;
     });
 
     return total;
@@ -60,7 +58,7 @@ const RewardPunishCard: FC<ManagerHandlePayslipProps> = ({ data }) => {
       <Row gutter={10}>
         <Col span={6}>
           <CustomCardStatic
-            title={"Tổng dòng"}
+            title={"Tổng phiếu"}
             value={totalRowValue}
             prefix={<FileTextOutlined />}
             valueStyle={{ color: "#1677ff" }}

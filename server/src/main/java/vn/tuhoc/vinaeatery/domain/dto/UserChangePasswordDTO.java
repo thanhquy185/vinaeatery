@@ -12,5 +12,4 @@ import lombok.Setter;
 public class UserChangePasswordDTO {
     private String newPassword;
     private String authNewPassword;
-    private String updateAt;
 }

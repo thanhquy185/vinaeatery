@@ -1,6 +1,5 @@
 package vn.tuhoc.vinaeatery.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -26,8 +25,6 @@ import vn.tuhoc.vinaeatery.domain.request.UserCreateRequest;
 import vn.tuhoc.vinaeatery.domain.request.UserLockRequest;
 import vn.tuhoc.vinaeatery.domain.request.UserUpdateRequest;
 import vn.tuhoc.vinaeatery.service.UserService;
-import vn.tuhoc.vinaeatery.service.HandlePaymentService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -39,8 +36,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class UserApiController {
         // Properties
         private final UserService userService;
-        private final HandlePaymentService handlePaymentService;
-        private final TimeService timeService;
         private final PasswordEncoder passwordEncoder;
 
         // Methods
@@ -134,9 +129,7 @@ public class UserApiController {
                 if (userUpdated != null) {
                         userUpdated.setRole(userUpdateRequest.getUser().getRole());
                         // userUpdated.setMethod(userUpdateRequest.getUser().getMethod());
-                        // userUpdated.setUpdateAt(this.timeService.getDateTimeVN(UserUpdateRequest.getUser().getUpdateAt()));
-                        userUpdated.setUpdateAt(userUpdateRequest.getUser().getUpdateAt());
-
+                       
                         this.userService.upsert(userUpdated);
                 }
 
@@ -167,15 +160,10 @@ public class UserApiController {
                 CommonStatusEnum handleStatus = userLockRequest.getUser().getStatus() == CommonStatusEnum.ACTIVE
                                 ? CommonStatusEnum.INACTIVE
                                 : CommonStatusEnum.ACTIVE;
-                // LocalDateTime handleUpdateAt =
-                // this.timeService.getDateTimeVN(userLockRequest.getUser().getUpdateAt());
-                // LocalDateTime handleUpdateAt =
-                // this.timeService.getDateTimeVN(LocalDateTime.now());
-
+                
                 User userLocked = this.userService.getOneById(id);
                 if (userLocked != null) {
                         userLocked.setStatus(handleStatus);
-                        // userLocked.setUpdateAt(userLockRequest.getUser().getUpdateAt());
 
                         this.userService.lock(userLocked);
                 }
@@ -220,10 +208,7 @@ public class UserApiController {
                         userUpdatePassword.setPassword(
                                         this.passwordEncoder
                                                         .encode(userChangePasswordRequest.getUser().getNewPassword()));
-                        userUpdatePassword
-                                        .setUpdateAt(userChangePasswordRequest.getUser().getUpdateAt());
 
-                        // userUpdatePassword.setUpdateAt(this.timeService.getDateTimeVN(LocalDateTime.now()));
                         this.userService.upsert(userUpdatePassword);
                 }
 

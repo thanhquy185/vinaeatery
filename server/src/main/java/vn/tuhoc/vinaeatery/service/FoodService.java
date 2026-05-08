@@ -58,7 +58,6 @@ public class FoodService {
             foodDTO.setUnit(food.getUnit());
             foodDTO.setDescription(food.getDescription());
             foodDTO.setStatus(food.getStatus());
-            foodDTO.setUpdateAt(food.getUpdateAt());
             foodDTO.setRecipe(recipeDTO);
         }
 
@@ -146,29 +145,30 @@ public class FoodService {
     public List<FoodDTO> getAllFormat(FoodCriteria foodCriteria) {
         List<FoodDTO> listFormat = new ArrayList<>();
         for (Food food : getAll(foodCriteria)) {
-            List<RecipeDTO> recipeDTO = new ArrayList<>();
-            for (Recipe recipe : recipeRepository.findAllByFoodId(food.getId())) {
-                Ingredient ingredient = ingredientRepository.findOneById(recipe.getId().getIngredientId());
-                recipeDTO.add(new RecipeDTO(ingredient.getId(), ingredient.getName(), ingredient.getInventory(),
-                        recipe.getQuantity(), recipe.getNote()));
-            }
+            listFormat.add(getOneFormatById(food.getId()));
+            // List<RecipeDTO> recipeDTO = new ArrayList<>();
+            // for (Recipe recipe : recipeRepository.findAllByFoodId(food.getId())) {
+            //     Ingredient ingredient = ingredientRepository.findOneById(recipe.getId().getIngredientId());
+            //     recipeDTO.add(new RecipeDTO(ingredient.getId(), ingredient.getName(), ingredient.getInventory(),
+            //             recipe.getQuantity(), recipe.getNote()));
+            // }
 
-            FoodDTO foodDTO = new FoodDTO();
-            foodDTO.setId(food.getId());
-            foodDTO.setImage(food.getImage());
-            foodDTO.setName(food.getName());
-            if (food.getCategoryFoodId() != null) {
+            // FoodDTO foodDTO = new FoodDTO();
+            // foodDTO.setId(food.getId());
+            // foodDTO.setImage(food.getImage());
+            // foodDTO.setName(food.getName());
+            // if (food.getCategoryFoodId() != null) {
 
-            }
-            foodDTO.setCategoryFood(categoryFoodRepository.findOneById(food.getCategoryFoodId()));
-            foodDTO.setPrice(food.getPrice());
-            foodDTO.setUnit(food.getUnit());
-            foodDTO.setDescription(food.getDescription());
-            foodDTO.setStatus(food.getStatus());
-            foodDTO.setUpdateAt(food.getUpdateAt());
-            foodDTO.setRecipe(recipeDTO);
+            // }
+            // foodDTO.setCategoryFood(categoryFoodRepository.findOneById(food.getCategoryFoodId()));
+            // foodDTO.setPrice(food.getPrice());
+            // foodDTO.setUnit(food.getUnit());
+            // foodDTO.setDescription(food.getDescription());
+            // foodDTO.setStatus(food.getStatus());
+            // foodDTO.setUpdateAt(food.getUpdateAt());
+            // foodDTO.setRecipe(recipeDTO);
 
-            listFormat.add(foodDTO);
+            // listFormat.add(foodDTO);
         }
 
         return listFormat;

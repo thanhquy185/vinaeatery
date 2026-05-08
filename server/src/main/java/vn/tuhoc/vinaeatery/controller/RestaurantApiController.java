@@ -1,7 +1,6 @@
 package vn.tuhoc.vinaeatery.controller;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -24,19 +23,13 @@ import vn.tuhoc.vinaeatery.domain.dto.RestaurantDTO;
 import vn.tuhoc.vinaeatery.domain.dto.RestaurantUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
-import vn.tuhoc.vinaeatery.domain.entity.Manager;
 import vn.tuhoc.vinaeatery.domain.entity.Restaurant;
 import vn.tuhoc.vinaeatery.domain.entity.RestaurantImage;
-import vn.tuhoc.vinaeatery.domain.entity.RestaurantImageForCrud;
 import vn.tuhoc.vinaeatery.domain.entity.RestaurantImageId;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
-import vn.tuhoc.vinaeatery.domain.request.RestaurantCreateRequest;
-import vn.tuhoc.vinaeatery.domain.request.RestaurantLockRequest;
-import vn.tuhoc.vinaeatery.domain.request.RestaurantUpdateRequest;
 import vn.tuhoc.vinaeatery.service.CloudinaryService;
 import vn.tuhoc.vinaeatery.service.RestaurantImageService;
 import vn.tuhoc.vinaeatery.service.RestaurantService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -49,7 +42,6 @@ public class RestaurantApiController {
         // Properties
         private final RestaurantService restaurantService;
         private final RestaurantImageService restaurantImageService;
-        private final TimeService timeService;
         private final CloudinaryService cloudinaryService;
 
         // Methods
@@ -182,8 +174,6 @@ public class RestaurantApiController {
                         selectedRestaurant.setAddress(restaurant.getAddress());
                         selectedRestaurant.setDescription(restaurant.getDescription());
                         selectedRestaurant.setRating(restaurant.getRating());
-                        // selectedRestaurant.setUpdateAt(this.timeService.getDateTimeVN(restaurant.getUpdateAt()));
-                        selectedRestaurant.setUpdateAt(restaurant.getUpdateAt());
                         restaurantUpdated = this.restaurantService.upsert(selectedRestaurant);
 
                         if (restaurantUpdated != null) {
@@ -225,15 +215,10 @@ public class RestaurantApiController {
                 CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
                                 ? CommonStatusEnum.INACTIVE
                                 : CommonStatusEnum.ACTIVE;
-                // LocalDateTime handleUpdateAt =
-                // this.timeService.getDateTimeVN(commonStatusUpdate.getRestaurant().getUpdateAt());
-                // LocalDateTime handleUpdateAt =
-                // this.timeService.getDateTimeVN(LocalDateTime.now());
 
                 Restaurant restaurantLocked = this.restaurantService.getOneById(id);
                 if (restaurantLocked != null) {
                         restaurantLocked.setStatus(handleStatus);
-                        // restaurantLocked.setUpdateAt(commonStatusUpdate.getRestaurant().getUpdateAt());
 
                         this.restaurantService.lock(restaurantLocked);
                 }

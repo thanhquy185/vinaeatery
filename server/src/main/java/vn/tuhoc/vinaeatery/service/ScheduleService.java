@@ -61,7 +61,6 @@ public class ScheduleService {
             scheduleDTO.setDateEnd(schedule.getDateEnd());
             scheduleDTO.setNote(schedule.getNote());
             scheduleDTO.setStatus(schedule.getStatus());
-            scheduleDTO.setUpdateAt(schedule.getUpdateAt());
             scheduleDTO.setScheduleEmployees(listScheduleEmployee);
             scheduleDTO.setScheduleShifts(listScheduleShift);
         }
@@ -79,10 +78,10 @@ public class ScheduleService {
         if (scheduleCriteria.getSort() != null && scheduleCriteria.getSort().isPresent()) {
             String sortStr = scheduleCriteria.getSort().get();
             switch (sortStr) {
-                case "ID tăng dần" -> sort = Sort.by(Schedule_.ID).ascending();
-                case "ID giảm dần" -> sort = Sort.by(Schedule_.ID).descending();
-                case "Tên tăng dần" -> sort = Sort.by(Schedule_.NAME).ascending();
-                case "Tên giảm dần" -> sort = Sort.by(Schedule_.NAME).descending();
+                case "Mã lịch làm tăng dần" -> sort = Sort.by(Schedule_.ID).ascending();
+                case "Mã lịch làm giảm dần" -> sort = Sort.by(Schedule_.ID).descending();
+                case "Tên lịch làm tăng dần" -> sort = Sort.by(Schedule_.NAME).ascending();
+                case "Tên lịch làm giảm dần" -> sort = Sort.by(Schedule_.NAME).descending();
                 case "Ngày bắt đầu tăng dần" -> sort = Sort.by(Schedule_.DATE_START).ascending();
                 case "Ngày bắt đầu giảm dần" -> sort = Sort.by(Schedule_.DATE_START).descending();
                 case "Ngày kết thúc tăng dần" -> sort = Sort.by(Schedule_.DATE_END).ascending();

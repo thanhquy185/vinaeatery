@@ -508,48 +508,6 @@ dialog {
 .attendance-table .day-header.weekend :is(.day-name, .day-date) {
   color: #dc2626;
 }
-.attendance-table .employee-cell {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.attendance-table .employee-cell img {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-}
-.attendance-table .employee-cell p {
-  color: #555;
-  font-size: 1.2rem;
-  text-align: left;
-}
-.attendance-table .employee-cell p.name {
-  color: #b91c1c;
-  font-size: 1.4rem;
-  font-weight: 600;
-}
-.attendance-table .employee-cell p.other {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.attendance-table .employee-cell p.other span.dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border: 1px solid #d5d5d5;
-  background: transparent;
-  border-radius: 50%;
-}
-.attendance-table .employee-cell p.other span.status {
-  font-weight: 500;
-}
-.attendance-table .employee-cell p.other span.status.green {
-  color: green;
-}
-.attendance-table .employee-cell p.other span.status.red {
-  color: red;
-}
 .attendance-table .attendance-cell {
   display: flex;
   flex-direction: column;
@@ -609,6 +567,49 @@ dialog {
 }
 .attendance-table .attendance-cell .leave {
   color: #3A46B8;
+}
+
+.attendance-table .employee-cell, .table-actions .employee-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.attendance-table .employee-cell img, .table-actions .employee-cell img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+}
+.attendance-table .employee-cell p, .table-actions .employee-cell p {
+  color: #555;
+  font-size: 1.2rem;
+  text-align: left;
+}
+.attendance-table .employee-cell p.name, .table-actions .employee-cell p.name {
+  color: #b91c1c;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+.attendance-table .employee-cell p.other, .table-actions .employee-cell p.other {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.attendance-table .employee-cell p.other span.dot, .table-actions .employee-cell p.other span.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border: 1px solid #d5d5d5;
+  background: transparent;
+  border-radius: 50%;
+}
+.attendance-table .employee-cell p.other span.status, .table-actions .employee-cell p.other span.status {
+  font-weight: 500;
+}
+.attendance-table .employee-cell p.other span.status.green, .table-actions .employee-cell p.other span.status.green {
+  color: green;
+}
+.attendance-table .employee-cell p.other span.status.red, .table-actions .employee-cell p.other span.status.red {
+  color: red;
 }
 
 .manager-restaurant {
@@ -1622,16 +1623,16 @@ dialog {
   align-items: center;
   gap: 4px;
 }
-.modal:not(.ant-modal.schedules) .ant-form-item-control .ant-image {
+.modal:not(.ant-modal:is(.allowances, .insurances, .schedules)) .ant-form-item-control .ant-image {
   padding: 2px;
   border: 1px solid #dedede;
   border-radius: 6px;
 }
-.modal:not(.ant-modal.schedules) .ant-form-item-control :is(img.ant-image-img, .ant-image-mask) {
+.modal:not(.ant-modal:is(.allowances, .insurances, .schedules)) .ant-form-item-control :is(img.ant-image-img, .ant-image-mask) {
   margin-top: 0;
   border-radius: 6px;
 }
-.modal:not(.ant-modal.schedules) .ant-form-item-control .ant-image-mask {
+.modal:not(.ant-modal:is(.allowances, .insurances, .schedules)) .ant-form-item-control .ant-image-mask {
   margin: 1px 0 0 1px !important;
 }
 .modal.ant-modal:is(.managers, .customers, .employees) .ant-form-item-control :is(.ant-image-img, .ant-image-mask) {
@@ -2053,45 +2054,45 @@ dialog {
 .modal.ant-modal.payslips .main-detail {
   width: calc(70% - 8px);
 }
-.modal.ant-modal.payslips .main-detail :is(.benefit, .reward-punish, .permission-ticket) .payslip-statistic .ant-card-body {
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance, .permission-ticket, .reward-punish, .salary-advance) .payslip-statistic .ant-card-body {
   padding: 14px;
 }
-.modal.ant-modal.payslips .main-detail :is(.benefit, .reward-punish, .permission-ticket) .payslip-statistic .ant-statistic-title {
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance, .permission-ticket, .reward-punish, .salary-advance) .payslip-statistic .ant-statistic-title {
   font-size: 1.4rem;
 }
-.modal.ant-modal.payslips .main-detail :is(.benefit, .reward-punish, .permission-ticket) .payslip-statistic .ant-statistic-content {
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance, .permission-ticket, .reward-punish, .salary-advance) .payslip-statistic .ant-statistic-content {
   font-size: 2rem;
 }
-.modal.ant-modal.payslips .main-detail :is(.benefit, .reward-punish, .permission-ticket) .payslip-item .title {
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance, .permission-ticket, .reward-punish, .salary-advance) .payslip-item .title {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.modal.ant-modal.payslips .main-detail :is(.benefit, .reward-punish, .permission-ticket) .payslip-item .title .ant-tag {
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance, .permission-ticket, .reward-punish, .salary-advance) .payslip-item .title .ant-tag {
   font-weight: 400;
 }
-.modal.ant-modal.payslips .main-detail :is(.benefit, .reward-punish, .permission-ticket) .payslip-item .description {
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance, .permission-ticket, .reward-punish, .salary-advance) .payslip-item .description {
   display: flex;
   align-items: center;
   gap: 8px;
   color: #888;
   font-size: 1.4rem;
 }
-.modal.ant-modal.payslips .main-detail :is(.benefit, .reward-punish, .permission-ticket) .payslip-item .description .dot {
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance, .permission-ticket, .reward-punish, .salary-advance) .payslip-item .description .dot {
   display: inline-block;
   width: 5px;
   height: 5px;
   background: #888;
   border-radius: 50%;
 }
-.modal.ant-modal.payslips .main-detail :is(.benefit, .reward-punish, .permission-ticket) .payslip-item .money {
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance, .permission-ticket, .reward-punish, .salary-advance) .payslip-item .money {
   font-size: 1.5rem;
   font-weight: 700;
 }
-.modal.ant-modal.payslips .main-detail :is(.benefit, .reward-punish, .permission-ticket) .payslip-item .money.green {
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance, .permission-ticket, .reward-punish, .salary-advance) .payslip-item .money.green {
   color: #1aa251;
 }
-.modal.ant-modal.payslips .main-detail :is(.benefit, .reward-punish, .permission-ticket) .payslip-item .money.red {
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance, .permission-ticket, .reward-punish, .salary-advance) .payslip-item .money.red {
   color: #d9363e;
 }
 .modal.ant-modal.payslips .main-detail .filter {
@@ -2165,70 +2166,6 @@ dialog {
 .modal.ant-modal.payslips .main-detail .role-history-item__main .unit {
   font-size: 1.3rem;
   color: #888;
-}
-.modal.ant-modal.payslips .main-detail .benefit .title {
-  justify-content: space-between;
-  align-items: flex-start !important;
-}
-.modal.ant-modal.payslips .main-detail .benefit .title :is(h3, p, span) {
-  font-size: 1.4rem;
-  font-weight: 400;
-}
-.modal.ant-modal.payslips .main-detail .benefit .title h3 {
-  font-weight: 700;
-}
-.modal.ant-modal.payslips .main-detail .benefit .title p {
-  color: #888;
-}
-.modal.ant-modal.payslips .main-detail .benefit .title span {
-  color: #666;
-  font-size: 1.2rem;
-}
-.modal.ant-modal.payslips .main-detail .benefit .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(20%, 1fr));
-  gap: 10px;
-}
-.modal.ant-modal.payslips .main-detail .benefit .grid .item {
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  background: #f9fafb;
-  padding: 20px;
-  border-radius: 10px;
-  transition: all 0.2s ease;
-}
-.modal.ant-modal.payslips .main-detail .benefit .grid .item:hover {
-  background: #fff0f0;
-  transform: translateY(-2px);
-}
-.modal.ant-modal.payslips .main-detail .benefit .grid img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-}
-.modal.ant-modal.payslips .main-detail .benefit .grid :is(h3, p) {
-  font-size: 1.4rem;
-}
-.modal.ant-modal.payslips .main-detail .benefit .grid h3 {
-  margin-top: 14px;
-  color: #777;
-  font-weight: 500;
-  text-align: center;
-}
-.modal.ant-modal.payslips .main-detail .benefit .grid p {
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-.modal.ant-modal.payslips .main-detail .benefit .grid p.green {
-  color: #16a34a;
-}
-.modal.ant-modal.payslips .main-detail .benefit .grid p.red {
-  color: #dc2626;
-}
-.modal.ant-modal.payslips .main-detail .benefit .grid p.blue {
-  color: #1677ff;
 }
 .modal.ant-modal.payslips .main-detail .attendance .ant-picker-calendar table {
   background: #FAFBFC;
@@ -2406,6 +2343,60 @@ dialog {
   font-size: 1.4rem;
   font-weight: 500;
   font-style: italic;
+}
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance) .title {
+  justify-content: space-between;
+  align-items: flex-start !important;
+}
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance) .title :is(h3, p, span) {
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance) .title h3 {
+  font-weight: 700;
+}
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance) .title p {
+  color: #888;
+}
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance) .title span {
+  color: #666;
+  font-size: 1.2rem;
+}
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance) .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20%, 1fr));
+  gap: 10px;
+}
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance) .grid .item {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: #f9fafb;
+  padding: 24px 20px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance) .grid :is(h3, p) {
+  font-size: 1.4rem;
+}
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance) .grid h3 {
+  color: #777;
+  font-weight: 500;
+  text-align: center;
+}
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance) .grid p {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance) .grid p.green {
+  color: #16a34a;
+}
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance) .grid p.red {
+  color: #dc2626;
+}
+.modal.ant-modal.payslips .main-detail :is(.allowance, .insurance) .grid p.blue {
+  color: #1677ff;
 }
 .modal.ant-modal.payslips .main-detail .reward-punish .payslip-item .money {
   font-size: 1.5rem;
@@ -2636,6 +2627,12 @@ dialog {
   justify-content: flex-end;
   top: 10px;
   margin-top: 0;
+}
+.modal.ant-modal:is(.allowances, .insurances) .ant-form-item-control-input-content:has(.has-employees) {
+  height: auto;
+}
+.modal.ant-modal:is(.allowances, .insurances) .has-employees {
+  width: 100%;
 }
 .modal.ant-modal.schedules .ant-form-item-control-input-content:has(.has-employees) {
   height: auto;
@@ -3018,6 +3015,35 @@ dialog {
 .table-dashboard td.ant-table-cell.right {
   text-align: right !important;
 }
+.ant-table-tbody:has(.table-dashboard__employee) > tr > td {
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+.table-dashboard__employee {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.table-dashboard__employee-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+:is(.table-dashboard__employee-name, .table-dashboard__employee-sub) {
+  text-align: left;
+}
+.table-dashboard__employee-name {
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+.table-dashboard__employee-sub {
+  height: 18px;
+  color: #888;
+  font-size: 1.2rem;
+  line-height: 18px;
+}
 .table-dashboard tfoot.ant-table-summary td.ant-table-cell:first-of-type {
   background: #b91c1c;
   color: #fff;
@@ -3041,6 +3067,12 @@ dialog {
 }
 .table-dashboard.expense tfoot.ant-table-summary td.ant-table-cell:first-of-type {
   background: #e15759;
+}
+.table-dashboard.human th.ant-table-cell {
+  background: #9c6ade;
+}
+.table-dashboard.human tfoot.ant-table-summary td.ant-table-cell:first-of-type {
+  background: #9c6ade;
 }
 
 .qr-scanner {
@@ -3124,15 +3156,25 @@ dialog {
   text-align: center;
   margin-top: 4px;
 }
+.ticket__row {
+  display: flex;
+}
 .ticket__info {
   font-size: 1.6rem;
+}
+.ticket__info.split-2 span {
+  display: inline-block;
+  width: 50%;
+}
+.ticket__info.split-2 span b {
+  width: 50%;
 }
 .ticket__info b {
   display: inline-block;
   width: 25%;
 }
 .ticket__info:not(:first-of-type) {
-  margin-top: 20px;
+  margin-top: 6px;
 }
 .ticket__chart {
   margin-top: 6px;
@@ -3142,6 +3184,7 @@ dialog {
 }
 .ticket__chart.split-2 {
   display: flex;
+  margin-bottom: 24px;
 }
 .ticket__chart.split-2 > * {
   width: 50%;
@@ -3166,9 +3209,6 @@ dialog {
   background: #b91c1c;
   color: #ffffff;
   font-weight: bold;
-}
-.ticket__table tr:nth-of-type(even) {
-  background: #f7f8f9;
 }
 .ticket__table tfoot td:first-of-type {
   background: #3597f2;
@@ -3229,13 +3269,60 @@ dialog {
   width: 16px;
   height: 16px;
 }
-.ticket__body:where(.order, .input_ticket) .ticket__date {
+.ticket__body:where(.payslip, .order, .input_ticket) .ticket__date {
   margin-bottom: 32px;
 }
 .ticket__body:where(.order, .input_ticket) .ticket__table {
   margin-top: 4px;
 }
-.ticket__footer:where(.order, .input_ticket) {
+.ticket__body.payslip .ticket__row {
+  align-items: flex-start;
+}
+.ticket__body.payslip .ticket__image {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  width: 20%;
+}
+.ticket__body.payslip .ticket__image img {
+  width: 135px;
+  height: 180px;
+  border-radius: 4px;
+}
+.ticket__body.payslip .ticket__infos {
+  width: 80%;
+}
+.ticket__body.payslip .salary-overview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 6px 0 0;
+}
+.ticket__body.payslip .salary-overview .item {
+  border: 1px dashed #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  background: #fafafa;
+}
+.ticket__body.payslip .salary-overview .item span {
+  display: block;
+  font-size: 13px;
+  color: #666;
+}
+.ticket__body.payslip .salary-overview .item b {
+  font-size: 16px;
+}
+.ticket__body.payslip .salary-overview .income b {
+  color: #16a34a;
+}
+.ticket__body.payslip .salary-overview .deduction b {
+  color: #dc2626;
+}
+.ticket__body.payslip .ticket__table {
+  margin-top: 14px;
+}
+.ticket__footer:where(.payslip, .order, .input_ticket) {
   justify-content: space-around;
 }
 .ticket__info b, .ticket__footer b {

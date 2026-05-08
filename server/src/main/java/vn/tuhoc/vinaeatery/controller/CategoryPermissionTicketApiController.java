@@ -1,6 +1,5 @@
 package vn.tuhoc.vinaeatery.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -21,14 +20,12 @@ import vn.tuhoc.vinaeatery.domain.criteria.CategoryPermissionTicketCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.entity.CategoryPermissionTicket;
 import vn.tuhoc.vinaeatery.domain.entity.PermissionTicket;
-// import vn.tuhoc.vinaeatery.domain.entity.PermissionTicket;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.domain.request.CategoryPermissionTicketCreateRequest;
 import vn.tuhoc.vinaeatery.domain.request.CategoryPermissionTicketLockRequest;
 import vn.tuhoc.vinaeatery.domain.request.CategoryPermissionTicketUpdateRequest;
 import vn.tuhoc.vinaeatery.service.CategoryPermissionTicketService;
 import vn.tuhoc.vinaeatery.service.PermissionTicketService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -39,7 +36,6 @@ public class CategoryPermissionTicketApiController {
         // Properties
         private final CategoryPermissionTicketService categoryPermissionTicketService;
         private final PermissionTicketService permissionTicketService;
-        private final TimeService timeService;
 
         // Methods
         @PostMapping("/list")
@@ -135,9 +131,6 @@ public class CategoryPermissionTicketApiController {
                                         .setDescription(categoryPermissionTicketUpdateRequest
                                                         .getCategoryPermissionTicket()
                                                         .getDescription());
-                        // categoryPermissionTicketUpdated.setUpdateAt(this.timeService.getDateTimeVN(categoryPermissionTicketUpdateRequest.getCategoryPermissionTicket().getUpdateAt()));
-                        categoryPermissionTicketUpdated.setUpdateAt(categoryPermissionTicketUpdateRequest
-                                        .getCategoryPermissionTicket().getUpdateAt());
 
                         this.categoryPermissionTicketService.upsert(categoryPermissionTicketUpdated);
                 }
@@ -183,16 +176,11 @@ public class CategoryPermissionTicketApiController {
                                 .getStatus() == CommonStatusEnum.ACTIVE
                                                 ? CommonStatusEnum.INACTIVE
                                                 : CommonStatusEnum.ACTIVE;
-                // LocalDateTime handleUpdateAt = this.serviceAt
-                // .getDateTimeVN(categoryPermissionTicketLockRequest.getCategoryPermissionTicket().getUpdateAt());
-                // LocalDateTime handleUpdateAt =
-                // this.timeService.getDateTimeVN(LocalDateTime.now());
 
                 CategoryPermissionTicket categoryPermissionTicketLocked = this.categoryPermissionTicketService
                                 .getOneById(id);
                 if (categoryPermissionTicketLocked != null) {
                         categoryPermissionTicketLocked.setStatus(handleStatus);
-                        // categoryPermissionTicketLocked.setUpdateAt(handleUpdateAt);
 
                         this.categoryPermissionTicketService.lock(categoryPermissionTicketLocked);
                 }

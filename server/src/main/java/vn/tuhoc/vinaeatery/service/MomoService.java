@@ -1,6 +1,7 @@
 package vn.tuhoc.vinaeatery.service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.UUID;
 
 import javax.crypto.Mac;
@@ -55,7 +56,8 @@ public class MomoService {
         String orderId = UUID.randomUUID().toString();
         String requestId = UUID.randomUUID().toString();
         String orderInfo = "Thanh toán hoá đơn: " + orderId;
-        String extraData = "Không có khuyến mãi gì hết";
+        String extraData = Base64.getEncoder()
+                .encodeToString("Không có khuyến mãi gì hết".getBytes(StandardCharsets.UTF_8));
         Long amount = handlePaymentService.getOneFormatById(handlePaymentId).getPayTotalPrice();
         Long orderExpire = System.currentTimeMillis() + 15 * 60 * 1000; // 15 phút
 

@@ -1,7 +1,6 @@
 package vn.tuhoc.vinaeatery.controller;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -29,7 +28,6 @@ import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.service.CategoryFoodService;
 import vn.tuhoc.vinaeatery.service.CloudinaryService;
 import vn.tuhoc.vinaeatery.service.FoodService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -41,7 +39,6 @@ public class CategoryFoodApiController {
     private final CategoryFoodService categoryFoodService;
     private final FoodService foodService;
     private final CloudinaryService cloudinaryService;
-    private final TimeService timeService;
 
     // Methods
     @PostMapping("/list")
@@ -162,13 +159,11 @@ public class CategoryFoodApiController {
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
                 ? CommonStatusEnum.INACTIVE
                 : CommonStatusEnum.ACTIVE;
-        // LocalDateTime handleUpdateAt =
-        // this.timeService.getDateTimeVN(commonStatusUpdate.getUpdateAt());
 
         CategoryFood categoryFoodLocked = this.categoryFoodService.getOneById(id);
         if (categoryFoodLocked != null) {
             categoryFoodLocked.setStatus(handleStatus);
-            // categoryFoodLocked.setUpdateAt(categoryFoodLocked.getUpdateAt());
+
             this.categoryFoodService.lock(categoryFoodLocked);
         }
 

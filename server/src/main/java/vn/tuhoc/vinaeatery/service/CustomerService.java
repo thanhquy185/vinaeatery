@@ -58,7 +58,6 @@ public class CustomerService {
             customerDTO.setAddress(customer.getAddress());
             customerDTO.setDescription(customer.getDescription());
             customerDTO.setStatus(customer.getStatus());
-            customerDTO.setUpdateAt(customer.getUpdateAt());
         }
 
         return customerDTO;

@@ -54,7 +54,6 @@ public class RestaurantService {
             restaurantDTO.setDescription(restaurant.getDescription());
             restaurantDTO.setStatus(restaurant.getStatus());
             restaurantDTO.setRating(restaurant.getRating());
-            restaurantDTO.setUpdateAt(restaurant.getUpdateAt());
             
             List<RestaurantImageDTO> restaurantImagesFormat = new ArrayList<>();
             List<RestaurantImage> restaurantImages = this.restaurantImageService

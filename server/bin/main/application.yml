@@ -1,0 +1,123 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: vinaeatery
+
+  datasource:
+    url: jdbc:mysql://${SPRING_DATASOURCE_HOST:localhost}:3306/${SPRING_DATASOURCE_DATABASE:vinaeatery}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration
+    
+  servlet:
+    multipart:
+      enabled: true
+      # default = 1MB
+      max-file-size: 50MB
+      # default = 10 MB (form data)
+      max-request-size: 50MB
+
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: thanhquyfu@gmail.com
+    password: lasupaxiozeafjgl
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  security:
+    oauth2:
+      client:
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth?prompt=select_account
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+          facebook:
+            authorization-uri: https://www.facebook.com/v17.0/dialog/oauth
+            token-uri: https://graph.facebook.com/v17.0/oauth/access_token
+            user-info-uri: https://graph.facebook.com/me?fields=id,name,email,picture
+            user-name-attribute: id
+        registration:
+          google:
+            client-id: 791866646476-s1l91vj5qp39ch3u96cvnf9oho6d6a30.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
+            scope: email,profile
+          facebook:
+            client-id: 1596150211566993
+            client-secret: f72300decd3c0bbf28684506e6523015
+            redirect-uri: http://localhost:8080/login/oauth2/code/facebook
+            scope: email,public_profile
+
+jwt:
+  base64-secret: XJvVeX4befworCdrEN8c0cEvg31ePhFO1zTIAvK8UfboZzmlS7A9cuWO5LKlVcfU7lJrR1WVJypseGylxREqBg==
+  access-token-validity-in-seconds: 86400
+  refresh-token-validity-in-seconds: 86400
+
+logging:
+  level:
+    root: INFO
+    com.shopcart: DEBUG
+    org.springframework.security: DEBUG
+    org.flywaydb: DEBUG
+
+
+cloudinary:
+  cloud-name: dzneg8cnu
+  api-key: 666874921632338
+  api-secret: 4DQm1g2CqLYggsUPSvOd4s4pI5c
+
+momo:
+  dev:
+    endpoint: https://test-payment.momo.vn/v2/gateway/api
+    accessKey: mTCKt9W3eU1m39TW
+    partnerCode: MOMOLRJZ20181206
+    secretKey: SetA5RDnLHvt51AULf51DyauxUo3kDU6
+    # redirectUrl: http://localhost:3000/
+    redirectUrl: https://669f-2402-800-62a8-8abd-a4d6-72c1-5b9c-4ea1.ngrok-free.app//payment
+    # ipnUrl: http://localhost:8080/api/momo/ipn-handler
+    ipnUrl: https://669f-2402-800-62a8-8abd-a4d6-72c1-5b9c-4ea1.ngrok-free.app//api/momo/ipn-handler
+    requestType: captureWallet
+  prod:
+    endpoint: https://payment.momo.vn/v2/gateway/api
+    accessKey: key
+    partnerCode: key
+    secretKey: key
+    redirectUrl: https://yourdomain.com/return
+    ipnUrl: https://yourdomain.com/api/momo/ipn-handler
+    requestType: captureWallet
+  env: dev
+
+zalopay:
+  app_id: 2554
+  key1: sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn
+  key2: trMrHtvjo6myautxDUiAcYsVtaeQ8nhf
+  endpoint: https://sb-openapi.zalopay.vn/v2/create
+  callback_url: https://669f-2402-800-62a8-8abd-a4d6-72c1-5b9c-4ea1.ngrok-free.app/api/zalopay/callback

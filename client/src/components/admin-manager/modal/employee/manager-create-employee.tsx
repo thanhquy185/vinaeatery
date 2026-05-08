@@ -6,7 +6,7 @@ import { ruleEmail, rulePhone, ruleRequired } from "../../../../common/rules";
 import type { EmployeeType } from "../../../../common/types";
 import {
   CommonGender,
-  CommonStatus,
+  EmployeeStatus,
   ModalAutoComplete,
   ModalLayout,
 } from "../../../../common/values";
@@ -122,12 +122,12 @@ const ManagerCreateEmployee: React.FC<CrudObjectModalProps> = ({
                 placeholder={defaultInputs.status}
                 options={[
                   {
-                    label: CommonStatus.active,
-                    value: CommonStatus.active,
+                    label: EmployeeStatus.active,
+                    value: EmployeeStatus.active,
                   },
                   {
-                    label: CommonStatus.inactive,
-                    value: CommonStatus.inactive,
+                    label: EmployeeStatus.inactive,
+                    value: EmployeeStatus.inactive,
                   },
                 ]}
               />

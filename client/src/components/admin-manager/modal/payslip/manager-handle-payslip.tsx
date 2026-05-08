@@ -8,11 +8,16 @@ import {
 } from "react";
 import type { CrudObjectModalProps } from "../../../../common/props";
 import type {
+  AllowanceType,
   AttendanceType,
+  EmployeeType,
+  InsuranceType,
   PayslipDate,
   PayslipMonth,
+  PermissionTicketType,
   RewardPunishType,
   RoleHistoryType,
+  SalaryAdvanceType,
   ScheduleType,
 } from "../../../../common/types";
 import { PayslipStatus } from "../../../../common/values";
@@ -20,7 +25,10 @@ import ProfileCard from "./profile-card";
 import FilterCard from "./filter-card";
 import RoleHistoryCard from "./role-history-card";
 import AttendanceCard from "./attendance-card";
+import AllowanceCard from "./allowance-card";
+import PermissionTicketCard from "./permission-ticket-card";
 import RewardPunishCard from "./reward-punish-card";
+import SalaryAdvanceCard from "./salary-advance-card";
 import SummaryCard from "./summary-card";
 import {
   calPayslipMonth,
@@ -34,10 +42,24 @@ import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/vi";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import InsuranceCard from "./insurance-card";
 
 dayjs.locale("vi");
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
+
+// Data Props
+export type DataProps = {
+  employee?: EmployeeType;
+  salaryAttendanceData?: (PayslipDate | PayslipMonth | undefined)[];
+  filteredRoleHistories?: RoleHistoryType[];
+  filteredSalaryDatas?: PayslipDate[];
+  filteredAllowances?: AllowanceType[];
+  filteredInsurances?: InsuranceType[];
+  filteredPermissionTickets?: PermissionTicketType[];
+  filteredRewardPunishes?: RewardPunishType[];
+  filteredSalaryAdvances?: SalaryAdvanceType[];
+};
 
 // Manager Handle Payslip Props
 export type ManagerHandlePayslipProps = {
@@ -49,7 +71,7 @@ export type ManagerHandlePayslipProps = {
   calendarValue?: Dayjs;
   timeDetailDateStart?: Dayjs;
   timeDetailDateEnd?: Dayjs;
-  data?: any;
+  data?: DataProps;
 };
 
 // Manager Handle Payslip
@@ -58,6 +80,10 @@ const ManagerHandlePayslip: FC<CrudObjectModalProps> = ({
   data,
   closeModal,
 }) => {
+  if (!data) {
+    return;
+  }
+
   // Các thành phần để lọc thời gian
   // - Mốc thời gian
   const [timeline, setTimeline] = useState<"year" | "month" | undefined>(
@@ -120,33 +146,64 @@ const ManagerHandlePayslip: FC<CrudObjectModalProps> = ({
       }),
     );
   }, [timeline, timeDetail]);
-  // - Chấm công
-  const filteredAttendances = useMemo(() => {
-    return (data?.attendances as AttendanceType[])?.filter((attendance) =>
+  // // - Chấm công
+  // const filteredAttendances = useMemo(() => {
+  //   return (data?.attendances as AttendanceType[])?.filter((attendance) =>
+  //     checkDateEqual({
+  //       date: attendance?.date!,
+  //       timeDetail: timeDetail!,
+  //       format: timeline === "year" ? "YYYY" : "YYYY-MM",
+  //     }),
+  //   );
+  // }, [timeline, timeDetail]);
+  // - Phụ cấp
+  const filteredAllowances = useMemo(() => {
+    return (data?.allowances as AllowanceType[])?.filter((allowance) =>
       checkDateEqual({
-        date: attendance?.date!,
+        date: allowance?.month!,
         timeDetail: timeDetail!,
         format: timeline === "year" ? "YYYY" : "YYYY-MM",
       }),
     );
   }, [timeline, timeDetail]);
-  // // - Đơn xin phép
-  // const filteredPermissionTickets = useMemo(() => {
-  //   return (data?.permissionTickets as PermissionTicketType[])?.filter(
-  //     (permissionTicket) =>
-  //       checkDateEqual({
-  //         date: permissionTicket?.date!,
-  //         timeDetail: timeDetail!,
-  //         format: timeline === "year" ? "YYYY" : "YYYY-MM",
-  //       }),
-  //   );
-  // }, [timeline, timeDetail]);
+  // - Bảo hiểm
+  const filteredInsurances = useMemo(() => {
+    return (data?.insurances as InsuranceType[])?.filter((insurance) =>
+      checkDateEqual({
+        date: insurance?.month!,
+        timeDetail: timeDetail!,
+        format: timeline === "year" ? "YYYY" : "YYYY-MM",
+      }),
+    );
+  }, [timeline, timeDetail]);
+  // - Đơn xin phép
+  const filteredPermissionTickets = useMemo(() => {
+    return (data?.permissionTickets as PermissionTicketType[])?.filter(
+      (permissionTicket) =>
+        checkDateEqual({
+          date: permissionTicket?.date!,
+          timeDetail: timeDetail!,
+          format: timeline === "year" ? "YYYY" : "YYYY-MM",
+        }),
+    );
+  }, [timeline, timeDetail]);
   // - Thưởng - Phạt
   const filteredRewardPunishes = useMemo(() => {
     return (data?.rewardPunishes as RewardPunishType[])?.filter(
       (rewardPunish) =>
         checkDateEqual({
           date: rewardPunish?.date!,
+          timeDetail: timeDetail!,
+          format: timeline === "year" ? "YYYY" : "YYYY-MM",
+        }),
+    );
+  }, [timeline, timeDetail]);
+  // - Ứng lương
+  const filteredSalaryAdvances = useMemo(() => {
+    return (data?.salaryAdvances as SalaryAdvanceType[])?.filter(
+      (salaryAdvance) =>
+        checkDateEqual({
+          date: salaryAdvance?.date!,
           timeDetail: timeDetail!,
           format: timeline === "year" ? "YYYY" : "YYYY-MM",
         }),
@@ -169,8 +226,9 @@ const ManagerHandlePayslip: FC<CrudObjectModalProps> = ({
       !timeDetailDateEndValue &&
       !timelineData.length &&
       !filteredSalaryDatas.length
-    )
+    ) {
       return [];
+    }
 
     const salaryAttendanceDataFinal = timelineData?.map((td) => {
       if (timeline === "year") {
@@ -301,8 +359,16 @@ const ManagerHandlePayslip: FC<CrudObjectModalProps> = ({
           setTimeline={setTimeline}
           timeDetail={timeDetail}
           setTimeDetail={setTimeDetail}
+          data={{
+            employee: data.employee,
+            salaryAttendanceData: salaryAttendanceData,
+            filteredSalaryDatas: filteredSalaryDatas,
+            filteredAllowances: filteredAllowances,
+            filteredInsurances: filteredInsurances,
+            filteredRewardPunishes: filteredRewardPunishes,
+            filteredSalaryAdvances: filteredSalaryAdvances,
+          }}
         />
-        {/* <BenefitCard /> */}
         <RoleHistoryCard
           data={{ filteredRoleHistories: filteredRoleHistories }}
         />
@@ -313,16 +379,24 @@ const ManagerHandlePayslip: FC<CrudObjectModalProps> = ({
           timeDetailDateEnd={timeDetailDateEndValue}
           data={{ salaryAttendanceData: salaryAttendanceData }}
         />
-        {/* <PermissionTicketCard
+        <AllowanceCard data={{ filteredAllowances: filteredAllowances }} />
+        <InsuranceCard data={{ filteredInsurances: filteredInsurances }} />
+        <PermissionTicketCard
           data={{ filteredPermissionTickets: filteredPermissionTickets }}
-        /> */}
+        />
         <RewardPunishCard
           data={{ filteredRewardPunishes: filteredRewardPunishes }}
+        />
+        <SalaryAdvanceCard
+          data={{ filteredSalaryAdvances: filteredSalaryAdvances }}
         />
         <SummaryCard
           data={{
             filteredSalaryDatas: filteredSalaryDatas,
+            filteredAllowances: filteredAllowances,
+            filteredInsurances: filteredInsurances,
             filteredRewardPunishes: filteredRewardPunishes,
+            filteredSalaryAdvances: filteredSalaryAdvances,
           }}
         />
       </div>

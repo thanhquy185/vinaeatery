@@ -1,7 +1,5 @@
 package vn.tuhoc.vinaeatery.domain.entity;
 
-import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
@@ -60,7 +58,4 @@ public class OrderTable {
     @Convert(converter = OrderStatusConverter.class)
     @NotNull(message = "Trạng thái không được để trống!")
     private OrderStatusEnum status;
-    @Column(columnDefinition = "DATETIME")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private String updateAt;
 }

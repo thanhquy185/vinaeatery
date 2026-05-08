@@ -3,7 +3,6 @@ package vn.tuhoc.vinaeatery.controller;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,12 +22,10 @@ import vn.tuhoc.vinaeatery.domain.dto.HandlePaymentUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.OrderSheetDTO;
 import vn.tuhoc.vinaeatery.domain.dto.UseTableDTO;
 import vn.tuhoc.vinaeatery.domain.entity.CategoryTable;
-import vn.tuhoc.vinaeatery.domain.entity.Employee;
 import vn.tuhoc.vinaeatery.domain.entity.HandlePayment;
 import vn.tuhoc.vinaeatery.domain.entity.Order;
 import vn.tuhoc.vinaeatery.domain.entity.OrderDetail;
 import vn.tuhoc.vinaeatery.domain.entity.OrderDetailId;
-import vn.tuhoc.vinaeatery.domain.entity.OrderSheet;
 import vn.tuhoc.vinaeatery.domain.entity.OrderSheetDetail;
 import vn.tuhoc.vinaeatery.domain.entity.OrderSheetDetailId;
 import vn.tuhoc.vinaeatery.domain.entity.UseTable;
@@ -38,7 +35,6 @@ import vn.tuhoc.vinaeatery.domain.enumm.OrderStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.PayStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.CategoryTableSurchargeTypeEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.UseTableStatusEnum;
-import vn.tuhoc.vinaeatery.domain.dto.EmployeeDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.dto.HandlePaymentDTO;
 import vn.tuhoc.vinaeatery.service.CategoryTableService;
@@ -52,7 +48,6 @@ import vn.tuhoc.vinaeatery.service.PayMethodService;
 import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.UseTableService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
-import vn.tuhoc.vinaeatery.util.SecurityUtil;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
 @RestController
@@ -84,19 +79,6 @@ public class HandlePaymentApiController {
         return ResponseEntity.status(HttpStatus.OK).body(handlePaymentSelected);
     }
 
-    @PostMapping("/get-format-is-employee-handle")
-    public ResponseEntity<?> getHandlePaymentFormatIsEmployeeHandle(
-            @RequestBody FormSecurityDTO formSecurityDTO) {
-        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "handle-payments", "read")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ValidationUtil
-                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
-        }
-
-        HandlePaymentDTO handlePaymentSelected = this.handlePaymentService.getOneFormatByIsEmployeeHandle(true);
-        return ResponseEntity.status(HttpStatus.OK).body(handlePaymentSelected);
-    }
-
     @PostMapping("/get-format/{use-table-id}")
     public ResponseEntity<?> getHandlePaymentFormatByUseTableId(@PathVariable("use-table-id") Long useTableId,
             @RequestBody FormSecurityDTO formSecurityDTO) {
@@ -110,6 +92,33 @@ public class HandlePaymentApiController {
         return ResponseEntity.status(HttpStatus.OK).body(handlePaymentSelected);
     }
 
+    @PostMapping("/get-format-is-employee-handle")
+    public ResponseEntity<?> getHandlePaymentFormatIsEmployeeHandle(
+            @RequestBody FormSecurityDTO formSecurityDTO) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "handle-payments", "read")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
+        HandlePaymentDTO handlePaymentSelected = this.handlePaymentService.getOneFormatByIsEmployeeHandle(true);
+        return ResponseEntity.status(HttpStatus.OK).body(handlePaymentSelected);
+    }
+
+    @PostMapping("/get-format-is-employee-handle-and-is-handling")
+    public ResponseEntity<?> getHandlePaymentFormatIsEmployeeHandleAndIsHandling(
+            @RequestBody FormSecurityDTO formSecurityDTO) {
+        if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "handle-payments", "read")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ValidationUtil
+                            .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
+        }
+
+        HandlePaymentDTO handlePaymentSelected = this.handlePaymentService
+                .getOneFormatByIsEmployeeHandleAndIsHandling(true, true);
+        return ResponseEntity.status(HttpStatus.OK).body(handlePaymentSelected);
+    }
+
     @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> handleUpdateHandlePayment(@PathVariable("id") Integer id,
             @RequestPart("form-security") FormSecurityDTO formSecurityDTO,
@@ -120,11 +129,12 @@ public class HandlePaymentApiController {
                     .body(ValidationUtil
                             .buildRestResponseWithStr(HandleFormSecurity.getErrorMessageByHandleFormData()));
         }
-
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
         }
+        
+        // HandlePayment handlePaymentIsEmployeeHandleAnd
 
         HandlePayment handlePaymentUpdated = this.handlePaymentService.getOneById(id);
         if (handlePaymentUpdated != null) {
@@ -135,6 +145,7 @@ public class HandlePaymentApiController {
             }
             handlePaymentUpdated.setPayMethodId(handlePayment.getPayMethodId());
             handlePaymentUpdated.setIsEmployeeHandle(handlePayment.getIsEmployeeHandle());
+            handlePaymentUpdated.setIsHandling(handlePayment.getIsHandling());
             handlePaymentUpdated.setPayTotalPrice(handlePayment.getPayTotalPrice());
             handlePaymentUpdated.setStatus(handlePayment.getStatus());
 

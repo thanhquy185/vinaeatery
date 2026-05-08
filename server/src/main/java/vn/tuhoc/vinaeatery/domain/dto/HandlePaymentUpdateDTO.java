@@ -18,6 +18,7 @@ public class HandlePaymentUpdateDTO {
     private Integer employeeId;
     private Integer payMethodId;
     private Boolean isEmployeeHandle;
+    private Boolean isHandling;
     private Long payTotalPrice;
     @Convert(converter = HandlePaymentStatusConverter.class)
     private HandlePaymentStatusEnum status;

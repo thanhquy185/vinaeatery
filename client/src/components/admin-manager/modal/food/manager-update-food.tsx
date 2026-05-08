@@ -77,7 +77,6 @@ const ManagerUpdateFood: React.FC<CrudObjectModalProps> = ({
                 restaurantId: restaurantId,
                 image: imageFile! || undefined,
                 recipe: recipe! || undefined,
-                updateAt: new Date().toISOString(),
                 ...values,
               },
             });

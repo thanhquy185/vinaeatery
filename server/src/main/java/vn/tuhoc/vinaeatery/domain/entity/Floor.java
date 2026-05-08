@@ -9,10 +9,6 @@ import lombok.Setter;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.converter.CommonStatusConverter;
 
-import java.time.LocalDateTime;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -40,7 +36,4 @@ public class Floor {
     @Convert(converter = CommonStatusConverter.class)
     @NotNull(message = "Trạng thái không được để trống!")
     private CommonStatusEnum status;
-    @Column(columnDefinition = "DATETIME")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateAt;
 }

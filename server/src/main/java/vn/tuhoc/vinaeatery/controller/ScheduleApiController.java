@@ -1,6 +1,5 @@
 package vn.tuhoc.vinaeatery.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -33,7 +32,6 @@ import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.service.ScheduleEmployeeService;
 import vn.tuhoc.vinaeatery.service.ScheduleService;
 import vn.tuhoc.vinaeatery.service.ScheduleShiftService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -45,7 +43,6 @@ public class ScheduleApiController {
     private final ScheduleService scheduleService;
     private final ScheduleEmployeeService scheduleEmployeeService;
     private final ScheduleShiftService scheduleShiftService;
-    private final TimeService timeService;
 
     // Methods
     @PostMapping("/list")
@@ -147,7 +144,6 @@ public class ScheduleApiController {
             scheduleUpdated.setDateStart(schedule.getDateStart());
             scheduleUpdated.setDateEnd(schedule.getDateEnd());
             scheduleUpdated.setNote(schedule.getNote());
-            scheduleUpdated.setUpdateAt(schedule.getUpdateAt());
             this.scheduleService.upsert(scheduleUpdated);
 
             this.scheduleEmployeeService.clearAllByScheduleId(scheduleUpdated.getId());
@@ -195,13 +191,11 @@ public class ScheduleApiController {
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
                 ? CommonStatusEnum.INACTIVE
                 : CommonStatusEnum.ACTIVE;
-        // LocalDateTime handleUpdateAt =
-        // this.timeService.getDateTimeVN(commonStatusUpdate.getUpdateAt());
 
         Schedule scheduleLocked = this.scheduleService.getOneById(id);
         if (scheduleLocked != null) {
             scheduleLocked.setStatus(handleStatus);
-            // scheduleLocked.setUpdateAt(handleUpdateAt);
+
             this.scheduleService.lock(scheduleLocked);
         }
 

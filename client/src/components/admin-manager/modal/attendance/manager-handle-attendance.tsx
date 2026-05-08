@@ -243,7 +243,7 @@ const ManagerHandleAttendance: FC<ManagerHandleAttendanceProps> = ({
                           : undefined,
                     },
               });
-              if (data) {
+              if (response) {
                 closeModal!();
               }
 

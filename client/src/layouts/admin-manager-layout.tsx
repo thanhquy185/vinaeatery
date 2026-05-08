@@ -58,18 +58,10 @@ import {
   Users,
   UserStar,
 } from "lucide-react";
-import type {
-  CustomerType,
-  EmployeeType,
-  FunctionType,
-  ManagerType,
-  RestaurantType,
-  UserType,
-} from "../common/types";
+import type { EmployeeType, FunctionType, UserType } from "../common/types";
 import {
   CommonStatus,
   ImageSourcePath,
-  ModalTitleValue,
   ModalWidthValue,
   UserRoleValue,
 } from "../common/values";
@@ -90,6 +82,7 @@ import CustomModal from "../components/common/modal";
 import ManagerChangePassword from "../components/admin-manager/modal/header-menu/manager-change-password";
 import ManagerTimetable from "../components/admin-manager/modal/header-menu/manager-timetable";
 import ManagerPermissionTicket from "../components/admin-manager/modal/header-menu/manager-permission-ticket";
+import ManagerPayslip from "../components/admin-manager/modal/header-menu/manager-payslip";
 
 const { Header, Sider } = Layout;
 
@@ -247,7 +240,7 @@ const AdminManagerSidebar: FC<{
           managerActiveManagerItems?.length! > 0 && {
             key: "active",
             icon: <MonitorCog />,
-            label: "Vận hành quán ăn",
+            label: "Quản lý vận hành",
             children: managerActiveManagerItems,
           },
         //   managerCustomerManagerItems?.length! > 0 && {
@@ -260,14 +253,14 @@ const AdminManagerSidebar: FC<{
           managerSeatManagerItems?.length! > 0 && {
             key: "seat",
             icon: <Columns3Cog />,
-            label: "Quản lý chỗ ngồi",
+            label: "Quản lý hạ tầng",
             children: managerSeatManagerItems,
           },
         !isAdmin &&
           managerFoodManagerItems?.length! > 0 && {
             key: "food",
             icon: <ChefHat />,
-            label: "Quản lý món ăn",
+            label: "Quản lý kho hàng",
             children: managerFoodManagerItems,
           },
         !isAdmin &&
@@ -318,8 +311,9 @@ const AdminManagerSidebar: FC<{
 // Admin Manager Header
 const AdminManagerHeader: FC<{
   infoLogin: any;
+  selectedRestaurant: number;
   selectedSubmenu: string;
-}> = ({ infoLogin, selectedSubmenu }) => {
+}> = ({ infoLogin, selectedRestaurant, selectedSubmenu }) => {
   // Biến để chuyển trang
   const navigate = useNavigate();
 
@@ -437,7 +431,7 @@ const AdminManagerHeader: FC<{
         openModal({
           title: "Bảng lương",
           width: "90%",
-          className: "default payslip",
+          className: "default sticky payslips",
           children: ManagerHeaderMenuModals.payslip(infoLogin),
         }),
     },
@@ -496,7 +490,14 @@ const AdminManagerHeader: FC<{
         closeModal={closeModal}
       />
     ),
-    payslip: (employee: EmployeeType) => <>123</>,
+    payslip: (employee: EmployeeType) => {
+      return (
+        <ManagerPayslip
+          employee={employee}
+          selectedRestaurant={selectedRestaurant}
+        />
+      );
+    },
     permissionTicket: (employee: EmployeeType) => (
       <ManagerPermissionTicket
         objectEN="permission-tickets"
@@ -816,6 +817,7 @@ const AdminManagerLayout: FC = () => {
       <Layout style={{ backgroundColor: "transparent" }}>
         <AdminManagerHeader
           infoLogin={infoLogin}
+          selectedRestaurant={selectedRestaurant}
           selectedSubmenu={selectedSubmenu}
         />
         <Outlet />

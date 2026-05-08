@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.tuhoc.vinaeatery.domain.entity.Role;
-import vn.tuhoc.vinaeatery.domain.enumm.CommonGenderEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.UserIsUsingEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.UserMethodEnum;
@@ -33,7 +31,7 @@ public class RestLoginDTO {
         private UserMethodEnum method;
         private UserIsUsingEnum isUsing;
         private CommonStatusEnum status;
-        private String updateAt;
+
     }
 
     @Getter

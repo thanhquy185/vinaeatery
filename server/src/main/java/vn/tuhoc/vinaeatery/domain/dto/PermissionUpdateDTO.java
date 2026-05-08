@@ -2,7 +2,6 @@ package vn.tuhoc.vinaeatery.domain.dto;
 
 import java.util.List;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +17,5 @@ public class PermissionUpdateDTO {
     // Properties
     @NotNull(message = "Tên chức vụ không được để trống!")
     private String name;
-    @Column(columnDefinition = "DATETIME")
-    private String updateAt;
     private List<PermissionDetailForCrud> permissionDetails;
 }

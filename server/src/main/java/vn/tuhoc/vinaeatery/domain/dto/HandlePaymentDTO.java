@@ -20,6 +20,7 @@ public class HandlePaymentDTO {
     private EmployeeDTO employee;
     private PayMethod payMethod;
     private Boolean isEmployeeHandle;
+    private Boolean isHandling;
     private Long payTotalPrice;
     @Convert(converter = HandlePaymentStatusConverter.class)
     private HandlePaymentStatusEnum status;

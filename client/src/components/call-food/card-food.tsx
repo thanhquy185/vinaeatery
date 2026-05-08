@@ -66,7 +66,7 @@ const CustomCardFood: React.FC<CustomCardFoodProps> = ({
             {object?.categoryFood!.name!}
           </p>
           <p className="call-food__food-paragraph price">
-            {vietnamMoneyFormat(object?.price!)}đ
+            {vietnamMoneyFormat(object?.price || 0)}
           </p>
         </div>
         {disabled && (

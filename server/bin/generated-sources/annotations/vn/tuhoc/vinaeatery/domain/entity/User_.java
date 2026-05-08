@@ -35,11 +35,6 @@ public abstract class User_ {
 	public static volatile SingularAttribute<User, UserIsUsingEnum> isUsing;
 	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.entity.User#updateAt
-	 **/
-	public static volatile SingularAttribute<User, String> updateAt;
-	
-	/**
 	 * @see vn.tuhoc.vinaeatery.domain.entity.User#id
 	 **/
 	public static volatile SingularAttribute<User, Integer> id;
@@ -73,7 +68,6 @@ public abstract class User_ {
 	public static final String ROLE = "role";
 	public static final String METHOD = "method";
 	public static final String IS_USING = "isUsing";
-	public static final String UPDATE_AT = "updateAt";
 	public static final String ID = "id";
 	public static final String CREATE_AT = "createAt";
 	public static final String USERNAME = "username";

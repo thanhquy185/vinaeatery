@@ -17,32 +17,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.criteria.UseTableCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
-import vn.tuhoc.vinaeatery.domain.dto.OrderSheetDTO;
-import vn.tuhoc.vinaeatery.domain.dto.OrderSheetDetailDTO;
 import vn.tuhoc.vinaeatery.domain.dto.UseTableDTO;
 import vn.tuhoc.vinaeatery.domain.dto.UseTableUpdateDTO;
-import vn.tuhoc.vinaeatery.domain.entity.CategoryTable;
 import vn.tuhoc.vinaeatery.domain.entity.HandlePayment;
-// import vn.tuhoc.vinaeatery.domain.entity.Customer;
-// import vn.tuhoc.vinaeatery.domain.entity.CustomerCard;
-import vn.tuhoc.vinaeatery.domain.entity.Order;
-import vn.tuhoc.vinaeatery.domain.entity.OrderDetail;
-import vn.tuhoc.vinaeatery.domain.entity.OrderDetailId;
 import vn.tuhoc.vinaeatery.domain.entity.UseTable;
-import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.HandlePaymentStatusEnum;
-import vn.tuhoc.vinaeatery.domain.enumm.OrderSheetStatusEnum;
-import vn.tuhoc.vinaeatery.domain.enumm.OrderStatusEnum;
-import vn.tuhoc.vinaeatery.domain.enumm.PayStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.UseTableStatusEnum;
 import vn.tuhoc.vinaeatery.service.UseTableService;
-import vn.tuhoc.vinaeatery.service.CategoryTableService;
-import vn.tuhoc.vinaeatery.service.CustomerService;
 import vn.tuhoc.vinaeatery.service.HandlePaymentService;
-import vn.tuhoc.vinaeatery.service.OrderDetailService;
-import vn.tuhoc.vinaeatery.service.OrderService;
-import vn.tuhoc.vinaeatery.service.TableService;
-// import vn.tuhoc.vinaeatery.service.OrderSheetService;
 import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
@@ -56,12 +38,6 @@ public class UseTableApiController {
     // Properties
     private final UseTableService useTableService;
     private final HandlePaymentService handlePaymentService;
-    // private final OrderSheetService orderSheetService;
-    private final OrderService orderService;
-    private final OrderDetailService orderDetailService;
-    private final CustomerService customerService;
-    private final CategoryTableService categoryTableService;
-    private final TableService tableService;
     private final TimeService timeService;
 
     // Methods
@@ -189,6 +165,7 @@ public class UseTableApiController {
                 newHandlePayment.setPayMethodId(null);
                 newHandlePayment.setPayTotalPrice(null);
                 newHandlePayment.setStatus(HandlePaymentStatusEnum.NOTHING);
+
                 this.handlePaymentService.upsert(newHandlePayment);
             }
         }

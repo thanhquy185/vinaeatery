@@ -55,6 +55,11 @@ public class HandlePaymentService {
         return this.handlePaymentRepository.findOneById(id);
     }
 
+    public HandlePayment getOneByIsEmployeeHandleAndIsHandling(Boolean isEmployeeHandle, Boolean isHandling) {
+        return this.handlePaymentRepository
+                .findOneByIsEmployeeHandleAndIsHandling(isEmployeeHandle, isHandling);
+    }
+
     public HandlePaymentDTO getOneFormatById(Integer id) {
         HandlePaymentDTO handlePaymentDTO = new HandlePaymentDTO();
         HandlePayment handlePayment = this.handlePaymentRepository.findOneById(id);
@@ -64,6 +69,7 @@ public class HandlePaymentService {
             handlePaymentDTO.setEmployee(employeeService.getOneFormatById(handlePayment.getEmployeeId()));
             handlePaymentDTO.setPayMethod(payMethodService.getOneById(handlePayment.getPayMethodId()));
             handlePaymentDTO.setIsEmployeeHandle(handlePayment.getIsEmployeeHandle());
+            handlePaymentDTO.setIsHandling(handlePayment.getIsHandling());
             handlePaymentDTO.setPayTotalPrice(handlePayment.getPayTotalPrice());
             handlePaymentDTO.setStatus(handlePayment.getStatus());
         }
@@ -71,14 +77,31 @@ public class HandlePaymentService {
         return handlePaymentDTO;
     }
 
-    public HandlePaymentDTO getOneFormatByIsEmployeeHandle(Boolean isEmployeeHandle) {
-        return getOneFormatById(this.handlePaymentRepository.findOneByIsEmployeeHandle(isEmployeeHandle).getId());
-    }
-    
     public HandlePaymentDTO getOneFormatByUseTableId(Long useTableId) {
-        return getOneFormatById(this.handlePaymentRepository.findOneByUseTableId(useTableId).getId());
+        HandlePayment handlePaymentByUseTableId = this.handlePaymentRepository.findOneByUseTableId(useTableId);
+        if (handlePaymentByUseTableId == null)
+            return null;
+
+        return getOneFormatById(handlePaymentByUseTableId.getId());
     }
 
+    public HandlePaymentDTO getOneFormatByIsEmployeeHandle(Boolean isEmployeeHandle) {
+        HandlePayment handlePaymentByEmployeeId = this.handlePaymentRepository
+                .findOneByIsEmployeeHandle(isEmployeeHandle);
+        if (handlePaymentByEmployeeId == null)
+            return null;
+
+        return getOneFormatById(handlePaymentByEmployeeId.getId());
+    }
+
+    public HandlePaymentDTO getOneFormatByIsEmployeeHandleAndIsHandling(Boolean isEmployeeHandle, Boolean isHandling) {
+        HandlePayment handlePaymentByIsEmployeeIdAndIsHandling = this.handlePaymentRepository
+                .findOneByIsEmployeeHandleAndIsHandling(isEmployeeHandle, isHandling);
+        if (handlePaymentByIsEmployeeIdAndIsHandling == null)
+            return null;
+
+        return getOneFormatById(handlePaymentByIsEmployeeIdAndIsHandling.getId());
+    }
 
     public List<HandlePayment> getAll() {
         return this.handlePaymentRepository.findAll();
@@ -222,6 +245,9 @@ public class HandlePaymentService {
                     this.useTableService.getOneById(handlePaymentUpdated.getUseTableId()).getRestaurantId());
             newOrder.setEmployeeId(handlePaymentUpdated.getEmployeeId());
             newOrder.setCustomerId(useTable.getCustomer().getId());
+            newOrder.setCustomerFullname(useTable.getCustomer().getFullname());
+            newOrder.setCustomerPhone(useTable.getCustomer().getPhone());
+            newOrder.setCustomerEmail(useTable.getCustomer().getEmail());
             newOrder.setTotalPrice(Math.round(totalFoodPrice + surchargeCategoryTable));
             newOrder.setStatus(OrderStatusEnum.CONFIRM);
             // - Thông tin thanh toán

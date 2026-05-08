@@ -22,11 +22,6 @@ public abstract class Role_ {
 	public static volatile SingularAttribute<Role, String> name;
 	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.entity.Role#updateAt
-	 **/
-	public static volatile SingularAttribute<Role, String> updateAt;
-	
-	/**
 	 * @see vn.tuhoc.vinaeatery.domain.entity.Role#id
 	 **/
 	public static volatile SingularAttribute<Role, Integer> id;
@@ -53,7 +48,6 @@ public abstract class Role_ {
 
 	public static final String SALARY_TYPE = "salaryType";
 	public static final String NAME = "name";
-	public static final String UPDATE_AT = "updateAt";
 	public static final String ID = "id";
 	public static final String RESTAURANT_ID = "restaurantId";
 	public static final String SALARY_VALUE = "salaryValue";

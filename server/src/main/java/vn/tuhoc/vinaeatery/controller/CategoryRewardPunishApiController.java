@@ -1,6 +1,5 @@
 package vn.tuhoc.vinaeatery.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -20,14 +19,11 @@ import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.criteria.CategoryRewardPunishCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.entity.CategoryRewardPunish;
-// import vn.tuhoc.vinaeatery.domain.entity.RewardPunish;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.domain.request.CategoryRewardPunishCreateRequest;
 import vn.tuhoc.vinaeatery.domain.request.CategoryRewardPunishLockRequest;
 import vn.tuhoc.vinaeatery.domain.request.CategoryRewardPunishUpdateRequest;
 import vn.tuhoc.vinaeatery.service.CategoryRewardPunishService;
-// import vn.tuhoc.vinaeatery.service.RewardPunishService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -37,8 +33,6 @@ import vn.tuhoc.vinaeatery.util.ValidationUtil;
 public class CategoryRewardPunishApiController {
         // Properties
         private final CategoryRewardPunishService categoryRewardPunishService;
-        // private final RewardPunishService rewardPunishService;
-        private final TimeService timeService;
 
         // Methods
         @PostMapping("/list")
@@ -133,9 +127,6 @@ public class CategoryRewardPunishApiController {
                         categoryRewardPunishUpdated
                                         .setDescription(categoryRewardPunishUpdateRequest.getCategoryRewardPunish()
                                                         .getDescription());
-                        // categoryRewardPunishUpdated.setUpdateAt(this.timeService.getDateTimeVN(categoryRewardPunishUpdateRequest.getCategoryRewardPunish().getUpdateAt()));
-                        categoryRewardPunishUpdated.setUpdateAt(
-                                        categoryRewardPunishUpdateRequest.getCategoryRewardPunish().getUpdateAt());
 
                         this.categoryRewardPunishService.upsert(categoryRewardPunishUpdated);
                 }
@@ -181,15 +172,10 @@ public class CategoryRewardPunishApiController {
                                 .getStatus() == CommonStatusEnum.ACTIVE
                                                 ? CommonStatusEnum.INACTIVE
                                                 : CommonStatusEnum.ACTIVE;
-                // LocalDateTime handleUpdateAt = this.serviceAt
-                // .getDateTimeVN(categoryRewardPunishLockRequest.getCategoryRewardPunish().getUpdateAt());
-                // LocalDateTime handleUpdateAt =
-                // this.timeService.getDateTimeVN(LocalDateTime.now());
 
                 CategoryRewardPunish categoryRewardPunishLocked = this.categoryRewardPunishService.getOneById(id);
                 if (categoryRewardPunishLocked != null) {
                         categoryRewardPunishLocked.setStatus(handleStatus);
-                        // categoryRewardPunishLocked.setUpdateAt(handleUpdateAt);
 
                         this.categoryRewardPunishService.lock(categoryRewardPunishLocked);
                 }

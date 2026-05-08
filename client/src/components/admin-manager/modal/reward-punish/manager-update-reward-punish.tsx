@@ -10,7 +10,7 @@ import { openConfirmation } from "../../../../utils/show-confirmation";
 import { openNotification } from "../../../../utils/show-notification";
 import dayjs from "dayjs";
 
-// Manager Update Permission Ticket
+// Manager Update Reward Punish
 const ManagerUpdateRewardPunish: FC<CrudObjectModalProps> = ({
   objectVN,
   objectEN,
@@ -76,7 +76,7 @@ const ManagerUpdateRewardPunish: FC<CrudObjectModalProps> = ({
           status: status! || undefined,
         },
       });
-      if (data) {
+      if (response) {
         closeModal();
       }
     } else {
@@ -217,36 +217,36 @@ const ManagerUpdateRewardPunish: FC<CrudObjectModalProps> = ({
             </Form.Item>
           </div>
         </div>
-        {data?.status === RewardPunishStatus.pending && (
-          <div className="modal__buttons">
-            <>
-              <button
-                className="modal__button secondary btn green-secondary"
-                onClick={(e) =>
-                  callApiToUpdateRewardPunish(
-                    data?.id!,
-                    e.target as HTMLElement,
-                    RewardPunishStatus.confirm,
-                  )
-                }
-              >
-                {RewardPunishStatus.confirm}
-              </button>
-              <button
-                className="modal__button secondary btn red-secondary"
-                onClick={(e) =>
-                  callApiToUpdateRewardPunish(
-                    data?.id!,
-                    e.target as HTMLElement,
-                    RewardPunishStatus.canceled,
-                  )
-                }
-              >
-                {RewardPunishStatus.canceled}
-              </button>
-            </>
-          </div>
-        )}
+        <div className="modal__buttons">
+          {data?.status !== RewardPunishStatus.confirm && (
+            <button
+              className="modal__button secondary btn green-secondary"
+              onClick={(e) =>
+                callApiToUpdateRewardPunish(
+                  data?.id!,
+                  e.target as HTMLElement,
+                  RewardPunishStatus.confirm,
+                )
+              }
+            >
+              {RewardPunishStatus.confirm}
+            </button>
+          )}
+          {data?.status !== RewardPunishStatus.canceled && (
+            <button
+              className="modal__button secondary btn red-secondary"
+              onClick={(e) =>
+                callApiToUpdateRewardPunish(
+                  data?.id!,
+                  e.target as HTMLElement,
+                  RewardPunishStatus.canceled,
+                )
+              }
+            >
+              {RewardPunishStatus.canceled}
+            </button>
+          )}
+        </div>
       </Form>
     </>
   );

@@ -83,6 +83,7 @@ const PaymentMethods: FC<PaymentProps> = ({
                   useTableId: handlePayment?.useTable?.id,
                   payMethodId: 1,
                   isEmployeeHandle: true,
+                  isHandling: true,
                   payTotalPrice: Math.round(
                     totalFoodPrice! +
                       -1 * customerDiscount! +
@@ -91,7 +92,7 @@ const PaymentMethods: FC<PaymentProps> = ({
                   status: HandlePaymentStatus.selected,
                 },
               });
-              if (data) {
+              if (response) {
                 updateMethodInfo!(moneyImage, moneyTitle, null);
                 updatePayInfo!(
                   "Lưu trữ nội bộ",
@@ -135,6 +136,7 @@ const PaymentMethods: FC<PaymentProps> = ({
                   useTableId: handlePayment?.useTable?.id,
                   payMethodId: 4,
                   isEmployeeHandle: true,
+                  isHandling: true,
                   payTotalPrice: Math.round(
                     totalFoodPrice! +
                       -1 * customerDiscount! +
@@ -143,7 +145,7 @@ const PaymentMethods: FC<PaymentProps> = ({
                   status: HandlePaymentStatus.selected,
                 },
               });
-              if (data) {
+              if (response) {
                 const momoResponse = await HandleCreateMomoOrder({
                   handlePaymentId: handlePayment?.id!,
                 });
@@ -189,6 +191,7 @@ const PaymentMethods: FC<PaymentProps> = ({
                   useTableId: handlePayment?.useTable?.id,
                   payMethodId: 2,
                   isEmployeeHandle: true,
+                  isHandling: true,
                   payTotalPrice: Math.round(
                     totalFoodPrice! +
                       -1 * customerDiscount! +
@@ -197,7 +200,7 @@ const PaymentMethods: FC<PaymentProps> = ({
                   status: HandlePaymentStatus.selected,
                 },
               });
-              if (data) {
+              if (response) {
                 updateMethodInfo!(atmLogo, atmTitle, "");
                 updatePayInfo!(
                   "Lưu trữ nội bộ",
@@ -241,6 +244,7 @@ const PaymentMethods: FC<PaymentProps> = ({
                   useTableId: handlePayment?.useTable?.id,
                   payMethodId: 5,
                   isEmployeeHandle: true,
+                  isHandling: true,
                   payTotalPrice: Math.round(
                     totalFoodPrice! +
                       -1 * customerDiscount! +
@@ -249,7 +253,7 @@ const PaymentMethods: FC<PaymentProps> = ({
                   status: HandlePaymentStatus.selected,
                 },
               });
-              if (data) {
+              if (response) {
                 const zalopayResponse = await HandleCreateZalopayOrder({
                   handlePaymentId: handlePayment?.id!,
                 });

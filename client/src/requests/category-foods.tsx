@@ -29,18 +29,18 @@ export const FindAllCategoryFood = ({
     }),
     {
       params,
-    }
+    },
   );
 };
 export const FindOneCategoryFood = (
-  id: string
+  id: string,
 ): Promise<AxiosResponse<CategoryFoodType, any>> => {
   return instance.post(
     `/api/${keys.categoryFoods}/detail/${id}`,
     getNewFormSecurityValue({
       fieldName: keys.categoryFoods,
       fieldAction: "read",
-    })
+    }),
   );
 };
 export const HandleCreateCategoryFood = ({
@@ -62,11 +62,11 @@ export const HandleCreateCategoryFood = ({
           getNewFormSecurityValue({
             fieldName: keys.categoryFoods,
             fieldAction: "create",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Đối tượng
   formData.append(
@@ -80,8 +80,8 @@ export const HandleCreateCategoryFood = ({
           status,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Hình ảnh
   if (image) formData.append("image-file", image);
@@ -111,11 +111,11 @@ export const HandleUpdateCategoryFood = ({
           getNewFormSecurityValue({
             fieldName: keys.categoryFoods,
             fieldAction: "update",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Đối tượng
   formData.append(
@@ -125,11 +125,10 @@ export const HandleUpdateCategoryFood = ({
         JSON.stringify({
           name,
           description,
-          // updateAt,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Hình ảnh
   if (image) formData.append("image-file", image);
@@ -143,7 +142,6 @@ export const HandleUpdateCategoryFood = ({
 export const HandleLockCategoryFood = ({
   id,
   status,
-  updateAt,
 }: CategoryFoodType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -157,11 +155,11 @@ export const HandleLockCategoryFood = ({
           getNewFormSecurityValue({
             fieldName: keys.categoryFoods,
             fieldAction: "lock",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Đối tượng
   formData.append(
@@ -170,11 +168,10 @@ export const HandleLockCategoryFood = ({
       [
         JSON.stringify({
           status,
-          updateAt,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
 
   return instance.put(`/api/${keys.categoryFoods}/lock/${id}`, formData, {

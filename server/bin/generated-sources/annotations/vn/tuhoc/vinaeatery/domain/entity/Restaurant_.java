@@ -37,11 +37,6 @@ public abstract class Restaurant_ {
 	public static volatile SingularAttribute<Restaurant, String> description;
 	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.entity.Restaurant#updateAt
-	 **/
-	public static volatile SingularAttribute<Restaurant, String> updateAt;
-	
-	/**
 	 * @see vn.tuhoc.vinaeatery.domain.entity.Restaurant#id
 	 **/
 	public static volatile SingularAttribute<Restaurant, Integer> id;
@@ -76,7 +71,6 @@ public abstract class Restaurant_ {
 	public static final String NAME = "name";
 	public static final String RATING = "rating";
 	public static final String DESCRIPTION = "description";
-	public static final String UPDATE_AT = "updateAt";
 	public static final String ID = "id";
 	public static final String MANAGER_ID = "managerId";
 	public static final String CREATE_AT = "createAt";

@@ -6,12 +6,12 @@ import { getClassColorByPayslipStatus } from "./attendance-card";
 import { vietnamMoneyFormat } from "../../../../utils/other-events";
 
 type AttendancePopoverMonthProps = {
-  isTable: boolean;
+  isTable?: boolean;
   payslipMonth: PayslipMonth;
 };
 
 const AttendancePopoverMonth: FC<AttendancePopoverMonthProps> = ({
-  isTable,
+  isTable = false,
   payslipMonth,
 }) => {
   const totalDays = payslipMonth.payslipDates.length;

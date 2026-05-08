@@ -98,14 +98,14 @@ const DrawerOrderSheet: FC<CallFoodLayoutProps> = ({
                         </td>
                         <td>{orderSheetDetail?.quantity!}x</td>
                         <td className="right">
-                          {vietnamMoneyFormat(orderSheetDetail?.price!)}đ
+                          {vietnamMoneyFormat(orderSheetDetail?.price!)}
                         </td>
                       </tr>
                     ),
                   )}
                 </table>
                 <p className="call-food__order-sheet-total">
-                  Tổng cộng: {vietnamMoneyFormat(orderSheet!.totalPrice!)}đ
+                  Tổng cộng: {vietnamMoneyFormat(orderSheet!.totalPrice!)}
                 </p>
                 <p
                   className={

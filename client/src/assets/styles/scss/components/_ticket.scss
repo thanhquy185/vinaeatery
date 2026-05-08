@@ -38,7 +38,6 @@
     }
   }
 
-
   &__line {
     @include size(100%, 1px);
     background: #dedede;
@@ -63,8 +62,23 @@
     margin-top: 4px;
   }
 
+  &__row {
+    display: flex;
+  }
+
   &__info {
     font-size: 1.6rem;
+
+    &.split-2 {
+      & span {
+        display: inline-block;
+        width: 50%;
+
+        & b {
+          width: 50%;
+        }
+      }
+    }
 
     & b {
       display: inline-block;
@@ -72,7 +86,7 @@
     }
 
     &:not(:first-of-type) {
-      margin-top: 20px;
+      margin-top: 6px;
     }
   }
 
@@ -85,13 +99,13 @@
 
     &.split-2 {
       display: flex;
+      margin-bottom: 24px;
 
       & > * {
         width: 50%;
       }
     }
   }
-
 
   &__table {
     table-layout: fixed;
@@ -115,26 +129,25 @@
       color: #ffffff;
       font-weight: bold;
     }
-  
-    & tr:nth-of-type(even) {
-      background: #f7f8f9;
-    }
-  
+
+    // & tr:nth-of-type(even) {
+    //   background: #f7f8f9;
+    // }
+
     & tfoot td:first-of-type {
       background: #3597f2;
       color: #fff;
       font-weight: 700;
     }
-  
+
     & td.left {
       text-align: left;
     }
-  
+
     & td.right {
       text-align: right;
     }
   }
-
 
   &__total {
     margin-top: 6px;
@@ -144,12 +157,11 @@
     & span {
       font-style: italic;
     }
-  
+
     & strong {
       font-weight: bold;
     }
   }
-
 
   &__footer {
     display: flex;
@@ -178,22 +190,22 @@
     font-weight: 700;
     transition: 0.2s ease-in-out;
     cursor: pointer;
-    
+
     &:hover {
       background: #fff;
       color: #699f4c;
     }
-  
+
     & svg.lucide {
-      @include size(16px)
+      @include size(16px);
     }
   }
 
-  // &__body:where(.order, .input_ticket) &__info {
+  // &__body:where(.payslip, .order, .input_ticket) &__info {
   //   font-size: 1.6rem;
   // }
 
-  &__body:where(.order, .input_ticket) &__date {
+  &__body:where(.payslip, .order, .input_ticket) &__date {
     margin-bottom: 32px;
   }
 
@@ -201,7 +213,64 @@
     margin-top: 4px;
   }
 
-  &__footer:where(.order, .input_ticket) {
+  &__body.payslip {
+    & .ticket__row {
+      align-items: flex-start;
+    }
+
+    & .ticket__image {
+      @include flexCenter();
+      width: 20%;
+
+      & img {
+        @include size(180px * 3 / 4, 180px);
+        border-radius: 4px;
+      }
+    }
+
+    & .ticket__infos {
+      width: 80%;
+    }
+
+    & .salary-overview {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 6px 0 0;
+
+      & .item {
+        border: 1px dashed #ccc;
+        border-radius: 10px;
+        padding: 10px;
+        text-align: center;
+        background: #fafafa;
+
+        & span {
+          display: block;
+          font-size: 13px;
+          color: #666;
+        }
+
+        & b {
+          font-size: 16px;
+        }
+      }
+
+      & .income b {
+        color: #16a34a; 
+      }
+
+      & .deduction b {
+        color: #dc2626; 
+      }
+    }
+
+    & .ticket__table {
+      margin-top: 14px;
+    }
+  }
+
+  &__footer:where(.payslip, .order, .input_ticket) {
     justify-content: space-around;
   }
 

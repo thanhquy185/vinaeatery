@@ -37,18 +37,18 @@ export const FindAllOrderTable = ({
     }),
     {
       params,
-    }
+    },
   );
 };
 export const FindOneOrderTable = (
-  id: string
+  id: string,
 ): Promise<AxiosResponse<OrderTableType, any>> => {
   return instance.post(
     `/api/${keys.orderTables}/detail/${id}`,
     getNewFormSecurityValue({
       fieldName: keys.orderTables,
       fieldAction: "read",
-    })
+    }),
   );
 };
 export const HandleCreateOrderTable = ({
@@ -76,11 +76,11 @@ export const HandleCreateOrderTable = ({
           getNewFormSecurityValue({
             fieldName: keys.orderTables,
             fieldAction: "create",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Thông tin cơ bản
   formData.append(
@@ -101,8 +101,8 @@ export const HandleCreateOrderTable = ({
           status,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
 
   return instance.post(`/api/${keys.orderTables}/create`, formData, {
@@ -115,7 +115,6 @@ export const HandleUpdateOrderTable = ({
   id,
   employeeId,
   status,
-  updateAt,
 }: OrderTableType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -129,11 +128,11 @@ export const HandleUpdateOrderTable = ({
           getNewFormSecurityValue({
             fieldName: keys.orderTables,
             fieldAction: "update",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Đối tượng
   formData.append(
@@ -143,11 +142,10 @@ export const HandleUpdateOrderTable = ({
         JSON.stringify({
           employeeId,
           status,
-          updateAt,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
 
   return instance.put(
@@ -157,6 +155,6 @@ export const HandleUpdateOrderTable = ({
       headers: {
         "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
 };

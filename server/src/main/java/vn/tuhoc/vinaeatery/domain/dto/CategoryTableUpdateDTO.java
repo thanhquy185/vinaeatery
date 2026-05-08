@@ -1,7 +1,5 @@
 package vn.tuhoc.vinaeatery.domain.dto;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.Convert;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,6 +20,4 @@ public class CategoryTableUpdateDTO {
     private CategoryTableSurchargeTypeEnum surchargeType;
     private Long surchargeValue;
     private String description;
-    @NotNull(message = "Thời gian cập nhật không được để trống!")
-    private LocalDateTime updateAt;
 }

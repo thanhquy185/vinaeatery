@@ -106,7 +106,6 @@ export const HandleUpdateSchedule = ({
   note,
   scheduleEmployees,
   scheduleShifts,
-  updateAt,
 }: ScheduleType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -138,7 +137,6 @@ export const HandleUpdateSchedule = ({
           note,
           scheduleEmployees,
           scheduleShifts,
-          updateAt,
         }),
       ],
       { type: "application/json" },
@@ -154,7 +152,6 @@ export const HandleUpdateSchedule = ({
 export const HandleLockSchedule = ({
   id,
   status,
-  updateAt,
 }: ScheduleType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -181,7 +178,6 @@ export const HandleLockSchedule = ({
       [
         JSON.stringify({
           status,
-          updateAt,
         }),
       ],
       { type: "application/json" },

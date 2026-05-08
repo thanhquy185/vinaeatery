@@ -1,7 +1,10 @@
 import { type FC } from "react";
 import { FileDown, LucideCircleQuestionMark, RotateCcw } from "lucide-react";
 import { DatePicker, Select } from "antd";
-import type { ManagerHandlePayslipProps } from "./manager-handle-payslip";
+import type {
+  DataProps,
+  ManagerHandlePayslipProps,
+} from "./manager-handle-payslip";
 import ConfigVN from "../../../common/config-vn";
 import CustomModal from "../../../common/modal";
 import FilterExplain from "./filter-explain";
@@ -24,8 +27,8 @@ const FilterCard: FC<ManagerHandlePayslipProps> = ({
   // - Quản lý các modal
   const ManagerFilterCardModals = {
     explain: (data: any) => <FilterExplain />,
-    salaryMonth: (data: any) => <FilterSalaryMonth />,
-    salaryYear: (data: any) => <FilterSalaryYear />,
+    salaryMonth: (data: DataProps) => <FilterSalaryMonth data={data} />,
+    salaryYear: (data: DataProps) => <FilterSalaryYear data={data} />,
   };
 
   return (
@@ -87,12 +90,12 @@ const FilterCard: FC<ManagerHandlePayslipProps> = ({
           onClick={() =>
             openSecondModal({
               title: `In phiếu lương ${timeline === "year" ? "năm" : "tháng"}`,
-              width: "50%",
+              width: "80%",
               className: `default ${objectEN} ticket`,
               children:
                 timeline === "year"
-                  ? ManagerFilterCardModals.salaryYear(data)
-                  : ManagerFilterCardModals.salaryMonth(data),
+                  ? ManagerFilterCardModals.salaryYear(data!)
+                  : ManagerFilterCardModals.salaryMonth(data!),
             })
           }
         >

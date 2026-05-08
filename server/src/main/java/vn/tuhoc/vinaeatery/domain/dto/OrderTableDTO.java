@@ -31,6 +31,4 @@ public class OrderTableDTO {
     private Integer guests;
     @Convert(converter = OrderStatusConverter.class)
     private OrderStatusEnum status;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private String updateAt;
 }

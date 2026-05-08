@@ -54,7 +54,6 @@ const ManagerChangePassword: React.FC<CrudObjectModalProps> = ({
               values: {
                 ...values,
                 id: fieldId,
-                // updateAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
               },
             });
             if (response) {

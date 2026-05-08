@@ -1,6 +1,5 @@
 package vn.tuhoc.vinaeatery.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -27,10 +26,8 @@ import vn.tuhoc.vinaeatery.domain.entity.ShiftDetail;
 import vn.tuhoc.vinaeatery.domain.entity.ShiftDetailForCrud;
 import vn.tuhoc.vinaeatery.domain.entity.ShiftDetailId;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
-// import vn.tuhoc.vinaeatery.service.EmployeeService;
 import vn.tuhoc.vinaeatery.service.ShiftDetailService;
 import vn.tuhoc.vinaeatery.service.ShiftService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -41,8 +38,6 @@ public class ShiftApiController {
     // Properties
     private final ShiftService shiftService;
     private final ShiftDetailService shiftDetailService;
-    // private final EmployeeService employeeService;
-    private final TimeService timeService;
 
     // Methods
     @PostMapping("/list")
@@ -133,7 +128,6 @@ public class ShiftApiController {
         Shift shiftUpdated = this.shiftService.getOneById(id);
         if (shiftUpdated != null) {
             shiftUpdated.setName(shift.getName());
-            shiftUpdated.setUpdateAt(shift.getUpdateAt());
             this.shiftService.upsert(shiftUpdated);
 
             this.shiftDetailService.clearAllByShiftId(shiftUpdated.getId());
@@ -170,13 +164,11 @@ public class ShiftApiController {
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
                 ? CommonStatusEnum.INACTIVE
                 : CommonStatusEnum.ACTIVE;
-        // LocalDateTime handleUpdateAt =
-        // this.timeService.getDateTimeVN(commonStatusUpdate.getUpdateAt());
 
         Shift shiftLocked = this.shiftService.getOneById(id);
         if (shiftLocked != null) {
             shiftLocked.setStatus(handleStatus);
-            // shiftLocked.setUpdateAt(handleUpdateAt);
+
             this.shiftService.lock(shiftLocked);
         }
 

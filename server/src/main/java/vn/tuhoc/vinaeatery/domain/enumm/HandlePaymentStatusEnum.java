@@ -8,7 +8,8 @@ public enum HandlePaymentStatusEnum {
     EXISTS(1, "Đã có hoá đơn thanh toán"),
     PENDING(2, "Đang chọn phương thức thanh toán"),
     SELECTED(3, "Đã chọn phương thức thanh toán"),
-    COMPLETED(4, "Đã hoàn tất thanh toán hoá đơn");
+    COMPLETED(4, "Đã hoàn tất thanh toán hoá đơn"),
+    FEEDBACK(5, "Đã hoàn tất đánh giá cửa hàng");
 
     // Properties
     private final Integer value;

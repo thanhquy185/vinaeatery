@@ -66,7 +66,6 @@ const AdminUpdateUser: React.FC<CrudObjectModalProps> = ({
                 ...values,
                 role: values!.role || undefined,
                 // method: values!.method || undefined,
-                updateAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
               },
             });
             if (response) {

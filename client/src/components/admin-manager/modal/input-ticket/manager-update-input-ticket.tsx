@@ -88,7 +88,7 @@ const ManagerUpdateInputTicket: React.FC<CrudObjectModalProps> = ({
           payStatus: payStatus! || undefined,
         },
       });
-      if (data) {
+      if (response) {
         closeModal();
       }
     } else {

@@ -17,5 +17,4 @@ public class OrderUpdateStatusDTO {
     private Integer employeeId;
     @Convert(converter = OrderStatusConverter.class)
     private OrderStatusEnum status;
-    private String updateAt;
 }

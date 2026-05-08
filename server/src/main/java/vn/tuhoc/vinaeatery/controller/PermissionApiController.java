@@ -1,6 +1,5 @@
 package vn.tuhoc.vinaeatery.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -27,10 +26,8 @@ import vn.tuhoc.vinaeatery.domain.entity.PermissionDetail;
 import vn.tuhoc.vinaeatery.domain.entity.PermissionDetailForCrud;
 import vn.tuhoc.vinaeatery.domain.entity.PermissionDetailId;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
-// import vn.tuhoc.vinaeatery.service.EmployeeService;
 import vn.tuhoc.vinaeatery.service.PermissionDetailService;
 import vn.tuhoc.vinaeatery.service.PermissionService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -41,8 +38,6 @@ public class PermissionApiController {
     // Properties
     private final PermissionService permissionService;
     private final PermissionDetailService permissionDetailService;
-    // private final EmployeeService employeeService;
-    private final TimeService timeService;
 
     // Methods
     @PostMapping("/list")
@@ -133,7 +128,6 @@ public class PermissionApiController {
         Permission permissionUpdated = this.permissionService.getOneById(id);
         if (permissionUpdated != null) {
             permissionUpdated.setName(permission.getName());
-            permissionUpdated.setUpdateAt(permission.getUpdateAt());
             this.permissionService.upsert(permissionUpdated);
 
             this.permissionDetailService.clearAllByPermissionId(permissionUpdated.getId());
@@ -170,16 +164,14 @@ public class PermissionApiController {
         CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
                 ? CommonStatusEnum.INACTIVE
                 : CommonStatusEnum.ACTIVE;
-        // LocalDateTime handleUpdateAt =
-        // this.timeService.getDateTimeVN(commonStatusUpdate.getUpdateAt());
 
-        Permission PermissionLocked = this.permissionService.getOneById(id);
-        if (PermissionLocked != null) {
-            PermissionLocked.setStatus(handleStatus);
-            // PermissionLocked.setUpdateAt(handleUpdateAt);
-            this.permissionService.lock(PermissionLocked);
+        Permission permissionLocked = this.permissionService.getOneById(id);
+        if (permissionLocked != null) {
+            permissionLocked.setStatus(handleStatus);
+
+            this.permissionService.lock(permissionLocked);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(PermissionLocked);
+        return ResponseEntity.status(HttpStatus.OK).body(permissionLocked);
     }
 }

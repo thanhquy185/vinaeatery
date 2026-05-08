@@ -23,6 +23,4 @@ public class FoodUpdateDTO {
     @NotNull(message = "Giá bán không được để trống!")
     private Long price;
     private String description;
-    @NotNull(message = "Ngày cập nhật không được để trống!")
-    private LocalDateTime updateAt;
 }

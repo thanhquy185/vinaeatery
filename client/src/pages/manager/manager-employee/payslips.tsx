@@ -1,4 +1,4 @@
-import { useMemo, useState, type FC } from "react";
+import { useEffect, useMemo, useState, type FC } from "react";
 import { Button, Image, InputNumber } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { DollarSign, IdCard, Settings } from "lucide-react";
@@ -10,16 +10,20 @@ import {
   EmployeeStatus,
   ImageSourcePath,
   RewardPunishStatus,
+  SalaryAdvanceStatus,
 } from "../../../common/values";
 import type {
+  AllowanceType,
   AttendanceType,
   EmployeeType,
+  InsuranceType,
   PayslipAttendanceDate,
   PayslipDate,
   PayslipShiftType,
   PayslipType,
   PermissionTicketType,
   RewardPunishType,
+  SalaryAdvanceType,
   ScheduleType,
 } from "../../../common/types";
 import CustomModal from "../../../components/common/modal";
@@ -30,22 +34,26 @@ import ManagerHandlePayslip from "../../../components/admin-manager/modal/paysli
 import { useModal } from "../../../hook/use-modal";
 import { useEntityQuery } from "../../../hook/use-entity-query";
 import { useRestaurantContext } from "../../../hook/use-restaurant-context";
+import { FindAllEmployee } from "../../../requests/employees";
 import { FindAllAttendance } from "../../../requests/attendances";
 import { FindAllSchedule } from "../../../requests/schedule";
+import { FindAllAllowance } from "../../../requests/allowances";
+import { FindAllInsurance } from "../../../requests/insurances";
 import { FindAllPermissionTicket } from "../../../requests/permission-tickets";
 import { FindAllRewardPunish } from "../../../requests/reward-punishes";
-import { FindAllEmployee } from "../../../requests/employees";
+import { FindAllSalaryAdvance } from "../../../requests/salary-advances";
 import { actionIndexes, getActionNameEn } from "../../../utils/default-actions";
 import { hasPermission } from "../../../utils/has-permissions";
 import {
+  calInsuranceSalaryByMinRoleSalary,
   calPayslipAttendanceSalary,
   calPayslipAttendanceTime,
   calPayslipDate,
   calPayslipStatus,
   generatePayslipShifts,
 } from "../../../utils/payslip-events";
-import dayjs from "dayjs";
 import { vietnamMoneyFormat } from "../../../utils/other-events";
+import dayjs from "dayjs";
 
 // Manager Payslips Page
 const ManagerPayslipsPage: FC<ManagerPageProps> = ({
@@ -96,9 +104,27 @@ const ManagerPayslipsPage: FC<ManagerPageProps> = ({
     },
     api: FindAllAttendance,
   });
+  // + Phụ cấp
+  const { data: allowances } = useEntityQuery<AllowanceType[]>({
+    keys: ["allowances", restaurantIdForCrud, CommonStatus.active],
+    params: {
+      restaurantId: restaurantIdForCrud,
+      statusValue: [CommonStatus.active],
+    },
+    api: FindAllAllowance,
+  });
+  // + Bảo hiểm
+  const { data: insurances } = useEntityQuery<InsuranceType[]>({
+    keys: ["insurances", restaurantIdForCrud, CommonStatus.active],
+    params: {
+      restaurantId: restaurantIdForCrud,
+      statusValue: [CommonStatus.active],
+    },
+    api: FindAllInsurance,
+  });
   // + Đơn xin phép
   const { data: permissionTickets } = useEntityQuery<PermissionTicketType[]>({
-    keys: ["permissionTickets", restaurantIdForCrud],
+    keys: ["permission-tickets", restaurantIdForCrud],
     params: {
       restaurantId: restaurantIdForCrud,
     },
@@ -106,11 +132,19 @@ const ManagerPayslipsPage: FC<ManagerPageProps> = ({
   });
   // + Thưởng - Phạt
   const { data: rewardPunishes } = useEntityQuery<RewardPunishType[]>({
-    keys: ["rewardPunishes", restaurantIdForCrud],
+    keys: ["reward-punishes", restaurantIdForCrud],
     params: {
       restaurantId: restaurantIdForCrud,
     },
     api: FindAllRewardPunish,
+  });
+  // + Ứng lương
+  const { data: salaryAdvances } = useEntityQuery<SalaryAdvanceType[]>({
+    keys: ["salary-advances", restaurantIdForCrud],
+    params: {
+      restaurantId: restaurantIdForCrud,
+    },
+    api: FindAllSalaryAdvance,
   });
   // - Tiền lương
   const salaryDatas = useMemo(() => {
@@ -297,12 +331,57 @@ const ManagerPayslipsPage: FC<ManagerPageProps> = ({
   const payslips = useMemo(() => {
     return (
       employees?.map((employee) => {
-        const totalSalary = salaryDatas
-          ?.filter((salaryData) => salaryData.employee.id === employee.id)
-          ?.reduce(
-            (total, salaryData) => total + salaryData.attendanceSalary,
-            0,
+        const employeeInsurances = insurances?.flatMap((insurance) => {
+          const insuranceDetails = insurance.insuranceDetails?.filter(
+            (insuranceDetail) => insuranceDetail.employeeId === employee.id,
           );
+          if (insuranceDetails?.length == 0) return [];
+
+          const insuranceSalary = calInsuranceSalaryByMinRoleSalary({
+            insurance: insurance,
+            roleHistories: employee.roleHistories || [],
+          });
+
+          return { ...insurance, insuranceSalary, insuranceDetails };
+        });
+
+        const totalSalary =
+          salaryDatas
+            ?.filter((salaryData) => salaryData.employee.id === employee.id)
+            ?.reduce(
+              (total, salaryData) => total + salaryData.attendanceSalary,
+              0,
+            ) || 0;
+        const totalAllowance =
+          allowances
+            ?.flatMap((allowance) =>
+              allowance.allowanceDetails?.filter(
+                (allowanceDetail) => allowanceDetail.employeeId === employee.id,
+              ),
+            )
+            ?.reduce(
+              (total, allowanceDetail) =>
+                total + (allowanceDetail?.categoryAllowance?.money || 0),
+              0,
+            ) || 0;
+        const totalInsurance =
+          employeeInsurances?.reduce((total, employeeInsurance) => {
+            const totalEmployeePercent =
+              employeeInsurance.insuranceDetails?.reduce(
+                (total, employeeInsuranceDetail) =>
+                  total +
+                  (employeeInsuranceDetail.categoryInsurance?.employeePercent ||
+                    0),
+                0,
+              ) || 0;
+
+            return (
+              total -
+              ((employeeInsurance.insuranceSalary || 0) *
+                (1.0 * totalEmployeePercent)) /
+                100
+            );
+          }, 0) || 0;
         let totalReward = 0,
           totalPunish = 0;
         rewardPunishes
@@ -315,12 +394,28 @@ const ManagerPayslipsPage: FC<ManagerPageProps> = ({
               if (handle === CategoryRewardPunishHandle.reward) {
                 totalReward += rewardPunish.money || 0;
               } else if (handle === CategoryRewardPunishHandle.punish) {
-                totalPunish += rewardPunish.money || 0;
+                totalPunish -= rewardPunish.money || 0;
               }
             }
-          });
-        const summary = totalSalary + totalReward - totalPunish;
-        const settlement = 0;
+          }) || 0;
+        const totalSalaryAdvance =
+          salaryAdvances
+            ?.filter(
+              (salaryAdvance) =>
+                salaryAdvance.employeeMain?.id === employee.id &&
+                salaryAdvance.status === SalaryAdvanceStatus.confirm,
+            )
+            ?.reduce(
+              (total, salaryAdvance) => total - (salaryAdvance?.money || 0),
+              0,
+            ) || 0;
+        const summary =
+          totalSalary +
+          totalAllowance +
+          totalInsurance +
+          totalReward +
+          totalPunish +
+          totalSalaryAdvance;
 
         return {
           employee,
@@ -332,6 +427,15 @@ const ManagerPayslipsPage: FC<ManagerPageProps> = ({
           attendances: attendances?.filter(
             (attendance) => attendance.employeeId === employee.id,
           ),
+          allowances: allowances?.flatMap((allowance) => {
+            const allowanceDetails = allowance.allowanceDetails?.filter(
+              (allowanceDetail) => allowanceDetail.employeeId === employee.id,
+            );
+            if (allowanceDetails?.length == 0) return [];
+
+            return { ...allowance, allowanceDetails };
+          }),
+          insurances: employeeInsurances,
           permissionTickets: permissionTickets?.filter(
             (permissionTicket) =>
               permissionTicket.employeeMain?.id === employee.id,
@@ -339,25 +443,38 @@ const ManagerPayslipsPage: FC<ManagerPageProps> = ({
           rewardPunishes: rewardPunishes?.filter(
             (rewardPunish) => rewardPunish.employeeMain?.id === employee.id,
           ),
+          salaryAdvances: salaryAdvances?.filter(
+            (salaryAdvance) => salaryAdvance.employeeMain?.id === employee.id,
+          ),
           salaryDatas: salaryDatas?.filter(
             (salary) => salary.employee?.id === employee.id,
           ),
           totalSalary: totalSalary,
+          totalAllowance: totalAllowance,
+          totalInsurance: totalInsurance,
           totalReward: totalReward,
           totalPunish: totalPunish,
+          totalSalaryAdvance: totalSalaryAdvance,
           summary: summary,
-          settlement: settlement,
         };
       }) || []
     );
-  }, [employees, schedules, attendances, permissionTickets, rewardPunishes]);
+  }, [
+    employees,
+    schedules,
+    attendances,
+    allowances,
+    insurances,
+    permissionTickets,
+    rewardPunishes,
+  ]);
   // - Cột thuộc tính
   const columns: ColumnsType<any> = [
     {
       title: "Nhân viên",
       dataIndex: "employee",
       key: "employee",
-      width: "20%",
+      width: "18%",
       render: (employee: EmployeeType) => (
         <div className="employee-info">
           <Image
@@ -382,10 +499,10 @@ const ManagerPayslipsPage: FC<ManagerPageProps> = ({
       ),
     },
     {
-      title: "Tiền lương",
+      title: "Lương làm",
       dataIndex: "totalSalary",
       key: "totalSalary",
-      width: "12%",
+      width: "10%",
       filterDropdown: ({
         setSelectedKeys,
         selectedKeys,
@@ -454,10 +571,156 @@ const ManagerPayslipsPage: FC<ManagerPageProps> = ({
       render: (totalSalary: number) => vietnamMoneyFormat(totalSalary || 0),
     },
     {
-      title: "Tiền thưởng",
+      title: "Phụ cấp",
+      dataIndex: "totalAllowance",
+      key: "totalAllowance",
+      width: "10%",
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => {
+        let min = 0,
+          max = 0;
+        if (selectedKeys[0]) {
+          try {
+            [min, max] = JSON.parse(selectedKeys[0] as string) as [
+              number,
+              number,
+            ];
+          } catch {}
+        }
+
+        return (
+          <div style={{ padding: 8 }}>
+            <InputNumber
+              placeholder="Tối thiểu"
+              style={{ marginBottom: 8, display: "block", width: "100%" }}
+              value={min || undefined}
+              onChange={(val) => {
+                setSelectedKeys([JSON.stringify([val ?? 0, max ?? 0])]);
+              }}
+            />
+            <InputNumber
+              placeholder="Tối đa"
+              style={{ marginBottom: 8, display: "block", width: "100%" }}
+              value={max || undefined}
+              onChange={(val) => {
+                setSelectedKeys([JSON.stringify([min ?? 0, val ?? 0])]);
+              }}
+            />
+            <Button
+              type="primary"
+              size="small"
+              style={{ width: "100%" }}
+              onClick={() => confirm()}
+            >
+              Lọc
+            </Button>
+            {/* <Button
+              size="small"
+              style={{ width: "100%", marginTop: 4 }}
+              onClick={() => {
+                clearFilters?.();
+                confirm();
+              }}
+            >
+              Đặt lại
+            </Button> */}
+          </div>
+        );
+      },
+      onFilter: (value, record) => {
+        if (!value) return true;
+        const [min, max] = JSON.parse(value as string) as [number, number];
+        const totalAllowance = record.totalAllowance ?? 0;
+        if (min && totalAllowance < min) return false;
+        if (max && totalAllowance > max) return false;
+        return true;
+      },
+      sorter: (a, b) => a?.totalAllowance! - b?.totalAllowance!,
+      render: (totalAllowance: number) =>
+        vietnamMoneyFormat(totalAllowance || 0),
+    },
+    {
+      title: "Bảo hiểm",
+      dataIndex: "totalInsurance",
+      key: "totalInsurance",
+      width: "10%",
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => {
+        let min = 0,
+          max = 0;
+        if (selectedKeys[0]) {
+          try {
+            [min, max] = JSON.parse(selectedKeys[0] as string) as [
+              number,
+              number,
+            ];
+          } catch {}
+        }
+
+        return (
+          <div style={{ padding: 8 }}>
+            <InputNumber
+              placeholder="Tối thiểu"
+              style={{ marginBottom: 8, display: "block", width: "100%" }}
+              value={min || undefined}
+              onChange={(val) => {
+                setSelectedKeys([JSON.stringify([val ?? 0, max ?? 0])]);
+              }}
+            />
+            <InputNumber
+              placeholder="Tối đa"
+              style={{ marginBottom: 8, display: "block", width: "100%" }}
+              value={max || undefined}
+              onChange={(val) => {
+                setSelectedKeys([JSON.stringify([min ?? 0, val ?? 0])]);
+              }}
+            />
+            <Button
+              type="primary"
+              size="small"
+              style={{ width: "100%" }}
+              onClick={() => confirm()}
+            >
+              Lọc
+            </Button>
+            {/* <Button
+              size="small"
+              style={{ width: "100%", marginTop: 4 }}
+              onClick={() => {
+                clearFilters?.();
+                confirm();
+              }}
+            >
+              Đặt lại
+            </Button> */}
+          </div>
+        );
+      },
+      onFilter: (value, record) => {
+        if (!value) return true;
+        const [min, max] = JSON.parse(value as string) as [number, number];
+        const totalInsurance = record.totalInsurance ?? 0;
+        if (min && totalInsurance < min) return false;
+        if (max && totalInsurance > max) return false;
+        return true;
+      },
+      sorter: (a, b) => a?.totalInsurance! - b?.totalInsurance!,
+      render: (totalInsurance: number) =>
+        vietnamMoneyFormat(totalInsurance || 0),
+    },
+    {
+      title: "Thưởng",
       dataIndex: "totalReward",
       key: "totalReward",
-      width: "12%",
+      width: "10%",
       filterDropdown: ({
         setSelectedKeys,
         selectedKeys,
@@ -526,10 +789,10 @@ const ManagerPayslipsPage: FC<ManagerPageProps> = ({
       render: (totalReward: number) => vietnamMoneyFormat(totalReward || 0),
     },
     {
-      title: "Tiền phạt",
+      title: "Phạt",
       dataIndex: "totalPunish",
       key: "totalPunish",
-      width: "12%",
+      width: "10%",
       filterDropdown: ({
         setSelectedKeys,
         selectedKeys,
@@ -598,10 +861,83 @@ const ManagerPayslipsPage: FC<ManagerPageProps> = ({
       render: (totalPunish: number) => vietnamMoneyFormat(totalPunish || 0),
     },
     {
-      title: "Tổng lương nhận",
+      title: "Ứng lương",
+      dataIndex: "totalSalaryAdvance",
+      key: "totalSalaryAdvance",
+      width: "10%",
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => {
+        let min = 0,
+          max = 0;
+        if (selectedKeys[0]) {
+          try {
+            [min, max] = JSON.parse(selectedKeys[0] as string) as [
+              number,
+              number,
+            ];
+          } catch {}
+        }
+
+        return (
+          <div style={{ padding: 8 }}>
+            <InputNumber
+              placeholder="Tối thiểu"
+              style={{ marginBottom: 8, display: "block", width: "100%" }}
+              value={min || undefined}
+              onChange={(val) => {
+                setSelectedKeys([JSON.stringify([val ?? 0, max ?? 0])]);
+              }}
+            />
+            <InputNumber
+              placeholder="Tối đa"
+              style={{ marginBottom: 8, display: "block", width: "100%" }}
+              value={max || undefined}
+              onChange={(val) => {
+                setSelectedKeys([JSON.stringify([min ?? 0, val ?? 0])]);
+              }}
+            />
+            <Button
+              type="primary"
+              size="small"
+              style={{ width: "100%" }}
+              onClick={() => confirm()}
+            >
+              Lọc
+            </Button>
+            {/* <Button
+              size="small"
+              style={{ width: "100%", marginTop: 4 }}
+              onClick={() => {
+                clearFilters?.();
+                confirm();
+              }}
+            >
+              Đặt lại
+            </Button> */}
+          </div>
+        );
+      },
+      onFilter: (value, record) => {
+        if (!value) return true;
+        const [min, max] = JSON.parse(value as string) as [number, number];
+        const totalSalaryAdvance = record.totalSalaryAdvance ?? 0;
+        if (min && totalSalaryAdvance < min) return false;
+        if (max && totalSalaryAdvance > max) return false;
+        return true;
+      },
+      sorter: (a, b) => a?.totalSalaryAdvance! - b?.totalSalaryAdvance!,
+      render: (totalSalaryAdvance: number) =>
+        vietnamMoneyFormat(totalSalaryAdvance || 0),
+    },
+    {
+      title: "Tổng nhận",
       dataIndex: "summary",
       key: "summary",
-      width: "16%",
+      width: "15%",
       filterDropdown: ({
         setSelectedKeys,
         selectedKeys,
@@ -670,82 +1006,10 @@ const ManagerPayslipsPage: FC<ManagerPageProps> = ({
       render: (summary: number) => vietnamMoneyFormat(summary || 0),
     },
     {
-      title: "Tổng quyết toán",
-      dataIndex: "settlement",
-      key: "settlement",
-      width: "16%",
-      filterDropdown: ({
-        setSelectedKeys,
-        selectedKeys,
-        confirm,
-        clearFilters,
-      }) => {
-        let min = 0,
-          max = 0;
-        if (selectedKeys[0]) {
-          try {
-            [min, max] = JSON.parse(selectedKeys[0] as string) as [
-              number,
-              number,
-            ];
-          } catch {}
-        }
-
-        return (
-          <div style={{ padding: 8 }}>
-            <InputNumber
-              placeholder="Tối thiểu"
-              style={{ marginBottom: 8, display: "block", width: "100%" }}
-              value={min || undefined}
-              onChange={(val) => {
-                setSelectedKeys([JSON.stringify([val ?? 0, max ?? 0])]);
-              }}
-            />
-            <InputNumber
-              placeholder="Tối đa"
-              style={{ marginBottom: 8, display: "block", width: "100%" }}
-              value={max || undefined}
-              onChange={(val) => {
-                setSelectedKeys([JSON.stringify([min ?? 0, val ?? 0])]);
-              }}
-            />
-            <Button
-              type="primary"
-              size="small"
-              style={{ width: "100%" }}
-              onClick={() => confirm()}
-            >
-              Lọc
-            </Button>
-            {/* <Button
-              size="small"
-              style={{ width: "100%", marginTop: 4 }}
-              onClick={() => {
-                clearFilters?.();
-                confirm();
-              }}
-            >
-              Đặt lại
-            </Button> */}
-          </div>
-        );
-      },
-      onFilter: (value, record) => {
-        if (!value) return true;
-        const [min, max] = JSON.parse(value as string) as [number, number];
-        const settlement = record.settlement ?? 0;
-        if (min && settlement < min) return false;
-        if (max && settlement > max) return false;
-        return true;
-      },
-      sorter: (a, b) => a?.settlement! - b?.settlement!,
-      render: (settlement: number) => vietnamMoneyFormat(settlement || 0),
-    },
-    {
       title: "",
       dataIndex: "",
       key: "actions",
-      width: "12",
+      width: "7%",
       className: "buttons",
       render: (text: any, record: PayslipType, index: number) => (
         <>
@@ -823,6 +1087,13 @@ const ManagerPayslipsPage: FC<ManagerPageProps> = ({
       />
     ),
   };
+
+  useEffect(() => {
+    console.log(salaryDatas);
+  }, [salaryDatas]);
+  useEffect(() => {
+    console.log(payslips);
+  }, [payslips]);
 
   return (
     <>

@@ -1,9 +1,6 @@
 package vn.tuhoc.vinaeatery.domain.dto;
 
-import java.time.LocalDateTime;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Convert;
 import lombok.AllArgsConstructor;
@@ -30,7 +27,5 @@ public class FoodDTO {
     private String description;
     @Convert(converter = FoodStatusConverter.class)
     private FoodStatusEnum status;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateAt;
     private List<RecipeDTO> recipe;
 }

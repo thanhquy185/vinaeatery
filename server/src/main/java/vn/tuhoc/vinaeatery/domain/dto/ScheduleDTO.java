@@ -2,7 +2,6 @@ package vn.tuhoc.vinaeatery.domain.dto;
 
 import java.util.List;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.converter.CommonStatusConverter;
@@ -26,7 +25,6 @@ public class ScheduleDTO {
     private String note;
     @Convert(converter = CommonStatusConverter.class)
     private CommonStatusEnum status;
-    private String updateAt;
     private List<ScheduleEmployeeDTO> scheduleEmployees;
     private List<ScheduleShiftDTO> scheduleShifts;
 }

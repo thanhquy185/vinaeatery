@@ -23,7 +23,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.domain.criteria.EmployeeCriteria;
 import vn.tuhoc.vinaeatery.domain.dto.EmployeeStatusUpdateDTO;
-import vn.tuhoc.vinaeatery.domain.dto.EmployeeChangePasswordDTO;
 import vn.tuhoc.vinaeatery.domain.dto.EmployeeDTO;
 import vn.tuhoc.vinaeatery.domain.dto.EmployeeUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
@@ -32,7 +31,6 @@ import vn.tuhoc.vinaeatery.domain.entity.RoleHistory;
 import vn.tuhoc.vinaeatery.domain.entity.RoleHistoryId;
 import vn.tuhoc.vinaeatery.domain.entity.User;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
-// import vn.tuhoc.vinaeatery.domain.dto.EmployeeUpdateFromClientDTO;
 import vn.tuhoc.vinaeatery.domain.enumm.EmployeeStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.UserIsUsingEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.UserMethodEnum;
@@ -221,7 +219,6 @@ public class EmployeeApiController {
                         employeeUpdate.setEmail(employee.getEmail());
                         employeeUpdate.setAddress(employee.getAddress());
                         employeeUpdate.setPermissionId(employee.getPermissionId());
-                        employeeUpdate.setUpdateAt(employee.getUpdateAt());
 
                         RoleHistory currentRoleHistory = roleHistoryService.getNewByEmployeeId(id);
                         if (currentRoleHistory != null
@@ -274,108 +271,14 @@ public class EmployeeApiController {
                 EmployeeStatusEnum handleStatus = employeeStatusUpdate.getStatus() == EmployeeStatusEnum.ACTIVE
                                 ? EmployeeStatusEnum.INACTIVE
                                 : EmployeeStatusEnum.ACTIVE;
-                // LocalDateTime handleUpdateAt =
-                // this.timeService.getDateTimeVN(employeeStatusUpdate.getUpdateAt());
 
                 Employee employeeLocked = this.employeeService.getOneById(id);
                 if (employeeLocked != null) {
                         employeeLocked.setStatus(handleStatus);
-                        // employeeLocked.setUpdateAt(employeeStatusUpdate.getUpdateAt());
+
                         this.employeeService.upsert(employeeLocked);
                 }
 
                 return ResponseEntity.status(HttpStatus.OK).body(employeeLocked);
         }
-
-        // @PutMapping("/update_from_client/{id}")
-        // public ResponseEntity<?> handleUpdateEmployeeFromClient(@PathVariable("id")
-        // Integer id,
-        // @RequestPart("Employee") @Valid EmployeeUpdateFromClientDTO Employee,
-        // @RequestPart(value = "file-image", required = false) MultipartFile fileImage,
-        // BindingResult bindingResult) {
-        // // Nếu thông tin không hợp lệ thì báo lỗi
-        // if (bindingResult.hasErrors()) {
-        // return
-        // ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getFieldErrors());
-        // }
-
-        // // Cập nhật file ảnh vào source code và lấy ra tên file để lưu vào csdl
-        // String image = null;
-        // if (fileImage != null && !fileImage.isEmpty()) {
-        // image = this.uploadService.uploadImageFiles(fileImage, "Employees",
-        // String.valueOf(id));
-        // }
-        // Employee.setImage(image);
-
-        // // Cập nhật lại theo giờ Việt Nam
-        // Employee.setUpdateAt(this.timeService.getTimeVN(Employee.getUpdateAt()));
-
-        // // Cập nhật lại dữ liệu
-        // Employee EmployeeUpdate = this.employeeService.getOneById(id);
-        // if (EmployeeUpdate != null) {
-        // if (EmployeeUpdate.getImage() == null || Employee.getImage() != null) {
-        // EmployeeUpdate.setImage(Employee.getImage());
-        // }
-        // EmployeeUpdate.setFullname(Employee.getFullname());
-        // EmployeeUpdate.setBirthday(Employee.getBirthday());
-        // EmployeeUpdate.setGender(Employee.getGender());
-        // EmployeeUpdate.setPhone(Employee.getPhone());
-        // EmployeeUpdate.setEmail(Employee.getEmail());
-        // EmployeeUpdate.setAddress(Employee.getAddress());
-        // EmployeeUpdate.setUpdateAt(Employee.getUpdateAt());
-        // this.employeeService.upsertEmployee(EmployeeUpdate);
-        // }
-
-        // return ResponseEntity.status(HttpStatus.CREATED).body(EmployeeUpdate);
-        // }
-
-        // @PutMapping(value = "/change-password/{id}", consumes =
-        // MediaType.MULTIPART_FORM_DATA_VALUE)
-        // public ResponseEntity<?> handleChangeEmployeePassword(
-        // @RequestPart("form-security") FormSecurityDTO formSecurityDTO,
-        // @PathVariable("id") Integer id,
-        // @RequestPart("employee") @Valid EmployeeChangePasswordDTO
-        // employeeChangePassword,
-        // BindingResult bindingResult) {
-        // if (!HandleFormSecurity.isValidFormData(formSecurityDTO, "employees",
-        // "change-password")) {
-        // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        // .body(ValidationUtil
-        // .buildRestResponseWithStr(HandleFormSecurity
-        // .getErrorMessageByHandleFormData()));
-        // }
-
-        // if (bindingResult.hasErrors()) {
-        // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        // .body(ValidationUtil.buildRestResponseWithBR(bindingResult));
-        // }
-
-        // Employee employeeUpdatePassword = this.employeeService.getOneById(id);
-        // if (employeeUpdatePassword != null) {
-        // if
-        // (!this.passwordEncoder.matches(employeeChangePassword.getCurrentPassword(),
-        // employeeUpdatePassword.getPassword())) {
-        // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        // .body(ValidationUtil.buildRestResponseWithStr(
-        // "Mật khẩu hiện tại không đúng!"));
-        // }
-        // if (!employeeChangePassword.getNewPassword()
-        // .equals(employeeChangePassword.getAuthNewPassword())) {
-        // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        // .body(ValidationUtil.buildRestResponseWithStr(
-        // "Xác nhận mật khẩu mới không đúng!"));
-        // }
-
-        // employeeUpdatePassword.setPassword(
-        // this.passwordEncoder.encode(employeeChangePassword.getNewPassword()));
-        // employeeUpdatePassword
-        // .setUpdateAt(this.timeService
-        // .getDateTimeVN(employeeChangePassword.getUpdateAt()));
-        // //
-        // employeeUpdatePassword.setUpdateAt(this.timeService.getDateTimeVN(LocalDateTime.now()));
-        // this.employeeService.upsert(employeeUpdatePassword);
-        // }
-
-        // return ResponseEntity.status(HttpStatus.OK).body(employeeUpdatePassword);
-        // }
 }

@@ -38,6 +38,17 @@ export const GetHandlePaymentByUseTableId = ({
     })
   );
 };
+export const GetHandlePaymentFormatByUseTableId = ({
+  useTableId,
+}: FilterDataProps): Promise<AxiosResponse<HandlePaymentType, any>> => {
+  return instance.post(
+    `/api/${keys.handlePayments}/get-format/${useTableId}`,
+    getNewFormSecurityValue({
+      fieldName: keys.handlePayments,
+      fieldAction: "read",
+    })
+  );
+};
 export const GetHandlePaymentFormatByIsEmployeeHandle = (): Promise<
   AxiosResponse<HandlePaymentType, any>
 > => {
@@ -49,11 +60,11 @@ export const GetHandlePaymentFormatByIsEmployeeHandle = (): Promise<
     })
   );
 };
-export const GetHandlePaymentFormatByUseTableId = ({
-  useTableId,
-}: FilterDataProps): Promise<AxiosResponse<HandlePaymentType, any>> => {
+export const GetHandlePaymentFormatByIsEmployeeHandleAndIsHandling = (): Promise<
+  AxiosResponse<HandlePaymentType, any>
+> => {
   return instance.post(
-    `/api/${keys.handlePayments}/get-format/${useTableId}`,
+    `/api/${keys.handlePayments}/get-format-is-employee-handle-and-is-handling`,
     getNewFormSecurityValue({
       fieldName: keys.handlePayments,
       fieldAction: "read",
@@ -66,6 +77,7 @@ export const HandleUpdateHandlePayment = ({
   employeeId,
   payMethodId,
   isEmployeeHandle,
+  isHandling,
   payTotalPrice,
   status,
 }: HandlePaymentType): Promise<AxiosResponse<RestResponseType, any>> => {
@@ -97,6 +109,7 @@ export const HandleUpdateHandlePayment = ({
           employeeId,
           payMethodId,
           isEmployeeHandle,
+          isHandling,
           payTotalPrice,
           status,
         }),

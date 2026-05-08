@@ -27,11 +27,6 @@ public abstract class Schedule_ {
 	public static volatile SingularAttribute<Schedule, String> name;
 	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.entity.Schedule#updateAt
-	 **/
-	public static volatile SingularAttribute<Schedule, String> updateAt;
-	
-	/**
 	 * @see vn.tuhoc.vinaeatery.domain.entity.Schedule#id
 	 **/
 	public static volatile SingularAttribute<Schedule, Integer> id;
@@ -59,7 +54,6 @@ public abstract class Schedule_ {
 	public static final String NOTE = "note";
 	public static final String DATE_START = "dateStart";
 	public static final String NAME = "name";
-	public static final String UPDATE_AT = "updateAt";
 	public static final String ID = "id";
 	public static final String DATE_END = "dateEnd";
 	public static final String RESTAURANT_ID = "restaurantId";

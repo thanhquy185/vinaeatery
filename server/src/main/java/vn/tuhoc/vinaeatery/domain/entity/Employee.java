@@ -67,6 +67,4 @@ public class Employee {
     @Convert(converter = EmployeeStatusConverter.class)
     @NotNull(message = "Trạng thái không được để trống!")
     private EmployeeStatusEnum status;
-    @Column(columnDefinition = "DATETIME")
-    private String updateAt;
 }

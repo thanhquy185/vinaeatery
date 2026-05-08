@@ -76,7 +76,7 @@ const ManagerUpdatePermissionTicket: FC<CrudObjectModalProps> = ({
           status: status! || undefined,
         },
       });
-      if (data) {
+      if (response) {
         closeModal();
       }
     } else {
@@ -202,36 +202,36 @@ const ManagerUpdatePermissionTicket: FC<CrudObjectModalProps> = ({
             </Form.Item>
           </div>
         </div>
-        {data?.status === PermissionTicketStatus.pending && (
-          <div className="modal__buttons">
-            <>
-              <button
-                className="modal__button secondary btn green-secondary"
-                onClick={(e) =>
-                  callApiToUpdatePermissionTicket(
-                    data?.id!,
-                    e.target as HTMLElement,
-                    PermissionTicketStatus.confirm,
-                  )
-                }
-              >
-                {PermissionTicketStatus.confirm}
-              </button>
-              <button
-                className="modal__button secondary btn red-secondary"
-                onClick={(e) =>
-                  callApiToUpdatePermissionTicket(
-                    data?.id!,
-                    e.target as HTMLElement,
-                    PermissionTicketStatus.canceled,
-                  )
-                }
-              >
-                {PermissionTicketStatus.canceled}
-              </button>
-            </>
-          </div>
-        )}
+        <div className="modal__buttons">
+          {data?.status !== PermissionTicketStatus.confirm && (
+            <button
+              className="modal__button secondary btn green-secondary"
+              onClick={(e) =>
+                callApiToUpdatePermissionTicket(
+                  data?.id!,
+                  e.target as HTMLElement,
+                  PermissionTicketStatus.confirm,
+                )
+              }
+            >
+              {PermissionTicketStatus.confirm}
+            </button>
+          )}
+          {data?.status !== PermissionTicketStatus.canceled && (
+            <button
+              className="modal__button secondary btn red-secondary"
+              onClick={(e) =>
+                callApiToUpdatePermissionTicket(
+                  data?.id!,
+                  e.target as HTMLElement,
+                  PermissionTicketStatus.canceled,
+                )
+              }
+            >
+              {PermissionTicketStatus.canceled}
+            </button>
+          )}
+        </div>
       </Form>
     </>
   );

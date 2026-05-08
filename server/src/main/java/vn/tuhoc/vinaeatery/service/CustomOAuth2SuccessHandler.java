@@ -61,8 +61,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         userLogin.setMethod(user.getMethod());
         userLogin.setIsUsing(user.getIsUsing());
         userLogin.setStatus(user.getStatus());
-        userLogin.setUpdateAt(user.getUpdateAt());
-
+        
         restLogin.setUserLogin(userLogin);
 
         String accessToken = this.securityUtil.createAccessToken(user.getUsername(), restLogin);

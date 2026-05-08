@@ -144,7 +144,7 @@ const AttendanceTable: FC<ManagerHandlePayslipProps> = ({ timeline, data }) => {
   return (
     <Table
       columns={columns}
-      dataSource={data.salaryAttendanceData}
+      dataSource={data?.salaryAttendanceData}
       rowKey="date"
       pagination={false}
       rowClassName={getRowClassNameByPayslipStatus}

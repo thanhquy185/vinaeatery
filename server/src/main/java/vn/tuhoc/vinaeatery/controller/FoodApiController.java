@@ -29,14 +29,11 @@ import vn.tuhoc.vinaeatery.domain.entity.Food;
 import vn.tuhoc.vinaeatery.domain.entity.Recipe;
 import vn.tuhoc.vinaeatery.domain.entity.RecipeId;
 import vn.tuhoc.vinaeatery.domain.entity.UseFood;
-import vn.tuhoc.vinaeatery.domain.entity.UseTable;
 import vn.tuhoc.vinaeatery.domain.enumm.FoodStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.UseFoodStatusEnum;
-import vn.tuhoc.vinaeatery.domain.enumm.UseTableStatusEnum;
 import vn.tuhoc.vinaeatery.service.CloudinaryService;
 import vn.tuhoc.vinaeatery.service.FoodService;
 import vn.tuhoc.vinaeatery.service.RecipeService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.UseFoodService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
@@ -50,7 +47,6 @@ public class FoodApiController {
     private final FoodService foodService;
     private final RecipeService recipeService;
     private final CloudinaryService cloudinaryService;
-    private final TimeService timeService;
 
     // Methods
     @PostMapping("/list")
@@ -172,7 +168,6 @@ public class FoodApiController {
             foodUpdated.setUnit(food.getUnit());
             foodUpdated.setPrice(food.getPrice());
             foodUpdated.setDescription(food.getDescription());
-            foodUpdated.setUpdateAt(this.timeService.getDateTimeVN(food.getUpdateAt()));
             this.foodService.upsert(foodUpdated);
 
             if (recipe != null) {
@@ -206,13 +201,11 @@ public class FoodApiController {
         FoodStatusEnum handleStatus = foodStatusUpdate.getStatus() == FoodStatusEnum.ACTIVE
                 ? FoodStatusEnum.INACTIVE
                 : FoodStatusEnum.ACTIVE;
-        // LocalDateTime handleUpdateAt =
-        // this.timeService.getDateTimeVN(foodStatusUpdate.getUpdateAt());
 
         Food foodLocked = this.foodService.getOneById(id);
         if (foodLocked != null) {
             foodLocked.setStatus(handleStatus);
-            // foodLocked.setUpdateAt(handleUpdateAt);
+
             this.foodService.lock(foodLocked);
         }
 

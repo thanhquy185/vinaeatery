@@ -49,7 +49,6 @@ public class TableService {
             tableDTO.setSeats(table.getSeats());
             tableDTO.setDescription(table.getDescription());
             tableDTO.setStatus(table.getStatus());
-            tableDTO.setUpdateAt(table.getUpdateAt());
         }
 
         return tableDTO;
@@ -143,21 +142,22 @@ public class TableService {
     public List<TableDTO> getAllFormat(TableCriteria tableCriteria) {
         List<TableDTO> listFormat = new ArrayList<>();
         for (TableE table : getAll(tableCriteria)) {
-            TableDTO tableDTO = new TableDTO();
-            tableDTO.setId(table.getId());
-            tableDTO.setName(table.getName());
-            if (table.getCategoryTableId() != null) {
-                tableDTO.setCategoryTable(categoryTableRepository.findOneById(table.getCategoryTableId()));
-            }
-            if (table.getFloorId() != null) {
-                tableDTO.setFloor(floorRepository.findOneById(table.getFloorId()));
-            }
-            tableDTO.setSeats(table.getSeats());
-            tableDTO.setDescription(table.getDescription());
-            tableDTO.setStatus(table.getStatus());
-            tableDTO.setUpdateAt(table.getUpdateAt());
+            listFormat.add(getOneFormatById(table.getId()));
+            // TableDTO tableDTO = new TableDTO();
+            // tableDTO.setId(table.getId());
+            // tableDTO.setName(table.getName());
+            // if (table.getCategoryTableId() != null) {
+            // tableDTO.setCategoryTable(categoryTableRepository.findOneById(table.getCategoryTableId()));
+            // }
+            // if (table.getFloorId() != null) {
+            // tableDTO.setFloor(floorRepository.findOneById(table.getFloorId()));
+            // }
+            // tableDTO.setSeats(table.getSeats());
+            // tableDTO.setDescription(table.getDescription());
+            // tableDTO.setStatus(table.getStatus());
+            // tableDTO.setUpdateAt(table.getUpdateAt());
 
-            listFormat.add(tableDTO);
+            // listFormat.add(tableDTO);
         }
 
         return listFormat;
@@ -168,8 +168,6 @@ public class TableService {
     }
 
     public TableE upsert(TableE Table) {
-        log.info("Service: Upsert Table");
-
         return this.tableRepository.save(Table);
     }
 

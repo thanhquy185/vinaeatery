@@ -1,7 +1,6 @@
 package vn.tuhoc.vinaeatery.controller;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -24,22 +23,12 @@ import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.CustomerDTO;
 import vn.tuhoc.vinaeatery.domain.dto.CustomerUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
-import vn.tuhoc.vinaeatery.domain.dto.ManagerUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.entity.Customer;
-import vn.tuhoc.vinaeatery.domain.entity.Employee;
-import vn.tuhoc.vinaeatery.domain.entity.Manager;
-import vn.tuhoc.vinaeatery.domain.entity.UseTable;
 import vn.tuhoc.vinaeatery.domain.entity.User;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.UserIsUsingEnum;
-import vn.tuhoc.vinaeatery.domain.request.CustomerCreateRequest;
-import vn.tuhoc.vinaeatery.domain.request.CustomerLockRequest;
-import vn.tuhoc.vinaeatery.domain.request.CustomerUpdateRequest;
 import vn.tuhoc.vinaeatery.service.CloudinaryService;
 import vn.tuhoc.vinaeatery.service.CustomerService;
-import vn.tuhoc.vinaeatery.service.TableService;
-import vn.tuhoc.vinaeatery.service.TimeService;
-import vn.tuhoc.vinaeatery.service.UseTableService;
 import vn.tuhoc.vinaeatery.service.UserService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
@@ -52,10 +41,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class CustomerApiController {
         // Properties
         private final UserService userService;
-        private final UseTableService useTableService;
         private final CustomerService customerService;
-        private final TableService tableService;
-        private final TimeService timeService;
         private final CloudinaryService cloudinaryService;
 
         // Methods
@@ -193,8 +179,6 @@ public class CustomerApiController {
                         customerUpdated.setEmail(customer.getEmail());
                         customerUpdated.setAddress(customer.getAddress());
                         customerUpdated.setDescription(customer.getDescription());
-                        // customerUpdated.setUpdateAt(this.timeService.getDateTimeVN(customer.getUpdateAt()));
-                        customerUpdated.setUpdateAt(customer.getUpdateAt());
                         Customer customerUpdatedResult = this.customerService.upsert(customerUpdated);
 
                         User userNew = this.userService.getOneById(customerUpdatedResult.getUserId());
@@ -283,15 +267,10 @@ public class CustomerApiController {
                 CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
                                 ? CommonStatusEnum.INACTIVE
                                 : CommonStatusEnum.ACTIVE;
-                // LocalDateTime handleUpdateAt =
-                // this.timeService.getDateTimeVN(customerLockRequest.getcustomer().getUpdateAt());
-                // LocalDateTime handleUpdateAt =
-                // this.timeService.getDateTimeVN(LocalDateTime.now());
 
                 Customer customerLocked = this.customerService.getOneById(id);
                 if (customerLocked != null) {
                         customerLocked.setStatus(handleStatus);
-                        // customerLocked.setUpdateAt(customerLockRequest.getcustomer().getUpdateAt());
 
                         this.customerService.lock(customerLocked);
                 }

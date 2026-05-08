@@ -17,11 +17,6 @@ public abstract class Shift_ {
 	public static volatile SingularAttribute<Shift, String> name;
 	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.entity.Shift#updateAt
-	 **/
-	public static volatile SingularAttribute<Shift, String> updateAt;
-	
-	/**
 	 * @see vn.tuhoc.vinaeatery.domain.entity.Shift#id
 	 **/
 	public static volatile SingularAttribute<Shift, Integer> id;
@@ -42,7 +37,6 @@ public abstract class Shift_ {
 	public static volatile SingularAttribute<Shift, CommonStatusEnum> status;
 
 	public static final String NAME = "name";
-	public static final String UPDATE_AT = "updateAt";
 	public static final String ID = "id";
 	public static final String RESTAURANT_ID = "restaurantId";
 	public static final String STATUS = "status";

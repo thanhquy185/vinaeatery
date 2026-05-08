@@ -38,5 +38,4 @@ public class EmployeeDTO {
     private PermissionDTO permission;
     @Convert(converter = EmployeeStatusConverter.class)
     private EmployeeStatusEnum status;
-    private String updateAt;
 }

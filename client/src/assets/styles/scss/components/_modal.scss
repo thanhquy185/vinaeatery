@@ -446,7 +446,7 @@
     }
   }
 
-  &:not(.ant-modal.schedules) .ant-form-item-control {
+  &:not(.ant-modal:is(.allowances, .insurances, .schedules)) .ant-form-item-control {
     & .ant-image {
       padding: 2px;
       border: 1px solid #dedede;
@@ -1023,7 +1023,7 @@
       //   background: #ffe9e9;
       // }
 
-      & :is(.benefit, .reward-punish, .permission-ticket) {
+      & :is(.allowance, .insurance, .permission-ticket, .reward-punish, .salary-advance) {
         & .payslip-statistic {
           & .ant-card-body {
             padding: 14px;
@@ -1165,86 +1165,6 @@
             .unit {
               font-size: 1.3rem;
               color: #888;
-            }
-          }
-        }
-      }
-
-      & .benefit {
-        & .title {
-          justify-content: space-between;
-          align-items: flex-start !important;
-
-          :is(h3, p, span) {
-            font-size: 1.4rem;
-            font-weight: 400;
-          }
-
-          h3 {
-            font-weight: 700;
-          }
-
-          p {
-            color: #888;
-          }
-
-          span {
-            color: #666;
-            font-size: 1.2rem;
-          }
-        }
-
-        & .grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(20%, 1fr));
-          gap: 10px;
-
-          & .item {
-            @include flexCenter();
-            flex-direction: column;
-            // height: 150px;
-            background: #f9fafb;
-            padding: 20px;
-            border-radius: 10px;
-            // gap: 10px;
-            transition: all 0.2s ease;
-
-            &:hover {
-              background: #fff0f0;
-              transform: translateY(-2px);
-            }
-          }
-
-          & img {
-            @include size(50px);
-            border-radius: 50%;
-          }
-
-          & :is(h3, p) {
-            font-size: 1.4rem;
-          }
-
-          & h3 {
-            margin-top: 14px;
-            color: #777;
-            font-weight: 500;
-            text-align: center;
-          }
-
-          & p {
-            font-size: 1.5rem;
-            font-weight: 700;
-
-            &.green {
-              color: #16a34a;
-            }
-
-            &.red {
-              color: #dc2626;
-            }
-
-            &.blue {
-              color: #1677ff;
             }
           }
         }
@@ -1497,6 +1417,86 @@
           font-size: 1.4rem;
           font-weight: 500;
           font-style: italic;
+        }
+      }
+
+      & :is(.allowance, .insurance) {
+        & .title {
+          justify-content: space-between;
+          align-items: flex-start !important;
+
+          :is(h3, p, span) {
+            font-size: 1.4rem;
+            font-weight: 400;
+          }
+
+          h3 {
+            font-weight: 700;
+          }
+
+          p {
+            color: #888;
+          }
+
+          span {
+            color: #666;
+            font-size: 1.2rem;
+          }
+        }
+
+        & .grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(20%, 1fr));
+          gap: 10px;
+
+          & .item {
+            @include flexCenter();
+            flex-direction: column;
+            // height: 150px;
+            background: #f9fafb;
+            padding: 24px 20px;
+            border-radius: 10px;
+            // gap: 10px;
+            transition: all 0.2s ease;
+
+            // &:hover {
+            //   background: #fff0f0;
+            //   transform: translateY(-2px);
+            // }
+          }
+
+          // & img {
+          //   @include size(50px);
+          //   border-radius: 50%;
+          // }
+
+          & :is(h3, p) {
+            font-size: 1.4rem;
+          }
+
+          & h3 {
+            // margin-top: 14px;
+            color: #777;
+            font-weight: 500;
+            text-align: center;
+          }
+
+          & p {
+            font-size: 1.5rem;
+            font-weight: 700;
+
+            &.green {
+              color: #16a34a;
+            }
+
+            &.red {
+              color: #dc2626;
+            }
+
+            &.blue {
+              color: #1677ff;
+            }
+          }
         }
       }
 
@@ -1814,6 +1814,16 @@
           }
         }
       }
+    }
+  }
+
+  &.ant-modal:is(.allowances, .insurances) {
+    & .ant-form-item-control-input-content:has(.has-employees) {
+      height: auto;
+    }
+
+    & .has-employees {
+      width: 100%;
     }
   }
 

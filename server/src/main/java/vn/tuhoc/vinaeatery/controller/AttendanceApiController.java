@@ -21,7 +21,6 @@ import vn.tuhoc.vinaeatery.domain.dto.AttendanceDTO;
 import vn.tuhoc.vinaeatery.domain.dto.AttendanceUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
 import vn.tuhoc.vinaeatery.domain.entity.Attendance;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 import vn.tuhoc.vinaeatery.service.AttendanceService;
@@ -32,7 +31,6 @@ import vn.tuhoc.vinaeatery.service.AttendanceService;
 public class AttendanceApiController {
         // Properties
         private final AttendanceService attendanceService;
-        private final TimeService timeService;
 
         // Methods
         @PostMapping("/list")
@@ -126,7 +124,6 @@ public class AttendanceApiController {
                         attendanceUpdate.setCheckOut(attendance.getCheckOut());
                         attendanceUpdate.setLeave(attendance.getLeave());
                         attendanceUpdate.setStatus(attendance.getStatus());
-                        // attendanceUpdate.setUpdateAt(attendance.getUpdateAt());
 
                         this.attendanceService.upsert(attendanceUpdate);
                 }

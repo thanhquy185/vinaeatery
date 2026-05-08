@@ -17,6 +17,11 @@ public abstract class HandlePayment_ {
 	public static volatile SingularAttribute<HandlePayment, Long> payTotalPrice;
 	
 	/**
+	 * @see vn.tuhoc.vinaeatery.domain.entity.HandlePayment#isHandling
+	 **/
+	public static volatile SingularAttribute<HandlePayment, Boolean> isHandling;
+	
+	/**
 	 * @see vn.tuhoc.vinaeatery.domain.entity.HandlePayment#employeeId
 	 **/
 	public static volatile SingularAttribute<HandlePayment, Integer> employeeId;
@@ -52,6 +57,7 @@ public abstract class HandlePayment_ {
 	public static volatile SingularAttribute<HandlePayment, HandlePaymentStatusEnum> status;
 
 	public static final String PAY_TOTAL_PRICE = "payTotalPrice";
+	public static final String IS_HANDLING = "isHandling";
 	public static final String EMPLOYEE_ID = "employeeId";
 	public static final String ID = "id";
 	public static final String USE_TABLE_ID = "useTableId";

@@ -32,7 +32,6 @@ export interface UserType {
   method?: string;
   isUsing?: string;
   status?: string;
-  updateAt?: string;
   newPassword?: string;
   authNewPassword?: string;
 }
@@ -60,6 +59,7 @@ export interface HandlePaymentType {
   payMethodId?: number;
   payMethod?: PayMethodType;
   isEmployeeHandle?: boolean;
+  isHandling?: boolean;
   payTotalPrice?: number;
   status?: string;
 }
@@ -80,7 +80,6 @@ export interface RestaurantType {
   description?: string;
   rating?: number;
   status?: string;
-  updateAt?: string;
   numberOfEmployees?: number;
   numberOfFoods?: number;
 }
@@ -107,7 +106,6 @@ export interface ManagerType {
   address?: string;
   description?: string;
   status?: string;
-  updateAt?: string;
 }
 
 // Kiểu dữ liệu Khách hàng
@@ -125,7 +123,6 @@ export interface CustomerType {
   address?: string;
   description?: string;
   status?: string;
-  updateAt?: string;
 }
 
 // Kiểu dữ liệu Sử dụng bàn ăn
@@ -260,7 +257,6 @@ export interface OrderTableType {
   customerNote?: string;
   guests?: number;
   status?: string;
-  updateAt?: string;
 }
 
 // Kiểu dữ liệu Tầng
@@ -270,7 +266,6 @@ export interface FloorType {
   name?: string;
   description?: string;
   status?: string;
-  updateAt?: string;
 }
 
 // Kiểu dữ liệu Loại bàn ăn
@@ -282,7 +277,6 @@ export interface CategoryTableType {
   surchargeValue?: number;
   description?: string;
   status?: string;
-  updateAt?: string;
 }
 
 // Kiểu dữ liệu Bàn ăn
@@ -297,7 +291,6 @@ export interface TableType {
   seats?: number;
   description?: string;
   status?: string;
-  updateAt?: string;
 }
 
 // Kiểu dữ liệu Phiếu nhập
@@ -332,7 +325,6 @@ export interface SupplierType {
   email?: string;
   address?: string;
   status?: string;
-  updateAt?: string;
 }
 
 // Kiểu dữ liệu Loại nguyên liệu
@@ -342,7 +334,6 @@ export interface CategoryIngredientType {
   name?: string;
   description?: string;
   status?: string;
-  updateAt?: string;
 }
 
 // Kiểu dữ liệu Nguyên liệu
@@ -360,7 +351,6 @@ export interface IngredientType {
   inventory?: number;
   note?: string;
   status?: string;
-  updateAt?: string;
 }
 
 // Kiểu dữ liệu Loại món ăn
@@ -371,7 +361,6 @@ export interface CategoryFoodType {
   name?: string;
   description?: string;
   status?: string;
-  updateAt?: string;
 }
 
 // Kiểu dữ liệu Món ăn
@@ -386,7 +375,6 @@ export interface FoodType {
   price?: number;
   description?: string;
   status?: string;
-  updateAt?: string;
   recipe?: RecipeType[];
 }
 
@@ -410,11 +398,13 @@ export interface PayslipType {
 // -
 export interface PayslipMonth {
   month: string;
+  totalShiftTime: number;
   totalTime: number;
   totalSalary: number;
   totalStatus: string;
   payslipDates: PayslipDate[];
 }
+// -
 export interface PayslipDate {
   date: string;
   employee: EmployeeType;
@@ -425,11 +415,13 @@ export interface PayslipDate {
   status: string;
   payslipShifts: PayslipShiftType[];
 }
+// -
 export interface PayslipAttendanceDate {
   date: string;
   employee: EmployeeType;
   payslipShifts: PayslipShiftType[];
 }
+// -
 export interface PayslipShiftType {
   id: number;
   name: string;
@@ -457,7 +449,81 @@ export interface AttendanceType {
   checkOut?: string;
   leave?: string;
   status?: string;
-  updateAt?: string;
+}
+
+// Kiểu dữ liệu Ứng lương
+export interface SalaryAdvanceType {
+  id?: number;
+  restaurantId?: number;
+  createAt?: string;
+  employeeHandleId?: number;
+  employeeHandle?: EmployeeType;
+  employeeMainId?: number;
+  employeeMain?: EmployeeType;
+  date?: string;
+  money?: number;
+  reason?: string;
+  status?: string;
+}
+
+// Kiểu dữ liệu Loại bảo hiểm
+export interface CategoryInsuranceType {
+  id?: number;
+  restaurantId?: number;
+  name?: string;
+  companyPercent?: number;
+  employeePercent?: number;
+  description?: string;
+  status?: string;
+}
+
+// Kiểu dữ liệu Bảo hiểm
+export interface InsuranceType {
+  id?: number;
+  restaurantId?: number;
+  name?: string;
+  month?: string;
+  note?: string;
+  status?: string;
+  insuranceSalary?: number;
+  insuranceDetails?: InsuranceDetailType[];
+}
+
+// Kiểu dữ liệu Chi tiết bảo hiểm
+export interface InsuranceDetailType {
+  insuranceId?: number;
+  employeeId?: number;
+  categoryInsuranceId?: number;
+  categoryInsurance?: CategoryInsuranceType;
+}
+
+// Kiểu dữ liệu Loại phụ cấp
+export interface CategoryAllowanceType {
+  id?: number;
+  restaurantId?: number;
+  name?: string;
+  money?: number;
+  description?: string;
+  status?: string;
+}
+
+// Kiểu dữ liệu Phụ cấp
+export interface AllowanceType {
+  id?: number;
+  restaurantId?: number;
+  name?: string;
+  month?: string;
+  note?: string;
+  status?: string;
+  allowanceDetails?: AllowanceDetailType[];
+}
+
+// Kiểu dữ liệu Chi tiết chụ cấp
+export interface AllowanceDetailType {
+  allowanceId?: number;
+  employeeId?: number;
+  categoryAllowanceId?: number;
+  categoryAllowance?: CategoryAllowanceType;
 }
 
 // Kiểu dữ liệu Lịch làm
@@ -469,18 +535,19 @@ export interface ScheduleType {
   dateEnd?: string;
   note?: string;
   status?: string;
-  updateAt?: string;
   scheduleEmployees?: ScheduleEmployeeType[];
   scheduleShifts?: ScheduleShiftType[];
   // scheduleExceptions?: ScheduleExceptionType[];
 }
 
+// Kiểu dữ liệu Lịch làm - Nhân viên
 export interface ScheduleEmployeeType {
   scheduleId?: number;
   employeeId?: number;
   employee?: EmployeeType;
 }
 
+// Kiểu dữ liệu Lịch làm - Ca làm
 export interface ScheduleShiftType {
   scheduleId?: number;
   shiftId?: number;
@@ -503,7 +570,6 @@ export interface ShiftType {
   name?: string;
   shiftDetails?: ShiftDetailType[];
   status?: string;
-  updateAt?: string;
 }
 
 // Kiểu dữ liệu Chi tiết ca làm
@@ -530,7 +596,6 @@ export interface CategoryPermissionTicketType {
   name?: string;
   description?: string;
   status?: string;
-  updateAt?: string;
 }
 
 // Kiểu dữ liệu Đơn xin phép
@@ -557,7 +622,6 @@ export interface CategoryRewardPunishType {
   handle?: string;
   description?: string;
   status?: string;
-  updateAt?: string;
 }
 
 // Kiểu dữ liệu thưởng - phạt
@@ -575,45 +639,7 @@ export interface RewardPunishType {
   money?: number;
   reason?: string;
   status?: string;
-  updateAt?: string;
 }
-
-// // Kiểu dữ liệu Kế hoạch phúc lợi
-// export interface BenefitPlanType {
-//   id?: number;
-//   restaurantId?: number;
-//   name?: string;
-//   dateStart?: string;
-//   dateEnd?: string;
-//   note?: string;
-//   status?: string;
-//   updateAt?: string;
-//   benefitPlanEmployees?: BenefitPlanEmployeeType[];
-//   benefitPlanBenefits?: BenefitPlanBenefit[];
-// }
-
-// export interface BenefitPlanEmployeeType {
-//   benefitPlanId?: number;
-//   employeeId?: number;
-//   employee?: EmployeeType;
-// }
-
-// export interface BenefitPlanBenefit {
-//   benefitPlanId?: number;
-//   benefitId?: number;
-//   benefit?: BenefitType;
-//   value?: number;
-//   note?: string;
-// }
-
-// // Kiểu dữ liệu Phúc lợi
-// export interface BenefitType {
-//   id?: number;
-//   icon?: string;
-//   name?: string;
-//   type?: string;
-//   description?: string;
-// }
 
 // Kiểu dữ liệu Chức vụ
 export interface RoleType {
@@ -623,7 +649,6 @@ export interface RoleType {
   salaryType?: string;
   salaryValue?: number;
   status?: string;
-  updateAt?: string;
 }
 
 // Kiểu dữ liệu Lịch sử chức vụ
@@ -643,7 +668,6 @@ export interface PermissionType {
   restaurantId?: number;
   name?: string;
   status?: string;
-  updateAt?: string;
   permissionDetails?: PermissionDetailType[];
 }
 
@@ -675,7 +699,6 @@ export interface EmployeeType {
   permissionId?: number;
   permission?: PermissionType;
   status?: string;
-  updateAt?: string;
   currentPassword?: string;
   newPassword?: string;
   authNewPassword?: string;

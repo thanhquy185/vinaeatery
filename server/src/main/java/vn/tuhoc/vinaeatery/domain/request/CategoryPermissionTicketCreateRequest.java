@@ -1,5 +1,6 @@
 package vn.tuhoc.vinaeatery.domain.request;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,8 @@ import vn.tuhoc.vinaeatery.domain.entity.CategoryPermissionTicket;
 @Setter
 @Getter
 public class CategoryPermissionTicketCreateRequest {
+    @Valid
     private FormSecurityDTO formSecurity;
+    @Valid
     private CategoryPermissionTicket categoryPermissionTicket;
 }

@@ -4,7 +4,7 @@ import type { RewardPunishType, RestResponseType } from "../common/types";
 import instance from "../services/customize";
 import { getNewFormSecurityValue, keys } from "../services/api";
 
-// Các api của đối tượng Đơn xin phép (Permission Ticket)
+// Các api của đối tượng Thưởng - Phạt (Reward Punish)
 export const FindAllRewardPunish = ({
   findType,
   findValue,

@@ -1,6 +1,5 @@
 package vn.tuhoc.vinaeatery.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -24,7 +23,6 @@ import vn.tuhoc.vinaeatery.domain.request.SupplierCreateRequest;
 import vn.tuhoc.vinaeatery.domain.request.SupplierLockRequest;
 import vn.tuhoc.vinaeatery.domain.request.SupplierUpdateRequest;
 import vn.tuhoc.vinaeatery.service.SupplierService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -36,7 +34,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class SupplierApiController {
     // Properties
     private final SupplierService supplierService;
-    private final TimeService timeService;
 
     // Methods
     @PostMapping("/list")
@@ -116,8 +113,6 @@ public class SupplierApiController {
             supplierUpdated.setPhone(supplierUpdateRequest.getSupplier().getPhone());
             supplierUpdated.setEmail(supplierUpdateRequest.getSupplier().getEmail());
             supplierUpdated.setAddress(supplierUpdateRequest.getSupplier().getAddress());
-            // supplierUpdated.setUpdateAt(this.timeService.getDateTimeVN(supplierUpdateRequest.getSupplier().getUpdateAt()));
-            supplierUpdated.setUpdateAt(this.timeService.getDateTimeVN(LocalDateTime.now()));
 
             this.supplierService.upsert(supplierUpdated);
         }
@@ -149,14 +144,10 @@ public class SupplierApiController {
         CommonStatusEnum handleStatus = supplierLockRequest.getSupplier().getStatus() == CommonStatusEnum.ACTIVE
                 ? CommonStatusEnum.INACTIVE
                 : CommonStatusEnum.ACTIVE;
-        // LocalDateTime handleUpdateAt =
-        // this.timeService.getDateTimeVN(supplierLockRequest.getSupplier().getUpdateAt());
-        LocalDateTime handleUpdateAt = this.timeService.getDateTimeVN(LocalDateTime.now());
 
         Supplier supplierLocked = this.supplierService.getOneById(id);
         if (supplierLocked != null) {
             supplierLocked.setStatus(handleStatus);
-            supplierLocked.setUpdateAt(handleUpdateAt);
 
             this.supplierService.lock(supplierLocked);
         }

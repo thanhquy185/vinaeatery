@@ -69,7 +69,6 @@ const ManagerUpdateRole: React.FC<CrudObjectModalProps> = ({
               values: {
                 ...values,
                 restaurantId: restaurantId,
-                updateAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
               },
             });
             if (response) {

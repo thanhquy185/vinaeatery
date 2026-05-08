@@ -1,6 +1,5 @@
 package vn.tuhoc.vinaeatery.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -25,7 +24,6 @@ import vn.tuhoc.vinaeatery.domain.request.IngredientCreateRequest;
 import vn.tuhoc.vinaeatery.domain.request.IngredientLockRequest;
 import vn.tuhoc.vinaeatery.domain.request.IngredientUpdateRequest;
 import vn.tuhoc.vinaeatery.service.IngredientService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
 
@@ -37,7 +35,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class IngredientApiController {
         // Properties
         private final IngredientService ingredientService;
-        private final TimeService timeService;
 
         // Methods
         @PostMapping("/list")
@@ -146,8 +143,6 @@ public class IngredientApiController {
                         ingredientUpdated.setDateRemove(ingredientUpdateRequest.getIngredient().getDateRemove());
                         ingredientUpdated.setInputPrice(ingredientUpdateRequest.getIngredient().getInputPrice());
                         ingredientUpdated.setNote(ingredientUpdateRequest.getIngredient().getNote());
-                        // ingredientUpdated.setUpdateAt(this.timeService.getDateTimeVN(ingredientUpdateRequest.getIngredient().getUpdateAt()));
-                        ingredientUpdated.setUpdateAt(this.timeService.getDateTimeVN(LocalDateTime.now()));
 
                         this.ingredientService.upsert(ingredientUpdated);
                 }
@@ -183,14 +178,10 @@ public class IngredientApiController {
                                 .getStatus() == CommonStatusEnum.ACTIVE
                                                 ? CommonStatusEnum.INACTIVE
                                                 : CommonStatusEnum.ACTIVE;
-                // LocalDateTime handleUpdateAt =
-                // this.timeService.getDateTimeVN(ingredientLockRequest.getIngredient().getUpdateAt());
-                LocalDateTime handleUpdateAt = this.timeService.getDateTimeVN(LocalDateTime.now());
 
                 Ingredient ingredientLocked = this.ingredientService.getOneById(id);
                 if (ingredientLocked != null) {
                         ingredientLocked.setStatus(handleStatus);
-                        ingredientLocked.setUpdateAt(handleUpdateAt);
 
                         this.ingredientService.lock(ingredientLocked);
                 }

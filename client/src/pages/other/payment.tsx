@@ -26,7 +26,7 @@ import PaymentInform from "../../components/other/payment/payment-inform";
 import { useEntityQuery } from "../../hook/use-entity-query";
 import { useEntityMutation } from "../../hook/use-entity-mutation";
 import {
-  GetHandlePaymentFormatByIsEmployeeHandle,
+  GetHandlePaymentFormatByIsEmployeeHandleAndIsHandling,
   HandleUpdateHandlePayment,
 } from "../../requests/handle-payments";
 import { openNotification } from "../../utils/show-notification";
@@ -106,7 +106,7 @@ const PaymentPage = () => {
   } = useEntityQuery<HandlePaymentType>({
     keys: [nameEN],
     params: {},
-    api: GetHandlePaymentFormatByIsEmployeeHandle,
+    api: GetHandlePaymentFormatByIsEmployeeHandleAndIsHandling,
   });
 
   // Danh sách chi tiết phiếu gọi món
@@ -556,16 +556,18 @@ const PaymentPage = () => {
                         content: `Bạn có chắc muốn đổi phương thức này ? Sau khi đổi, bạn có thể chọn phương thức thanh toán khác để hoàn tất đơn hàng.`,
                       });
                       if (answer) {
-                        const data = await changePayMethodMutation.mutateAsync({
-                          values: {
-                            id: handlePayment?.id,
-                            useTableId: handlePayment?.useTable?.id,
-                            payMethodId: undefined,
-                            isEmployeeHandle: true,
-                            status: HandlePaymentStatus.pending,
-                          },
-                        });
-                        if (data) {
+                        const response =
+                          await changePayMethodMutation.mutateAsync({
+                            values: {
+                              id: handlePayment?.id,
+                              useTableId: handlePayment?.useTable?.id,
+                              payMethodId: undefined,
+                              isEmployeeHandle: true,
+                              isHandling: true,
+                              status: HandlePaymentStatus.pending,
+                            },
+                          });
+                        if (response) {
                           updateMethodInfo!("", "", null);
                           updatePayInfo!("", "", "", 0, 0);
                         }
@@ -665,17 +667,20 @@ const PaymentPage = () => {
                           return;
                         }
 
-                        const data = await completePaymentMutation.mutateAsync({
-                          values: {
-                            id: handlePayment?.id,
-                            useTableId: handlePayment?.useTable?.id,
-                            employeeId: handlePayment?.employee?.id,
-                            payMethodId: handlePayment?.payMethod?.id,
-                            payTotalPrice: handlePayment?.payTotalPrice,
-                            status: HandlePaymentStatus.completed,
-                          },
-                        });
-                        if (data) {
+                        const response =
+                          await completePaymentMutation.mutateAsync({
+                            values: {
+                              id: handlePayment?.id,
+                              useTableId: handlePayment?.useTable?.id,
+                              employeeId: handlePayment?.employee?.id,
+                              isEmployeeHandle: true,
+                              isHandling: false,
+                              payMethodId: handlePayment?.payMethod?.id,
+                              payTotalPrice: handlePayment?.payTotalPrice,
+                              status: HandlePaymentStatus.feedback,
+                            },
+                          });
+                        if (response) {
                           setExperienceValue("");
                           setScore01Value(0);
                           setScore02Value(0);

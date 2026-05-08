@@ -12,6 +12,9 @@ COPY settings.gradle .
 COPY src ./src
 COPY lib ./lib
 
+# Clear cache docker
+RUN rm -rf /root/.gradle
+
 # Build project
 RUN ./gradlew clean build -x test
 

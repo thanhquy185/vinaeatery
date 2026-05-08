@@ -2,7 +2,6 @@ package vn.tuhoc.vinaeatery.domain.entity;
 
 import java.util.List;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -36,8 +35,6 @@ public class Permission {
     @Convert(converter = CommonStatusConverter.class)
     @NotNull(message = "Trạng thái không được để trống!")
     private CommonStatusEnum status;
-    @Column(columnDefinition = "DATETIME")
-    private String updateAt;
     @Transient
     private List<PermissionDetailForCrud> permissionDetails;
 }

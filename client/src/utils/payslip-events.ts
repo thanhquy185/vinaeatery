@@ -1,9 +1,11 @@
 import type {
   EmployeeType,
+  InsuranceType,
   PayslipAttendanceDate,
   PayslipDate,
   PayslipShiftType,
   RoleHistoryType,
+  RoleType,
   ScheduleType,
 } from "../common/types";
 import {
@@ -345,4 +347,62 @@ export const calPayslipMonth = ({
     totalSalary: payslipTotalSalary || 0,
     totalStatus: payslipTotalStatus,
   };
+};
+
+// -
+const baseInsuranceSalaryForFixed = 10000000;
+const baseInsuranceSalaryForHours = 4000000;
+
+export const calRoleSalary = ({
+  insuranceRoleHistory,
+  insuranceMonth,
+}: {
+  insuranceRoleHistory: RoleHistoryType;
+  insuranceMonth: string;
+}) => {
+  if (insuranceRoleHistory.roleSalaryType === RoleSalaryType.fixed)
+    return (insuranceRoleHistory.roleSalaryValue || 0) <
+      baseInsuranceSalaryForFixed
+      ? insuranceRoleHistory.roleSalaryValue
+      : baseInsuranceSalaryForFixed;
+
+  // return (
+  //   (insuranceRoleHistory.roleSalaryValue || 0) *
+  //   dayjs(insuranceMonth).daysInMonth()
+  // );
+
+  return baseInsuranceSalaryForHours;
+};
+export const calInsuranceSalaryByMinRoleSalary = ({
+  insurance,
+  roleHistories,
+}: {
+  insurance: InsuranceType;
+  roleHistories: RoleHistoryType[];
+}) => {
+  const insuranceRoleHistories = roleHistories.filter((roleHistory) =>
+    checkDateStartEndEqual({
+      dateStart: roleHistory.dateStart!,
+      dateEnd: roleHistory.dateEnd!,
+      timeDetail: dayjs(insurance.month!),
+      format: "YYYY-MM",
+    }),
+  );
+  if (insuranceRoleHistories.length === 0) return 0;
+
+  if (insuranceRoleHistories.length === 1) {
+    return calRoleSalary({
+      insuranceRoleHistory: insuranceRoleHistories[0],
+      insuranceMonth: insurance.month!,
+    });
+  }
+
+  const insuranceRoleSalaries = insuranceRoleHistories.map(
+    (insuranceRoleHistory) =>
+      calRoleSalary({
+        insuranceRoleHistory: insuranceRoleHistory,
+        insuranceMonth: insurance.month!,
+      }),
+  );
+  return insuranceRoleSalaries.sort((a, b) => (a || 0) - (b || 0))[0];
 };

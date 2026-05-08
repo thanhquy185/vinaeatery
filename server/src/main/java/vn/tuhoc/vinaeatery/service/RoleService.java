@@ -37,7 +37,6 @@ public class RoleService {
             roleDTO.setSalaryType(role.getSalaryType());
             roleDTO.setSalaryValue(role.getSalaryValue());
             roleDTO.setStatus(role.getStatus());
-            roleDTO.setUpdateAt(role.getUpdateAt());
         }
 
         return roleDTO;

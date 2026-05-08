@@ -57,7 +57,6 @@ public class SecurityUtil {
         userClaims.put("username", restLoginDTO.getUserLogin().getUsername());
         userClaims.put("method", restLoginDTO.getUserLogin().getMethod());
         userClaims.put("status", restLoginDTO.getUserLogin().getStatus());
-        userClaims.put("updateAt", restLoginDTO.getUserLogin().getUpdateAt());
 
         return userClaims;
     }

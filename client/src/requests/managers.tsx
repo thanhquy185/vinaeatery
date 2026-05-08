@@ -25,15 +25,15 @@ export const FindAllManager = ({
     getNewFormSecurityValue({ fieldName: keys.managers, fieldAction: "read" }),
     {
       params,
-    }
+    },
   );
 };
 export const FindOneManager = (
-  id: string
+  id: string,
 ): Promise<AxiosResponse<ManagerType, any>> => {
   return instance.post(
     `/api/${keys.managers}/detail/${id}`,
-    getNewFormSecurityValue({ fieldName: keys.managers, fieldAction: "read" })
+    getNewFormSecurityValue({ fieldName: keys.managers, fieldAction: "read" }),
   );
 };
 // export const FindOneManagerByUserId = (
@@ -69,11 +69,11 @@ export const HandleCreateManager = ({
           getNewFormSecurityValue({
             fieldName: keys.managers,
             fieldAction: "create",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Thông tin cơ bản
   formData.append(
@@ -93,8 +93,8 @@ export const HandleCreateManager = ({
           status,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Hình ảnh
   if (image) formData.append("image-file", image);
@@ -116,7 +116,6 @@ export const HandleUpdateManager = ({
   email,
   address,
   description,
-  updateAt,
 }: ManagerType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -130,11 +129,11 @@ export const HandleUpdateManager = ({
           getNewFormSecurityValue({
             fieldName: keys.managers,
             fieldAction: "update",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Thông tin cơ bản
   formData.append(
@@ -150,11 +149,10 @@ export const HandleUpdateManager = ({
           email,
           address,
           description,
-          updateAt,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   if (image) formData.append("image-file", image);
 
@@ -167,7 +165,6 @@ export const HandleUpdateManager = ({
 export const HandleLockManager = ({
   id,
   status,
-  updateAt,
 }: ManagerType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -181,11 +178,11 @@ export const HandleLockManager = ({
           getNewFormSecurityValue({
             fieldName: keys.managers,
             fieldAction: "lock",
-          })
+          }),
         ),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
   // Thông tin cơ bản
   formData.append(
@@ -194,11 +191,10 @@ export const HandleLockManager = ({
       [
         JSON.stringify({
           status,
-          updateAt,
         }),
       ],
-      { type: "application/json" }
-    )
+      { type: "application/json" },
+    ),
   );
 
   return instance.patch(`/api/${keys.managers}/lock/${id}`, formData, {

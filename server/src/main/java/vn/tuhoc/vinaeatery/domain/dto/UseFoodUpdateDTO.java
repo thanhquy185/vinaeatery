@@ -1,11 +1,7 @@
 package vn.tuhoc.vinaeatery.domain.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

@@ -50,7 +50,6 @@ public class ManagerService {
             managerDTO.setAddress(manager.getAddress());
             managerDTO.setDescription(manager.getDescription());
             managerDTO.setStatus(manager.getStatus());
-            managerDTO.setUpdateAt(manager.getUpdateAt());
         }
 
         return managerDTO;

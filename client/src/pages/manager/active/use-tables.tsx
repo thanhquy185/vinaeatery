@@ -233,7 +233,7 @@ const ManagerUseTablesPage: FC<ManagerPageProps> = ({
           status: status! || undefined,
         },
       });
-      if (data) {
+      if (response) {
         closeModal();
       }
     } else {

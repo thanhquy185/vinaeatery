@@ -23,7 +23,7 @@ import AdminManagerMainFilterInfo from "../../../components/admin-manager/common
 import AdminManagerMainData from "../../../components/admin-manager/common/main-data";
 import ManagerCreatePermission from "../../../components/admin-manager/modal/permissions/manager-create-permission";
 import ManagerDetailPermission from "../../../components/admin-manager/modal/permissions/manager-detail-permission";
-import ManagerUpdatePermission from "../../../components/admin-manager/modal/permissions/manager-update-role";
+import ManagerUpdatePermission from "../../../components/admin-manager/modal/permissions/manager-update-permission";
 import ManagerLock from "../../../components/admin-manager/modal/manager-lock";
 import { useModal } from "../../../hook/use-modal";
 import { useEntityQuery } from "../../../hook/use-entity-query";

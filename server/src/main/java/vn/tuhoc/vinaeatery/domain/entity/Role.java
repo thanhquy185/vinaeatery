@@ -1,18 +1,11 @@
 package vn.tuhoc.vinaeatery.domain.entity;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,5 +36,4 @@ public class Role {
     @Convert(converter = CommonStatusConverter.class)
     @NotNull(message = "Trạng thái không được để trống!")
     private CommonStatusEnum status;
-    private String updateAt;
 }

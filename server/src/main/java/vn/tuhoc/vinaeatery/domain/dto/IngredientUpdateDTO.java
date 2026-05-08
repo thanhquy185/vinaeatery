@@ -1,7 +1,5 @@
 package vn.tuhoc.vinaeatery.domain.dto;
 
-import java.time.LocalDateTime;
-
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +21,4 @@ public class IngredientUpdateDTO {
     private String dateRemove;
     private Long inputPrice;
     private String note;
-    @NotNull(message = "Thời gian cập nhật không được để trống!")
-    private LocalDateTime updateAt;
 }

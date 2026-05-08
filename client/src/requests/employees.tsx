@@ -127,7 +127,6 @@ export const HandleUpdateEmployee = ({
   address,
   roleId,
   permissionId,
-  updateAt,
 }: EmployeeType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -161,7 +160,6 @@ export const HandleUpdateEmployee = ({
           address,
           roleId,
           permissionId,
-          updateAt,
         }),
       ],
       { type: "application/json" },
@@ -178,7 +176,6 @@ export const HandleUpdateEmployee = ({
 export const HandleLockEmployee = ({
   id,
   status,
-  updateAt,
 }: EmployeeType): Promise<AxiosResponse<RestResponseType, any>> => {
   // Form data
   const formData = new FormData();
@@ -205,7 +202,6 @@ export const HandleLockEmployee = ({
       [
         JSON.stringify({
           status,
-          updateAt,
         }),
       ],
       { type: "application/json" },

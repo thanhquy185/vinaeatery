@@ -146,7 +146,9 @@ public class SecurityConfig {
                                 "/api/restaurants/list-format-for-public-page",
                                 "/oauth2/**",
                                 "/login/oauth2/**",
-                                "/websocket/**")
+                                "/websocket/**",
+                                "/api/momo/**",
+                                "/api/zalopay/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2

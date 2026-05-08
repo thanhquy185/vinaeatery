@@ -1,9 +1,5 @@
 package vn.tuhoc.vinaeatery.domain.dto;
 
-import java.time.LocalDateTime;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import jakarta.persistence.Convert;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.repository.converter.CommonStatusConverter;
@@ -26,5 +22,4 @@ public class RoleDTO {
     private Long salaryValue;
     @Convert(converter = CommonStatusConverter.class)
     private CommonStatusEnum status;
-    private String updateAt;
 }

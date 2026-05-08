@@ -47,7 +47,6 @@ public class PermissionService {
             permissionDTO.setRestaurantId(permission.getRestaurantId());
             permissionDTO.setName(permission.getName());
             permissionDTO.setStatus(permission.getStatus());
-            permissionDTO.setUpdateAt(permission.getUpdateAt());
             permissionDTO.setPermissionDetails(listPermissionDetail);
         }
 

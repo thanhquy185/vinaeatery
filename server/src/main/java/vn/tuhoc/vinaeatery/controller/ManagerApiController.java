@@ -23,18 +23,13 @@ import vn.tuhoc.vinaeatery.domain.dto.ManagerDTO;
 import vn.tuhoc.vinaeatery.domain.dto.ManagerUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.CommonStatusUpdateDTO;
 import vn.tuhoc.vinaeatery.domain.dto.FormSecurityDTO;
-import vn.tuhoc.vinaeatery.domain.entity.Employee;
 import vn.tuhoc.vinaeatery.domain.entity.Manager;
 import vn.tuhoc.vinaeatery.domain.entity.User;
 import vn.tuhoc.vinaeatery.domain.enumm.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.domain.enumm.UserIsUsingEnum;
-import vn.tuhoc.vinaeatery.domain.request.ManagerCreateRequest;
-import vn.tuhoc.vinaeatery.domain.request.ManagerLockRequest;
-import vn.tuhoc.vinaeatery.domain.request.ManagerUpdateRequest;
 import vn.tuhoc.vinaeatery.repository.RestaurantRepository;
 import vn.tuhoc.vinaeatery.service.CloudinaryService;
 import vn.tuhoc.vinaeatery.service.ManagerService;
-import vn.tuhoc.vinaeatery.service.TimeService;
 import vn.tuhoc.vinaeatery.service.UserService;
 import vn.tuhoc.vinaeatery.util.HandleFormSecurity;
 import vn.tuhoc.vinaeatery.util.ValidationUtil;
@@ -48,7 +43,6 @@ public class ManagerApiController {
         // Properties
         private final UserService userService;
         private final ManagerService managerService;
-        private final TimeService timeService;
         private final CloudinaryService cloudinaryService;
         private final RestaurantRepository restaurantRepository;
 
@@ -187,8 +181,6 @@ public class ManagerApiController {
                         managerUpdated.setEmail(manager.getEmail());
                         managerUpdated.setAddress(manager.getAddress());
                         managerUpdated.setDescription(manager.getDescription());
-                        // managerUpdated.setUpdateAt(this.timeService.getDateTimeVN(manager.getUpdateAt()));
-                        managerUpdated.setUpdateAt(manager.getUpdateAt());
                         Manager managerUpdatedResult = this.managerService.upsert(managerUpdated);
 
                         User userNew = this.userService.getOneById(managerUpdatedResult.getUserId());
@@ -225,15 +217,10 @@ public class ManagerApiController {
                 CommonStatusEnum handleStatus = commonStatusUpdate.getStatus() == CommonStatusEnum.ACTIVE
                                 ? CommonStatusEnum.INACTIVE
                                 : CommonStatusEnum.ACTIVE;
-                // LocalDateTime handleUpdateAt =
-                // this.timeService.getDateTimeVN(ManagerLockRequest.getManager().getUpdateAt());
-                // LocalDateTime handleUpdateAt =
-                // this.timeService.getDateTimeVN(LocalDateTime.now());
 
                 Manager managerLocked = this.managerService.getOneById(id);
                 if (managerLocked != null) {
                         managerLocked.setStatus(handleStatus);
-                        // managerLocked.setUpdateAt(ManagerLockRequest.getManager().getUpdateAt());
 
                         this.managerService.lock(managerLocked);
                 }

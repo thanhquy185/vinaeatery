@@ -1,14 +1,26 @@
 import React, { useMemo } from "react";
-import { Table } from "antd";
+import { Image, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { vietnamMoneyFormat } from "../../../utils/other-events";
+import type { EmployeeType, RoleType } from "../../../common/types";
+import { ImageSourcePath } from "../../../common/values";
+import type { RcFile } from "antd/es/upload";
 
 interface AdminManagerMainTableDashboardProps {
   id?: string;
   className?: string;
   columnsWidth?: string[];
   columnsTitle?: string[];
-  tbody?: (string | number)[][];
+  tbody?: (
+    | number
+    | string
+    | {
+        id: string | number;
+        fullname: string;
+        currentRole: RoleType;
+        avatar: string | File | RcFile | undefined;
+      }
+  )[][];
   format?: string[];
   tfoot?: (string | number)[];
 }
@@ -45,6 +57,36 @@ const AdminManagerMainTableDashboard: React.FC<
       // align: "center",
       className: format[index] === "info" ? "left" : "center",
       render: (value: any) => {
+        if (format[index] === "employee") {
+          const employee = value as EmployeeType;
+
+          return (
+            <div className="table-dashboard__employee">
+              {/* <Image
+                src={
+                  employee?.image
+                    ? employee.image as string
+                    : `${ImageSourcePath}/no-image.png`
+                }
+                preview={false}
+                className="table-dashboard__employee-image"
+              /> */}
+              <div className="table-dashboard__employee-info">
+                <p className="table-dashboard__employee-name">
+                  {employee?.fullname}
+                </p>
+                <p className="table-dashboard__employee-sub">
+                  <b>Mã nhân viên: </b>
+                  <span>{employee?.id}</span>
+                </p>
+                <p className="table-dashboard__employee-sub">
+                  <b>Chức vụ: </b>
+                  <span>{employee?.currentRole?.name}</span>
+                </p>
+              </div>
+            </div>
+          );
+        }
         if (format[index] === "price") {
           return vietnamMoneyFormat(Number(value));
         }
@@ -64,7 +106,7 @@ const AdminManagerMainTableDashboard: React.FC<
       <Table.Summary>
         <Table.Summary.Row>
           <Table.Summary.Cell index={0} colSpan={colSpan}>
-            <b>Tổng:</b>
+            <b>TỔNG</b>
           </Table.Summary.Cell>
 
           {tfoot.map((value, index) => {

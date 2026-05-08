@@ -16,4 +16,7 @@ public class RecipeDTO {
     private Long ingredientInventory;
     private Long quantity;
     private String note;
+
+    
+
 }
