@@ -1,16 +1,14 @@
+import SpinnerComponent from "./components/SpinnerComponent";
 import { useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
-import { store } from "./store";
-import CustomSpinner from "./components/common/spinner";
-import { getRouter } from "./services/router";
-// import "./assets/styles/tailwind.css";
+import { App as AntdApp, ConfigProvider } from "antd";
+import { store } from "./stores";
+import { getRouter } from "./routers/router";
 import "./utils/i18n";
 import "./assets/styles/css/main.css";
-import { ConfigProvider } from "antd";
-import { App as AntdApp } from "antd";
 
 // Query Client
 const queryClient = new QueryClient();
@@ -49,7 +47,7 @@ const App = () => {
       <RouterProvider router={router} />
     </ConfigProvider>
   ) : (
-    <CustomSpinner />
+    <SpinnerComponent />
   );
 };
 
@@ -61,5 +59,5 @@ createRoot(document.getElementById("root")!).render(
         <App />
       </AntdApp>
     </Provider>
-  </QueryClientProvider>
+  </QueryClientProvider>,
 );

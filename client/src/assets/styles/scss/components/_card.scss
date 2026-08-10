@@ -1,0 +1,275 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/colors" as *;
+@use "../abstracts/mixins" as *;
+
+$public-restaurant-card-padding: 16px;
+
+:is(
+  .restaurant-filter-card-info,
+  .restaurant-popup-card-info,
+  .restaurant-detail-card
+) {
+  $thumbnail-size: 90px;
+
+  & h3 {
+    margin-bottom: 6px;
+  }
+
+  & p {
+    @include flex(stretch, center);
+    gap: 4px;
+    margin-bottom: 4px;
+    color: #777;
+    font-size: 1.5rem;
+
+    &.address {
+      color: #555;
+    }
+  }
+
+  & .star {
+    @include flex(stretch, center);
+    gap: 4px;
+    margin-bottom: 4px;
+
+    & .ant-rate-star {
+      margin-inline-end: 4px;
+    }
+
+    & span {
+      &.anticon-star {
+        @include size(16px);
+      }
+
+      &.description {
+        color: #999;
+        margin-left: 2px;
+      }
+    }
+  }
+}
+
+.restaurant-filter-card-info {
+  $thumbnail-size: 90px;
+
+  & h3 {
+    width: calc(100% - calc($public-restaurant-card-padding + $thumbnail-size));
+  }
+
+  & img {
+    position: absolute;
+    top: $public-restaurant-card-padding;
+    right: $public-restaurant-card-padding;
+    @include size($thumbnail-size);
+    border-radius: 8px;
+  }
+
+  & p {
+    width: calc(100% - calc($public-restaurant-card-padding + $thumbnail-size));
+  }
+}
+
+.restaurant-detail-card {
+  height: 100%;
+  overflow-y: auto;
+
+  & .header {
+    $thumbnail-width: 280px;
+
+    padding: $public-restaurant-card-padding;
+
+    & .content {
+      width: calc(100% - $thumbnail-width - $public-restaurant-card-padding);
+    }
+
+    & h3 {
+      margin-bottom: 0;
+    }
+
+    & .ant-image:has(.thumbnail) {
+      position: absolute;
+      top: $public-restaurant-card-padding;
+      right: $public-restaurant-card-padding;
+      @include size($thumbnail-width, calc($thumbnail-width * 10 / 16));
+
+      & :is(.ant-image-img, .ant-image-mask) {
+        height: 100%;
+        border-radius: 8px;
+      }
+    }
+
+    & .info {
+      $icon-size: 16px;
+
+      margin-top: 16px;
+
+      & p {
+        margin: 6px 0 0;
+        font-size: 1.6rem;
+
+        & svg {
+          @include size($icon-size);
+        }
+
+        & a {
+          color: #777;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+
+  & .has-icon {
+    font-size: 1.6rem;
+
+    & svg {
+      @include size(18px);
+    }
+  }
+}
+
+.use-table-card {
+  width: 100%;
+  background: #f9fafb;
+  padding: 20px;
+  border: 3px solid #fff;
+  border-radius: 8px;
+  transition:
+    border-color 0.2s ease-in-out,
+    transform 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+
+  & .title {
+    color: #000;
+    font-size: 1.8rem;
+    font-weight: 700;
+    transition: transform 0.2s ease;
+  }
+
+  & .info {
+    font-size: 1.4rem;
+    color: #000;
+    margin-top: 8px;
+
+    & b {
+      color: #666;
+      font-weight: 600;
+    }
+
+    & .status {
+      // display: inline-block;
+      padding: 4px 10px;
+      border-radius: 8px;
+      color: white;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+  }
+
+  &.red .info > .status {
+    background-color: $red-secondary-btn-color;
+  }
+
+  &.green .info > .status {
+    background-color: $green-secondary-btn-color;
+  }
+
+  &.yellow .info > .status {
+    background-color: $yellow-secondary-btn-color;
+  }
+
+  &.gray .info > .status {
+    background-color: #bbb;
+  }
+
+  & .title + .info {
+    margin-top: 16px;
+  }
+
+  &:hover {
+    background: #fff;
+    border-color: $primary-color;
+    transform: translateY(-6px);
+    // transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    & .title {
+      color: $primary-color;
+    }
+  }
+}
+
+.use-food-card,
+.menu-card {
+  & h3 {
+    margin-bottom: 4px;
+    transition: color 0.2s ease-in-out;
+  }
+
+  & span {
+    color: #777;
+  }
+
+  & .category {
+    color: #555;
+  }
+
+  & .price {
+    color: #f9c74f;
+  }
+}
+
+.use-food-card {
+  $border-radius: 14px;
+
+  .ant-list-item:has(&) {
+    border: 3px solid transparent !important;
+    border-block-end: 3px solid transparent !important;
+    margin-block-end: 0 !important;
+    border-radius: $border-radius;
+    transition:
+      border-color 0.2s ease-in-out,
+      transform 0.2s ease;
+    cursor: pointer;
+
+    .ant-card {
+      border: none;
+      border-radius: $border-radius;
+
+      &-cover {
+        margin-top: 0;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+      }
+    }
+
+    img {
+      border-radius: $border-radius;
+    }
+
+    &:hover {
+      border-color: $primary-color !important;
+      border-block-end-color: $primary-color !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-6px);
+
+      & h3 {
+        color: $primary-color;
+      }
+    }
+  }
+}
+
+.menu-card {
+  & h3 {
+    font-size: 1.5rem;
+  }
+
+  & span {
+    font-size: 1.3rem;
+  }
+}

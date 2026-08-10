@@ -1,0 +1,47 @@
+spring:
+  jpa:
+    show-sql: true
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+logging:
+  level:
+    root: INFO
+    com.shopcart: DEBUG
+    org.springframework.security: DEBUG
+
+    # Hibernate
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+
+    # Flyway
+    org.flywaydb: DEBUG
+
+    # Thêm các dòng này
+    org.springframework.web: DEBUG
+    org.springframework.web.servlet.DispatcherServlet: TRACE
+    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: TRACE
+
+momo:
+  endpoint: ${MOMO_STG_ENDPOINT}
+  accessKey: ${MOMO_STG_ACCESS_KEY}
+  partnerCode: ${MOMO_STG_PARTNER_CODE}
+  secretKey: ${MOMO_STG_SECRET_KEY}
+  redirectUrl: ${MOMO_STG_REDIRECT_URL}
+  ipnUrl: ${MOMO_STG_IPN_URL}
+  requestType: ${MOMO_STG_REQUEST_TYPE}
+
+zalopay:
+  app_id: ${ZALOPAY_STG_APP_ID}
+  key1: ${ZALOPAY_STG_KEY1}
+  key2: ${ZALOPAY_STG_KEY2}
+  endpoint: ${ZALOPAY_STG_ENDPOINT}
+  callback_url: ${ZALOPAY_STG_CALLBACK_URL}
+
+app:
+  frontend_url: ${APP_STG_FRONTEND_URL}
+  backend_url: ${APP_STG_BACKEND_URL}

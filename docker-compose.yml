@@ -2,7 +2,6 @@ services:
   mysql:
     image: mysql:8.0
     container_name: vinaeatery_mysql
-    restart: always
     environment:
       # MYSQL_HOST: mysql
       MYSQL_ROOT_PASSWORD: 123456
@@ -18,6 +17,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    volumes:
+      - mysql:/data
+    restart: always
 
   server:
     build: ./server
@@ -27,12 +29,14 @@ services:
         condition: service_healthy
     environment:
       SPRING_DATASOURCE_HOST: mysql
-      SPRING_DATASOURCE_DATABASE: vinaeatery
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 123456
-      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
-      SPRING_JPA_SHOW_SQL: "true"
-      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL8Dialect
+      # SPRING_DATASOURCE_DATABASE: vinaeatery
+      # SPRING_DATASOURCE_USERNAME: root
+      # SPRING_DATASOURCE_PASSWORD: 123456
+      # SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      # SPRING_JPA_SHOW_SQL: "true"
+      # SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL8Dialect
+    env_file:
+      - ./server/.env
     ports:
       - "8080:8080"
 
@@ -43,6 +47,20 @@ services:
       - server
     ports:
       - "5173:5173"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+
+  redis:
+    image: redis:7-alpine
+    container_name: vinaeatery_redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis:/data
+    restart: always
 
 volumes:
-  mysql_data:
+  mysql:
+  redis:

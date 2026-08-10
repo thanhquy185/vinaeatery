@@ -11,7 +11,7 @@ public abstract class AllowanceDetailId_ {
 
 	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.entity.AllowanceDetailId#getEmployeeId
+	 * @see vn.tuhoc.vinaeatery.domain.entity.AllowanceDetailId#employeeId
 	 **/
 	public static volatile SingularAttribute<AllowanceDetailId, Integer> employeeId;
 	
@@ -21,12 +21,12 @@ public abstract class AllowanceDetailId_ {
 	public static volatile EmbeddableType<AllowanceDetailId> class_;
 	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.entity.AllowanceDetailId#getCategoryAllowanceId
+	 * @see vn.tuhoc.vinaeatery.domain.entity.AllowanceDetailId#categoryAllowanceId
 	 **/
 	public static volatile SingularAttribute<AllowanceDetailId, Integer> categoryAllowanceId;
 	
 	/**
-	 * @see vn.tuhoc.vinaeatery.domain.entity.AllowanceDetailId#getAllowanceId
+	 * @see vn.tuhoc.vinaeatery.domain.entity.AllowanceDetailId#allowanceId
 	 **/
 	public static volatile SingularAttribute<AllowanceDetailId, Integer> allowanceId;
 

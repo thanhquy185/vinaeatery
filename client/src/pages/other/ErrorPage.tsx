@@ -1,0 +1,18 @@
+import { Result, Button } from "antd";
+
+const OtherErrorPage: React.FC = () => {
+  return (
+    <Result
+      status="404"
+      title="404"
+      subTitle="Sorry, the page you visited does not exist."
+      extra={
+        <Button type="primary" href="/">
+          Back Home
+        </Button>
+      }
+    />
+  );
+};
+
+export default OtherErrorPage;

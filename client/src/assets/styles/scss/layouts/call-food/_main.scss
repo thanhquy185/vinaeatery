@@ -327,7 +327,7 @@
 
       & :is(span, b) {
         display: inline-block;
-        width: 32%;
+        width: 30%;
       }
 
       & span {
@@ -563,7 +563,7 @@
     }
   
     &-button {
-      height: 28px;
+      @include size(28px);
       border-radius: 6px;
       font-size: 1.2rem;
     }

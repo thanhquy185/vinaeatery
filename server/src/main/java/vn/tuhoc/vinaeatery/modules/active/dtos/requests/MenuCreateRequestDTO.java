@@ -1,0 +1,38 @@
+package vn.tuhoc.vinaeatery.modules.active.dtos.requests;
+
+import java.util.List;
+
+import jakarta.persistence.Convert;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import vn.tuhoc.vinaeatery.modules.active.domains.converters.MenuTypeConverter;
+import vn.tuhoc.vinaeatery.modules.active.domains.enums.MenuTypeEnum;
+import vn.tuhoc.vinaeatery.modules.global.domains.converters.CommonStatusConverter;
+import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
+
+@Data
+public class MenuCreateRequestDTO {
+    @NotNull(message = "Mã nhà hàng không được để trống!")
+    private Integer restaurantId;
+
+    @NotBlank(message = "Tên thực đơn không được để trống!")
+    private String name;
+
+    @NotNull(message = "Loại thực đơn không được để trống!")
+    @Convert(converter = MenuTypeConverter.class)
+    private MenuTypeEnum type;
+
+    @NotNull(message = "Giá tiền không được để trống!")
+    @Min(value = 0)
+    private Long price;
+
+    private String description;
+
+    @NotNull(message = "Trạng thái không được để trống!")
+    @Convert(converter = CommonStatusConverter.class)
+    private CommonStatusEnum status;
+
+    List<MenuDetailCreateRequestDTO> menuDetails;
+}

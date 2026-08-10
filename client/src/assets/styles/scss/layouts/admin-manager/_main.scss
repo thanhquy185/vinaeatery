@@ -5,8 +5,9 @@
 .main {
   $filter-find-width: 40%;
   $filter-select-width: calc(
-    calc(calc(100% - $filter-find-width) / 3) -
-      calc(calc($admin-space / 2) * 2 / 3)
+    calc(calc(100% - $filter-find-width) / 3) - calc(
+        calc($admin-space / 2) * 2 / 3
+      )
   );
   $filter-button-width: 16%;
   $card-padding: 24px; // Theo mặc định của ant
@@ -19,7 +20,9 @@
   // background: #ccc;
   padding: $admin-space;
   // margin-left: $admin-sidebar-width;
-  transition: width 0.3s ease, margin-left 0.3s ease;
+  transition:
+    width 0.3s ease,
+    margin-left 0.3s ease;
   overflow: visible;
 
   // body:has(.sidebar.hide) & {
@@ -225,7 +228,7 @@
     width: calc($filter-find-width - calc($admin-space / 2));
   }
 
-  // &__filter.order-tables &__filter-select.filter-date {
+  // &__filter.reservations &__filter-select.filter-date {
   //   width: calc(calc(calc(100% - $filter-find-width - $filter-button-width) / 2) - calc($admin-space / 2));
   // }
 
@@ -239,59 +242,6 @@
   &__info,
   &__calendar {
     margin-top: calc($admin-space / 2);
-  }
-
-  &__use-foods .ant-list-items {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: calc($admin-space / 2);
-  }
-
-  &__use-foods .ant-list-item {
-    width: calc(100% / 4 - calc(calc(($admin-space / 2) * 3) / 4));
-    padding: 0;
-    border-block-end: none;
-    border: 3px solid transparent;
-    border-radius: 8px;
-    transition: border-color 0.2s ease-in-out, transform 0.2s ease;
-    cursor: pointer;
-  }
-
-  &__use-foods .ant-list-item:hover {
-    border-color: $primary-color;
-    // transform: translateY(-6px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-
-  &__use-foods .ant-list-item .ant-card {
-    width: 100%;
-  }
-
-  &__use-foods .ant-list-item .ant-card-bordered {
-    border: none;
-  }
-
-  &__use-foods .ant-list-item .ant-card-bordered .ant-card-cover {
-    margin-top: 0;
-    margin-inline-start: 0;
-    margin-inline-end: 0;
-  }
-
-  &__use-foods .ant-list-item .ant-card-bordered .ant-card-cover img {
-    height: 200px;
-  }
-
-  &__use-foods .ant-list-item .ant-card-meta-description .price {
-    color: #f9c74f;
-  }
-
-  &__use-foods .ant-list-item .ant-card-actions span {
-    padding: 0 10px;
-  }
-
-  &__use-foods .ant-list-item .ant-card-actions li button {
-    width: 100%;
   }
 
   &__order-sheets {
@@ -341,97 +291,6 @@
     @include size(100%, 40px);
     // border-radius: $calendar-border-radius $calendar-border-radius 0 0;
   }
-
-  &__calendar {
-    border-radius: $calendar-border-radius;
-    // margin-top: $admin-space;
-  }
-
-  &__calendar
-    :where(
-      .fc-daygrid-body,
-      .fc-scrollgrid-sync-table,
-      .fc-col-header,
-      .fc-timegrid-body,
-      .fc-timegrid-slots table,
-      .fc-timegrid-cols table
-    ) {
-    width: 100% !important;
-  }
-
-  &__calendar .fc-scrollgrid-sync-table td {
-    height: 100px !important;
-    cursor: pointer;
-    transition: 0.1s ease;
-  }
-
-  &__calendar
-    :where(.fc-scrollgrid-sync-table, .fc-timegrid-slots)
-    td:not(.fc-scrollgrid-shrink):hover {
-    background: #eee;
-    // color: #fff;
-  }
-
-  &__calendar .fc-timegrid-col-events {
-    margin: 0;
-  }
-
-  &__notes {
-    @include flex(flex-start, center);
-    gap: 20px;
-    width: 100%;
-    margin-bottom: 14px;
-  }
-
-  &__notes p {
-    color: #777;
-  }
-
-  &__notes p span {
-    display: inline-block;
-    @include size(10px);
-    border-radius: 50%;
-    background: #000;
-  }
-
-  &__notes p span.green {
-    background: $green-secondary-btn-color;
-  }
-
-  &__notes p span.yellow {
-    background: $yellow-secondary-btn-color;
-  }
-
-  &__notes p span.red {
-    background: $red-secondary-btn-color;
-  }
-
-  &__notes p span.gray {
-    background: $ternary-color;
-  }
-
-  // &__filter-select.filter-employee .ant-select-selector {
-  //   padding: 0 11px 0 0;
-  // }
-
-  &__filter-select.filter-employee {
-    height: 120px !important;
-  }
-
-  // &__filter-select.filter-employee
-  //   .ant-select-selection-item
-  //   .hasImageInLabel
-  //   > img {
-  //   @include size(40px !important);
-  // }
-
-  // &__filter-select.filter-employee
-  //   .ant-select-selection-item
-  //   .hasImageInLabel
-  //   span {
-  //   height: calc(60px / 3) !important;
-  //   line-height: calc(60px / 3);
-  // }
 
   &:has(&__filter-select.filter-employee) &__calendar {
     margin-top: calc($admin-space / 2 - calc($admin-filter-height - 120px));

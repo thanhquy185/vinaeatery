@@ -206,151 +206,6 @@ textarea.ant-input {
       border-radius: 50%;
       margin: 0 4px;
     }
-
-    // & &-item-option .hasImageInLabel {
-    //   height: 120px;
-    //   @include flex(stretch, center);
-    //   padding: 14px;
-    //   border: 1px solid #f0f0f0;
-    //   border-radius: 8px;
-    //   background: #fafafa;
-    //   gap: 20px;
-
-    //   & img {
-    //     @include size(80px);
-    //     border-radius: 50%;
-    //     object-fit: cover;
-    //     border: 2px solid $primary-color;
-    //   }
-
-    //   & .info {
-    //     @include flex(center, stretch);
-    //     flex-direction: column;
-    //     width: calc(100% - 80px);
-
-    //     .sub-info-warper {
-    //       display: flex;
-    //       align-items: center;
-    //       width: 100%;
-    //       margin-top: 2px;
-    //     }
-
-    //     & .sub-info:not(:first-of-type) {
-    //       margin-left: 24px;
-    //     }
-
-    //     & p {
-    //       display: flex;
-    //       align-items: center;
-    //       font-size: 1.4rem;
-    //       font-weight: 400;
-
-    //       &.name {
-    //         font-size: 1.7rem;
-    //         font-weight: 600;
-    //       }
-
-    //       & svg.lucide {
-    //         @include size(14px);
-    //         color: #777;
-    //       }
-
-    //       & span {
-    //         margin-left: 4px;
-    //         margin-right: 6px;
-    //         color: #777;
-    //       }
-
-    //       & b {
-    //         color: #555;
-    //         font-weight: 500;
-
-    //         &.red {
-    //           color: red;
-    //         }
-
-    //         &.green {
-    //           color: green;
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
-  }
-
-  &-selector {
-    // & .hasImageInLabel {
-    //   height: 120px;
-    //   @include flex(stretch, center);
-    //   padding: 14px;
-    //   border: 1px solid #f0f0f0;
-    //   border-radius: 8px;
-    //   background: #fafafa;
-    //   gap: 20px;
-
-    //   & img {
-    //     @include size(80px !important);
-    //     border-radius: 50%;
-    //     object-fit: cover;
-    //     border: 2px solid $primary-color;
-    //   }
-
-    //   & .info {
-    //     @include flex(center, stretch);
-    //     flex-direction: column;
-    //     width: calc(100% - 80px);
-
-    //     & .sub-info-warper {
-    //       display: flex;
-    //       align-items: center;
-    //       width: 100%;
-    //       margin-top: 4px;
-    //     }
-
-    //     & .sub-info:not(:first-of-type) {
-    //       margin-left: 24px;
-    //     }
-
-    //     & p {
-    //       display: flex;
-    //       align-items: center;
-    //       height: 22px !important;
-    //       font-size: 1.4rem;
-    //       font-weight: 400;
-    //       line-height: 22px;
-
-    //       &.name {
-    //         font-size: 1.7rem;
-    //         font-weight: 600;
-    //       }
-
-    //       & svg.lucide {
-    //         @include size(14px !important);
-    //         color: #777;
-    //       }
-
-    //       & span {
-    //         margin-left: 4px;
-    //         margin-right: 6px;
-    //         color: #777;
-    //       }
-
-    //       & b {
-    //         color: #555;
-    //         font-weight: 500;
-    //         height: auto !important;
-
-    //         &.red {
-    //           color: red;
-    //         }
-
-    //         &.green {
-    //           color: green;
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
   }
 
   &-clear {
@@ -492,5 +347,82 @@ textarea.ant-input {
   &:has(.ant-dropdown-menu-item) button {
     width: 100%;
     font-weight: 500;
+  }
+}
+
+:is(.ant-form, .ant-popover) {
+  & .check-password {
+    padding: 10px;
+
+    & p {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 1.4rem;
+
+      & svg.lucide {
+        @include size(1.4rem);
+      }
+
+      &.green {
+        color: #52c41a;
+      }
+
+      &.red {
+        color: #ff4d4f;
+      }
+    }
+  }
+}
+
+.ant-tabs {
+  & .ant-tabs-nav-list {
+    width: 100%;
+  }
+
+  & .ant-tabs-tab {
+    flex: 1;
+    justify-content: center;
+    margin: 0 !important;
+  }
+}
+
+.ant-empty {
+  &-image {
+    @include flexCenter();
+  }
+
+  &-description {
+    margin-top: 14px;
+    font-size: 1.4rem;
+  }
+}
+
+.ant-timeline {
+  $item-width: 20%;
+
+  &-item {
+    &-label {
+      width: calc($item-width - 12px) !important;
+    }
+
+    &-tail,
+    &-head {
+      inset-inline-start: $item-width !important;
+    }
+
+    &-content {
+      inset-inline-start: calc($item-width - 4px) !important;
+    }
+  }
+}
+
+.ant-result {
+  @include flexCenter();
+  flex-direction: column;
+  height: 100vh;
+
+  &-icon {
+    margin: 0 0 24px !important;
   }
 }

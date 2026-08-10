@@ -31,16 +31,14 @@ jacocoTestReport {
 dependencies {
     // Spring Boot core
     implementation 'org.springframework.boot:spring-boot-starter'
-    implementation("org.springframework.boot:spring-boot-starter-mail")
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
-    // implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"
 	implementation 'jakarta.validation:jakarta.validation-api:3.0.2' // Do jakarta.validation không tìm thấy trong starter-validation
 
     // Tomcat embedded - provided (runtime only)
@@ -78,6 +76,13 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.38'
     annotationProcessor 'org.projectlombok:lombok:1.18.38'
 
+    // Map struct binding
+    implementation 'org.mapstruct:mapstruct:1.6.3'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+
+    // lombok + map struct binding
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
@@ -87,7 +92,6 @@ dependencies {
     implementation "org.flywaydb:flyway-core"
     implementation 'org.flywaydb:flyway-mysql'
     
-
     // Zalo Pay
     implementation 'org.apache.httpcomponents:httpclient:4.5.13'
     implementation 'org.json:json:20230227'
@@ -95,6 +99,16 @@ dependencies {
 
     // OAuth2 Client (Google, Facebook Login)
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+    // Spring Doc - OpenAPI
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.17'
+
+    // Dotenv
+    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 dependencyManagement {
@@ -103,6 +117,30 @@ dependencyManagement {
     }
 }
 
-tasks.named('test') {
+tasks.named("test") {
 	useJUnitPlatform()
+}
+tasks.register("bootRunDev") {
+    group = "application"
+    description = ""
+    doFirst {
+        System.setProperty("spring.profiles.active", "dev")
+    }
+    finalizedBy("bootRun")
+}
+tasks.register("bootRunStg") {
+    group = "application"
+    description = ""
+    doFirst {
+        System.setProperty("spring.profiles.active", "stg")
+    }
+    finalizedBy("bootRun")
+}
+tasks.register("bootRunProd") {
+    group = "application"
+    description = ""
+    doFirst {
+        System.setProperty("spring.profiles.active", "prod")
+    }
+    finalizedBy("bootRun")
 }

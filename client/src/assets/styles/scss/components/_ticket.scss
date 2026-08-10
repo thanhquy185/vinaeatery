@@ -201,76 +201,16 @@
     }
   }
 
-  // &__body:where(.payslip, .order, .input_ticket) &__info {
-  //   font-size: 1.6rem;
-  // }
 
-  &__body:where(.payslip, .order, .input_ticket) &__date {
+  &__body:where(.dashboard, .bill, .input_ticket) &__date {
     margin-bottom: 32px;
   }
 
-  &__body:where(.order, .input_ticket) &__table {
+  &__body:where(.dashboard, .bill, .input_ticket) &__table {
     margin-top: 4px;
   }
 
-  &__body.payslip {
-    & .ticket__row {
-      align-items: flex-start;
-    }
-
-    & .ticket__image {
-      @include flexCenter();
-      width: 20%;
-
-      & img {
-        @include size(180px * 3 / 4, 180px);
-        border-radius: 4px;
-      }
-    }
-
-    & .ticket__infos {
-      width: 80%;
-    }
-
-    & .salary-overview {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin: 6px 0 0;
-
-      & .item {
-        border: 1px dashed #ccc;
-        border-radius: 10px;
-        padding: 10px;
-        text-align: center;
-        background: #fafafa;
-
-        & span {
-          display: block;
-          font-size: 13px;
-          color: #666;
-        }
-
-        & b {
-          font-size: 16px;
-        }
-      }
-
-      & .income b {
-        color: #16a34a; 
-      }
-
-      & .deduction b {
-        color: #dc2626; 
-      }
-    }
-
-    & .ticket__table {
-      margin-top: 14px;
-    }
-  }
-
-  &__footer:where(.payslip, .order, .input_ticket) {
+  &__footer:where(.dashboard, .bill, .input_ticket) {
     justify-content: space-around;
   }
 

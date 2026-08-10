@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { Modal, Input, message, Form, Select } from "antd";
-import { ruleRequired } from "../common/rules";
-import { openNotification } from "../utils/show-notification";
-import { openConfirmation } from "../utils/show-confirmation";
+import { ruleRequired } from "../constants/rules";
+import { openNotification } from "../utils/showNotification";
+import { openConfirmation } from "../utils/showConfirmation";
 
 // 👉 Định nghĩa kiểu dữ liệu trả về
 interface AddressResult {

@@ -2,138 +2,75 @@
   "groups": [
     {
       "name": "momo",
-      "type": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO"
+      "type": "vn.tuhoc.vinaeatery.modules.payment.dtos.others.MomoPropertiesDTO",
+      "sourceType": "vn.tuhoc.vinaeatery.modules.payment.dtos.others.MomoPropertiesDTO"
     },
     {
-      "name": "momo.active-config",
-      "type": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO",
-      "sourceMethod": "getActiveConfig()"
-    },
-    {
-      "name": "momo.dev",
-      "type": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO",
-      "sourceMethod": "getDev()"
-    },
-    {
-      "name": "momo.prod",
-      "type": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO",
-      "sourceMethod": "getProd()"
+      "name": "zalopay",
+      "type": "vn.tuhoc.vinaeatery.modules.payment.dtos.others.ZaloPayPropertiesDTO",
+      "sourceType": "vn.tuhoc.vinaeatery.modules.payment.dtos.others.ZaloPayPropertiesDTO"
     }
   ],
   "properties": [
     {
-      "name": "momo.active-config.access-key",
+      "name": "momo.access-key",
       "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
+      "sourceType": "vn.tuhoc.vinaeatery.modules.payment.dtos.others.MomoPropertiesDTO"
     },
     {
-      "name": "momo.active-config.endpoint",
+      "name": "momo.endpoint",
       "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
+      "sourceType": "vn.tuhoc.vinaeatery.modules.payment.dtos.others.MomoPropertiesDTO"
     },
     {
-      "name": "momo.active-config.ipn-url",
+      "name": "momo.ipn-url",
       "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
+      "sourceType": "vn.tuhoc.vinaeatery.modules.payment.dtos.others.MomoPropertiesDTO"
     },
     {
-      "name": "momo.active-config.partner-code",
+      "name": "momo.partner-code",
       "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
+      "sourceType": "vn.tuhoc.vinaeatery.modules.payment.dtos.others.MomoPropertiesDTO"
     },
     {
-      "name": "momo.active-config.redirect-url",
+      "name": "momo.redirect-url",
       "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
+      "sourceType": "vn.tuhoc.vinaeatery.modules.payment.dtos.others.MomoPropertiesDTO"
     },
     {
-      "name": "momo.active-config.request-type",
+      "name": "momo.request-type",
       "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
+      "sourceType": "vn.tuhoc.vinaeatery.modules.payment.dtos.others.MomoPropertiesDTO"
     },
     {
-      "name": "momo.active-config.secret-key",
+      "name": "momo.secret-key",
       "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
+      "sourceType": "vn.tuhoc.vinaeatery.modules.payment.dtos.others.MomoPropertiesDTO"
     },
     {
-      "name": "momo.dev.access-key",
+      "name": "zalopay.app-id",
       "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
+      "sourceType": "vn.tuhoc.vinaeatery.modules.payment.dtos.others.ZaloPayPropertiesDTO"
     },
     {
-      "name": "momo.dev.endpoint",
+      "name": "zalopay.callback-url",
       "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
+      "sourceType": "vn.tuhoc.vinaeatery.modules.payment.dtos.others.ZaloPayPropertiesDTO"
     },
     {
-      "name": "momo.dev.ipn-url",
+      "name": "zalopay.endpoint",
       "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
+      "sourceType": "vn.tuhoc.vinaeatery.modules.payment.dtos.others.ZaloPayPropertiesDTO"
     },
     {
-      "name": "momo.dev.partner-code",
+      "name": "zalopay.key1",
       "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
+      "sourceType": "vn.tuhoc.vinaeatery.modules.payment.dtos.others.ZaloPayPropertiesDTO"
     },
     {
-      "name": "momo.dev.redirect-url",
+      "name": "zalopay.key2",
       "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
-    },
-    {
-      "name": "momo.dev.request-type",
-      "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
-    },
-    {
-      "name": "momo.dev.secret-key",
-      "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
-    },
-    {
-      "name": "momo.env",
-      "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO"
-    },
-    {
-      "name": "momo.prod.access-key",
-      "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
-    },
-    {
-      "name": "momo.prod.endpoint",
-      "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
-    },
-    {
-      "name": "momo.prod.ipn-url",
-      "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
-    },
-    {
-      "name": "momo.prod.partner-code",
-      "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
-    },
-    {
-      "name": "momo.prod.redirect-url",
-      "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
-    },
-    {
-      "name": "momo.prod.request-type",
-      "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
-    },
-    {
-      "name": "momo.prod.secret-key",
-      "type": "java.lang.String",
-      "sourceType": "vn.tuhoc.vinaeatery.domain.dto.MomoPropertiesDTO$EnvConfig"
+      "sourceType": "vn.tuhoc.vinaeatery.modules.payment.dtos.others.ZaloPayPropertiesDTO"
     }
   ],
   "hints": [],

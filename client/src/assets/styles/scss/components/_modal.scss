@@ -376,7 +376,7 @@
       font-size: 1.5rem;
     }
 
-    & .input-pay-total-price {
+    & .input-payment-total-price {
       height: 40px;
       line-height: 40px;
 
@@ -387,10 +387,11 @@
     }
   }
 
-  & .sub-info {
-    padding-left: 14px;
+  & .sub-info,
+  & .sub-sub-info {
+    padding-left: 10px;
     color: #555;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
 
     &:not(:first-of-type) {
       margin-top: 4px;
@@ -400,6 +401,15 @@
       display: inline-block;
       width: 18%;
       font-weight: 600;
+    }
+  }
+
+  & .sub-sub-info {
+    color: #777;
+    font-size: 1.4rem;
+
+    & b {
+      font-weight: 400;
     }
   }
 
@@ -446,7 +456,8 @@
     }
   }
 
-  &:not(.ant-modal:is(.allowances, .insurances, .schedules)) .ant-form-item-control {
+  &:not(.ant-modal:is(.allowances, .insurances, .schedules))
+    .ant-form-item-control {
     & .ant-image {
       padding: 2px;
       border: 1px solid #dedede;
@@ -494,37 +505,6 @@
     .ant-form-item-control
     :is(.ant-image-img, .ant-image-mask) {
     @include size(140px, calc(140px * 4 / 3));
-  }
-
-  &.ant-modal.timetable .ant-alert {
-    margin-bottom: 14px;
-
-    &-message {
-      color: $primary-color;
-      font-size: 1.8rem;
-      font-weight: 700;
-    }
-
-    &-description {
-      & p {
-        display: flex;
-        align-items: center;
-        font-size: 1.5rem;
-
-        & svg.lucide {
-          @include size(15px);
-        }
-
-        & span {
-          margin-left: 2px;
-          margin-right: 4px;
-        }
-
-        & b {
-          font-weight: 600;
-        }
-      }
-    }
   }
 
   &.ant-modal.permission-ticket {
@@ -610,10 +590,10 @@
     & table {
       width: 100%;
       border-collapse: collapse;
+      border: 1px solid #ccc;
       margin-top: 4px;
 
       & :is(th, td) {
-        border: 1px solid #ccc;
         padding: 10px;
         font-size: 1.4rem;
         text-align: center;
@@ -631,6 +611,33 @@
           text-align: left;
         }
       }
+
+      & .sub {
+        $bg-color: #fafafa;
+
+        &-row td {
+          background: $bg-color;
+        }
+  
+        &-table {
+          width: 100%;
+          border-collapse: collapse;
+          border-radius: 6px;
+          overflow: hidden;
+        }
+  
+        &-table td {
+          background: $bg-color;
+          font-size: 13px;
+          padding: 4px 6px;
+          border: none;
+
+          & span.ant-tag {
+            padding: 2px 10px;
+          }
+        }
+      }
+
     }
 
     & .note {
@@ -679,8 +686,7 @@
   }
 
   &.ant-modal.table-histories {
-    & .sub-info {
-      // background: #fdeaea;
+    & .order-sheet-info {
       background: rgba(211, 47, 47, 0.05);
       padding: 14px 16px;
       border: 1px solid #ccc;
@@ -693,9 +699,14 @@
         margin-top: 4px;
       }
 
+      & p {
+        margin-top: 4px;
+        font-size: 1.4rem;
+      }
+
       & b {
         display: inline-block;
-        width: 15%;
+        width: 18%;
         color: #000;
       }
 
@@ -720,6 +731,10 @@
         &.gray {
           background: #bbb;
         }
+      }
+
+      & table {
+        margin-top: 8px;
       }
     }
   }
@@ -891,1005 +906,17 @@
     }
   }
 
-  &.ant-modal.payslips {
-    $left-info-width: 30%;
-    // $gap: calc($padding-vertical / 2);
-    $gap: 16px;
-    $green-color: #22c55e;
-    $red-color: #ef4444;
-    $cell-background-green-color: #dcfce7;
-    $cell-background-yellow-color: #fef9c3;
-    $cell-background-red-color: #fee2e2;
-    $cell-background-gray-color: #f1f5f9;
-    $cell-border-green-color: #bbf7d0;
-    $cell-border-yellow-color: #fef08a;
-    $cell-border-red-color: #fecaca;
-    $cell-border-gray-color: #cbd5e1;
-
-    & .ant-modal-content {
-      background: #fcf8f8;
+  &.ant-modal {
+    & .check-password {
+      background: #f5f5f5;
+      padding: 10px;
+      margin: 6px 0 calc($margin-bottom - 8px);
+      border-radius: $border-radius;
     }
 
-    & .ant-modal-body {
-      display: flex;
-      align-items: flex-start;
-      gap: $gap;
-    }
-
-    & .card {
-      // background: #faedeb;
-      // background: #ffe9e9;
-      background: #fff;
-      padding: 20px;
-      // border: 1px solid $primary-color;
-      // border: 1px solid #ededed;
-      border-radius: 12px;
-
-      & .ant-divider {
-        background: #efefef;
-        margin: 6px 0 10px;
-      }
-
-      & .row {
-        @include flex(space-between, center);
-      }
-
-      & p {
-        display: flex;
-        align-items: center;
-        margin-top: 2px;
-        color: #555;
-        font-size: 1.5rem;
-
-        &.title {
-          margin: 0 0 4px;
-          // color: $primary-color;
-          color: #000;
-          font-size: 1.7rem;
-          font-weight: 600;
-        }
-
-        &.sub {
-          color: #777;
-          font-size: 1.3rem;
-        }
-
-        & svg.lucide {
-          @include size(16px);
-        }
-
-        & span.has-icon {
-          margin-left: 3px;
-          margin-right: 5px;
-        }
-
-        & b {
-          color: #333;
-          font-weight: 500;
-        }
-      }
-    }
-
-    & :is(.left-info, .main-detail) {
-      display: flex;
-      flex-direction: column;
-      gap: $gap;
-    }
-
-    & .left-info {
-      position: sticky;
-      top: calc($header-height + $padding-horizontal);
-      left: 0;
-      width: calc($left-info-width - calc($gap / 2));
-
-      & .profile {
-        display: flex;
-        flex-direction: column;
-
-        & .ant-image :is(.ant-image-img, .ant-image-mask) {
-          @include size(100px);
-          padding: 2px;
-          border: 2px solid $primary-color;
-          // border: 2px solid #dedede;
-          margin-left: 50%;
-          border-radius: 50%;
-          transform: translateX(-50%);
-        }
-
-        & .ant-divider {
-          margin: 20px 0 14px;
-        }
-
-        & p {
-          &.title {
-            color: $primary-color;
-          }
-
-          &.sub {
-            margin-left: 16px;
-
-            & b {
-              color: #444;
-            }
-          }
-        }
-      }
-    }
-
-    & .main-detail {
-      width: calc(calc(100% - $left-info-width) - calc($gap / 2));
-
-      // & .rule {
-      //   background: #ffe9e9;
-      // }
-
-      & :is(.allowance, .insurance, .permission-ticket, .reward-punish, .salary-advance) {
-        & .payslip-statistic {
-          & .ant-card-body {
-            padding: 14px;
-          }
-
-          & .ant-statistic {
-            &-title {
-              font-size: 1.4rem;
-            }
-
-            &-content {
-              font-size: 2rem;
-            }
-          }
-        }
-
-        & .payslip-item {
-          & .title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-
-            & .ant-tag {
-              font-weight: 400;
-            }
-          }
-
-          & .description {
-            $color: #888;
-
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: $color;
-            font-size: 1.4rem;
-
-            & .dot {
-              display: inline-block;
-              @include size(5px);
-              background: $color;
-              border-radius: 50%;
-            }
-          }
-
-          & .money {
-            font-size: 1.5rem;
-            font-weight: 700;
-
-            &.green {
-              color: #1aa251;
-            }
-
-            &.red {
-              color: #d9363e;
-            }
-          }
-        }
-      }
-
-      & .filter {
-        $filter-height: 40px;
-
-        position: sticky;
-        top: $header-height + $padding-horizontal;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        gap: calc($gap / 2);
-
-        & :is(.ant-select, .ant-picker, button) {
-          height: $filter-height;
-        }
-
-        & :is(.ant-select, .ant-picker) {
-          width: 24%;
-        }
-
-        & button {
-          @include flexCenter();
-          gap: 6px;
-          width: 14%;
-          font-size: 1.4rem;
-
-          &:first-of-type {
-            @include size($filter-height);
-          }
-
-          &:nth-of-type(2) {
-            margin-left: auto;
-          }
-
-          & svg.lucide {
-            @include size(18px);
-          }
-        }
-      }
-
-      & .role-history {
-        &-item {
-          &__header {
-            @include flex(space-between, center);
-
-            .left {
-              display: flex;
-              align-items: center;
-              gap: 8px;
-            }
-
-            .position {
-              color: #000;
-              font-size: 1.4rem;
-              font-weight: 600;
-            }
-
-            .time {
-              font-size: 1.2rem;
-              color: #666;
-            }
-          }
-
-          &__main {
-            display: flex;
-            align-items: baseline;
-            margin-top: 6px;
-            font-size: 1.4rem;
-            gap: 4px;
-
-            .formula {
-              color: #777;
-              font-weight: 500;
-            }
-
-            .amount {
-              color: $primary-color;
-              font-size: 1.6rem;
-              font-weight: 700;
-            }
-
-            .unit {
-              font-size: 1.3rem;
-              color: #888;
-            }
-          }
-        }
-      }
-
-      & .attendance {
-        $thead-height: 35px;
-        $thead-radius: 4px;
-
-        & .ant-picker-calendar table {
-          background: #FAFBFC;
-        }
-
-        &-wrapper {
-          position: absolute;
-          top: 0;
-          @include flexCenter();
-          @include size(100%);
-        }
-        
-        & .row {
-          & .ant-select {
-            width: 16%;
-          }
-
-          & .note {
-            font-size: 1.4rem;
-  
-            &,
-            &s {
-              display: flex;
-              align-items: center;
-              gap: 4px;
-            }
-  
-            &s {
-              gap: 10px;
-            }
-  
-            & .dot {
-              @include size(12px);
-              background: transparent;
-              border: 1px solid transparent;
-              border-radius: 50%;
-  
-              &.green {
-                background: $cell-background-green-color;
-                border-color: $cell-border-green-color;
-              }
-  
-              &.yellow {
-                background: $cell-background-yellow-color;
-                border-color: $cell-border-yellow-color;
-              }
-  
-              &.red {
-                background: $cell-background-red-color;
-                border-color: $cell-border-red-color;
-              }
-  
-              &.gray {
-                background: $cell-background-gray-color;
-                border-color: $cell-border-gray-color;
-              }
-            }
-          }
-        }
-
-        & .ant-picker {
-          &-date-panel {
-            & .ant-picker-calendar-date {
-              margin: 3px;
-            }
-
-            & .ant-picker-cell-inner {
-              padding: 0;
-              // border: 1px solid #0505050f;
-              // margin: 0;
-            }
-
-            & :is(th, td) {
-              font-size: 1.3rem;
-            }
-
-            & thead {
-              background: $primary-color;
-              height: $thead-height;
-
-              & th {
-                padding: 0;
-                color: #fff;
-                font-size: 1.4rem;
-                font-weight: 600;
-                line-height: $thead-height;
-
-                &:first-of-type {
-                  border-radius: $thead-radius 0 0 0;
-                }
-
-                &:last-of-type {
-                  border-radius: 0 $thead-radius 0 0;
-                }
-              }
-            }
-
-            & tbody {
-              & tr:not(:has(td.ant-picker-cell-in-view)) {
-                display: none;
-              }
-            }
-          }
-
-          &-month-panel {
-            & .ant-picker-calendar-date {
-              margin: 3px;
-            }
-          }
-
-          &-calendar {
-            :is(&-date, &-date-today) {
-              background: #fff;
-
-              &:hover {
-                background: #0000000a;
-              }
-            }
-
-            &-date-today {
-              border-color: #0505050f;
-            }
-
-            &-date-value {
-              color: #000;
-              font-weight: 500;
-            }
-          }
-
-          &-cell {
-            &:not(&-in-view) {
-              opacity: 0;
-              pointer-events: none;
-            }
-
-            // &-inner {
-            //   // border-color: #faedeb;
-            //   // border: 3px solid transparent;
-            // }
-
-            &:has(:is(.attendance-month, .attendance-date).green)
-              .ant-picker-cell-inner {
-              background: $cell-background-green-color;
-              border-color: $cell-border-green-color;
-            }
-
-            &:has(:is(.attendance-month, .attendance-date).yellow)
-              .ant-picker-cell-inner {
-              background: $cell-background-yellow-color;
-              border-color: $cell-border-yellow-color;
-            }
-
-            &:has(:is(.attendance-month, .attendance-date).red)
-              .ant-picker-cell-inner {
-              background: $cell-background-red-color;
-              border-color: $cell-border-red-color;
-            }
-
-            &:has(:is(.attendance-month, .attendance-date).gray)
-              .ant-picker-cell-inner {
-              background: $cell-background-gray-color;
-              border-color: $cell-border-gray-color;
-            }
-          }
-        }
-
-        & .table-attendance {
-          margin-top: 8px;
-
-          & tr {
-            position: relative;
-            cursor: pointer;
-
-            & td:has(.row-hover-trigger) {
-              position: absolute;
-              width: 100%;
-            }
-
-            & .row-hover-trigger {
-              position: absolute;
-              z-index: 100;
-              inset: 0;
-            }
-
-            &.green {
-              background: $cell-background-green-color;
-              border-color: $cell-border-green-color;
-            }
-
-            &.yellow {
-              background: $cell-background-yellow-color;
-              border-color: $cell-border-yellow-color;
-            }
-
-            &.red {
-              background: $cell-background-red-color;
-              border-color: $cell-border-red-color;
-            }
-
-            &.gray {
-              background: $cell-background-gray-color;
-              border-color: $cell-border-gray-color;
-            }
-          }
-
-          & :is(th, td) {
-            height: $thead-height;
-            padding: 0;
-            font-size: 1.3rem;
-            line-height: $thead-height;
-          }
-
-          & th {
-            background: $primary-color;
-            color: #fff;
-            font-size: 1.4rem;
-            font-weight: 600;
-
-            &::before {
-              display: none;
-            }
-
-            &:nth-of-type(2) {
-              border-start-start-radius: $thead-radius;
-            }
-
-            &:last-of-type {
-              border-start-end-radius: $thead-radius;
-            }
-          }
-
-          & .ant-table-summary {
-            & td:first-of-type {
-              background: $primary-color;
-              color: #fff;
-            }
-          }
-        }
-
-        & > p.note {
-          color: #555;
-          font-size: 1.4rem;
-          font-weight: 500;
-          font-style: italic;
-        }
-      }
-
-      & :is(.allowance, .insurance) {
-        & .title {
-          justify-content: space-between;
-          align-items: flex-start !important;
-
-          :is(h3, p, span) {
-            font-size: 1.4rem;
-            font-weight: 400;
-          }
-
-          h3 {
-            font-weight: 700;
-          }
-
-          p {
-            color: #888;
-          }
-
-          span {
-            color: #666;
-            font-size: 1.2rem;
-          }
-        }
-
-        & .grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(20%, 1fr));
-          gap: 10px;
-
-          & .item {
-            @include flexCenter();
-            flex-direction: column;
-            // height: 150px;
-            background: #f9fafb;
-            padding: 24px 20px;
-            border-radius: 10px;
-            // gap: 10px;
-            transition: all 0.2s ease;
-
-            // &:hover {
-            //   background: #fff0f0;
-            //   transform: translateY(-2px);
-            // }
-          }
-
-          // & img {
-          //   @include size(50px);
-          //   border-radius: 50%;
-          // }
-
-          & :is(h3, p) {
-            font-size: 1.4rem;
-          }
-
-          & h3 {
-            // margin-top: 14px;
-            color: #777;
-            font-weight: 500;
-            text-align: center;
-          }
-
-          & p {
-            font-size: 1.5rem;
-            font-weight: 700;
-
-            &.green {
-              color: #16a34a;
-            }
-
-            &.red {
-              color: #dc2626;
-            }
-
-            &.blue {
-              color: #1677ff;
-            }
-          }
-        }
-      }
-
-      & .reward-punish {
-        & .payslip-item {
-          & .money {
-            font-size: 1.5rem;
-            font-weight: 700;
-
-            &.green {
-              color: #1aa251;
-            }
-
-            &.red {
-              color: #d9363e;
-            }
-          }
-        }
-      }
-
-      & .summary {
-        & .ant-divider.primary {
-          // height: 2px;
-          // background: $primary-color;
-          margin: 14px 0 6px;
-        }
-
-        & p {
-          align-items: flex-start;
-
-          & span {
-            width: 40%;
-          }
-
-          & b {
-            width: 60%;
-            text-align: right;
-          }
-
-          &.green {
-            color: $green-color;
-
-            & b {
-              color: $green-color;
-            }
-          }
-
-          &.red {
-            color: $red-color;
-
-            & b {
-              color: $red-color;
-            }
-          }
-
-          &.total {
-            color: $primary-color;
-            font-size: 1.9rem;
-            font-weight: 600;
-
-            & b {
-              color: $primary-color;
-              font-weight: 600;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  &.ant-modal.payslip-ticket {
-    .salary-slip {
-      // max-width: 800px;
-      margin: 0 auto;
-      // padding: 16px;
-      font-size: 14px;
-      color: #222;
-
-      &__header {
-        text-align: center;
-
-        .title {
-          font-size: 18px;
-          font-weight: 700;
-        }
-
-        .company {
-          font-size: 14px;
-          margin-top: 4px;
-        }
-      }
-
-      &__info {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        row-gap: 6px;
-
-        span {
-          font-weight: 600;
-          margin-right: 4px;
-        }
-      }
-
-      &__section {
-        margin-top: 16px;
-
-        .section-title {
-          font-weight: 700;
-          margin-bottom: 8px;
-        }
-
-        .section-total {
-          text-align: right;
-          margin-top: 8px;
-          font-weight: 600;
-
-          &.positive {
-            color: #2e7d32;
-          }
-
-          &.negative {
-            color: #c62828;
-          }
-        }
-      }
-
-      &__summary {
-        text-align: right;
-
-        .net-salary {
-          font-size: 16px;
-          font-weight: 700;
-        }
-      }
-
-      &__footer {
-        margin-top: 24px;
-        font-size: 12px;
-        color: #666;
-        text-align: right;
-      }
-    }
-  }
-
-  &.ant-modal.attendances {
-    & .info {
-      & p {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 1.6rem;
-        color: #555;
-
-        &.title {
-          color: #000;
-          font-size: 1.8rem;
-          font-weight: 600;
-        }
-
-        & b {
-          color: #333;
-          font-weight: 500;
-        }
-      }
-
-      &.employee {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-
-        & img {
-          @include size(50px);
-          border-radius: 50%;
-        }
-
-        & p {
-          color: #777;
-          font-size: 1.6rem;
-
-          &.name {
-            color: $primary-color;
-            font-size: 1.8rem;
-            font-weight: 600;
-          }
-
-          &.other {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-
-            & span.dot {
-              display: inline-block;
-              @include size(8px);
-              border: 1px solid #d5d5d5;
-              background: transparent;
-              border-radius: 50%;
-            }
-
-            & span.status {
-              font-weight: 500;
-
-              &.green {
-                color: green;
-              }
-
-              &.red {
-                color: red;
-              }
-            }
-          }
-        }
-      }
-
-      &.machine-log {
-        & p {
-          & .dot {
-            @include size(8px);
-            background: #000;
-            border-radius: 50%;
-          }
-
-          & .action {
-            &.green {
-              color: $green-secondary-btn-color;
-            }
-
-            &.red {
-              color: $red-secondary-btn-color;
-            }
-          }
-        }
-
-        & :is(.item, .content) {
-          display: flex;
-          align-items: center;
-        }
-
-        & .list {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
-
-        & .item {
-          gap: 10px;
-          background: #f7f9fc;
-          padding: 14px;
-          border: 1px solid #e5e7eb;
-          border-radius: $border-radius;
-        }
-
-        & .content {
-          justify-content: space-between;
-          flex: 1;
-        }
-
-        & .shift {
-          color: #6b7280;
-          font-size: 1.4rem;
-        }
-
-        & .action {
-          padding: 4px 10px;
-          margin-inline-end: 0;
-          font-weight: 500;
-        }
-
-        & .inform {
-          @include flexCenter();
-          flex-direction: column;
-
-          & img {
-            @include size(80px);
-          }
-
-          & h3 {
-            color: #333;
-            font-size: 1.6rem;
-          }
-
-          & p {
-            color: #777;
-            font-size: 1.4rem;
-          }
-        }
-      }
-
-      & .modal__form {
-        & .ant-form-item {
-          &-label label,
-          &-control input,
-          &-control textarea,
-          &-control .ant-input-number,
-          &-control .ant-picker,
-          &-control .ant-select-selector,
-          &-control .ant-select-arrow,
-          &-control .ant-select-clear,
-          &-control .ant-upload #image-button[type="button"] {
-            height: 40px;
-            font-size: 1.6rem;
-          }
-
-          &-control {
-            & :is(.ant-select-selector, .ant-select-selection-wrap) {
-              height: 40px !important;
-            }
-
-            & .ant-select-arrow,
-            & .ant-select-clear {
-              @include size(calc(40px / 2));
-              justify-content: flex-end;
-              top: calc(40px / 4);
-              margin-top: 0;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  &.ant-modal:is(.allowances, .insurances) {
-    & .ant-form-item-control-input-content:has(.has-employees) {
-      height: auto;
-    }
-
-    & .has-employees {
-      width: 100%;
-    }
-  }
-
-  &.ant-modal.schedules {
-    & .ant-form-item-control-input-content:has(.has-employees) {
-      height: auto;
-    }
-
-    & .has-timetable {
-      $gap: calc($admin-space / 2);
-      $table-width: 24%;
-
-      display: flex;
-      align-items: flex-start;
-      gap: $gap;
-      width: 100%;
-
-      & .ant-table {
-        &-wrapper {
-          position: sticky;
-          // top: calc(50px + $gap);
-          top: $gap;
-          width: calc($table-width - calc($gap / 2));
-        }
-
-        & table {
-          & th {
-            text-align: center;
-          }
-
-          & .shift-item {
-            padding: 14px;
-            border: 1px solid #dedede;
-            border-radius: 6px;
-            cursor: pointer;
-
-            &.active {
-              background: $hover-color;
-            }
-
-            & p {
-              color: #666;
-              font-size: 1.1rem;
-              text-align: left;
-
-              &.title {
-                margin-bottom: 6px;
-                color: #000;
-                font-size: 1.3rem;
-                font-weight: 600;
-                text-align: center;
-              }
-            }
-          }
-        }
-      }
-
-      & .timetable {
-        width: calc(calc(100% - $table-width) - calc($gap / 2));
-      }
-    }
-  }
-
-  &.ant-modal.shifts {
-    & .shift-info {
-      margin: 0 0 4px 10px;
+    &.ant-modal:is(.managers, .customers, .employees):has(.check-password)
+      .modal__buttons {
+      margin-top: 54px;
     }
   }
 }
