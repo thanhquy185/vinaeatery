@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LoadingOutlined } from "@ant-design/icons";
 import type { ReactQueryMutationProps } from "../common/props";
 import type { RestResponseType } from "../types/RestResponseType";
-import { openNotification } from "../utils/showNotification";
+import { openNotification } from "../utils/showNotificationUtil";
 
 const notificationKey = "notification";
 

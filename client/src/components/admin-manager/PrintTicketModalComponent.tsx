@@ -1,6 +1,6 @@
 import { Download, Mail, MapPin, Phone } from "lucide-react";
 import { ImageSourcePath } from "../../constants/values";
-import { handlePrintTicket } from "../../utils/printTicket";
+import { handlePrintTicket } from "../../utils/printTicketUtil";
 import type { RestaurantSubInfoResponseType } from "../../types/RestaurantType";
 
 type PrintTicketModalComponentProps = {

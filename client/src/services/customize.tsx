@@ -1,33 +1,47 @@
 import axios from "axios";
-import Cookies from "js-cookie";
+import { getAccessToken } from "../stores/accessTokenStore";
+import { isPublicUrl } from "../utils/authUtil";
+import type { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 
-const instance = axios.create({
+const instance: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
 });
 
 instance.interceptors.request.use(
-  function (config) {
-    const token = Cookies.get("refreshToken"); // lấy token mới nhất mỗi lần gọi
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
+  (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
+    if (isPublicUrl(config.url)) {
+      return config;
     }
+
+    const accessToken = getAccessToken();
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+
     return config;
   },
-  function (error) {
+
+  (error: unknown) => {
     return Promise.reject(error);
   },
 );
 
 instance.interceptors.response.use(
-  function (response) {
-    if (response.data && response.data.data) return response.data;
+  (response) => {
+    if (response.data?.data) {
+      return response.data;
+    }
 
     return response;
   },
-  function (error) {
-    if (error.response && error.response.data) return error.response.data;
-    return Promise.reject(error);
+
+  (error) => {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+
+    return error;
   },
 );
 

@@ -38,8 +38,8 @@ import {
   ImageSourcePath,
   UserRoleValue,
 } from "../../constants/values";
-import { openConfirmation } from "../../utils/showConfirmation";
-import { openNotification } from "../../utils/showNotification";
+import { openConfirmation } from "../../utils/showConfirmationUtil";
+import { openNotification } from "../../utils/showNotificationUtil";
 import type { ReactQueryMutationProps } from "../../constants/props";
 import type { ManagerUpdateRequestType } from "../../types/ManagerType";
 import type { EmployeeDetailResponseType } from "../../types/EmployeeType";

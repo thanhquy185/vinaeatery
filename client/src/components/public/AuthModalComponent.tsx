@@ -11,8 +11,8 @@ import {
   rulePhone,
   rulePasswordStrong,
 } from "../../constants/rules";
-import { openNotification } from "../../utils/showNotification";
-import { openConfirmation } from "../../utils/showConfirmation";
+import { openNotification } from "../../utils/showNotificationUtil";
+import { openConfirmation } from "../../utils/showConfirmationUtil";
 import type { CustomerDetailResponseType } from "../../types/CustomerType";
 import type {
   AuthCustomerRegisterRequestType,

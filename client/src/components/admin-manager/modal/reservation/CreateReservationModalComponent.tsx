@@ -14,7 +14,7 @@ import {
   ReservationStatusValue,
 } from "../../../../constants/values";
 import { DatePicker, Form, Input, InputNumber } from "antd";
-import { openConfirmation } from "../../../../utils/showConfirmation";
+import { openConfirmation } from "../../../../utils/showConfirmationUtil";
 import type { CrudObjectModalProps } from "../../../../constants/props";
 import type { ReservationStatusEnum } from "../../../../constants/enums";
 import type {

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Input, Form } from "antd";
 import { ModalAutoComplete, ModalLayout } from "../../../constants/values";
 import { rulePasswordStrong, ruleRequired } from "../../../constants/rules";
-import { openConfirmation } from "../../../utils/showConfirmation";
+import { openConfirmation } from "../../../utils/showConfirmationUtil";
 import type { CrudObjectModalProps } from "../../../constants/props";
 import type {
   UserChangePasswordRequestType,

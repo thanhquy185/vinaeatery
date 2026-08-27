@@ -1,6 +1,6 @@
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { openNotification } from "./showNotification";
+import { openNotification } from "./showNotificationUtil";
 
 type PrintTicketProps = {
   contentPrint?: string;

@@ -1,7 +1,7 @@
 import { Button } from "antd";
 import { ImageSourcePath } from "../../constants/values";
 import { vietnamMoneyFormat } from "../../utils/otherEvents";
-import { openNotification } from "../../utils/showNotification";
+import { openNotification } from "../../utils/showNotificationUtil";
 import type { Dispatch, SetStateAction } from "react";
 import type { FoodInfoResponseType } from "../../types/FoodType";
 import type { ShoppingCartRequestType } from "../../types/ShoppingCartType";

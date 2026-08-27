@@ -19,7 +19,7 @@ import {
   ModalWidthValue,
 } from "../../constants/values";
 import { ImageSourcePath } from "../../constants/values";
-import { actionIndexes, getActionNameEn } from "../../utils/defaultActions";
+import { actionIndexes, getActionNameEn } from "../../utils/defaultActionsUtil";
 import { getFilterSelectValueToShow } from "../../utils/otherEvents";
 import type { SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";

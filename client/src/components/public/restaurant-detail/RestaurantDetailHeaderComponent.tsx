@@ -15,10 +15,10 @@ import {
   Globe,
 } from "lucide-react";
 import { ImageSourcePath } from "../../../constants/values";
-import { getVietnamCurrentTime } from "../../../utils/dayjs";
+import { getVietnamCurrentTime } from "../../../utils/dayjsUtil";
 import type { Dispatch, SetStateAction } from "react";
 import type { RestaurantPublicDetailResponseType } from "../../../types/RestaurantType";
-import { openNotification } from "../../../utils/showNotification";
+import { openNotification } from "../../../utils/showNotificationUtil";
 
 type RestaurantDetailHeaderComponentProps = {
   isCustomer: boolean;

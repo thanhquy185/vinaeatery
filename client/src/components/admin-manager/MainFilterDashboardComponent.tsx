@@ -30,7 +30,7 @@ import {
   chartQueryDashboardFeedback,
   tableDataQueryDashboardFeedback,
 } from "../../pages/manager/dashboard/FeedbackPage";
-import { openNotification } from "../../utils/showNotification";
+import { openNotification } from "../../utils/showNotificationUtil";
 import type { RestaurantSubInfoResponseType } from "../../types/RestaurantType";
 
 type MainFilterDashboardComponentProps = {

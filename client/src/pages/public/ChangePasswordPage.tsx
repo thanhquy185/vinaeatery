@@ -16,8 +16,8 @@ import { LoadingOutlined, SaveOutlined } from "@ant-design/icons";
 import { ruleRequired } from "../../constants/rules";
 
 import type { ReactQueryMutationProps } from "../../constants/props";
-import { openNotification } from "../../utils/showNotification";
-import { openConfirmation } from "../../utils/showConfirmation";
+import { openNotification } from "../../utils/showNotificationUtil";
+import { openConfirmation } from "../../utils/showConfirmationUtil";
 import UserApiService from "../../services/api/v1/UserApiService";
 import type { CustomerInfoResponseType } from "../../types/CustomerType";
 import type { UserChangePasswordRequestType } from "../../types/UserType";

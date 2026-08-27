@@ -15,9 +15,9 @@ import {
   PaymentMachineStatusValue,
   UseTableStatusValue,
 } from "../../../../constants/values";
-import { hasPermission } from "../../../../utils/hasPermissions";
-import { actionIndexes } from "../../../../utils/defaultActions";
-import { openConfirmation } from "../../../../utils/showConfirmation";
+import { hasPermission } from "../../../../utils/hasPermissionsUtil";
+import { actionIndexes } from "../../../../utils/defaultActionsUtil";
+import { openConfirmation } from "../../../../utils/showConfirmationUtil";
 import {
   numberToVietnamWords,
   vietnamMoneyFormat,

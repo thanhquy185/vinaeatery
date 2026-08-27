@@ -2,8 +2,8 @@ import useEntityQuery from "../../../../hooks/useEntityQuery2";
 import UseTableApiService from "../../../../services/api/v1/UseTableApiService";
 import { Spin } from "antd";
 import { UseTableStatusValue } from "../../../../constants/values";
-import { actionIndexes } from "../../../../utils/defaultActions";
-import { hasPermission } from "../../../../utils/hasPermissions";
+import { actionIndexes } from "../../../../utils/defaultActionsUtil";
+import { hasPermission } from "../../../../utils/hasPermissionsUtil";
 import type { CrudObjectModalProps } from "../../../../constants/props";
 import type { UseTableDetailResponseType } from "../../../../types/UseTableType";
 

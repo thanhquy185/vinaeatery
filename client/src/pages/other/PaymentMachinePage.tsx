@@ -16,8 +16,8 @@ import {
   PaymentMachineProcessStatusValue,
   PaymentMachineStatusValue,
 } from "../../constants/values";
-import { openNotification } from "../../utils/showNotification";
-import { openConfirmation } from "../../utils/showConfirmation";
+import { openNotification } from "../../utils/showNotificationUtil";
+import { openConfirmation } from "../../utils/showConfirmationUtil";
 import { over } from "stompjs";
 import type { Client } from "stompjs";
 import type {

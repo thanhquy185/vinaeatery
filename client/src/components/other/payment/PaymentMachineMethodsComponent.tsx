@@ -9,7 +9,7 @@ import {
   PaymentMethodImageValue,
   PaymentMethodTitleValue,
 } from "../../../constants/values";
-import { openConfirmation } from "../../../utils/showConfirmation";
+import { openConfirmation } from "../../../utils/showConfirmationUtil";
 import type { PaymentMachinePageProps } from "../../../constants/props";
 import type {
   PaymentMachineProcessStatusEnum,

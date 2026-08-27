@@ -3,7 +3,7 @@ import { type SelectProps } from "antd";
 import { Plus, RotateCcw } from "lucide-react";
 import FilterFindComponent from "../FilterFindComponent";
 import FilterSelectComponent from "../FilterSelectComponent";
-import { actionIndexes, getActionNameEn } from "../../utils/defaultActions";
+import { actionIndexes, getActionNameEn } from "../../utils/defaultActionsUtil";
 
 type MainFilterInfoComponentProps = {
   objectName: string;

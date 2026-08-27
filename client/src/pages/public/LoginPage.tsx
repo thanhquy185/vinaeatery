@@ -8,8 +8,9 @@ import type {
   AuthLoginRequestType,
   AuthLoginResponseType,
 } from "../../types/AuthType";
+import { setAccessToken } from "../../stores/accessTokenStore";
 
-const OtherLoginPage = () => {
+const OtherLoginPage: React.FC = () => {
   const [form] = Form.useForm<AuthLoginRequestType>();
 
   const loginMutation = useEntityMutation<
@@ -53,6 +54,8 @@ const OtherLoginPage = () => {
             values,
           });
           if (response.status === 200) {
+            setAccessToken(response.data.accessToken);
+
             setTimeout(() => {
               const userRole = response.data.userInfo.role;
 

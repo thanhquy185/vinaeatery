@@ -23,7 +23,7 @@ import {
 } from "../../constants/values";
 import { ImageSourcePath } from "../../constants/values";
 import { getFilterSelectValueToShow } from "../../utils/otherEvents";
-import { actionIndexes, getActionNameEn } from "../../utils/defaultActions";
+import { actionIndexes, getActionNameEn } from "../../utils/defaultActionsUtil";
 import type { SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { AdminManagerPageProps } from "../../constants/props";

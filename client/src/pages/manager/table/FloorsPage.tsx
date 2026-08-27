@@ -18,9 +18,12 @@ import {
   ModalTitleValue,
   ModalWidthValue,
 } from "../../../constants/values";
-import { hasPermission } from "../../../utils/hasPermissions";
+import { hasPermission } from "../../../utils/hasPermissionsUtil";
 import { getFilterSelectValueToShow } from "../../../utils/otherEvents";
-import { actionIndexes, getActionNameEn } from "../../../utils/defaultActions";
+import {
+  actionIndexes,
+  getActionNameEn,
+} from "../../../utils/defaultActionsUtil";
 import type { SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { AdminManagerPageProps } from "../../../constants/props";

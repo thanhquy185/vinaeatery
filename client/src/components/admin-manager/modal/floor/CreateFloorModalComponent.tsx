@@ -8,7 +8,7 @@ import {
   ModalLayout,
 } from "../../../../constants/values";
 import { ruleRequired } from "../../../../constants/rules";
-import { openConfirmation } from "../../../../utils/showConfirmation";
+import { openConfirmation } from "../../../../utils/showConfirmationUtil";
 import type { CrudObjectModalProps } from "../../../../constants/props";
 import type {
   FloorCreateRequestType,

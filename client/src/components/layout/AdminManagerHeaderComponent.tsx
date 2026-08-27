@@ -13,8 +13,8 @@ import {
   ModalWidthValue,
   UserRoleValue,
 } from "../../constants/values";
-import { openNotification } from "../../utils/showNotification";
-import { openConfirmation } from "../../utils/showConfirmation";
+import { openNotification } from "../../utils/showNotificationUtil";
+import { openConfirmation } from "../../utils/showConfirmationUtil";
 import type { MenuProps } from "antd";
 import type { UserDetailResponseType } from "../../types/UserType";
 import type { ManagerDetailResponseType } from "../../types/ManagerType";

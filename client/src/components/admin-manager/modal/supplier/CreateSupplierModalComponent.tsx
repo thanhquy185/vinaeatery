@@ -14,7 +14,7 @@ import {
   ModalAutoComplete,
   ModalLayout,
 } from "../../../../constants/values";
-import { openConfirmation } from "../../../../utils/showConfirmation";
+import { openConfirmation } from "../../../../utils/showConfirmationUtil";
 import type { CrudObjectModalProps } from "../../../../constants/props";
 import type {
   SupplierCreateRequestType,

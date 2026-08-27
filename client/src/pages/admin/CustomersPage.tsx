@@ -22,7 +22,7 @@ import {
 import useModal from "../../hooks/useModal";
 import useEntityQuery from "../../hooks/useEntityQuery2";
 import { ImageSourcePath } from "../../constants/values";
-import { actionIndexes, getActionNameEn } from "../../utils/defaultActions";
+import { actionIndexes, getActionNameEn } from "../../utils/defaultActionsUtil";
 import { getFilterSelectValueToShow } from "../../utils/otherEvents";
 import type { SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";

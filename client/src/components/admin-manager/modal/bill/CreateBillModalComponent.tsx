@@ -22,7 +22,7 @@ import {
   numberToVietnamWords,
   vietnamMoneyFormat,
 } from "../../../../utils/otherEvents";
-import { openConfirmation } from "../../../../utils/showConfirmation";
+import { openConfirmation } from "../../../../utils/showConfirmationUtil";
 import type { CrudObjectModalProps } from "../../../../constants/props";
 import type { TableInputComponentRowData } from "../../TableInputComponent";
 import type {

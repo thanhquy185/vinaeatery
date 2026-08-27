@@ -15,7 +15,7 @@ import {
   ruleRequired,
 } from "../../../../constants/rules";
 import { ModalAutoComplete, ModalLayout } from "../../../../constants/values";
-import { openConfirmation } from "../../../../utils/showConfirmation";
+import { openConfirmation } from "../../../../utils/showConfirmationUtil";
 import { convertUrlsToUploadFiles } from "../../../../utils/otherEvents";
 import type { UploadFile } from "antd/es/upload";
 import type { CrudObjectModalProps } from "../../../../constants/props";

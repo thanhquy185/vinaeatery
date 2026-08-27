@@ -16,7 +16,7 @@ import {
 import { CloseOutlined } from "@ant-design/icons";
 import { ruleRequired, rulePhone, ruleEmail } from "../../../constants/rules";
 import { ReservationStatusValue } from "../../../constants/values";
-import { openConfirmation } from "../../../utils/showConfirmation";
+import { openConfirmation } from "../../../utils/showConfirmationUtil";
 import type { Dispatch, SetStateAction } from "react";
 import type { ReservationStatusEnum } from "../../../constants/enums";
 import type { RestaurantPublicResponseType } from "../../../types/RestaurantType";

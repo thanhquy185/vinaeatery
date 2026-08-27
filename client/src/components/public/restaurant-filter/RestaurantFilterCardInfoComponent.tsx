@@ -1,6 +1,6 @@
 import { Card, Rate, Tag, Typography } from "antd";
 import { ImageSourcePath } from "../../../constants/values";
-import { getVietnamCurrentTime } from "../../../utils/dayjs";
+import { getVietnamCurrentTime } from "../../../utils/dayjsUtil";
 import type { RestaurantPublicResponseType } from "../../../types/RestaurantType";
 
 type RestaurantFilterCardInfoComponentProps = {

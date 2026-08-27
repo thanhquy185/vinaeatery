@@ -30,8 +30,11 @@ import {
   ModalWidthValue,
   InputTicketPaymentStatusValue,
 } from "../../../constants/values";
-import { actionIndexes, getActionNameEn } from "../../../utils/defaultActions";
-import { hasPermission } from "../../../utils/hasPermissions";
+import {
+  actionIndexes,
+  getActionNameEn,
+} from "../../../utils/defaultActionsUtil";
+import { hasPermission } from "../../../utils/hasPermissionsUtil";
 import {
   getFilterSelectValueToShow,
   vietnamMoneyFormat,

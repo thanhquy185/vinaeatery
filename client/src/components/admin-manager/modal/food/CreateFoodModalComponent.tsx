@@ -13,7 +13,7 @@ import {
 import TableInputComponent, {
   type TableInputComponentRowData,
 } from "../../TableInputComponent";
-import { openConfirmation } from "../../../../utils/showConfirmation";
+import { openConfirmation } from "../../../../utils/showConfirmationUtil";
 import {
   inputNumberFormatter,
   inputNumberParse,

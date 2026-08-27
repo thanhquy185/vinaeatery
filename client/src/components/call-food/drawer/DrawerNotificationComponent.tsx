@@ -1,6 +1,6 @@
 import { Button } from "antd";
-import { openNotification } from "../../../utils/showNotification";
-import { openConfirmation } from "../../../utils/showConfirmation";
+import { openNotification } from "../../../utils/showNotificationUtil";
+import { openConfirmation } from "../../../utils/showConfirmationUtil";
 import type { CallFoodPageProps } from "../../../constants/props";
 
 const DrawerNotificationComponent: React.FC<CallFoodPageProps> = ({

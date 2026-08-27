@@ -9,6 +9,7 @@ import { UserRoleValue } from "../constants/values";
 import type { ManagerDetailResponseType } from "../types/ManagerType";
 import type { EmployeeDetailResponseType } from "../types/EmployeeType";
 import type { CustomerDetailResponseType } from "../types/CustomerType";
+import { getAccessToken, setAccessToken } from "../stores/accessTokenStore";
 
 // Router giúp chuyển hướng trang
 // Chú thích
@@ -19,6 +20,14 @@ export const getRouter = async (): Promise<
   ReturnType<typeof createBrowserRouter>
 > => {
   // Người dùng đăng nhập hiện tại
+  if (!getAccessToken()) {
+    const refreshTokenResponse = await AuthApiService.handleRefreshToken();
+    if (refreshTokenResponse.status !== 200) {
+      return createBrowserRouter(AllowRouter({}));
+    }
+
+    setAccessToken(refreshTokenResponse.data.accessToken);
+  }
   const responseUserLogin = await AuthApiService.handleGetInfo();
   if (responseUserLogin.status !== 200) {
     console.error("Truy vấn dữ liệu thất bại");

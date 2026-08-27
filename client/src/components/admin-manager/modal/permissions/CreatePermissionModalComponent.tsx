@@ -9,7 +9,7 @@ import {
   ModalLayout,
 } from "../../../../constants/values";
 import useEntityMutation from "../../../../hooks/useEntityMutation";
-import { openConfirmation } from "../../../../utils/showConfirmation";
+import { openConfirmation } from "../../../../utils/showConfirmationUtil";
 import type { CrudObjectModalProps } from "../../../../constants/props";
 import type {
   PermissionCreateRequestType,

@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Client, over } from "stompjs";
 import { Spin } from "antd";
-import { getVietnamCurrentDate } from "../../../utils/dayjs";
+import { getVietnamCurrentDate } from "../../../utils/dayjsUtil";
 import type { AdminManagerPageProps } from "../../../constants/props";
 import type { PageResponseType } from "../../../types/PageResponseType";
 import type { MessageSummaryResponseType } from "../../../types/MessageType";

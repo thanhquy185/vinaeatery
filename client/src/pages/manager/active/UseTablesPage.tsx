@@ -15,7 +15,7 @@ import UseTableApiService from "../../../services/api/v1/UseTableApiService";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { UseTableStatusValue } from "../../../constants/values";
-import { openConfirmation } from "../../../utils/showConfirmation";
+import { openConfirmation } from "../../../utils/showConfirmationUtil";
 import { getFilterSelectValueToShow } from "../../../utils/otherEvents";
 import type { SelectProps } from "antd";
 import type { UseTableStatusEnum } from "../../../constants/enums";

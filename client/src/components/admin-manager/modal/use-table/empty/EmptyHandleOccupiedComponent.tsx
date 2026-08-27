@@ -3,7 +3,7 @@ import EmptyHandleOccupiedCustomerComponent from "./EmptyHandleOccupiedCustomerC
 import { Form } from "antd";
 import { useState } from "react";
 import { UseTableStatusValue } from "../../../../../constants/values";
-import { openNotification } from "../../../../../utils/showNotification";
+import { openNotification } from "../../../../../utils/showNotificationUtil";
 import type { ManagerHandleUpdateStatusUseTableProps } from "../../../../../constants/props";
 import type { UseTableOccupiedInfoRequestType } from "../../../../../types/UseTableType";
 

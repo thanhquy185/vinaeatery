@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import { ReservationStatusValue } from "../../constants/values";
 import { getStatusTag } from "../../pages/public/ReservationsPage";
-import { openConfirmation } from "../../utils/showConfirmation";
+import { openConfirmation } from "../../utils/showConfirmationUtil";
 import type { Dispatch, SetStateAction } from "react";
 import type { ReservationStatusEnum } from "../../constants/enums";
 import type { PageResponseType } from "../../types/PageResponseType";

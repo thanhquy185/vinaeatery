@@ -17,7 +17,7 @@ import {
   ReservationStatusValue,
   UseTableStatusValue,
 } from "../../../../../constants/values";
-import { openNotification } from "../../../../../utils/showNotification";
+import { openNotification } from "../../../../../utils/showNotificationUtil";
 import type { ManagerHandleUpdateStatusUseTableProps } from "../../../../../constants/props";
 import type { PageResponseType } from "../../../../../types/PageResponseType";
 import type { ReservationSummaryResponseType } from "../../../../../types/ReservationType";

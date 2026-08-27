@@ -12,8 +12,8 @@ import {
   inputNumberFormatter,
   inputNumberParse,
 } from "../../../../../utils/otherEvents";
-import { openConfirmation } from "../../../../../utils/showConfirmation";
-import { openNotification } from "../../../../../utils/showNotification";
+import { openConfirmation } from "../../../../../utils/showConfirmationUtil";
+import { openNotification } from "../../../../../utils/showNotificationUtil";
 import type { Client } from "stompjs";
 import type {
   PaymentMachineProcessStatusEnum,

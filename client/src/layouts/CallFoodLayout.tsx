@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { over } from "stompjs";
-import { openNotification } from "../utils/showNotification";
+import { openNotification } from "../utils/showNotificationUtil";
 import type { Client } from "stompjs";
 import type { UseTableCustomerResponseType } from "../types/UseTableType";
 import type { ShoppingCartRequestType } from "../types/ShoppingCartType";

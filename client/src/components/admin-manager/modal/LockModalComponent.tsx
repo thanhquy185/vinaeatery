@@ -22,7 +22,7 @@ import {
   ImageSourcePath,
   ModalLayout,
 } from "../../../constants/values";
-import { openConfirmation } from "../../../utils/showConfirmation";
+import { openConfirmation } from "../../../utils/showConfirmationUtil";
 import type { CrudObjectModalProps } from "../../../constants/props";
 import MenuApiService from "../../../services/api/v1/MenuApiService";
 

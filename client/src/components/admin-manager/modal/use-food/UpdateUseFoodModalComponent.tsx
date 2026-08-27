@@ -8,9 +8,9 @@ import {
   FoodIngredientStatusValue,
   UseFoodStatusValue,
 } from "../../../../constants/values";
-import { actionIndexes } from "../../../../utils/defaultActions";
-import { hasPermission } from "../../../../utils/hasPermissions";
-import { openConfirmation } from "../../../../utils/showConfirmation";
+import { actionIndexes } from "../../../../utils/defaultActionsUtil";
+import { hasPermission } from "../../../../utils/hasPermissionsUtil";
+import { openConfirmation } from "../../../../utils/showConfirmationUtil";
 import { vietnamMoneyFormat } from "../../../../utils/otherEvents";
 import type { CrudObjectModalProps } from "../../../../constants/props";
 import type { UseFoodStatusEnum } from "../../../../constants/enums";

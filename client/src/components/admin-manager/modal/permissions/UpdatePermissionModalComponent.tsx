@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { Form, Input, Select, Spin } from "antd";
 import { ruleRequired } from "../../../../constants/rules";
 import { ModalAutoComplete, ModalLayout } from "../../../../constants/values";
-import { openConfirmation } from "../../../../utils/showConfirmation";
+import { openConfirmation } from "../../../../utils/showConfirmationUtil";
 import type { CrudObjectModalProps } from "../../../../constants/props";
 import type {
   PermissionDetailResponseType,

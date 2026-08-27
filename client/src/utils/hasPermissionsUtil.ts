@@ -1,4 +1,4 @@
-import { getActionNameVn } from "./defaultActions";
+import { getActionNameVn } from "./defaultActionsUtil";
 
 interface HasPermissionParams {
   isManager: boolean;

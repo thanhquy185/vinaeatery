@@ -17,8 +17,11 @@ import {
   ModalWidthValue,
   UseTableStatusValue,
 } from "../../../constants/values";
-import { hasPermission } from "../../../utils/hasPermissions";
-import { actionIndexes, getActionNameEn } from "../../../utils/defaultActions";
+import { hasPermission } from "../../../utils/hasPermissionsUtil";
+import {
+  actionIndexes,
+  getActionNameEn,
+} from "../../../utils/defaultActionsUtil";
 import { getFilterSelectValueToShow } from "../../../utils/otherEvents";
 import type { SelectProps } from "antd";
 import type { ColumnsType } from "antd/es/table";

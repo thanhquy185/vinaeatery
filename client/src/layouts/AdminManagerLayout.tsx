@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Outlet, useRouteLoaderData } from "react-router-dom";
 import { Layout } from "antd";
 import { Client, over } from "stompjs";
-import { openNotification } from "../utils/showNotification";
+import { openNotification } from "../utils/showNotificationUtil";
 
 type AdminManagerLayoutProps = {
   isAdmin: boolean;

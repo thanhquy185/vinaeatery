@@ -16,8 +16,8 @@ import {
   UserCircle,
 } from "lucide-react";
 import { ImageSourcePath, UserRoleValue } from "../../constants/values";
-import { openConfirmation } from "../../utils/showConfirmation";
-import { openNotification } from "../../utils/showNotification";
+import { openConfirmation } from "../../utils/showConfirmationUtil";
+import { openNotification } from "../../utils/showNotificationUtil";
 import type { ReactNode } from "react";
 import type { MenuProps } from "antd";
 import type { UserDetailResponseType } from "../../types/UserType";
