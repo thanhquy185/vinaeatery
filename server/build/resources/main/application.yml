@@ -5,10 +5,10 @@ spring:
   application:
     name: vinaeatery
 
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
   datasource:
-    url: jdbc:mysql://${SPRING_DATASOURCE_HOST:localhost}:3306/${SPRING_DATASOURCE_DATABASE:vinaeatery}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -32,6 +32,18 @@ spring:
     allow-bean-definition-overriding: true
     allow-circular-references: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
   security:
     oauth2:
       client:
@@ -50,12 +62,10 @@ spring:
           google:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
-            redirect-uri: http://localhost:8080/login/oauth2/code/google
             scope: email,profile
           facebook:
             client-id: ${FACEBOOK_CLIENT_ID}
             client-secret: ${FACEBOOK_CLIENT_SECRET}
-            redirect-uri: http://localhost:8080/login/oauth2/code/facebook
             scope: email,public_profile
   
   flyway:
@@ -64,14 +74,21 @@ spring:
     baseline-version: 0
     locations: classpath:db/migration
 
-  profiles:
-    active: dev
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui
 
 jwt:
   base64-secret: ${JWT_SECRET}
-  access-token-validity-in-seconds: 86400
+  access-token-validity-in-seconds: 600
   refresh-token-validity-in-seconds: 86400
 
-app:
-  frontend_url: ${APP_DEV_FRONTEND_URL}
-  backend_url: ${APP_DEV_BACKEND_URL}
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}

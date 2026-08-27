@@ -35,7 +35,6 @@ import vn.tuhoc.vinaeatery.customs.OAuth2FailureHandlerCustom;
 import vn.tuhoc.vinaeatery.customs.OAuth2SuccessHandlerCustom;
 import vn.tuhoc.vinaeatery.customs.OAuth2UserServiceCustom;
 import vn.tuhoc.vinaeatery.customs.UserDetailsServiceCustom;
-// import vn.tuhoc.vinaeatery.customs.JwtAuthenticationEntryPointCustom;
 import vn.tuhoc.vinaeatery.customs.JwtAuthenticationFilterCustom;
 import vn.tuhoc.vinaeatery.utils.SecurityUtil;
 
@@ -86,6 +85,7 @@ public class SecurityConfig {
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(this.userDetailsServiceCustom);
         provider.setPasswordEncoder(passwordEncoder());
+
         return provider;
     }
 
@@ -95,12 +95,6 @@ public class SecurityConfig {
                 .authenticationProvider(this.authenticationProvider())
                 .build();
     }
-
-    // @Bean
-    // public JwtAuthenticationEntryPointCustom jwtAuthenticationEntryPointCustom()
-    // {
-    // return new JwtAuthenticationEntryPointCustom();
-    // }
 
     @Bean
     public SecurityFilterChain filterChain(

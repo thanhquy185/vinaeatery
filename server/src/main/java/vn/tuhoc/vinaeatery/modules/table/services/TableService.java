@@ -1,6 +1,7 @@
 package vn.tuhoc.vinaeatery.modules.table.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -91,12 +92,16 @@ public class TableService {
 
     @Cacheable(value = "table__crud_all", unless = "#result == null")
     public List<TableCrudResponseDTO> handleGetCrud() {
-        return this.getAllCrud().stream().map(this.tableMapper::entityToCrudResponse).toList();
+        return this.getAllCrud().stream()
+                .map(this.tableMapper::entityToCrudResponse)
+                .collect(Collectors.toList());
     }
 
     @Cacheable(value = "table__crud", key = "#restaurantId", unless = "#result == null")
     public List<TableCrudResponseDTO> handleGetCrud(Integer restaurantId) {
-        return this.getAllCrud(restaurantId).stream().map(this.tableMapper::entityToCrudResponse).toList();
+        return this.getAllCrud(restaurantId).stream()
+                .map(this.tableMapper::entityToCrudResponse)
+                .collect(Collectors.toList());
     }
 
     @Caching(evict = {

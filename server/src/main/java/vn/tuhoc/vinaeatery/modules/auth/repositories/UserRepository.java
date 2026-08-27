@@ -12,7 +12,5 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer>, JpaS
 
     Optional<UserEntity> findOneByUsernameAndPassword(String username, String password);
 
-    Optional<UserEntity> findOneByUsernameAndRefreshToken(String username, String refreshToken);
-
     Boolean existsByUsername(String username);
 }

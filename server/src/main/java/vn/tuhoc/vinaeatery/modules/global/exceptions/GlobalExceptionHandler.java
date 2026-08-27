@@ -22,11 +22,11 @@ import vn.tuhoc.vinaeatery.modules.active.exceptions.UseFoodNotFoundByIdExceptio
 import vn.tuhoc.vinaeatery.modules.active.exceptions.UseTableNotFoundByIdException;
 import vn.tuhoc.vinaeatery.modules.active.exceptions.UseTableNotFoundByRestaurantIdTableIdAndEndAtIsNull;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.AuthAccessTokenIsNotValidException;
+import vn.tuhoc.vinaeatery.modules.auth.exceptions.AuthSessionNotFoundByRefreshTokenException;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.AuthUserIsLockingException;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.AuthUsernameOrPasswordIsNotAvailable;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserNotFoundByIdException;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserNotFoundByUsernameAndPasswordException;
-import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserNotFoundByUsernameAndRefreshTokenException;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserNotFoundByUsernameException;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserPasswordIsUsingException;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserPasswordIsNotMatchException;
@@ -133,10 +133,10 @@ public class GlobalExceptionHandler {
                         CustomerNotFoundByUserIdException.class,
                         CustomerNotFoundByPhoneException.class,
                         CustomerNotFoundByEmailException.class,
+                        AuthSessionNotFoundByRefreshTokenException.class,
                         UserNotFoundByIdException.class,
                         UserNotFoundByUsernameException.class,
                         UserNotFoundByUsernameAndPasswordException.class,
-                        UserNotFoundByUsernameAndRefreshTokenException.class,
                         UseTableNotFoundByIdException.class,
                         UseTableNotFoundByRestaurantIdTableIdAndEndAtIsNull.class,
                         UseFoodNotFoundByIdException.class,

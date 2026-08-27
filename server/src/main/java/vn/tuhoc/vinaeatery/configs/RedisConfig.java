@@ -10,7 +10,6 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -22,6 +21,9 @@ import java.util.Map;
 @Configuration
 @EnableCaching
 public class RedisConfig {
+    private final StringRedisSerializer STRING_SERIALIZER = new StringRedisSerializer();
+    private final GenericJackson2JsonRedisSerializer JSON_SERIALIZER = new GenericJackson2JsonRedisSerializer();
+
     private Map<String, RedisCacheConfiguration> generateRedisCacheConfiguration(
             RedisCacheConfiguration defaultConfig) {
         RedisCacheConfiguration cache10Minute = RedisTTLUtil.config10Minute(defaultConfig);
@@ -132,16 +134,14 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(
-            RedisConnectionFactory connectionFactory) {
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
-
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
-
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+        template.setKeySerializer(this.STRING_SERIALIZER);
+        template.setValueSerializer(this.JSON_SERIALIZER);
+        template.setHashKeySerializer(this.STRING_SERIALIZER);
+        template.setHashValueSerializer(this.JSON_SERIALIZER);
+        template.afterPropertiesSet();
 
         return template;
     }
@@ -159,9 +159,8 @@ public class RedisConfig {
                 .entryTtl(Duration.ofMinutes(10))
                 .disableCachingNullValues()
                 .serializeKeysWith(
-                        RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair
-                        .fromSerializer(new GenericJackson2JsonRedisSerializer()));
+                        RedisSerializationContext.SerializationPair.fromSerializer(this.STRING_SERIALIZER))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(this.JSON_SERIALIZER));
 
         Map<String, RedisCacheConfiguration> cacheConfigurations = this.generateRedisCacheConfiguration(defaultConfig);
 

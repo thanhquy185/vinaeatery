@@ -79,7 +79,7 @@ public class InputTicketService {
                 return this.inputTicketMapper.entityToDetailResponse(this.getOneById(id));
         }
 
-        @Cacheable(value = "input_ticket__summary", key = "#floorCriteria.getCacheKey()", unless = "#result == null")
+        @Cacheable(value = "input_ticket__summary", key = "#inputTicketCriteria.getCacheKey()", unless = "#result == null")
         public PageResponseDTO<InputTicketSummaryResponseDTO> handleGetSummary(
                         InputTicketCriteria inputTicketCriteria) {
                 Page<InputTicketSummaryResponseDTO> page = this.getAll(inputTicketCriteria)

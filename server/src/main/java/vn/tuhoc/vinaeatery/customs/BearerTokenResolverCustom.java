@@ -13,9 +13,10 @@ public class BearerTokenResolverCustom implements BearerTokenResolver {
     @Override
     public String resolve(HttpServletRequest request) {
         String path = request.getServletPath();
-        if (path.startsWith("/api/auth/customer/register")
-                || path.startsWith("/api/auth/login")
-                || path.startsWith("/api/restaurants/public")
+        if (path.startsWith("/api/v1/auth/customer/register")
+                || path.startsWith("/api/v1/auth/login")
+                || path.startsWith("/api/v1/auth/refresh-token")
+                || path.startsWith("/api/v1/restaurants/public")
                 || path.startsWith("/oauth2/")
                 || path.startsWith("/login/oauth2/")) {
             return null;

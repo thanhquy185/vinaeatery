@@ -1,6 +1,7 @@
 package vn.tuhoc.vinaeatery.modules.employee.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -94,12 +95,16 @@ public class RoleService {
 
     @Cacheable(value = "role__crud_all", unless = "#result == null")
     public List<RoleCrudResponseDTO> handleGetCrud() {
-        return this.getAllCrud().stream().map(this.roleMapper::entityToCrudResponse).toList();
+        return this.getAllCrud().stream()
+                .map(this.roleMapper::entityToCrudResponse)
+                .collect(Collectors.toList());
     }
 
     @Cacheable(value = "role__crud", key = "#restaurantId", unless = "#result == null")
     public List<RoleCrudResponseDTO> handleGetCrud(Integer restaurantId) {
-        return this.getAllCrud(restaurantId).stream().map(this.roleMapper::entityToCrudResponse).toList();
+        return this.getAllCrud(restaurantId).stream()
+                .map(this.roleMapper::entityToCrudResponse)
+                .collect(Collectors.toList());
     }
 
     @Caching(evict = {

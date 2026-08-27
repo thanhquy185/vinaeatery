@@ -1,0 +1,59 @@
+spring:
+  jpa:
+    show-sql: false
+
+  datasource:
+    url: jdbc:mysql://${SPRING_PROD_DATASOURCE_HOST}:3306/${SPRING_PROD_DATASOURCE_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${SPRING_PROD_DATASOURCE_USERNAME}
+    password: ${SPRING_PROD_DATASOURCE_PASSWORD}
+  
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            redirect-uri: ${GOOGLE_PROD_REDIRECT_URL}
+          facebook:
+            redirect-uri: ${FACEBOOK_PROD_REDIRECT_URL}
+
+logging:
+  level:
+    root: WARN
+
+    # Application
+    com.shopcart: INFO
+
+    # Spring Security
+    org.springframework.security: WARN
+
+    # Hibernate
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: OFF
+
+    # Flyway
+    org.flywaydb: INFO
+
+    # Spring Web
+    org.springframework.web: WARN
+    org.springframework.web.servlet.DispatcherServlet: WARN
+    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: WARN
+    
+momo:
+  endpoint: ${MOMO_PROD_ENDPOINT}
+  accessKey: ${MOMO_PROD_ACCESS_KEY}
+  partnerCode: ${MOMO_PROD_PARTNER_CODE}
+  secretKey: ${MOMO_PROD_SECRET_KEY}
+  redirectUrl: ${MOMO_PROD_REDIRECT_URL}
+  ipnUrl: ${MOMO_PROD_IPN_URL}
+  requestType: ${MOMO_PROD_REQUEST_TYPE}
+
+zalopay:
+  app_id: ${ZALOPAY_PROD_APP_ID}
+  key1: ${ZALOPAY_PROD_KEY1}
+  key2: ${ZALOPAY_PROD_KEY2}
+  endpoint: ${ZALOPAY_PROD_ENDPOINT}
+  callback_url: ${ZALOPAY_PROD_CALLBACK_URL}
+
+app:
+  frontend_url: ${APP_PROD_FRONTEND_URL}
+  backend_url: ${APP_PROD_BACKEND_URL}

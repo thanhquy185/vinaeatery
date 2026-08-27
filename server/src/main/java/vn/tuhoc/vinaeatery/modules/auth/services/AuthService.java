@@ -1,36 +1,40 @@
 package vn.tuhoc.vinaeatery.modules.auth.services;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import vn.tuhoc.vinaeatery.modules.auth.domains.entities.AuthSessionEntity;
 import vn.tuhoc.vinaeatery.modules.auth.domains.entities.UserEntity;
 import vn.tuhoc.vinaeatery.modules.auth.domains.enums.UserMethodEnum;
 import vn.tuhoc.vinaeatery.modules.auth.domains.enums.UserRoleEnum;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.requests.AuthLoginRequestDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.requests.AuthRegisterRequestDTO;
+import vn.tuhoc.vinaeatery.modules.auth.dtos.requests.AuthSessionCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.requests.UserCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.AuthLoginResponseDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserInfoResponseDTO;
-import vn.tuhoc.vinaeatery.modules.auth.exceptions.AuthAccessTokenIsNotValidException;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.EmployeeDetail2ResponseDTO;
 import vn.tuhoc.vinaeatery.modules.employee.services.EmployeeService;
 import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.modules.global.services.EmailService;
+import vn.tuhoc.vinaeatery.modules.global.services.TimeService;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.requests.CustomerRegisterRequestDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.CustomerDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.ManagerDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.services.CustomerService;
 import vn.tuhoc.vinaeatery.modules.restaurant.services.ManagerService;
 import vn.tuhoc.vinaeatery.utils.SecurityUtil;
+import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -38,13 +42,15 @@ import vn.tuhoc.vinaeatery.utils.SecurityUtil;
 public class AuthService {
         @Value("${jwt.refresh-token-validity-in-seconds}")
         private Long jwtRefreshTokenExpiration;
+        private final AuthenticationManager authenticationManager;
+        private final SecurityUtil securityUtil;
+        private final TimeService timeService;
+        private final EmailService emailService;
         private final UserService userService;
+        private final AuthSessionService authSessionService;
         private final ManagerService managerService;
         private final CustomerService customerService;
         private final EmployeeService employeeService;
-        private final EmailService emailService;
-        private final SecurityUtil securityUtil;
-        private final AuthenticationManager authenticationManager;
 
         public CustomerDetailResponseDTO handleCustomerRegister(AuthRegisterRequestDTO authRegisterRequestDTO) {
                 // Tạo tài khoản mới (mật khẩu sẽ được mã hoá trong User Service)
@@ -82,53 +88,6 @@ public class AuthService {
                 return customerDetailResponseDTO;
         }
 
-        public AuthLoginResponseDTO handleLogin(AuthLoginRequestDTO authLoginRequestDTO) {
-                // Lấy ra tên tài khoản, mật khẩu và tạo thông tin đăng nhập
-                String usernameRequest = authLoginRequestDTO.getUsername();
-                String passwordRequest = authLoginRequestDTO.getPassword();
-                UserEntity currentUser = this.userService.getOneByUsernameForLogin(usernameRequest);
-
-                // Nạp input vào security
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                                usernameRequest, passwordRequest);
-
-                // Xác thực người dùng
-                Authentication authentication = this.authenticationManager
-                                .authenticate(authenticationToken);
-
-                // Nạp thông tin
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                // Tạo Rest Login DTO
-                AuthLoginResponseDTO restLogin = AuthLoginResponseDTO.builder()
-                                .userInfo(UserInfoResponseDTO.builder()
-                                                .id(currentUser.getId())
-                                                .role(currentUser.getRole())
-                                                .username(currentUser.getUsername())
-                                                .method(currentUser.getMethod())
-                                                .status(currentUser.getStatus())
-                                                .build())
-                                .build();
-                restLogin.setAccessToken(this.securityUtil.createAccessToken(currentUser.getUsername(), restLogin));
-
-                // Tạo refresh token
-                String refreshToken = this.securityUtil.createRefreshToken(currentUser.getUsername(), restLogin);
-                this.userService.handleChangeRefreshToken(currentUser.getUsername(), refreshToken);
-                restLogin.setRefreshToken(refreshToken);
-
-                // Tạo cookie
-                ResponseCookie responseCookie = ResponseCookie.from("refreshToken", restLogin.getRefreshToken())
-                                .httpOnly(false) // Chỉ cho phép phía server được sử dụng (tạm cho client-web)
-                                .secure(true) // Chỉ cho phép https
-                                .path("/") // Cho phép tất cả đường dẫn
-                                .sameSite("None") // quan trọng để cookie gửi qua cross-site
-                                .maxAge(jwtRefreshTokenExpiration * 365) //
-                                .build();
-                restLogin.setResponseCookie(responseCookie);
-
-                return restLogin;
-        }
-
         public Object handleGetInfo() {
                 String username = this.securityUtil.getCurrentUserLogin().isPresent()
                                 ? this.securityUtil.getCurrentUserLogin().get()
@@ -164,11 +123,22 @@ public class AuthService {
                                                                 : customerDetailResponseDTO;
         }
 
-        public AuthLoginResponseDTO handleRefreshToken(String refreshToken) {
-                // Truy username từ refresh token để lấy ra thông tin tài khoản
-                Jwt decodedJwt = this.securityUtil.checkValidRefreshToken(refreshToken);
-                String username = decodedJwt.getSubject();
-                UserEntity currentUser = this.userService.getOneByUsernameAndRefreshToken(username, refreshToken);
+        public AuthLoginResponseDTO handleLogin(AuthLoginRequestDTO authLoginRequestDTO) {
+                // Lấy ra tên tài khoản, mật khẩu và tạo thông tin đăng nhập
+                String usernameRequest = authLoginRequestDTO.getUsername();
+                String passwordRequest = authLoginRequestDTO.getPassword();
+                UserEntity currentUser = this.userService.getOneByUsernameForLogin(usernameRequest);
+
+                // Nạp input vào security
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                                usernameRequest, passwordRequest);
+
+                // Xác thực người dùng
+                Authentication authentication = this.authenticationManager
+                                .authenticate(authenticationToken);
+
+                // Nạp thông tin
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
                 // Tạo Rest Login DTO
                 AuthLoginResponseDTO restLogin = AuthLoginResponseDTO.builder()
@@ -180,37 +150,95 @@ public class AuthService {
                                                 .status(currentUser.getStatus())
                                                 .build())
                                 .build();
-                restLogin.setAccessToken(this.securityUtil.createAccessToken(currentUser.getUsername(), restLogin));
 
-                // Tạo refresh token mới
-                String newRefreshToken = this.securityUtil.createRefreshToken(currentUser.getUsername(), restLogin);
-                this.userService.handleChangeRefreshToken(currentUser.getUsername(), newRefreshToken);
-                restLogin.setRefreshToken(newRefreshToken);
+                // Tạo access token
+                String accessToken = this.securityUtil.createAccessToken(currentUser.getUsername(), restLogin);
+                restLogin.setAccessToken(accessToken);
 
-                // Tạo cookie mới
-                ResponseCookie responseCookie = ResponseCookie.from("refreshToken", restLogin.getRefreshToken())
-                                .httpOnly(false) // Chỉ cho phép phía server được sử dụng (tạm cho client-web)
+                // Tạo refresh token
+                AuthSessionEntity authSessionEntity = this.authSessionService
+                                .getValidSessionByUserId(currentUser.getId());
+                String refreshToken;
+                if (authSessionEntity != null) {
+                        refreshToken = authSessionEntity.getRefreshToken();
+                } else {
+                        refreshToken = this.securityUtil.createRefreshToken(currentUser.getUsername(), restLogin);
+
+                        LocalDateTime currentDateTime = LocalDateTime.now();
+                        AuthSessionCreateRequestDTO authSessionCreateRequestDTO = AuthSessionCreateRequestDTO.builder()
+                                        .userId(currentUser.getId())
+                                        .createAt(this.timeService.getDatetime(currentDateTime))
+                                        .expiredAt(this.timeService.getDatetime(
+                                                        currentDateTime.plusSeconds(this.jwtRefreshTokenExpiration)))
+                                        .refreshToken(refreshToken)
+                                        .build();
+                        this.authSessionService.handleCreate(authSessionCreateRequestDTO);
+                }
+
+                ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
+                                .httpOnly(true) // Chỉ cho phép phía server được sử dụng (tạm cho client-web)
                                 .secure(true) // Chỉ cho phép https
                                 .path("/") // Cho phép tất cả đường dẫn
                                 .sameSite("None") // quan trọng để cookie gửi qua cross-site
-                                .maxAge(jwtRefreshTokenExpiration * 365) //
+                                .maxAge(this.jwtRefreshTokenExpiration) //
                                 .build();
                 restLogin.setResponseCookie(responseCookie);
 
                 return restLogin;
         }
 
-        public AuthLoginResponseDTO handleLogout() {
-                String username = this.securityUtil.getCurrentUserLogin().isPresent()
-                                ? this.securityUtil.getCurrentUserLogin().get()
-                                : null;
-                if (username.isBlank() || username.isEmpty()) {
-                        throw new AuthAccessTokenIsNotValidException();
-                }
-                this.userService.handleChangeRefreshToken(username, null);
+        public AuthLoginResponseDTO handleRefreshToken(String refreshToken) {
+                // Truy auth session từ refresh token để lấy ra thông tin tài khoản
+                AuthSessionEntity currentAuthSession = this.authSessionService
+                                .getValidSessionByRefreshToken(refreshToken);
+                UserEntity currentUser = currentAuthSession.getUser();
 
-                ResponseCookie responseCookie = ResponseCookie
-                                .from("refreshToken", null)
+                // Tạo Rest Login DTO
+                AuthLoginResponseDTO restLogin = AuthLoginResponseDTO.builder()
+                                .userInfo(UserInfoResponseDTO.builder()
+                                                .id(currentUser.getId())
+                                                .role(currentUser.getRole())
+                                                .username(currentUser.getUsername())
+                                                .method(currentUser.getMethod())
+                                                .status(currentUser.getStatus())
+                                                .build())
+                                .build();
+
+                // Tạo access token mới
+                String newAccessToken = this.securityUtil.createAccessToken(currentUser.getUsername(), restLogin);
+                restLogin.setAccessToken(newAccessToken);
+
+                // Tạo refresh token mới nếu token của session hiện tại chưa bị thu hồi
+                String newRefreshToken = currentAuthSession.getRefreshToken();
+                if (ValidationUtil.nonNull(currentAuthSession.getRevokedAt())) {
+                        newRefreshToken = this.securityUtil.createRefreshToken(
+                                        currentUser.getUsername(),
+                                        restLogin);
+                        this.authSessionService.handleChangeRefreshToken(
+                                        currentUser.getId(),
+                                        refreshToken,
+                                        newRefreshToken);
+                }
+
+                ResponseCookie responseCookie = ResponseCookie.from("refreshToken", newRefreshToken)
+                                .httpOnly(true) // Chỉ cho phép phía server được sử dụng (tạm cho client-web)
+                                .secure(true) // Chỉ cho phép https
+                                .path("/") // Cho phép tất cả đường dẫn
+                                .sameSite("None") // quan trọng để cookie gửi qua cross-site
+                                .maxAge(this.jwtRefreshTokenExpiration) //
+                                .build();
+                restLogin.setResponseCookie(responseCookie);
+
+                return restLogin;
+        }
+
+        public AuthLoginResponseDTO handleLogout(String refreshToken) {
+                // Truy auth session từ refresh token để lấy ra thông tin tài khoản
+                AuthSessionEntity currentAuthSession = this.authSessionService
+                                .getValidSessionByRefreshToken(refreshToken);
+                currentAuthSession.setRevokedAt(this.timeService.getCurrentDatetime());
+
+                ResponseCookie responseCookie = ResponseCookie.from("refreshToken", null)
                                 .httpOnly(true)
                                 .secure(true)
                                 .path("/")

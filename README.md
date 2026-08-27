@@ -69,11 +69,22 @@ Mỗi vai trò sẽ có giao diện và quyền truy cập riêng nhằm đảm 
 
 ---
 
-# Kiến trúc hệ thống
+# Thiết kế hệ thống
+
+## Kiến trúc tổng thể
 
 <p align="center">
   <img src="docs/images/architecture.png" width="100%">
   <em>Hình ảnh: Kiến trúc tổng thể của hệ thống</em>
+</p>
+
+## Cơ sở dữ liệu quan hệ
+
+> <a href="https://dbdiagram.io/d/vinaeatery-6a839cd6e093539a9ed25901" target="_blank">Ấn vào để xem chi tiết</a>
+
+<p align="center">
+  <img src="docs/images/database.png" width="100%">
+  <em>Hình ảnh: Cơ sở dữ liệu quan hệ của hệ thống</em>
 </p>
 
 ---

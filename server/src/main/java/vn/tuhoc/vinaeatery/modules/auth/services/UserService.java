@@ -20,7 +20,6 @@ import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserNotFoundByIdException;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserNotFoundByUsernameAndPasswordException;
-import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserNotFoundByUsernameAndRefreshTokenException;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserNotFoundByUsernameException;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserPasswordIsUsingException;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserPasswordIsNotMatchException;
@@ -55,11 +54,6 @@ public class UserService {
     public UserEntity getOneByUsernameAndPassword(String username, String password) {
         return this.userRepository.findOneByUsernameAndPassword(username, password)
                 .orElseThrow(() -> new UserNotFoundByUsernameAndPasswordException(username, password));
-    }
-
-    public UserEntity getOneByUsernameAndRefreshToken(String username, String refreshToken) {
-        return this.userRepository.findOneByUsernameAndRefreshToken(username, refreshToken)
-                .orElseThrow(() -> new UserNotFoundByUsernameAndRefreshTokenException(username, refreshToken));
     }
 
     private Page<UserEntity> getAll(UserCriteria userCriteria) {
@@ -151,13 +145,6 @@ public class UserService {
         String newPassword = this.passwordEncoder.encode(newPasswordRequest);
         this.userMapper.changePasswordEntityFromRequest(
                 newPassword, userChangePasswordRequestDTO, userEntity);
-
-        return this.userMapper.entityToDetailResponse(userEntity);
-    }
-
-    public UserDetailResponseDTO handleChangeRefreshToken(String username, String refreshToken) {
-        UserEntity userEntity = this.getOneByUsername(username);
-        userEntity.setRefreshToken(refreshToken);
 
         return this.userMapper.entityToDetailResponse(userEntity);
     }

@@ -7,33 +7,43 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TimeService {
+    private final String DATE_FORMAT = "yyyy-MM-dd";
+    private final String TIME_FORMAT = "HH:mm:ss";
+    private final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    public LocalDateTime getLocalDateTime(String datetime) {
+        return LocalDateTime.parse(
+                datetime,
+                DateTimeFormatter.ofPattern(this.DATE_TIME_FORMAT));
+    }
+
     public String getDate(LocalDateTime localDateTime) {
         return localDateTime
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                .format(DateTimeFormatter.ofPattern(this.DATE_FORMAT));
     }
 
     public String getTime(LocalDateTime localDateTime) {
         return localDateTime
-                .format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+                .format(DateTimeFormatter.ofPattern(TIME_FORMAT));
     }
 
     public String getDatetime(LocalDateTime localDateTime) {
         return localDateTime
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                .format(DateTimeFormatter.ofPattern(this.DATE_TIME_FORMAT));
     }
 
     public String getCurrentDate() {
         return LocalDateTime.now()
-                .format(DateTimeFormatter.ofPattern("yyy-MM-dd"));
+                .format(DateTimeFormatter.ofPattern(this.DATE_FORMAT));
     }
 
     public String getCurrentTime() {
         return LocalDateTime.now()
-                .format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+                .format(DateTimeFormatter.ofPattern(TIME_FORMAT));
     }
 
     public String getCurrentDatetime() {
         return LocalDateTime.now()
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                .format(DateTimeFormatter.ofPattern(this.DATE_TIME_FORMAT));
     }
 }

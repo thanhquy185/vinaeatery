@@ -24,7 +24,6 @@ public interface UserMapper {
 
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
         @Mapping(target = "id", ignore = true)
-        @Mapping(target = "refreshToken", ignore = true)
         UserEntity createEntityFromRequest(UserCreateRequestDTO userCreateRequestDTO);
 
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -32,7 +31,6 @@ public interface UserMapper {
         @Mapping(target = "role", ignore = true)
         @Mapping(target = "username", ignore = true)
         @Mapping(target = "password", ignore = true)
-        @Mapping(target = "refreshToken", ignore = true)
         @Mapping(target = "method", ignore = true)
         void deleteEntityFromRequest(
                         UserDeleteRequestDTO userDeleteRequestDTO,
@@ -43,7 +41,6 @@ public interface UserMapper {
         @Mapping(target = "role", ignore = true)
         @Mapping(target = "username", ignore = true)
         @Mapping(target = "password", source = "newPassword")
-        @Mapping(target = "refreshToken", ignore = true)
         @Mapping(target = "method", ignore = true)
         @Mapping(target = "status", ignore = true)
         void changePasswordEntityFromRequest(

@@ -2,7 +2,6 @@ package vn.tuhoc.vinaeatery.modules.auth.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +34,15 @@ public class AuthController {
                                 customerFormatCreated);
         }
 
+        @PostMapping("/get-info")
+        public ResponseEntity<RestResponseDTO<Object>> handleRefreshToken() {
+                Object info = this.authService.handleGetInfo();
+
+                return RestResponseUtils.ok(
+                                "Truy thông tin tài khoản thành công!",
+                                info);
+        }
+
         @PostMapping("/login")
         public ResponseEntity<RestResponseDTO<AuthLoginResponseDTO>> handleLogin(
                         @RequestBody @Valid AuthLoginRequestDTO authLoginRequestDTO) {
@@ -46,16 +54,7 @@ public class AuthController {
                                 restLogin);
         }
 
-        @PostMapping("/get-info")
-        public ResponseEntity<RestResponseDTO<Object>> handleRefreshToken() {
-                Object info = this.authService.handleGetInfo();
-
-                return RestResponseUtils.ok(
-                                "Truy thông tin tài khoản thành công!",
-                                info);
-        }
-
-        @GetMapping("/refresh-token")
+        @PostMapping("/refresh-token")
         public ResponseEntity<RestResponseDTO<AuthLoginResponseDTO>> handleRefreshToken(
                         @CookieValue("refreshToken") String refreshToken) {
                 AuthLoginResponseDTO restLogin = this.authService.handleRefreshToken(refreshToken);
@@ -67,8 +66,9 @@ public class AuthController {
         }
 
         @PostMapping("/logout")
-        public ResponseEntity<RestResponseDTO<Object>> logout() {
-                AuthLoginResponseDTO restLogin = this.authService.handleLogout();
+        public ResponseEntity<RestResponseDTO<Object>> logout(
+                        @CookieValue("refreshToken") String refreshToken) {
+                AuthLoginResponseDTO restLogin = this.authService.handleLogout(refreshToken);
 
                 return RestResponseUtils.okWithCookie(
                                 restLogin.getResponseCookie().toString(),

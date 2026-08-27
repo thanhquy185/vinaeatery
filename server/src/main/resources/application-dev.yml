@@ -1,0 +1,64 @@
+spring:
+  jpa:
+    show-sql: true
+
+  datasource:
+    url: jdbc:mysql://${SPRING_DEV_DATASOURCE_HOST}:3306/${SPRING_DEV_DATASOURCE_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${SPRING_DEV_DATASOURCE_USERNAME}
+    password: ${SPRING_DEV_DATASOURCE_PASSWORD}
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            redirect-uri: ${GOOGLE_DEV_REDIRECT_URL}
+          facebook:
+            redirect-uri: ${FACEBOOK_DEV_REDIRECT_URL}
+
+logging:
+  level:
+    root: INFO
+
+    # Application
+    com.shopcart: DEBUG
+
+    # Spring Security
+    org.springframework.security: DEBUG
+
+    # Hibernate
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+
+    # Flyway
+    org.flywaydb: DEBUG
+
+    # Spring Web
+    org.springframework.web: DEBUG
+    org.springframework.web.servlet.DispatcherServlet: TRACE
+    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: TRACE
+
+momo:
+  endpoint: ${MOMO_DEV_ENDPOINT}
+  accessKey: ${MOMO_DEV_ACCESS_KEY}
+  partnerCode: ${MOMO_DEV_PARTNER_CODE}
+  secretKey: ${MOMO_DEV_SECRET_KEY}
+  redirectUrl: ${MOMO_DEV_REDIRECT_URL}
+  ipnUrl: ${MOMO_DEV_IPN_URL}
+  requestType: ${MOMO_DEV_REQUEST_TYPE}
+
+zalopay:
+  app_id: ${ZALOPAY_DEV_APP_ID}
+  key1: ${ZALOPAY_DEV_KEY1}
+  key2: ${ZALOPAY_DEV_KEY2}
+  endpoint: ${ZALOPAY_DEV_ENDPOINT}
+  callback_url: ${ZALOPAY_DEV_CALLBACK_URL}
+
+app:
+  frontend_url: ${APP_DEV_FRONTEND_URL}
+  backend_url: ${APP_DEV_BACKEND_URL}

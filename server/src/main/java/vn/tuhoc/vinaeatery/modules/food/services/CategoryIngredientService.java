@@ -1,6 +1,7 @@
 package vn.tuhoc.vinaeatery.modules.food.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -97,12 +98,16 @@ public class CategoryIngredientService {
 
     @Cacheable(value = "category_ingredient__crud_all", unless = "#result == null")
     public List<CategoryIngredientCrudResponseDTO> handleGetCrud() {
-        return this.getAllCrud().stream().map(this.categoryIngredientMapper::entityToCrudResponse).toList();
+        return this.getAllCrud().stream()
+                .map(this.categoryIngredientMapper::entityToCrudResponse)
+                .collect(Collectors.toList());
     }
 
     @Cacheable(value = "category_ingredient__crud", key = "#restaurantId", unless = "#result == null")
     public List<CategoryIngredientCrudResponseDTO> handleGetCrud(Integer restaurantId) {
-        return this.getAllCrud(restaurantId).stream().map(this.categoryIngredientMapper::entityToCrudResponse).toList();
+        return this.getAllCrud(restaurantId).stream()
+                .map(this.categoryIngredientMapper::entityToCrudResponse)
+                .collect(Collectors.toList());
     }
 
     @Caching(evict = {

@@ -44,13 +44,13 @@ public class SecurityUtil {
     private final JwtEncoder jwtEncoder;
     private final JwtAuthorityUtil jwtAuthorityUtil;
 
-    private Map<String, Object> getUserClams(Boolean isRefreshToken, AuthLoginResponseDTO restLoginDTO) {
+    private Map<String, Object> getUserClams(Boolean isAccessToken, AuthLoginResponseDTO restLoginDTO) {
         UserRoleEnum userRoleEnum = restLoginDTO.getUserInfo().getRole();
 
         Map<String, Object> userClaims = new HashMap<>();
         userClaims.put("id", restLoginDTO.getUserInfo().getId());
         userClaims.put("role", String.format("ROLE_%s", restLoginDTO.getUserInfo().getRole().getValue()));
-        if (isRefreshToken
+        if (isAccessToken
                 && (userRoleEnum.equals(UserRoleEnum.MANAGER) || userRoleEnum.equals(UserRoleEnum.EMPLOYEE))) {
             List<String> authorities = this.jwtAuthorityUtil.generateAuthorities(
                     userRoleEnum.equals(UserRoleEnum.MANAGER),
@@ -80,7 +80,7 @@ public class SecurityUtil {
     }
 
     private JwtClaimsSet generateClaims(
-            Boolean isRefreshToken,
+            Boolean isAccessToken,
             Instant now,
             Instant validity,
             String username,
@@ -89,14 +89,29 @@ public class SecurityUtil {
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(username)
-                .claim("user", this.getUserClams(isRefreshToken, restLoginDTO))
+                .claim("user", this.getUserClams(isAccessToken, restLoginDTO))
                 .build();
     }
 
     private SecretKey getSecretKey() {
-        byte[] keyBytes = Base64.from(jwtKey).decode();
+        byte[] keyBytes = Base64.from(this.jwtKey).decode();
 
         return new SecretKeySpec(keyBytes, 0, keyBytes.length, SecurityUtil.JWT_ALGORITHM.getName());
+    }
+
+    private String generateToken(String type, String username, AuthLoginResponseDTO restLoginDTO) {
+        boolean isAccessToken = type.equalsIgnoreCase("access-token");
+
+        Instant now = Instant.now();
+        Instant validity = now.plus(
+                isAccessToken ? this.jwtAccessTokenExpiration : this.jwtRefreshTokenExpiration,
+                ChronoUnit.SECONDS);
+
+        JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
+
+        JwtClaimsSet claims = this.generateClaims(isAccessToken, now, validity, username, restLoginDTO);
+
+        return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
     }
 
     public Optional<String> getCurrentUserLogin() {
@@ -106,34 +121,12 @@ public class SecurityUtil {
         return Optional.ofNullable(extractPrincipal);
     }
 
-    // public static Optional<String> getCurrentUserJWT() {
-    // SecurityContext securityContext = SecurityContextHolder.getContext();
-
-    // return Optional.ofNullable(securityContext.getAuthentication())
-    // .filter(authentication -> authentication.getCredentials() instanceof String)
-    // .map(authentication -> (String) authentication.getCredentials());
-    // }
-
     public String createAccessToken(String username, AuthLoginResponseDTO restLoginDTO) {
-        Instant now = Instant.now();
-        Instant validity = now.plus(this.jwtRefreshTokenExpiration, ChronoUnit.SECONDS);
-
-        JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
-
-        JwtClaimsSet claims = this.generateClaims(false, now, validity, username, restLoginDTO);
-
-        return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
+        return this.generateToken("access-token", username, restLoginDTO);
     }
 
     public String createRefreshToken(String username, AuthLoginResponseDTO restLoginDTO) {
-        Instant now = Instant.now();
-        Instant validity = now.plus(this.jwtAccessTokenExpiration, ChronoUnit.SECONDS);
-
-        JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
-
-        JwtClaimsSet claims = this.generateClaims(true, now, validity, username, restLoginDTO);
-
-        return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
+        return this.generateToken("refresh-token", username, restLoginDTO);
     }
 
     public Jwt checkValidRefreshToken(String token) {

@@ -1,6 +1,7 @@
 package vn.tuhoc.vinaeatery.modules.food.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -90,7 +91,7 @@ public class FoodService {
         return this.foodMapper.entityToDetailResponse(this.getOneById(id));
     }
 
-    @Cacheable(value = "food__summary", key = "#floorCriteria.getCacheKey()", unless = "#result == null")
+    @Cacheable(value = "food__summary", key = "#foodCriteria.getCacheKey()", unless = "#result == null")
     public PageResponseDTO<FoodSummaryResponseDTO> handleGetSummary(FoodCriteria foodCriteria) {
         Page<FoodSummaryResponseDTO> page = this.getAll(foodCriteria).map(this.foodMapper::entityToSummaryResponse);
 
@@ -99,12 +100,15 @@ public class FoodService {
 
     @Cacheable(value = "food__crud_all", unless = "#result == null")
     public List<FoodCrudResponseDTO> handleGetCrud() {
-        return this.getAllCrud().stream().map(this.foodMapper::entityToCrudResponse).toList();
+        return this.getAllCrud().stream().map(this.foodMapper::entityToCrudResponse)
+                .collect(Collectors.toList());
     }
 
     @Cacheable(value = "food__crud", key = "#restaurantId", unless = "#result == null")
     public List<FoodCrudResponseDTO> handleGetCrud(Integer restaurantId) {
-        return this.getAllCrud(restaurantId).stream().map(this.foodMapper::entityToCrudResponse).toList();
+        return this.getAllCrud(restaurantId).stream()
+                .map(this.foodMapper::entityToCrudResponse)
+                .collect(Collectors.toList());
     }
 
     @Caching(evict = {

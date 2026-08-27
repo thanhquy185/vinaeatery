@@ -67,14 +67,8 @@ logs/
 *.log
 
 ############################
-# Spring Boot
+# Spring Boot - Local Config
 ############################
-application-local.yml
-application-local.properties
-application-dev.yml
-application-dev.properties
-application-prod.yml
-application-prod.properties
 
 ############################
 # Temporary

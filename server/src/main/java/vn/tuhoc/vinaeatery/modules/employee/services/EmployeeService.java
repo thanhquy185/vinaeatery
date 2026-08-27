@@ -3,6 +3,7 @@ package vn.tuhoc.vinaeatery.modules.employee.services;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -147,12 +148,16 @@ public class EmployeeService {
 
     @Cacheable(value = "employee__crud_all", unless = "#result == null")
     public List<EmployeeCrudResponseDTO> handleGetCrud() {
-        return this.getAllCrud().stream().map(this.employeeMapper::entityToCrudResponse).toList();
+        return this.getAllCrud().stream()
+                .map(this.employeeMapper::entityToCrudResponse)
+                .collect(Collectors.toList());
     }
 
     @Cacheable(value = "employee__crud", key = "#restaurantId", unless = "#result == null")
     public List<EmployeeCrudResponseDTO> handleGetCrud(Integer restaurantId) {
-        return this.getAllCrud(restaurantId).stream().map(this.employeeMapper::entityToCrudResponse).toList();
+        return this.getAllCrud(restaurantId).stream()
+                .map(this.employeeMapper::entityToCrudResponse)
+                .collect(Collectors.toList());
     }
 
     @Caching(evict = {

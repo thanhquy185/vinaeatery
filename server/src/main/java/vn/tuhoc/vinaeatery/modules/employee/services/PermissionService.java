@@ -1,6 +1,7 @@
 package vn.tuhoc.vinaeatery.modules.employee.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -100,12 +101,16 @@ public class PermissionService {
 
     @Cacheable(value = "permission__crud_all", unless = "#result == null")
     public List<PermissionCrudResponseDTO> handleGetCrud() {
-        return this.getAllCrud().stream().map(this.permissionMapper::entityToCrudResponse).toList();
+        return this.getAllCrud().stream()
+                .map(this.permissionMapper::entityToCrudResponse)
+                .collect(Collectors.toList());
     }
 
     @Cacheable(value = "permission__crud", key = "#restaurantId", unless = "#result == null")
     public List<PermissionCrudResponseDTO> handleGetCrud(Integer restaurantId) {
-        return this.getAllCrud(restaurantId).stream().map(this.permissionMapper::entityToCrudResponse).toList();
+        return this.getAllCrud(restaurantId).stream()
+                .map(this.permissionMapper::entityToCrudResponse)
+                .collect(Collectors.toList());
     }
 
     @Caching(evict = {

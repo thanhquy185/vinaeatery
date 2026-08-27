@@ -13,11 +13,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import vn.tuhoc.vinaeatery.modules.auth.domains.entities.AuthSessionEntity;
 import vn.tuhoc.vinaeatery.modules.auth.domains.entities.UserEntity;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.AuthLoginResponseDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserInfoResponseDTO;
+import vn.tuhoc.vinaeatery.modules.auth.services.AuthSessionService;
 import vn.tuhoc.vinaeatery.modules.auth.services.UserService;
 import vn.tuhoc.vinaeatery.utils.SecurityUtil;
+import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 
 @Component
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class OAuth2SuccessHandlerCustom implements AuthenticationSuccessHandler 
     @Value("${jwt.access-token-validity-in-seconds}")
     private long jwtRefreshTokenExpiration;
     private final UserService userService;
+    private final AuthSessionService authSessionService;
     private final SecurityUtil securityUtil;
 
     @Override
@@ -63,17 +67,20 @@ public class OAuth2SuccessHandlerCustom implements AuthenticationSuccessHandler 
         String accessToken = this.securityUtil.createAccessToken(user.getUsername(), restLogin);
         restLogin.setAccessToken(accessToken);
 
-        String refreshToken = this.securityUtil.createRefreshToken(user.getUsername(), restLogin);
-        userService.handleChangeRefreshToken(user.getUsername(), refreshToken);
+        AuthSessionEntity authSessionEntity = this.authSessionService.getOneByUserIdAndRevokedIsNull(user.getId());
+        String currentRefreshToken = ValidationUtil.nonNull(authSessionEntity)
+                ? authSessionEntity.getRefreshToken()
+                : null;
+        String newRefreshToken = this.securityUtil.createRefreshToken(user.getUsername(), restLogin);
+        this.authSessionService.handleChangeRefreshToken(user.getId(), currentRefreshToken, newRefreshToken);
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
-                .httpOnly(false)
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", newRefreshToken)
+                .httpOnly(true)
                 .secure(true)
                 .path("/")
                 .sameSite("None")
-                .maxAge(jwtRefreshTokenExpiration * 365)
+                .maxAge(this.jwtRefreshTokenExpiration)
                 .build();
-
         response.addHeader("Set-Cookie", cookie.toString());
 
         String redirectUrl = "http://localhost:5173/public";

@@ -11,8 +11,9 @@ public class AuthorizationConfig {
                         AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
                 auth.requestMatchers(
                                 "/",
-                                "/api/v1/auth/login",
                                 "/api/v1/auth/customer/register",
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/refresh-token",
                                 "/api/v1/restaurants/public",
                                 "/api/v1/restaurants/public/*",
                                 "/api/v1/momo/**",
