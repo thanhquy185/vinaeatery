@@ -2,7 +2,10 @@ package vn.tuhoc.vinaeatery.modules.global.services;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import vn.tuhoc.vinaeatery.modules.global.exceptions.FileNameIsEmptyException;
 import vn.tuhoc.vinaeatery.modules.global.exceptions.FileUploadIsEmptyException;
@@ -16,9 +19,10 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Slf4j
 public class CloudinaryService {
-    private final Cloudinary cloudinary;
+    final Cloudinary cloudinary;
 
     // Sinh public_id dạng uuid_filename
     private String generatePublicId(String fileName) {

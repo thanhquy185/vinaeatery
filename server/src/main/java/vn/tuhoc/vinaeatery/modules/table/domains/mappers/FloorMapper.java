@@ -1,13 +1,12 @@
 package vn.tuhoc.vinaeatery.modules.table.domains.mappers;
 
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
 
+import vn.tuhoc.vinaeatery.configs.CentralMapperConfig;
 import vn.tuhoc.vinaeatery.modules.restaurant.domains.mappers.RestaurantMapperHelper;
 import vn.tuhoc.vinaeatery.modules.table.domains.entities.FloorEntity;
 import vn.tuhoc.vinaeatery.modules.table.dtos.requests.FloorCreateRequestDTO;
@@ -18,7 +17,7 @@ import vn.tuhoc.vinaeatery.modules.table.dtos.responses.FloorCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.table.dtos.responses.FloorDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.table.dtos.responses.FloorInfoResponseDTO;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {
+@Mapper(config = CentralMapperConfig.class, uses = {
                 RestaurantMapperHelper.class,
 })
 public interface FloorMapper {
@@ -27,7 +26,7 @@ public interface FloorMapper {
         FloorSummaryResponseDTO entityToSummaryResponse(FloorEntity floorEntity);
 
         FloorCrudResponseDTO entityToCrudResponse(FloorEntity floorEntity);
-        
+
         FloorInfoResponseDTO entityToInfoResponse(FloorEntity floorEntity);
 
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

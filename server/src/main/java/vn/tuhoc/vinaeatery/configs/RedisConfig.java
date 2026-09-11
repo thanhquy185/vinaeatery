@@ -13,6 +13,8 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.utils.RedisTTLUtil;
 
 import java.time.Duration;
@@ -20,9 +22,10 @@ import java.util.Map;
 
 @Configuration
 @EnableCaching
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RedisConfig {
-    private final StringRedisSerializer STRING_SERIALIZER = new StringRedisSerializer();
-    private final GenericJackson2JsonRedisSerializer JSON_SERIALIZER = new GenericJackson2JsonRedisSerializer();
+    final StringRedisSerializer STRING_SERIALIZER = new StringRedisSerializer();
+    final GenericJackson2JsonRedisSerializer JSON_SERIALIZER = new GenericJackson2JsonRedisSerializer();
 
     private Map<String, RedisCacheConfiguration> generateRedisCacheConfiguration(
             RedisCacheConfiguration defaultConfig) {

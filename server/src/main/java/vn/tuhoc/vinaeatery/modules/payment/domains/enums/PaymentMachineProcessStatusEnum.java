@@ -3,6 +3,10 @@ package vn.tuhoc.vinaeatery.modules.payment.domains.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public enum PaymentMachineProcessStatusEnum {
     PENDING("PENDING", "Đang chọn phương thức thanh toán"),
     CANCELLED("CANCELLED", "Huỷ thanh toán hoá đơn"),
@@ -10,8 +14,8 @@ public enum PaymentMachineProcessStatusEnum {
     FEEDBACK("FEEDBACK", "Đã hoàn tất đánh giá cửa hàng"),
     COMPLETED("COMPLETED", "Đã hoàn tất thanh toán hoá đơn");
 
-    private final String value;
-    private final String description;
+    final String value;
+    final String description;
 
     PaymentMachineProcessStatusEnum(String value, String description) {
         this.value = value;
@@ -29,20 +33,20 @@ public enum PaymentMachineProcessStatusEnum {
 
     @JsonCreator
     public static PaymentMachineProcessStatusEnum fromDescription(String description) {
-        for (PaymentMachineProcessStatusEnum status : values()) {
-            if (status.getDescription().equalsIgnoreCase(description)) {
-                return status;
+        for (PaymentMachineProcessStatusEnum processStatus : values()) {
+            if (processStatus.getDescription().equalsIgnoreCase(description)) {
+                return processStatus;
             }
         }
         throw new IllegalArgumentException("Không tìm thấy trạng thái: " + description);
     }
 
     public static PaymentMachineProcessStatusEnum fromValue(String value) {
-        for (PaymentMachineProcessStatusEnum status : values()) {
-            if (status.getValue().equals(value)) {
-                return status;
+        for (PaymentMachineProcessStatusEnum processStatus : values()) {
+            if (processStatus.getValue().equals(value)) {
+                return processStatus;
             }
         }
-        throw new IllegalArgumentException("Invalid status: " + value);
+        throw new IllegalArgumentException("Invalid process status: " + value);
     }
 }

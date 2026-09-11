@@ -13,10 +13,12 @@ import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.FeedbackExperienceConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.FeedbackExperienceEnum;
 import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.CustomerEntity;
@@ -28,6 +30,7 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedEntityGraph(name = "FeedbackEntity.half", attributeNodes = {
         @NamedAttributeNode("restaurant"),
         @NamedAttributeNode("customer"),
@@ -35,41 +38,41 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 public class FeedbackEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    Integer id;
 
     @Column(columnDefinition = "DATETIME", nullable = false)
-    private String at;
+    String at;
 
     @Column(columnDefinition = "VARCHAR(8)", nullable = false)
     @Convert(converter = FeedbackExperienceConverter.class)
-    private FeedbackExperienceEnum experience;
+    FeedbackExperienceEnum experience;
 
     @Column(columnDefinition = "TINYINT", nullable = false)
-    private Integer score1;
+    Integer score1;
 
     @Column(columnDefinition = "TINYINT", nullable = false)
-    private Integer score2;
+    Integer score2;
 
     @Column(columnDefinition = "TINYINT", nullable = false)
-    private Integer score3;
+    Integer score3;
 
     @Column(columnDefinition = "TINYINT", nullable = false)
-    private Integer score4;
+    Integer score4;
 
     @Column(columnDefinition = "TINYINT", nullable = false)
-    private Integer score5;
+    Integer score5;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String message;
+    String message;
 
     @OneToOne(mappedBy = "feedback", fetch = FetchType.LAZY)
-    private UseTableEntity useTable;
+    UseTableEntity useTable;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = true)
-    private CustomerEntity customer;
+    CustomerEntity customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
-    private RestaurantEntity restaurant;
+    RestaurantEntity restaurant;
 }

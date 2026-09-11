@@ -1,18 +1,17 @@
 package vn.tuhoc.vinaeatery.modules.active.domains.mappers;
 
 import org.mapstruct.BeanMapping;
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
 
+import vn.tuhoc.vinaeatery.configs.CentralMapperConfig;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.BillDetailEntity;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.BillDetailCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillDDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.domains.mappers.FoodMapperHelper;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {
+@Mapper(config = CentralMapperConfig.class, uses = {
                 FoodMapperHelper.class })
 public interface BillDetailMapper {
         BillDDetailResponseDTO entityToDetailResponse(BillDetailEntity billDetailEntity);

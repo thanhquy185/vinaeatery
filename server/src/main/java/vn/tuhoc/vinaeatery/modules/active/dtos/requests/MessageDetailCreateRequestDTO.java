@@ -1,12 +1,15 @@
 package vn.tuhoc.vinaeatery.modules.active.dtos.requests;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MessageDetailCreateRequestDTO {
-    private String sendAt;
+    String sendAt;
 
-    private Boolean isRestaurantSend;
+    Boolean isRestaurantSend;
 
-    private String content;
+    String content;
 }

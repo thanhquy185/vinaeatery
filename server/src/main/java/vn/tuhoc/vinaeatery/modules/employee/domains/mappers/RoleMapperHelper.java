@@ -2,7 +2,9 @@ package vn.tuhoc.vinaeatery.modules.employee.domains.mappers;
 
 import org.springframework.stereotype.Component;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.employee.domains.entities.RoleEntity;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.RoleCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.RoleDetailResponseDTO;
@@ -13,9 +15,10 @@ import vn.tuhoc.vinaeatery.modules.employee.repositories.RoleRepository;
 
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoleMapperHelper {
-    private final RoleRepository roleRepository;
-    private final RoleMapper roleMapper;
+    final RoleRepository roleRepository;
+    final RoleMapper roleMapper;
 
     public RoleEntity mapToEntity(Integer id) {
         return this.roleRepository.findOneByIdToCrud(id)

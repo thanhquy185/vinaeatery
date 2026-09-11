@@ -2,50 +2,53 @@ package vn.tuhoc.vinaeatery.modules.active.dtos.requests;
 
 import jakarta.persistence.Convert;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.UseTableStatusConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.UseTableStatusEnum;
 
 @Data
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UseTableCreateRequestDTO {
     @NotNull(message = "Mã nhà hàng không được để trống!")
-    private Integer restaurantId;
+    Integer restaurantId;
 
-    private Integer menuId;
+    Integer menuId;
 
-    private Integer messageId;
+    Integer messageId;
 
-    private Integer billId;
+    Integer billId;
 
-    private Integer reservationId;
+    Integer reservationId;
 
     @NotNull(message = "Mã bàn ăn không được để trống!")
-    private Integer tableId;
+    Integer tableId;
 
-    private Integer employeeId;
+    Integer employeeId;
 
-    private Integer customerId;
+    Integer customerId;
 
     @NotNull(message = "Thời gian bắt đầu không được để trống!")
-    private String startAt;
+    String startAt;
 
-    private String endAt;
+    String endAt;
 
-    private String customerFullname;
+    String customerFullname;
 
-    private String customerPhone;
+    String customerPhone;
 
-    private String customerEmail;
+    String customerEmail;
 
-    private Integer customerAdult;
+    Integer customerAdult;
 
-    private Integer customerChild;
+    Integer customerChild;
 
-    private Integer customerGuests;
+    Integer customerGuests;
 
     @NotNull(message = "Trạng thái không được để trống!")
     @Convert(converter = UseTableStatusConverter.class)
-    private UseTableStatusEnum status;
+    UseTableStatusEnum status;
 }

@@ -7,8 +7,8 @@ import vn.tuhoc.vinaeatery.modules.active.domains.enums.MenuTypeEnum;
 @Converter(autoApply = true)
 public class MenuTypeConverter implements AttributeConverter<MenuTypeEnum, String> {
     @Override
-    public String convertToDatabaseColumn(MenuTypeEnum status) {
-        return (status != null) ? status.getValue() : null;
+    public String convertToDatabaseColumn(MenuTypeEnum type) {
+        return (type != null) ? type.getValue() : null;
     }
 
     @Override

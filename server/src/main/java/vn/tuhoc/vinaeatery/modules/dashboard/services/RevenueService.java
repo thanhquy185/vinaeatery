@@ -9,7 +9,9 @@ import java.util.Set;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.BillDetailEntity;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.BillEntity;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.UseTableEntity;
@@ -41,12 +43,13 @@ import vn.tuhoc.vinaeatery.utils.TimeRangeUtil;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RevenueService {
-        private final RestaurantRepository restaurantRepository;
-        private final UseTableRepository useTableRepository;
-        private final BillRepository billRepository;
-        private final TableRepository tableRepository;
-        private final RestaurantMapper restaurantMapper;
+        final RestaurantRepository restaurantRepository;
+        final UseTableRepository useTableRepository;
+        final BillRepository billRepository;
+        final TableRepository tableRepository;
+        final RestaurantMapper restaurantMapper;
 
         private RevenueResponseDTO handleDashboardTypeBill(RevenueRequestDTO revenueRequestDTO) {
                 int restaurantId = revenueRequestDTO.getRestaurantId();

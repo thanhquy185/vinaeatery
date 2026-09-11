@@ -2,30 +2,27 @@ package vn.tuhoc.vinaeatery.modules.food.repositories.criteria;
 
 import java.util.Optional;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CategoryIngredientCriteria {
-    private Integer page;
-
-    private Integer size;
-
-    private Optional<String> id;
-
-    private Optional<String> restaurantId;
-
-    private Optional<String> name;
-
-    private Optional<String> status;
-
-    private Optional<String> sort;
+    Integer page;
+    Integer size;
+    Optional<String> id;
+    Optional<String> restaurantId;
+    Optional<String> name;
+    Optional<String> status;
+    Optional<String> sort;
 
     public String getCacheKey() {
         StringBuilder cacheKey = new StringBuilder();

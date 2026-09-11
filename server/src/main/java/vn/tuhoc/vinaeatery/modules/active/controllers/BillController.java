@@ -14,14 +14,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.BillCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.BillUpdateStatusRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillCustomerResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.repositories.criteria.BillCriteria;
-import vn.tuhoc.vinaeatery.modules.active.services.BillService;
+import vn.tuhoc.vinaeatery.modules.active.services.interfaces.BillService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -29,8 +31,9 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @RestController
 @RequestMapping("/api/v1/bills")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class BillController {
-        private final BillService billService;
+        final BillService billService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('BILLS__READ')")

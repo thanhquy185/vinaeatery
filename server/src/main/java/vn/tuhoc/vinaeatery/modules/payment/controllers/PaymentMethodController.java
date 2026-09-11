@@ -12,14 +12,14 @@ import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.modules.payment.dtos.responses.PaymentMethodCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.payment.dtos.responses.PaymentMethodDetailResponseDTO;
-import vn.tuhoc.vinaeatery.modules.payment.services.PaymentMethodService;
+import vn.tuhoc.vinaeatery.modules.payment.services.PaymentMethodServiceImplement;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 
 @RestController
 @RequestMapping("/api/v1/payment-methods")
 @RequiredArgsConstructor
 public class PaymentMethodController {
-        private final PaymentMethodService paymentMethodService;
+        private final PaymentMethodServiceImplement paymentMethodService;
 
         @GetMapping("/{id}")
         public ResponseEntity<RestResponseDTO<PaymentMethodDetailResponseDTO>> handleGetDetailById(

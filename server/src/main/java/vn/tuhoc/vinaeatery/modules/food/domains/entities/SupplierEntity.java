@@ -13,10 +13,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.global.domains.converters.CommonStatusConverter;
 import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
@@ -27,40 +29,41 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedEntityGraph(name = "SupplierEntity.full", attributeNodes = {
         @NamedAttributeNode("restaurant"),
 })
 public class SupplierEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    Integer id;
 
     @Column(nullable = false)
-    private String fullname;
+    String fullname;
 
     @Column(columnDefinition = "VARCHAR(11)", unique = true, nullable = true)
-    private String phone;
+    String phone;
 
     @Column(unique = true, nullable = false)
-    private String email;
+    String email;
 
     @Column(columnDefinition = "VARCHAR(25)", nullable = false)
-    private String houseNumber;
+    String houseNumber;
 
     @Column(columnDefinition = "VARCHAR(100)", nullable = false)
-    private String streetName;
+    String streetName;
 
     @Column(columnDefinition = "VARCHAR(30)", nullable = false)
-    private String ward;
+    String ward;
 
     @Column(columnDefinition = "VARCHAR(25)", nullable = false)
-    private String province;
+    String province;
 
     @Column(nullable = false)
     @Convert(converter = CommonStatusConverter.class)
-    private CommonStatusEnum status;
+    CommonStatusEnum status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
-    private RestaurantEntity restaurant;
+    RestaurantEntity restaurant;
 }

@@ -3,12 +3,16 @@ package vn.tuhoc.vinaeatery.modules.employee.domains.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public enum EmployeeStatusEnum {
     ACTIVE("ACTIVE", "Đang làm"),
     INACTIVE("INACTIVE", "Nghỉ làm");
 
-    private final String value;
-    private final String description;
+    final String value;
+    final String description;
 
     EmployeeStatusEnum(String value, String description) {
         this.value = value;
@@ -36,7 +40,7 @@ public enum EmployeeStatusEnum {
 
     public static EmployeeStatusEnum fromValue(String value) {
         for (EmployeeStatusEnum status : values()) {
-            if (status.getValue().equals(value)) {
+            if (status.getValue().equalsIgnoreCase(value)) {
                 return status;
             }
         }

@@ -17,10 +17,12 @@ import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.BillPaymentStatusConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.BillStatusConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.BillPaymentStatusEnum;
@@ -36,6 +38,7 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedEntityGraph(name = "BillEntity.half", attributeNodes = {
                 @NamedAttributeNode("restaurant"),
                 @NamedAttributeNode("employee"),
@@ -48,55 +51,55 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 public class BillEntity {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Integer id;
+        Integer id;
 
         @Column(columnDefinition = "DATETIME", nullable = false)
-        private String createAt;
+        String createAt;
 
         @Column(nullable = false)
-        private String customerFullname;
+        String customerFullname;
 
         @Column(columnDefinition = "VARCHAR(11)", nullable = false)
-        private String customerPhone;
+        String customerPhone;
 
         @Column(nullable = false)
-        private String customerEmail;
+        String customerEmail;
 
         @Column(nullable = false)
-        private Long totalPrice;
+        Long totalPrice;
 
         @Column(columnDefinition = "VARCHAR(9)", nullable = false)
         @Convert(converter = BillStatusConverter.class)
-        private BillStatusEnum status;
+        BillStatusEnum status;
 
         @Column(nullable = false)
-        private String paymentId;
+        String paymentId;
 
         @Column(columnDefinition = "DATETIME", nullable = false)
-        private String paymentAt;
+        String paymentAt;
 
         @Column(nullable = false)
-        private Long paymentTotalPrice;
+        Long paymentTotalPrice;
 
         @Column(columnDefinition = "VARCHAR(6)", nullable = false)
         @Convert(converter = BillPaymentStatusConverter.class)
-        private BillPaymentStatusEnum paymentStatus;
+        BillPaymentStatusEnum paymentStatus;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "restaurant_id", nullable = false)
-        private RestaurantEntity restaurant;
+        RestaurantEntity restaurant;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "employee_id", nullable = false)
-        private EmployeeEntity employee;
+        EmployeeEntity employee;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "customer_id", nullable = false)
-        private CustomerEntity customer;
+        CustomerEntity customer;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "payment_method_id", nullable = false)
-        private PaymentMethodEntity paymentMethod;
+        PaymentMethodEntity paymentMethod;
 
         @OneToMany(mappedBy = "bill", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
         @Builder.Default

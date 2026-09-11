@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.MessageCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.MessageDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.MessageSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.repositories.criteria.MessageCriteria;
-import vn.tuhoc.vinaeatery.modules.active.services.MessageService;
+import vn.tuhoc.vinaeatery.modules.active.services.interfaces.MessageService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -24,8 +26,9 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @RestController
 @RequestMapping("/api/v1/messages")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MessageController {
-        private final MessageService messageService;
+        final MessageService messageService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('MESSAGES__READ')")

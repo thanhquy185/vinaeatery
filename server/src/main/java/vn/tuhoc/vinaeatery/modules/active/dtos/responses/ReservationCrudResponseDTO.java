@@ -1,28 +1,31 @@
 package vn.tuhoc.vinaeatery.modules.active.dtos.responses;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReservationCrudResponseDTO {
-    private Integer id;
+    Integer id;
 
-    private String createAt;
+    String createAt;
 
-    private String arriveAt;
+    String arriveAt;
 
-    private String customerFullname;
+    String customerFullname;
 
-    private String customerPhone;
+    String customerPhone;
 
-    private String customerEmail;
+    String customerEmail;
 
-    private Integer customerGuests;
+    Integer customerGuests;
 
-    private String customerNote;
+    String customerNote;
 }

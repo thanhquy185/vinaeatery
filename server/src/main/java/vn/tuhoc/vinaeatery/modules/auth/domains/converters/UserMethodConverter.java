@@ -7,8 +7,8 @@ import vn.tuhoc.vinaeatery.modules.auth.domains.enums.UserMethodEnum;
 @Converter(autoApply = true)
 public class UserMethodConverter implements AttributeConverter<UserMethodEnum, String> {
     @Override
-    public String convertToDatabaseColumn(UserMethodEnum status) {
-        return (status != null) ? status.getValue() : null;
+    public String convertToDatabaseColumn(UserMethodEnum method) {
+        return (method != null) ? method.getValue() : null;
     }
 
     @Override

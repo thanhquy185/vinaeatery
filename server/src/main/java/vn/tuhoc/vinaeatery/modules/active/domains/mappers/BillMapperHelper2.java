@@ -2,16 +2,19 @@ package vn.tuhoc.vinaeatery.modules.active.domains.mappers;
 
 import org.springframework.stereotype.Component;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.BillEntity;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillInfoResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.repositories.BillRepository;
 
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class BillMapperHelper2 {
-    private final BillRepository billRepository;
-    private final BillMapper2 billMapper2;
+    final BillRepository billRepository;
+    final BillMapper2 billMapper2;
 
     public BillEntity mapToEntity(Integer id) {
         return this.billRepository.findOneByIdToCrud(id).orElse(null);

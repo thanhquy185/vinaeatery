@@ -2,7 +2,9 @@ package vn.tuhoc.vinaeatery.modules.auth.domains.mappers;
 
 import org.springframework.stereotype.Component;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.auth.domains.entities.UserEntity;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserInfoResponseDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserDetailResponseDTO;
@@ -11,9 +13,10 @@ import vn.tuhoc.vinaeatery.modules.auth.repositories.UserRepository;
 
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserMapperHelper {
-    private final UserRepository userRepository;
-    private final UserMapper userMapper;
+    final UserRepository userRepository;
+    final UserMapper userMapper;
 
     public UserEntity mapToEntity(Integer id) {
         return this.userRepository.findById(id).get();

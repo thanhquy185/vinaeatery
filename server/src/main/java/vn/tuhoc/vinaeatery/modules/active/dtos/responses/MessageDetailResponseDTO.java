@@ -2,26 +2,29 @@ package vn.tuhoc.vinaeatery.modules.active.dtos.responses;
 
 import java.util.List;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantSubInfoResponseDTO;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MessageDetailResponseDTO {
-    private Integer id;
+    Integer id;
 
-    private RestaurantSubInfoResponseDTO restaurant;
+    RestaurantSubInfoResponseDTO restaurant;
 
-    private UseTableInfoResponseDTO useTable;
+    UseTableInfoResponseDTO useTable;
 
-    private String createAt;
+    String createAt;
 
-    private Boolean isRead;
+    Boolean isRead;
 
-    private List<MessageDDetailResponseDTO> messageDetails;
+    List<MessageDDetailResponseDTO> messageDetails;
 }

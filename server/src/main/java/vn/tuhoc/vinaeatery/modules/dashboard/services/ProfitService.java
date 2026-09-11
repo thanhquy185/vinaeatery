@@ -7,7 +7,9 @@ import java.util.List;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.BillEntity;
 import vn.tuhoc.vinaeatery.modules.active.repositories.BillRepository;
 import vn.tuhoc.vinaeatery.modules.dashboard.dtos.requests.ProfitRequestDTO;
@@ -26,11 +28,12 @@ import vn.tuhoc.vinaeatery.utils.TimeRangeUtil;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProfitService {
-        private final RestaurantRepository restaurantRepository;
-        private final BillRepository billRepository;
-        private final InputTicketRepository inputTicketRepository;
-        private final RestaurantMapper restaurantMapper;
+        final RestaurantRepository restaurantRepository;
+        final BillRepository billRepository;
+        final InputTicketRepository inputTicketRepository;
+        final RestaurantMapper restaurantMapper;
 
         @Cacheable(value = "dashboard__profit", key = "'restaurantId=' + #profitRequestDTO.getRestaurantId() + 'timeline=' + #profitRequestDTO.getTimeline() + 'timeDetail=' + #profitRequestDTO.getTimeDetail()", unless = "#result == null")
         public ProfitResponseDTO handleDashboard(ProfitRequestDTO profitRequestDTO) {

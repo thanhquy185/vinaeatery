@@ -8,10 +8,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "permission_details")
@@ -19,16 +21,17 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PermissionDetailEntity {
     @EmbeddedId
-    private PermissionDetailIdEntity id;
+    PermissionDetailIdEntity id;
 
     @MapsId("permissionId")
     @ManyToOne
     @JsonIgnore
-    private PermissionEntity permission;
+    PermissionEntity permission;
 
     @MapsId("functionId")
     @ManyToOne(fetch = FetchType.LAZY)
-    private FunctionEntity function;
+    FunctionEntity function;
 }

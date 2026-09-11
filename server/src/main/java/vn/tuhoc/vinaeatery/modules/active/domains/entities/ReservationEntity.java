@@ -18,10 +18,12 @@ import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.ReservationStatusConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.ReservationStatusEnum;
 import vn.tuhoc.vinaeatery.modules.employee.domains.entities.EmployeeEntity;
@@ -34,6 +36,7 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedEntityGraph(name = "ReservationEntity.full", attributeNodes = {
                 @NamedAttributeNode("restaurant"),
                 @NamedAttributeNode("employee"),
@@ -45,47 +48,47 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 public class ReservationEntity {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Integer id;
+        Integer id;
 
         @Column(columnDefinition = "DATETIME", nullable = false)
-        private String createAt;
+        String createAt;
 
         @Column(columnDefinition = "DATETIME", nullable = false)
-        private String arriveAt;
+        String arriveAt;
 
         @Column(nullable = false)
-        private String customerFullname;
+        String customerFullname;
 
         @Column(columnDefinition = "VARCHAR(11)", nullable = false)
-        private String customerPhone;
+        String customerPhone;
 
         @Column(nullable = false)
-        private String customerEmail;
+        String customerEmail;
 
         @Column(nullable = false)
-        private Integer customerGuests;
+        Integer customerGuests;
 
         @Column(columnDefinition = "MEDIUMTEXT", nullable = true)
-        private String customerNote;
+        String customerNote;
 
         @Column(columnDefinition = "VARCHAR(9)", nullable = false)
         @Convert(converter = ReservationStatusConverter.class)
-        private ReservationStatusEnum status;
+        ReservationStatusEnum status;
 
         @OneToMany(mappedBy = "reservation", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
         @JsonIgnore
-        private List<UseTableEntity> useTables;
+        List<UseTableEntity> useTables;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "restaurant_id", nullable = false)
-        private RestaurantEntity restaurant;
+        RestaurantEntity restaurant;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "employee_id", nullable = true)
-        private EmployeeEntity employee;
+        EmployeeEntity employee;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "customer_id", nullable = false)
-        private CustomerEntity customer;
+        CustomerEntity customer;
 
 }

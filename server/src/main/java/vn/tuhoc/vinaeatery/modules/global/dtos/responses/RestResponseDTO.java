@@ -2,16 +2,19 @@ package vn.tuhoc.vinaeatery.modules.global.dtos.responses;
 
 import org.springframework.http.HttpStatus;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RestResponseDTO<T> {
-        private int status;
-        private String error;
-        private Object message;
-        private T data;
+        int status;
+        String error;
+        Object message;
+        T data;
 
         public static <T> RestResponseDTO<T> ok(
                         String message,

@@ -3,13 +3,17 @@ package vn.tuhoc.vinaeatery.modules.auth.domains.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public enum UserMethodEnum {
     HANDMADE("HANDMADE", "Tạo tài khoản thủ công"),
     GOOGLE("GOOGLE", "Tạo tài khoản bằng Google"),
     FACEBOOK("FACEBOOK", "Tạo tài khoản bằng Facebook");
 
-    private final String value;
-    private final String description;
+    final String value;
+    final String description;
 
     UserMethodEnum(String value, String description) {
         this.value = value;
@@ -36,11 +40,11 @@ public enum UserMethodEnum {
     }
 
     public static UserMethodEnum fromValue(String value) {
-        for (UserMethodEnum status : values()) {
-            if (status.getValue().equals(value)) {
-                return status;
+        for (UserMethodEnum method : values()) {
+            if (method.getValue().equals(value)) {
+                return method;
             }
         }
-        throw new IllegalArgumentException("Invalid status: " + value);
+        throw new IllegalArgumentException("Invalid method: " + value);
     }
 }

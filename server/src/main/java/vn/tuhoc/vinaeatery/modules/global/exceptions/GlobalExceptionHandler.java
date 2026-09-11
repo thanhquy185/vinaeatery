@@ -26,7 +26,6 @@ import vn.tuhoc.vinaeatery.modules.auth.exceptions.AuthSessionNotFoundByRefreshT
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.AuthUserIsLockingException;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.AuthUsernameOrPasswordIsNotAvailable;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserNotFoundByIdException;
-import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserNotFoundByUsernameAndPasswordException;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserNotFoundByUsernameException;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserPasswordIsUsingException;
 import vn.tuhoc.vinaeatery.modules.auth.exceptions.UserPasswordIsNotMatchException;
@@ -136,7 +135,6 @@ public class GlobalExceptionHandler {
                         AuthSessionNotFoundByRefreshTokenException.class,
                         UserNotFoundByIdException.class,
                         UserNotFoundByUsernameException.class,
-                        UserNotFoundByUsernameAndPasswordException.class,
                         UseTableNotFoundByIdException.class,
                         UseTableNotFoundByRestaurantIdTableIdAndEndAtIsNull.class,
                         UseFoodNotFoundByIdException.class,

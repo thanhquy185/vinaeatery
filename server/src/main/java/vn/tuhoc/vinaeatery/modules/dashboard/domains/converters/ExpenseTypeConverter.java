@@ -7,8 +7,8 @@ import vn.tuhoc.vinaeatery.modules.dashboard.domains.enums.ExpenseTypeEnum;
 @Converter(autoApply = true)
 public class ExpenseTypeConverter implements AttributeConverter<ExpenseTypeEnum, String> {
     @Override
-    public String convertToDatabaseColumn(ExpenseTypeEnum status) {
-        return (status != null) ? status.getValue() : null;
+    public String convertToDatabaseColumn(ExpenseTypeEnum type) {
+        return (type != null) ? type.getValue() : null;
     }
 
     @Override

@@ -2,47 +2,50 @@ package vn.tuhoc.vinaeatery.modules.active.repositories.criteria;
 
 import java.util.Optional;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UseTableCriteria {
-    private Integer page;
+    Integer page;
 
-    private Integer size;
+    Integer size;
 
-    private Optional<String> id;
+    Optional<String> id;
 
-    private Optional<String> restaurantId;
+    Optional<String> restaurantId;
 
-    private Optional<String> tableId;
+    Optional<String> tableId;
 
-    private Optional<String> tableName;
+    Optional<String> tableName;
 
-    private Optional<String> floorId;
-    
-    private Optional<String> employeeId;
+    Optional<String> floorId;
 
-    private Optional<String> customerId;
+    Optional<String> employeeId;
 
-    private Optional<String> billId;
+    Optional<String> customerId;
 
-    private Optional<String> reservationId;
+    Optional<String> billId;
 
-    private Optional<String> startAtStart;
+    Optional<String> reservationId;
 
-    private Optional<String> startAtEnd;
+    Optional<String> startAtStart;
 
-    private Optional<String> endAtStart;
+    Optional<String> startAtEnd;
 
-    private Optional<String> endAtEnd;
+    Optional<String> endAtStart;
 
-    private Optional<String> status;
+    Optional<String> endAtEnd;
 
-    private Optional<String> sort;
+    Optional<String> status;
+
+    Optional<String> sort;
 }

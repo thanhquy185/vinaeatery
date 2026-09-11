@@ -12,13 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.OrderSheetCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.OrderSheetUpdateStatusRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.OrderSheetDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.OrderSheetSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.repositories.criteria.OrderSheetCriteria;
-import vn.tuhoc.vinaeatery.modules.active.services.OrderSheetService;
+import vn.tuhoc.vinaeatery.modules.active.services.interfaces.OrderSheetService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -26,8 +28,9 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @RestController
 @RequestMapping("/api/v1/order-sheets")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderSheetController {
-        private final OrderSheetService orderSheetService;
+        final OrderSheetService orderSheetService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('ORDER_SHEETS__READ')")

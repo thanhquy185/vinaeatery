@@ -1,23 +1,26 @@
 package vn.tuhoc.vinaeatery.modules.payment.dtos.responses;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.FoodInfoResponseDTO3;
 
 @Data
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PaymentMachineFoodDetailResponseDTO {
-    private FoodInfoResponseDTO3 food;
+    FoodInfoResponseDTO3 food;
 
-    private Long quantity;
+    Long quantity;
 
-    private Long price;
+    Long price;
 
-    private String foodNameSnapshot;
+    String foodNameSnapshot;
 
-    private String foodUnitSnapshot;
+    String foodUnitSnapshot;
 
-    private Long foodPriceSnapshot;
+    Long foodPriceSnapshot;
 
-    private Long totalPriceDetail;
+    Long totalPriceDetail;
 }

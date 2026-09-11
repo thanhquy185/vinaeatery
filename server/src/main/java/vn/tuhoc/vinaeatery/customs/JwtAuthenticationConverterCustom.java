@@ -24,6 +24,7 @@ public class JwtAuthenticationConverterCustom implements Converter<Jwt, Abstract
             authorities.add(new SimpleGrantedAuthority(role));
         }
 
+        @SuppressWarnings("unchecked")
         List<String> authorityClaims = (List<String>) user.get("authorities");
         if (authorityClaims != null) {
             authorityClaims.forEach(authority -> authorities.add(new SimpleGrantedAuthority(authority)));

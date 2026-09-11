@@ -17,10 +17,12 @@ import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.OrderSheetStatusConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.OrderSheetStatusEnum;
 import vn.tuhoc.vinaeatery.modules.employee.domains.entities.EmployeeEntity;
@@ -32,6 +34,7 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedEntityGraph(name = "OrderSheetEntity.half", attributeNodes = {
                 @NamedAttributeNode("restaurant"),
                 @NamedAttributeNode("employee"),
@@ -40,41 +43,41 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 public class OrderSheetEntity {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Integer id;
+        Integer id;
 
         @Column(columnDefinition = "DATETIME", nullable = false)
-        private String createAt;
+        String createAt;
 
         @Column(columnDefinition = "DATETIME", nullable = true)
-        private String serviceAt;
+        String serviceAt;
 
         @Column(columnDefinition = "DATETIME", nullable = true)
-        private String cancelAt;
+        String cancelAt;
 
         @Column(nullable = false)
-        private Long totalPrice;
+        Long totalPrice;
 
         @Column(columnDefinition = "TEXT", nullable = true)
-        private String note;
+        String note;
 
         @Column(columnDefinition = "TEXT", nullable = true)
-        private String message;
+        String message;
 
         @Column(columnDefinition = "VARCHAR(9)", nullable = false)
         @Convert(converter = OrderSheetStatusConverter.class)
-        private OrderSheetStatusEnum status;
+        OrderSheetStatusEnum status;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "restaurant_id", nullable = false)
-        private RestaurantEntity restaurant;
+        RestaurantEntity restaurant;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "use_table_id", nullable = false)
-        private UseTableEntity useTable;
+        UseTableEntity useTable;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "employee_id", nullable = true)
-        private EmployeeEntity employee;
+        EmployeeEntity employee;
 
         @OneToMany(mappedBy = "orderSheet", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
         @Builder.Default

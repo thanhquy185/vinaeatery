@@ -1,10 +1,12 @@
 package vn.tuhoc.vinaeatery.modules.table.dtos.responses;
 
 import jakarta.persistence.Convert;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.global.domains.converters.CommonStatusConverter;
 import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.modules.table.domains.converters.CategoryTableSurchargeTypeConverter;
@@ -14,19 +16,20 @@ import vn.tuhoc.vinaeatery.modules.table.domains.enums.CategoryTableSurchargeTyp
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CategoryTableInfoResponseDTO {
-    private Integer id;
+    Integer id;
 
-    private String name;
+    String name;
 
     @Convert(converter = CategoryTableSurchargeTypeConverter.class)
-    private CategoryTableSurchargeTypeEnum surchargeType;
+    CategoryTableSurchargeTypeEnum surchargeType;
 
-    private Long surchargeValue;
+    Long surchargeValue;
 
-    private String description;
+    String description;
 
     @Convert(converter = CommonStatusConverter.class)
-    private CommonStatusEnum status;
+    CommonStatusEnum status;
 
 }

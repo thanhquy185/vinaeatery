@@ -1,10 +1,12 @@
 package vn.tuhoc.vinaeatery.modules.table.dtos.responses;
 
 import jakarta.persistence.Convert;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.global.domains.converters.CommonStatusConverter;
 import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantSubInfoResponseDTO;
@@ -13,15 +15,16 @@ import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantSubInfoRe
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class FloorDetailResponseDTO {
-    private Integer id;
+    Integer id;
 
-    private RestaurantSubInfoResponseDTO restaurant;
+    RestaurantSubInfoResponseDTO restaurant;
 
-    private String name;
+    String name;
 
-    private String description;
+    String description;
 
     @Convert(converter = CommonStatusConverter.class)
-    private CommonStatusEnum status;
+    CommonStatusEnum status;
 }

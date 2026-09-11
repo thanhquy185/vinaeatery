@@ -1,26 +1,29 @@
 package vn.tuhoc.vinaeatery.modules.payment.dtos.requests;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PaymentMachineFoodCreateRequestDTO {
-    private Integer foodId;
+    Integer foodId;
 
-    private Long quantity;
+    Long quantity;
 
-    private Long price;
+    Long price;
 
-    private String foodNameSnapshot;
+    String foodNameSnapshot;
 
-    private String foodUnitSnapshot;
+    String foodUnitSnapshot;
 
-    private Long foodPriceSnapshot;
+    Long foodPriceSnapshot;
 
-    private Long totalPriceDetail;
+    Long totalPriceDetail;
 }

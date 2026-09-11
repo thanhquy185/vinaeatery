@@ -3,12 +3,16 @@ package vn.tuhoc.vinaeatery.modules.food.domains.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public enum FoodStatusEnum {
     SELLING("SELLING", "Đang bán"),
     STOP_SELLING("STOP_SELLING", "Dừng bán");
 
-    private final String value;
-    private final String description;
+    final String value;
+    final String description;
 
     FoodStatusEnum(String value, String description) {
         this.value = value;
@@ -36,7 +40,7 @@ public enum FoodStatusEnum {
 
     public static FoodStatusEnum fromValue(String value) {
         for (FoodStatusEnum status : values()) {
-            if (status.getValue().equals(value)) {
+            if (status.getValue().equalsIgnoreCase(value)) {
                 return status;
             }
         }

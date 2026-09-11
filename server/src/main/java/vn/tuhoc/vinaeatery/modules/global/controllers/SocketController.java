@@ -6,8 +6,8 @@ import org.springframework.stereotype.Controller;
 import lombok.RequiredArgsConstructor;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.MessageEntity;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.OrderSheetDetailResponseDTO;
-import vn.tuhoc.vinaeatery.modules.active.services.MessageService;
-import vn.tuhoc.vinaeatery.modules.active.services.OrderSheetService;
+import vn.tuhoc.vinaeatery.modules.active.services.MessageServiceImplement;
+import vn.tuhoc.vinaeatery.modules.active.services.OrderSheetServiceImplement;
 import vn.tuhoc.vinaeatery.modules.global.dtos.requests.RestaurantReadMessageRequestDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.requests.RestaurantSendMessageRequestDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.requests.UpdateStatusOrderSheetRequestDTO;
@@ -19,8 +19,8 @@ import vn.tuhoc.vinaeatery.modules.global.services.SocketService;
 @RequiredArgsConstructor
 public class SocketController {
         private final SocketService socketService;
-        private final MessageService messageService;
-        private final OrderSheetService orderSheetService;
+        private final MessageServiceImplement messageService;
+        private final OrderSheetServiceImplement orderSheetService;
 
         @MessageMapping("/open-payment-machine")
         public void handleOpenPaymentMachine(

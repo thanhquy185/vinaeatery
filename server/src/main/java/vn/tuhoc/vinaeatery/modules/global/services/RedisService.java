@@ -1,6 +1,9 @@
 package vn.tuhoc.vinaeatery.modules.global.services;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -9,9 +12,10 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RedisService {
-    private final RedisTemplate<String, Object> redisTemplate;
-    private final StringRedisTemplate stringRedisTemplate;
+    final RedisTemplate<String, Object> redisTemplate;
+    final StringRedisTemplate stringRedisTemplate;
 
     public void set(String key, Object value) {
         this.redisTemplate.opsForValue().set(key, value);

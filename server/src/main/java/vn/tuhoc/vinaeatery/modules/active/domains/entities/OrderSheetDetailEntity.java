@@ -9,10 +9,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.food.domains.entities.FoodEntity;
 
 @Entity
@@ -21,34 +23,35 @@ import vn.tuhoc.vinaeatery.modules.food.domains.entities.FoodEntity;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderSheetDetailEntity {
     @EmbeddedId
-    private OrderSheetDetailIdEntity id;
+    OrderSheetDetailIdEntity id;
 
     @MapsId("orderSheetId")
     @ManyToOne
     @JsonIgnore
-    private OrderSheetEntity orderSheet;
+    OrderSheetEntity orderSheet;
 
     @MapsId("foodId")
     @ManyToOne(fetch = FetchType.LAZY)
-    private FoodEntity food;
+    FoodEntity food;
 
     @Column(nullable = false)
-    private Long quantity;
+    Long quantity;
 
     @Column(nullable = false)
-    private Long price;
+    Long price;
 
     @Column(nullable = false)
-    private String foodNameSnapshot;
+    String foodNameSnapshot;
 
     @Column(nullable = false)
-    private String foodUnitSnapshot;
+    String foodUnitSnapshot;
 
     @Column(nullable = false)
-    private Long foodPriceSnapshot;
+    Long foodPriceSnapshot;
 
     @Column(nullable = false)
-    private Long totalPriceDetail;
+    Long totalPriceDetail;
 }

@@ -1,16 +1,15 @@
 package vn.tuhoc.vinaeatery.modules.food.domains.mappers;
 
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
 
+import vn.tuhoc.vinaeatery.configs.CentralMapperConfig;
 import vn.tuhoc.vinaeatery.modules.food.domains.entities.FoodEntity;
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.FoodInfoResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.FoodInfoResponseDTO2;
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.FoodInfoResponseDTO3;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {
+@Mapper(config = CentralMapperConfig.class, uses = {
                 CategoryFoodMapperHelper2.class,
                 RecipeMapperHelper2.class
 })

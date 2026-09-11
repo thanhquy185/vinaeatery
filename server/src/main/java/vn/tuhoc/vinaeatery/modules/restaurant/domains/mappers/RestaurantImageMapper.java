@@ -1,18 +1,17 @@
 package vn.tuhoc.vinaeatery.modules.restaurant.domains.mappers;
 
 import org.mapstruct.BeanMapping;
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
 
+import vn.tuhoc.vinaeatery.configs.CentralMapperConfig;
 import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantImageEntity;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.requests.RestaurantImageCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.requests.RestaurantImageUpdateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantImageDetailResponseDTO;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {
+@Mapper(config = CentralMapperConfig.class, uses = {
                 RestaurantMapperHelper.class
 })
 public interface RestaurantImageMapper {

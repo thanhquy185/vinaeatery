@@ -2,34 +2,29 @@ package vn.tuhoc.vinaeatery.modules.restaurant.repositories.criteria;
 
 import java.util.Optional;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ManagerCriteria {
-    private Integer page;
-
-    private Integer size;
-
-    private Optional<String> id;
-
-    private Optional<String> fullname;
-
-    private Optional<String> username;
-
-    private Optional<String> phone;
-
-    private Optional<String> email;
-
-    private Optional<String> status;
-
-    private Optional<String> sort;
+    Integer page;
+    Integer size;
+    Optional<String> id;
+    Optional<String> fullname;
+    Optional<String> username;
+    Optional<String> phone;
+    Optional<String> email;
+    Optional<String> status;
+    Optional<String> sort;
 
     public String getCacheKey() {
         StringBuilder cacheKey = new StringBuilder();

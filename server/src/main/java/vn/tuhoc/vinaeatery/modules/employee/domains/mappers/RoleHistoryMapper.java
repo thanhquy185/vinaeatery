@@ -1,17 +1,16 @@
 package vn.tuhoc.vinaeatery.modules.employee.domains.mappers;
 
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
 
+import vn.tuhoc.vinaeatery.configs.CentralMapperConfig;
 import vn.tuhoc.vinaeatery.modules.employee.domains.entities.RoleHistoryEntity;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.requests.RoleHistoryCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.RoleHistoryDetailResponseDTO;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {
+@Mapper(config = CentralMapperConfig.class, uses = {
                 RoleMapperHelper.class
 })
 public interface RoleHistoryMapper {

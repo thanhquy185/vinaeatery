@@ -2,29 +2,32 @@ package vn.tuhoc.vinaeatery.modules.global.dtos.responses;
 
 import java.util.List;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PageResponseDTO<T> {
-    private List<T> content;
+    List<T> content;
 
-    private int totalPages;
+    int totalPages;
 
-    private long totalElements;
+    long totalElements;
 
-    private boolean first;
+    boolean first;
 
-    private boolean last;
+    boolean last;
 
-    private int numberOfElements;
+    int numberOfElements;
 
-    private int size;
+    int size;
 
-    private int number;
+    int number;
 }

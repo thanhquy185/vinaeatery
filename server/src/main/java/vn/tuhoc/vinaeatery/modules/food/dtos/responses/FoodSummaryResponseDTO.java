@@ -1,10 +1,12 @@
 package vn.tuhoc.vinaeatery.modules.food.dtos.responses;
 
 import jakarta.persistence.Convert;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.food.domains.converters.FoodStatusConverter;
 import vn.tuhoc.vinaeatery.modules.food.domains.enums.FoodStatusEnum;
 
@@ -12,19 +14,20 @@ import vn.tuhoc.vinaeatery.modules.food.domains.enums.FoodStatusEnum;
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class FoodSummaryResponseDTO {
-    private Integer id;
+    Integer id;
 
-    private CategoryFoodInfoResponseDTO categoryFood;
+    CategoryFoodInfoResponseDTO categoryFood;
 
-    private String image;
+    String image;
 
-    private String name;
+    String name;
 
-    private String unit;
+    String unit;
 
-    private Long price;
+    Long price;
 
     @Convert(converter = FoodStatusConverter.class)
-    private FoodStatusEnum status;
+    FoodStatusEnum status;
 }

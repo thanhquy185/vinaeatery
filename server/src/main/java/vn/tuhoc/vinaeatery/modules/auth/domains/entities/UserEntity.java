@@ -15,10 +15,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.auth.domains.converters.UserMethodConverter;
 import vn.tuhoc.vinaeatery.modules.auth.domains.converters.UserRoleConverter;
 import vn.tuhoc.vinaeatery.modules.auth.domains.enums.UserMethodEnum;
@@ -32,29 +34,30 @@ import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    Integer id;
 
     @Column(columnDefinition = "VARCHAR(8)", nullable = false)
     @Convert(converter = UserRoleConverter.class)
-    private UserRoleEnum role;
+    UserRoleEnum role;
 
     @Column(nullable = false)
-    private String username;
+    String username;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
-    private String password;
+    String password;
 
     @Column(columnDefinition = "VARCHAR(8)", nullable = false)
     @Convert(converter = UserMethodConverter.class)
-    private UserMethodEnum method;
+    UserMethodEnum method;
 
     @Column(columnDefinition = "VARCHAR(8)", nullable = false)
     @Convert(converter = CommonStatusConverter.class)
-    private CommonStatusEnum status;
+    CommonStatusEnum status;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore

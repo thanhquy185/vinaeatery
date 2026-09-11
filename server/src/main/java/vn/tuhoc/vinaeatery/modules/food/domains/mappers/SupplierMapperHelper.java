@@ -2,7 +2,9 @@ package vn.tuhoc.vinaeatery.modules.food.domains.mappers;
 
 import org.springframework.stereotype.Component;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.food.domains.entities.SupplierEntity;
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.SupplierCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.SupplierDetailResponseDTO;
@@ -13,9 +15,10 @@ import vn.tuhoc.vinaeatery.modules.food.repositories.SupplierRepository;
 
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class SupplierMapperHelper {
-    private final SupplierRepository supplierRepository;
-    private final SupplierMapper supplierMapper;
+    final SupplierRepository supplierRepository;
+    final SupplierMapper supplierMapper;
 
     public SupplierEntity mapToEntity(Integer id) {
         return this.supplierRepository.findOneByIdToCrud(id)

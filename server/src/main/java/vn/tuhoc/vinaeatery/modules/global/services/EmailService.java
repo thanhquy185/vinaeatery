@@ -7,16 +7,19 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import jakarta.mail.internet.MimeMessage;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.CustomerDetailResponseDTO;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EmailService {
   @Value("${app.frontend_url}")
-  private String frontendUrl;
-  private final JavaMailSender mailSender;
+  String frontendUrl;
+  final JavaMailSender mailSender;
 
   @Async
   public void sendRegisterSuccessEmail(

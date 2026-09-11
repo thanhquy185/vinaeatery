@@ -3,10 +3,12 @@ package vn.tuhoc.vinaeatery.modules.payment.dtos.responses;
 import java.util.List;
 
 import jakarta.persistence.Convert;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.EmployeeSubInfoResponseDTO;
 import vn.tuhoc.vinaeatery.modules.payment.domains.converters.PaymentMachineProcessStatusConverter;
 import vn.tuhoc.vinaeatery.modules.payment.domains.converters.PaymentMachineStatusConverter;
@@ -17,32 +19,33 @@ import vn.tuhoc.vinaeatery.modules.payment.domains.enums.PaymentMachineStatusEnu
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PaymentMachineInfoResponseDTO {
-    private Integer id;
+    Integer id;
 
-    private PaymentMethodInfoResponseDTO paymentMethod;
+    PaymentMethodInfoResponseDTO paymentMethod;
 
-    private EmployeeSubInfoResponseDTO employee;
+    EmployeeSubInfoResponseDTO employee;
 
-    private String at;
+    String at;
 
-    private Long foodPrice;
+    Long foodPrice;
 
-    private Long categoryTableSurcharge;
+    Long categoryTableSurcharge;
 
-    private Long customerDiscount;
+    Long customerDiscount;
 
-    private Long totalPrice;
+    Long totalPrice;
 
-    private String paymentId;
+    String paymentId;
 
-    private Long paymentTotalPrice;
+    Long paymentTotalPrice;
 
     @Convert(converter = PaymentMachineProcessStatusConverter.class)
-    private PaymentMachineProcessStatusEnum processStatus;
+    PaymentMachineProcessStatusEnum processStatus;
 
     @Convert(converter = PaymentMachineStatusConverter.class)
-    private PaymentMachineStatusEnum status;
+    PaymentMachineStatusEnum status;
 
-    private List<PaymentMachineFoodDetailResponseDTO> paymentMachineFoods;
+    List<PaymentMachineFoodDetailResponseDTO> paymentMachineFoods;
 }

@@ -3,12 +3,16 @@ package vn.tuhoc.vinaeatery.modules.global.domains.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public enum CommonStatusEnum {
     ACTIVE("ACTIVE", "Hoạt động"),
     INACTIVE("INACTIVE", "Tạm dừng");
 
-    private final String value;
-    private final String description;
+    final String value;
+    final String description;
 
     CommonStatusEnum(String value, String description) {
         this.value = value;

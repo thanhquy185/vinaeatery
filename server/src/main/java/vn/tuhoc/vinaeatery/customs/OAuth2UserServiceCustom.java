@@ -7,13 +7,13 @@ import vn.tuhoc.vinaeatery.modules.auth.domains.enums.UserMethodEnum;
 import vn.tuhoc.vinaeatery.modules.auth.domains.enums.UserRoleEnum;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.requests.UserCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserDetailResponseDTO;
-import vn.tuhoc.vinaeatery.modules.auth.services.UserService;
+import vn.tuhoc.vinaeatery.modules.auth.services.UserServiceImplement;
 import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
 import vn.tuhoc.vinaeatery.modules.global.services.EmailService;
 import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.CustomerEntity;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.requests.CustomerRegisterRequestDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.CustomerDetailResponseDTO;
-import vn.tuhoc.vinaeatery.modules.restaurant.services.CustomerService;
+import vn.tuhoc.vinaeatery.modules.restaurant.services.CustomerServiceImplement;
 import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -34,8 +34,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class OAuth2UserServiceCustom implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     private final EmailService emailService;
-    private final UserService userService;
-    private final CustomerService customerService;
+    private final UserServiceImplement userService;
+    private final CustomerServiceImplement customerService;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -66,7 +66,9 @@ public class OAuth2UserServiceCustom implements OAuth2UserService<OAuth2UserRequ
             // firstName = oAuth2User.getAttribute("given_name");
             // lastName = oAuth2User.getAttribute("family_name");
             name = oAuth2User.getAttribute("name");
+            @SuppressWarnings("unchecked")
             Map<String, Object> pictureObj = (Map<String, Object>) oAuth2User.getAttributes().get("picture");
+            @SuppressWarnings("unchecked")
             Map<String, Object> dataObj = (Map<String, Object>) pictureObj.get("data");
             avatar = (String) dataObj.get("url");
         } else {
@@ -91,7 +93,7 @@ public class OAuth2UserServiceCustom implements OAuth2UserService<OAuth2UserRequ
         // -
         String finalEmail = email;
         // -
-        CustomerEntity customerExistsByEmail = this.customerService.getOneByEmailNotThrowException(finalEmail);
+        CustomerEntity customerExistsByEmail = this.customerService.handleGetOneByEmailNotThrowException(finalEmail);
         if (ValidationUtil.isNull(customerExistsByEmail)) {
             UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
                     .username(finalEmail)
@@ -129,7 +131,7 @@ public class OAuth2UserServiceCustom implements OAuth2UserService<OAuth2UserRequ
 
         // Tạo DefaultOAuth2User để Spring Security dùng
         // - Lấy user từ DB sau khi tạo hoặc đã tồn tại
-        UserEntity userExistsByUsernameIsEmail = this.userService.getOneByUsername(finalEmail);
+        UserEntity userExistsByUsernameIsEmail = this.userService.handleGetByUsername(finalEmail);
         if (userExistsByUsernameIsEmail.getStatus().equals(CommonStatusEnum.INACTIVE)) {
             throw new OAuth2AuthenticationException(
                     new OAuth2Error("CUSTOMER_ACCOUNT_DISABLED"),

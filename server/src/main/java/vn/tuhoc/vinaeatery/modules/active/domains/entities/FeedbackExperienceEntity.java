@@ -6,10 +6,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "feedback_experiences")
@@ -17,18 +19,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class FeedbackExperienceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "VARCHAR(8)")
-    private String id;
+    String id;
 
     @Column(nullable = false)
-    private String image;
+    String image;
 
     @Column(nullable = false)
-    private String name;
+    String name;
 
     @Column(columnDefinition = "TINYINT", nullable = false)
-    private Integer index;
+    Integer index;
 }

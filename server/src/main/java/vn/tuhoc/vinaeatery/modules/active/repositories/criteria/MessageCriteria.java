@@ -2,29 +2,32 @@ package vn.tuhoc.vinaeatery.modules.active.repositories.criteria;
 
 import java.util.Optional;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MessageCriteria {
-    private Integer page;
+    Integer page;
 
-    private Integer size;
+    Integer size;
 
-    private Optional<String> id;
+    Optional<String> id;
 
-    private Optional<String> restaurantId;
+    Optional<String> restaurantId;
 
-    private Optional<String> useTableId;
+    Optional<String> useTableId;
 
-    private Optional<String> createAtStart;
+    Optional<String> createAtStart;
 
-    private Optional<String> createAtEnd;
+    Optional<String> createAtEnd;
 
-    private Optional<String> sort;
+    Optional<String> sort;
 }

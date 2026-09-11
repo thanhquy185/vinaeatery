@@ -3,10 +3,12 @@ package vn.tuhoc.vinaeatery.modules.auth.dtos.requests;
 import jakarta.persistence.Convert;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.auth.domains.converters.UserMethodConverter;
 import vn.tuhoc.vinaeatery.modules.auth.domains.converters.UserRoleConverter;
 import vn.tuhoc.vinaeatery.modules.auth.domains.enums.UserMethodEnum;
@@ -18,22 +20,23 @@ import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCreateRequestDTO {
     @NotNull(message = "Quyền không được để trống!")
     @Convert(converter = UserRoleConverter.class)
-    private UserRoleEnum role;
+    UserRoleEnum role;
 
     @NotBlank(message = "Tên tài khoản không được để trống!")
-    private String username;
+    String username;
 
     @NotBlank(message = "Mật khẩu không được để trống!")
-    private String password;
+    String password;
 
     @NotNull(message = "Phương thức tạo tài khoản không được để trống!")
     @Convert(converter = UserMethodConverter.class)
-    private UserMethodEnum method;
+    UserMethodEnum method;
 
     @NotNull(message = "Trạng thái không được để trống!")
     @Convert(converter = CommonStatusConverter.class)
-    private CommonStatusEnum status;
+    CommonStatusEnum status;
 }

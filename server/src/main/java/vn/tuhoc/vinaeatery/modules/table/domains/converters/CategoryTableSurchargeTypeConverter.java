@@ -7,8 +7,8 @@ import vn.tuhoc.vinaeatery.modules.table.domains.enums.CategoryTableSurchargeTyp
 @Converter(autoApply = true)
 public class CategoryTableSurchargeTypeConverter implements AttributeConverter<CategoryTableSurchargeTypeEnum, String> {
     @Override
-    public String convertToDatabaseColumn(CategoryTableSurchargeTypeEnum status) {
-        return (status != null) ? status.getValue() : null;
+    public String convertToDatabaseColumn(CategoryTableSurchargeTypeEnum surchargeType) {
+        return (surchargeType != null) ? surchargeType.getValue() : null;
     }
 
     @Override

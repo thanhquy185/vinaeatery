@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.requests.ManagerCreateRequestDTO;
@@ -25,7 +27,7 @@ import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.ManagerCrudResponse
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.ManagerDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.ManagerSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.repositories.criteria.ManagerCriteria;
-import vn.tuhoc.vinaeatery.modules.restaurant.services.ManagerService;
+import vn.tuhoc.vinaeatery.modules.restaurant.services.ManagerServiceImplement;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,8 +35,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RestController
 @RequestMapping("/api/v1/managers")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ManagerController {
-        private final ManagerService managerService;
+        final ManagerServiceImplement managerService;
 
         @GetMapping("/{id}")
         public ResponseEntity<RestResponseDTO<ManagerDetailResponseDTO>> handleGetDetailById(

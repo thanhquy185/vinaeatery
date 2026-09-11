@@ -3,21 +3,24 @@ package vn.tuhoc.vinaeatery.modules.active.dtos.requests;
 import java.util.List;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MessageCreateRequestDTO {
     @NotNull(message = "Mã nhà hàng không được để trống!")
-    private Integer restaurantId;
+    Integer restaurantId;
 
     @NotNull(message = "Mã sử dụng bàn ăn không được để trống!")
-    private Long useTableId;
+    Long useTableId;
 
-    private String createAt;
+    String createAt;
 
-    private Boolean isRead;
+    Boolean isRead;
 
-    private List<MessageDetailCreateRequestDTO> messageDetails;
+    List<MessageDetailCreateRequestDTO> messageDetails;
 }

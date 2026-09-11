@@ -3,12 +3,16 @@ package vn.tuhoc.vinaeatery.modules.active.domains.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public enum UseFoodStatusEnum {
     CAN_ORDER("CAN_ORDER", "Còn phục vụ"),
     CAN_NOT_ORDER("CAN_NOT_ORDER", "Hết phục vụ");
 
-    private final String value;
-    private final String description;
+    final String value;
+    final String description;
 
     UseFoodStatusEnum(String value, String description) {
         this.value = value;

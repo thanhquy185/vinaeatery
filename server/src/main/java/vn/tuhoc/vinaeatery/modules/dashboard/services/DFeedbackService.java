@@ -7,7 +7,9 @@ import java.util.List;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.FeedbackEntity;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.FeedbackExperienceEntity;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.FeedbackScoreEntity;
@@ -31,12 +33,13 @@ import vn.tuhoc.vinaeatery.utils.TimeRangeUtil;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class DFeedbackService {
-    private final RestaurantRepository restaurantRepository;
-    private final FeedbackExperienceRepository feedbackExperienceRepository;
-    private final FeedbackScoreRepository feedbackScoreRepository;
-    private final FeedbackRepository feedbackRepository;
-    private final RestaurantMapper restaurantMapper;
+    final RestaurantRepository restaurantRepository;
+    final FeedbackExperienceRepository feedbackExperienceRepository;
+    final FeedbackScoreRepository feedbackScoreRepository;
+    final FeedbackRepository feedbackRepository;
+    final RestaurantMapper restaurantMapper;
 
     private void handleCalScore(int[] scores, Integer feedbackScore) {
         if (feedbackScore != null && feedbackScore >= 1 && feedbackScore <= 5) {

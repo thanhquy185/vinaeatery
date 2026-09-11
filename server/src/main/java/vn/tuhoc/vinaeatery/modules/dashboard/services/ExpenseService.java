@@ -10,7 +10,9 @@ import java.util.Set;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.dashboard.domains.enums.ExpenseTypeEnum;
 import vn.tuhoc.vinaeatery.modules.dashboard.domains.enums.TimelineEnum;
 import vn.tuhoc.vinaeatery.modules.dashboard.dtos.requests.ExpenseRequestDTO;
@@ -40,11 +42,12 @@ import vn.tuhoc.vinaeatery.utils.TimeRangeUtil;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExpenseService {
-        private final RestaurantRepository restaurantRepository;
-        private final InputTicketRepository inputTicketRepository;
-        private final SupplierRepository supplierRepository;
-        private final RestaurantMapper restaurantMapper;
+        final RestaurantRepository restaurantRepository;
+        final InputTicketRepository inputTicketRepository;
+        final SupplierRepository supplierRepository;
+        final RestaurantMapper restaurantMapper;
 
         private ExpenseResponseDTO handleDashboardTypeInputTicket(ExpenseRequestDTO expenseRequestDTO) {
                 int restaurantId = expenseRequestDTO.getRestaurantId();

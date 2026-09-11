@@ -4,23 +4,26 @@ import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class FoodUpdateRequestDTO {
     @NotBlank(message = "Tên món ăn không được để trống!")
-    private String name;
+    String name;
 
     @NotNull(message = "Loại món ăn không được để trống!")
-    private Integer categoryFoodId;
+    Integer categoryFoodId;
 
     @NotBlank(message = "Đơn vị không được để trống!")
-    private String unit;
+    String unit;
 
     @NotNull(message = "Giá bán không được để trống!")
-    private Long price;
+    Long price;
 
-    private String description;
+    String description;
 
-    private List<RecipeUpdateRequestDTO> recipes;
+    List<RecipeUpdateRequestDTO> recipes;
 }

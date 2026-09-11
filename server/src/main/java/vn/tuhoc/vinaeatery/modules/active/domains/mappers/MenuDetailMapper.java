@@ -1,12 +1,11 @@
 package vn.tuhoc.vinaeatery.modules.active.domains.mappers;
 
 import org.mapstruct.BeanMapping;
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
 
+import vn.tuhoc.vinaeatery.configs.CentralMapperConfig;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.MenuDetailEntity;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.MenuDetailCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.MenuDetailUpdateRequestDTO;
@@ -14,7 +13,7 @@ import vn.tuhoc.vinaeatery.modules.active.dtos.responses.MenuDDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.MenuDetailCustomerResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.domains.mappers.FoodMapperHelper;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {
+@Mapper(config = CentralMapperConfig.class, uses = {
                 FoodMapperHelper.class
 })
 public interface MenuDetailMapper {

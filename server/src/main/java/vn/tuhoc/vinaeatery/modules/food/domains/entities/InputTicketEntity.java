@@ -17,10 +17,12 @@ import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.employee.domains.entities.EmployeeEntity;
 import vn.tuhoc.vinaeatery.modules.food.domains.converters.InputTicketPaymentStatusConverter;
 import vn.tuhoc.vinaeatery.modules.food.domains.converters.InputTicketStatusConverter;
@@ -34,6 +36,7 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedEntityGraph(name = "InputTicketEntity.half", attributeNodes = {
                 @NamedAttributeNode("restaurant"),
                 @NamedAttributeNode("employee"),
@@ -46,33 +49,33 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 public class InputTicketEntity {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Integer id;
+        Integer id;
 
         @Column(columnDefinition = "DATETIME", nullable = false)
-        private String createAt;
+        String createAt;
 
         @Column(nullable = false)
-        private Long totalInputPrice;
+        Long totalInputPrice;
 
         @Column(columnDefinition = "VARCHAR(6)", nullable = false)
         @Convert(converter = InputTicketPaymentStatusConverter.class)
-        private InputTicketPaymentStatusEnum paymentStatus;
+        InputTicketPaymentStatusEnum paymentStatus;
 
         @Column(columnDefinition = "VARCHAR(9)", nullable = false)
         @Convert(converter = InputTicketStatusConverter.class)
-        private InputTicketStatusEnum status;
+        InputTicketStatusEnum status;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "restaurant_id", nullable = false)
-        private RestaurantEntity restaurant;
+        RestaurantEntity restaurant;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "employee_id", nullable = false)
-        private EmployeeEntity employee;
+        EmployeeEntity employee;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "supplier_id", nullable = false)
-        private SupplierEntity supplier;
+        SupplierEntity supplier;
 
         @OneToMany(mappedBy = "inputTicket", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
         @Builder.Default

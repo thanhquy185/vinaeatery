@@ -7,8 +7,8 @@ import vn.tuhoc.vinaeatery.modules.dashboard.domains.enums.RevenueTypeEnum;
 @Converter(autoApply = true)
 public class RevenueTypeConverter implements AttributeConverter<RevenueTypeEnum, String> {
     @Override
-    public String convertToDatabaseColumn(RevenueTypeEnum status) {
-        return (status != null) ? status.getValue() : null;
+    public String convertToDatabaseColumn(RevenueTypeEnum type) {
+        return (type != null) ? type.getValue() : null;
     }
 
     @Override

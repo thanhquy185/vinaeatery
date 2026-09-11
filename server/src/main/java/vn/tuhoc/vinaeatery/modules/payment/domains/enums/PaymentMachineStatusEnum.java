@@ -3,13 +3,17 @@ package vn.tuhoc.vinaeatery.modules.payment.domains.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public enum PaymentMachineStatusEnum {
     PROCESSING("PROCESSING", "Đang xử lý"),
     CANCELLED("CANCELLED", "Đã huỷ bỏ"),
     COMPLETED("COMPLETED", "Đã hoàn thành");
 
-    private final String value;
-    private final String description;
+    final String value;
+    final String description;
 
     PaymentMachineStatusEnum(String value, String description) {
         this.value = value;

@@ -4,23 +4,24 @@ import java.io.Serializable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Embeddable
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoleHistoryIdEntity implements Serializable {
-    private Integer employeeId;
+    Integer employeeId;
 
-    private Integer roleId;
+    Integer roleId;
 
     @Column(columnDefinition = "DATE")
-    private String dateStart;
+    String dateStart;
 }

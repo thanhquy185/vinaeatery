@@ -8,10 +8,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "message_details")
@@ -19,15 +21,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MessageDetailEntity {
     @EmbeddedId
-    private MessageDetailIdEntity id;
+    MessageDetailIdEntity id;
 
     @MapsId("messageId")
     @ManyToOne
     @JsonIgnore
-    private MessageEntity message;
+    MessageEntity message;
 
     @Column(columnDefinition = "TEXT")
-    private String content;
+    String content;
 }

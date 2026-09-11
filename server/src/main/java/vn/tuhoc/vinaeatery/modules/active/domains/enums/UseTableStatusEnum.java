@@ -3,14 +3,18 @@ package vn.tuhoc.vinaeatery.modules.active.domains.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public enum UseTableStatusEnum {
     REPAIR("REPAIR", "Đang bảo trì"),
     EMPTY("EMPTY", "Đang trống"),
     RESERVED("RESERVED", "Đã đặt bàn"),
     OCCUPIED("OCCUPIED", "Đang có khách");
 
-    private final String value;
-    private final String description;
+    final String value;
+    final String description;
 
     UseTableStatusEnum(String value, String description) {
         this.value = value;

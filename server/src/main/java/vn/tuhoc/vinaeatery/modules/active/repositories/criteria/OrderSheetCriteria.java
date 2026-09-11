@@ -2,45 +2,48 @@ package vn.tuhoc.vinaeatery.modules.active.repositories.criteria;
 
 import java.util.Optional;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderSheetCriteria {
-    private Integer page;
+    Integer page;
 
-    private Integer size;
+    Integer size;
 
-    private Optional<String> id;
+    Optional<String> id;
 
-    private Optional<String> restaurantId;
+    Optional<String> restaurantId;
 
-    private Optional<String> employeeId;
+    Optional<String> employeeId;
 
-    private Optional<String> tableId;
+    Optional<String> tableId;
 
-    private Optional<String> tableName;
+    Optional<String> tableName;
 
-    private Optional<String> floorId;
+    Optional<String> floorId;
 
-    private Optional<String> createAtStart;
+    Optional<String> createAtStart;
 
-    private Optional<String> createAtEnd;
+    Optional<String> createAtEnd;
 
-    private Optional<String> serviceAtStart;
+    Optional<String> serviceAtStart;
 
-    private Optional<String> serviceAtEnd;
+    Optional<String> serviceAtEnd;
 
-    private Optional<String> cancelAtStart;
+    Optional<String> cancelAtStart;
 
-    private Optional<String> cancelAtEnd;
+    Optional<String> cancelAtEnd;
 
-    private Optional<String> status;
+    Optional<String> status;
 
-    private Optional<String> sort;
+    Optional<String> sort;
 }

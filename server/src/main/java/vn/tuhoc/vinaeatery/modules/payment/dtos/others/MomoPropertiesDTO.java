@@ -3,23 +3,26 @@ package vn.tuhoc.vinaeatery.modules.payment.dtos.others;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Component
 @ConfigurationProperties(prefix = "momo")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MomoPropertiesDTO {
-    private String endpoint;
+    String endpoint;
 
-    private String accessKey;
+    String accessKey;
 
-    private String partnerCode;
+    String partnerCode;
 
-    private String secretKey;
+    String secretKey;
 
-    private String redirectUrl;
+    String redirectUrl;
 
-    private String ipnUrl;
+    String ipnUrl;
 
-    private String requestType;
+    String requestType;
 }

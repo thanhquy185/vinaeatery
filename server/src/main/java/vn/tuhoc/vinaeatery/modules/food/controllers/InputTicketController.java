@@ -12,14 +12,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.InputTicketCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.InputTicketUpdatePaymentStatusRequestDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.InputTicketUpdateStatusRequestDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.InputTicketDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.InputTicketSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.repositories.criteria.InputTicketCriteria;
-import vn.tuhoc.vinaeatery.modules.food.services.InputTicketService;
+import vn.tuhoc.vinaeatery.modules.food.services.interfaces.InputTicketService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -27,6 +29,7 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @RestController
 @RequestMapping("/api/v1/input-tickets")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class InputTicketController {
         private final InputTicketService inputTicketService;
 

@@ -25,7 +25,7 @@ import vn.tuhoc.vinaeatery.modules.restaurant.dtos.requests.CustomerUpdateReques
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.CustomerCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.CustomerDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.CustomerSummaryResponseDTO;
-import vn.tuhoc.vinaeatery.modules.restaurant.services.CustomerService;
+import vn.tuhoc.vinaeatery.modules.restaurant.services.interfaces.CustomerService;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 
 import org.springframework.web.bind.annotation.PostMapping;

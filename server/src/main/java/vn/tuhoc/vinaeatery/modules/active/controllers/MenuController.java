@@ -13,14 +13,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.MenuCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.MenuDeleteRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.MenuUpdateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.MenuDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.MenuSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.repositories.criteria.MenuCriteria;
-import vn.tuhoc.vinaeatery.modules.active.services.MenuService;
+import vn.tuhoc.vinaeatery.modules.active.services.interfaces.MenuService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -28,8 +30,9 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @RestController
 @RequestMapping("/api/v1/menus")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MenuController {
-        private final MenuService menuService;
+        final MenuService menuService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('MENUS__READ')")

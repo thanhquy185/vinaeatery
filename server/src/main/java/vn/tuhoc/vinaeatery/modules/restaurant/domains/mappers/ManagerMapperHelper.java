@@ -2,7 +2,9 @@ package vn.tuhoc.vinaeatery.modules.restaurant.domains.mappers;
 
 import org.springframework.stereotype.Component;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.ManagerEntity;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.ManagerCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.ManagerDetailResponseDTO;
@@ -13,9 +15,10 @@ import vn.tuhoc.vinaeatery.modules.restaurant.repositories.ManagerRepository;
 
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ManagerMapperHelper {
-    private final ManagerRepository managerRepository;
-    private final ManagerMapper managerMapper;
+    final ManagerRepository managerRepository;
+    final ManagerMapper managerMapper;
 
     public ManagerEntity mapToEntity(Integer id) {
         return this.managerRepository.findOneByIdToCrud(id)

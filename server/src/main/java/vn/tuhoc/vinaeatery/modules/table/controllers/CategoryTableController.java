@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.modules.table.dtos.requests.CategoryTableCreateRequestDTO;
@@ -26,15 +28,16 @@ import vn.tuhoc.vinaeatery.modules.table.dtos.responses.CategoryTableDetailRespo
 import vn.tuhoc.vinaeatery.modules.table.dtos.responses.CategoryTableSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.table.dtos.responses.CategoryTableCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.table.repositories.criteria.CategoryTableCriteria;
-import vn.tuhoc.vinaeatery.modules.table.services.CategoryTableService;
+import vn.tuhoc.vinaeatery.modules.table.services.interfaces.CategoryTableService;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 
 @RestController
 @RequestMapping("/api/v1/category-tables")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CategoryTableController {
-        private final CategoryTableService categoryTableService;
+        final CategoryTableService categoryTableService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('CATEGORY_TABLES__READ')")

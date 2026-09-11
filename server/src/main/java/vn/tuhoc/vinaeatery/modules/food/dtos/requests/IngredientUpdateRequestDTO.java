@@ -2,29 +2,32 @@ package vn.tuhoc.vinaeatery.modules.food.dtos.requests;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class IngredientUpdateRequestDTO {
     @NotBlank(message = "Tên nguyên liệu không được để trống!")
-    private String name;
+    String name;
 
     @NotNull(message = "Loại nguyên liệu không được để trống!")
-    private Integer categoryIngredientId;
+    Integer categoryIngredientId;
 
     @NotNull(message = "Đơn vị tính không được để trống!")
-    private String unit;
+    String unit;
 
     @NotNull(message = "Dung lượng không được để trống!")
-    private Long capacity;
+    Long capacity;
 
-    private String dateCreate;
+    String dateCreate;
 
-    private String dateRemove;
+    String dateRemove;
 
-    private Long inputPrice;
+    Long inputPrice;
 
-    private Long inventory;
+    Long inventory;
 
-    private String note;
+    String note;
 }

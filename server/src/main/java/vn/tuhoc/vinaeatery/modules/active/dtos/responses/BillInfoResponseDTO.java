@@ -1,10 +1,12 @@
 package vn.tuhoc.vinaeatery.modules.active.dtos.responses;
 
 import jakarta.persistence.Convert;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.BillPaymentStatusConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.BillStatusConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.BillPaymentStatusEnum;
@@ -15,30 +17,31 @@ import vn.tuhoc.vinaeatery.modules.payment.dtos.responses.PaymentMethodInfoRespo
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class BillInfoResponseDTO {
-    private Integer id;
+    Integer id;
 
-    private String createAt;
+    String createAt;
 
-    private String customerFullname;
+    String customerFullname;
 
-    private String customerPhone;
+    String customerPhone;
 
-    private String customerEmail;
+    String customerEmail;
 
-    private Long totalPrice;
+    Long totalPrice;
 
     @Convert(converter = BillStatusConverter.class)
-    private BillStatusEnum status;
+    BillStatusEnum status;
 
-    private String paymentId;
+    String paymentId;
 
-    private PaymentMethodInfoResponseDTO paymentMethod;
+    PaymentMethodInfoResponseDTO paymentMethod;
 
-    private String paymentAt;
+    String paymentAt;
 
-    private Long paymentTotalPrice;
+    Long paymentTotalPrice;
 
     @Convert(converter = BillPaymentStatusConverter.class)
-    private BillPaymentStatusEnum paymentStatus;
+    BillPaymentStatusEnum paymentStatus;
 }

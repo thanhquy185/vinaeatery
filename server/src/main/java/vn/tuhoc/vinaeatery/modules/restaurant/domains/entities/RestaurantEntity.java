@@ -19,10 +19,12 @@ import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.BillEntity;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.FeedbackEntity;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.MenuEntity;
@@ -53,57 +55,58 @@ import vn.tuhoc.vinaeatery.modules.table.domains.entities.TableEntity;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedEntityGraph(name = "RestaurantEntity.half", attributeNodes = {
                 @NamedAttributeNode("manager")
 })
 public class RestaurantEntity {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Integer id;
+        Integer id;
 
         @Column(columnDefinition = "TIME", nullable = false)
-        private String openAt;
+        String openAt;
 
         @Column(columnDefinition = "TIME", nullable = false)
-        private String closeAt;
+        String closeAt;
 
         @Column(nullable = false)
-        private String name;
+        String name;
 
         @Column(columnDefinition = "VARCHAR(11)", unique = true, nullable = false)
-        private String phone;
+        String phone;
 
         @Column(unique = true, nullable = false)
-        private String email;
+        String email;
 
         @Column(nullable = false)
-        private Double latitude;
+        Double latitude;
 
         @Column(nullable = false)
-        private Double longitude;
+        Double longitude;
 
         @Column(columnDefinition = "VARCHAR(25)", nullable = false)
-        private String houseNumber;
+        String houseNumber;
 
         @Column(columnDefinition = "VARCHAR(100)", nullable = false)
-        private String streetName;
+        String streetName;
 
         @Column(columnDefinition = "VARCHAR(30)", nullable = false)
-        private String ward;
+        String ward;
 
         @Column(columnDefinition = "VARCHAR(25)", nullable = false)
-        private String province;
+        String province;
 
         @Column(columnDefinition = "MEDIUMTEXT", nullable = true)
-        private String description;
+        String description;
 
         @Column(columnDefinition = "VARCHAR(8)", nullable = false)
         @Convert(converter = CommonStatusConverter.class)
-        private CommonStatusEnum status;
+        CommonStatusEnum status;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "manager_id", nullable = false)
-        private ManagerEntity manager;
+        ManagerEntity manager;
 
         @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
         @JsonIgnore

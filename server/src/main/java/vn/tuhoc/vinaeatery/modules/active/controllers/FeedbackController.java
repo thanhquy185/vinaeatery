@@ -10,18 +10,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.FeedbackCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.FeedbackDetailResponseDTO;
-import vn.tuhoc.vinaeatery.modules.active.services.FeedbackService;
+import vn.tuhoc.vinaeatery.modules.active.services.interfaces.FeedbackService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 
 @RestController
 @RequestMapping("/api/v1/feedbacks")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class FeedbackController {
-        private final FeedbackService feedbackService;
+        final FeedbackService feedbackService;
 
         @GetMapping("/{id}")
         public ResponseEntity<RestResponseDTO<FeedbackDetailResponseDTO>> handleGetDetailById(

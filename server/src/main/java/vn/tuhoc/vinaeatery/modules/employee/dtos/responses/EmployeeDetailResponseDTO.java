@@ -3,10 +3,12 @@ package vn.tuhoc.vinaeatery.modules.employee.dtos.responses;
 import java.util.List;
 
 import jakarta.persistence.Convert;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserInfoResponseDTO;
 import vn.tuhoc.vinaeatery.modules.employee.domains.converters.EmployeeStatusConverter;
 import vn.tuhoc.vinaeatery.modules.employee.domains.enums.EmployeeStatusEnum;
@@ -18,42 +20,43 @@ import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantSubInfoRe
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EmployeeDetailResponseDTO {
-    private Integer id;
+    Integer id;
 
-    private RestaurantSubInfoResponseDTO restaurant;
+    RestaurantSubInfoResponseDTO restaurant;
 
-    private UserInfoResponseDTO user;
+    UserInfoResponseDTO user;
 
-    private RoleInfoResponseDTO role;
+    RoleInfoResponseDTO role;
 
-    private PermissionSubInfoResponseDTO permission;
+    PermissionSubInfoResponseDTO permission;
 
-    private String image;
+    String image;
 
-    private String fullname;
+    String fullname;
 
-    private String birthdate;
+    String birthdate;
 
     @Convert(converter = CommonGenderConverter.class)
-    private CommonGenderEnum gender;
+    CommonGenderEnum gender;
 
-    private String phone;
+    String phone;
 
-    private String email;
+    String email;
 
-    private String houseNumber;
+    String houseNumber;
 
-    private String streetName;
+    String streetName;
 
-    private String ward;
+    String ward;
 
-    private String province;
+    String province;
 
-    private String description;
+    String description;
 
     @Convert(converter = EmployeeStatusConverter.class)
-    private EmployeeStatusEnum status;
+    EmployeeStatusEnum status;
 
     List<RoleHistoryDetailResponseDTO> roleHistories;
 }

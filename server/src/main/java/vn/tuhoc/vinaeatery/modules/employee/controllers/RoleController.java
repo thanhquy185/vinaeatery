@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.requests.RoleCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.requests.RoleDeleteRequestDTO;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.requests.RoleUpdateRequestDTO;
@@ -24,7 +26,7 @@ import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.RoleDetailResponseDTO
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.RoleSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.RoleCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.employee.repositories.criteria.RoleCriteria;
-import vn.tuhoc.vinaeatery.modules.employee.services.RoleService;
+import vn.tuhoc.vinaeatery.modules.employee.services.RoleServiceImplement;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -33,8 +35,9 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @RestController
 @RequestMapping("/api/v1/roles")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoleController {
-        private final RoleService roleService;
+        final RoleServiceImplement roleService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('ROLES__READ')")

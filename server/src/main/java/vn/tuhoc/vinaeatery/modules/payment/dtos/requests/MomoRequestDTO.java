@@ -1,38 +1,41 @@
 package vn.tuhoc.vinaeatery.modules.payment.dtos.requests;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MomoRequestDTO {
-    private String partnerCode;
+    String partnerCode;
 
-    private String requestType;
+    String requestType;
 
-    private String ipnUrl;
+    String ipnUrl;
 
-    private String orderId;
+    String orderId;
 
-    private String description;
+    String description;
 
-    private String orderInfo;
+    String orderInfo;
 
-    private String requestId;
+    String requestId;
 
-    private String redirectUrl;
+    String redirectUrl;
 
-    private String lang;
+    String lang;
 
-    private String extraData;
+    String extraData;
 
-    private String signature;
+    String signature;
 
-    private Long amount;
+    Long amount;
 
-    private Long orderExpire;
+    Long orderExpire;
 }

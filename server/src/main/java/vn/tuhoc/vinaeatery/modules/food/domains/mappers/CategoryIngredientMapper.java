@@ -1,13 +1,12 @@
 package vn.tuhoc.vinaeatery.modules.food.domains.mappers;
 
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
 
+import vn.tuhoc.vinaeatery.configs.CentralMapperConfig;
 import vn.tuhoc.vinaeatery.modules.food.domains.entities.CategoryIngredientEntity;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.CategoryIngredientCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.CategoryIngredientDeleteRequestDTO;
@@ -18,7 +17,7 @@ import vn.tuhoc.vinaeatery.modules.food.dtos.responses.CategoryIngredientInfoRes
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.CategoryIngredientSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.domains.mappers.RestaurantMapperHelper;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {
+@Mapper(config = CentralMapperConfig.class, uses = {
                 RestaurantMapperHelper.class,
 })
 public interface CategoryIngredientMapper {

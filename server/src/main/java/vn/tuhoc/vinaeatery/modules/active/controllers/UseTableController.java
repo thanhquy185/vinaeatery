@@ -1,6 +1,5 @@
 package vn.tuhoc.vinaeatery.modules.active.controllers;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,22 +12,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.UseTableCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.UseTableUpdateStatusRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.UseTableCustomerResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.UseTableDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.UseTableSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.repositories.criteria.UseTableCriteria;
-import vn.tuhoc.vinaeatery.modules.active.services.UseTableService;
+import vn.tuhoc.vinaeatery.modules.active.services.interfaces.UseTableService;
+import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 
 @RestController
 @RequestMapping("/api/v1/use-tables")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UseTableController {
-        private final UseTableService useTableService;
+        final UseTableService useTableService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('USE_TABLES__READ')")
@@ -55,9 +58,9 @@ public class UseTableController {
 
         @GetMapping("")
         @PreAuthorize("hasAuthority('USE_TABLES__READ')")
-        public ResponseEntity<RestResponseDTO<Page<UseTableSummaryResponseDTO>>> handleGetSummary(
+        public ResponseEntity<RestResponseDTO<PageResponseDTO<UseTableSummaryResponseDTO>>> handleGetSummary(
                         UseTableCriteria useTableCriteria) {
-                Page<UseTableSummaryResponseDTO> useTableSummary = this.useTableService
+                PageResponseDTO<UseTableSummaryResponseDTO> useTableSummary = this.useTableService
                                 .handleGetSummary(useTableCriteria);
 
                 return RestResponseUtils.ok(

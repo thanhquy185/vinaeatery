@@ -18,10 +18,12 @@ import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.UseTableEntity;
 import vn.tuhoc.vinaeatery.modules.global.domains.converters.CommonStatusConverter;
 import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
@@ -33,6 +35,7 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedEntityGraph(name = "TableEntity.full", attributeNodes = {
                 @NamedAttributeNode("restaurant"),
                 @NamedAttributeNode("floor"),
@@ -45,20 +48,20 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 public class TableEntity {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Integer id;
+        Integer id;
 
         @Column(nullable = false)
-        private String name;
+        String name;
 
         @Column(nullable = false)
-        private Integer seats;
+        Integer seats;
 
         @Column(columnDefinition = "MEDIUMTEXT", nullable = true)
-        private String description;
+        String description;
 
         @Column(columnDefinition = "VARCHAR(8)", nullable = false)
         @Convert(converter = CommonStatusConverter.class)
-        private CommonStatusEnum status;
+        CommonStatusEnum status;
 
         @OneToMany(mappedBy = "table", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
         @JsonIgnore

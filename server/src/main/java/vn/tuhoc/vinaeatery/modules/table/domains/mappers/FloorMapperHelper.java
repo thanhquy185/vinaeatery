@@ -2,7 +2,9 @@ package vn.tuhoc.vinaeatery.modules.table.domains.mappers;
 
 import org.springframework.stereotype.Component;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.table.domains.entities.FloorEntity;
 import vn.tuhoc.vinaeatery.modules.table.dtos.responses.FloorCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.table.dtos.responses.FloorDetailResponseDTO;
@@ -13,9 +15,10 @@ import vn.tuhoc.vinaeatery.modules.table.repositories.FloorRepository;
 
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class FloorMapperHelper {
-    private final FloorRepository floorRepository;
-    private final FloorMapper floorMapper;
+    final FloorRepository floorRepository;
+    final FloorMapper floorMapper;
 
     public FloorEntity mapToEntity(Integer id) {
         return this.floorRepository.findOneByIdToCrud(id)

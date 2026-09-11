@@ -27,6 +27,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.customs.AccessDeniedHandlerCustom;
 import vn.tuhoc.vinaeatery.customs.AuthenticationEntryPointCustom;
 import vn.tuhoc.vinaeatery.customs.BearerTokenResolverCustom;
@@ -41,10 +43,11 @@ import vn.tuhoc.vinaeatery.utils.SecurityUtil;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class SecurityConfig {
     @Value("${jwt.base64-secret}")
-    private String jwtKey;
-    private final UserDetailsServiceCustom userDetailsServiceCustom;
+    String jwtKey;
+    final UserDetailsServiceCustom userDetailsServiceCustom;
 
     SecurityConfig(UserDetailsServiceCustom userDetailsServiceCustom) {
         this.userDetailsServiceCustom = userDetailsServiceCustom;

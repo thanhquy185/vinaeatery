@@ -5,11 +5,15 @@ import java.time.format.DateTimeFormatter;
 
 import org.springframework.stereotype.Service;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
 @Service
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TimeService {
-    private final String DATE_FORMAT = "yyyy-MM-dd";
-    private final String TIME_FORMAT = "HH:mm:ss";
-    private final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    final String DATE_FORMAT = "yyyy-MM-dd";
+    final String TIME_FORMAT = "HH:mm:ss";
+    final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public LocalDateTime getLocalDateTime(String datetime) {
         return LocalDateTime.parse(

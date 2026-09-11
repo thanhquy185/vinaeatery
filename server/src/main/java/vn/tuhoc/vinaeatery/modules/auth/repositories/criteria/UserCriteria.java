@@ -2,29 +2,32 @@ package vn.tuhoc.vinaeatery.modules.auth.repositories.criteria;
 
 import java.util.Optional;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCriteria {
-    private Integer page;
+    Integer page;
 
-    private Integer size;
+    Integer size;
 
-    private Optional<String> id;
+    Optional<String> id;
 
-    private Optional<String> role;
+    Optional<String> role;
 
-    private Optional<String> username;
+    Optional<String> username;
 
-    private Optional<String> method;
+    Optional<String> method;
 
-    private Optional<String> status;
+    Optional<String> status;
 
-    private Optional<String> sort;
+    Optional<String> sort;
 }

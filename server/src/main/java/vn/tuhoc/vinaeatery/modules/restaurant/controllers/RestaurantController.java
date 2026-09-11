@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.requests.RestaurantCreateRequestDTO;
@@ -28,7 +30,7 @@ import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantPublicDet
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantPublicResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.repositories.criteria.RestaurantCriteria;
-import vn.tuhoc.vinaeatery.modules.restaurant.services.RestaurantService;
+import vn.tuhoc.vinaeatery.modules.restaurant.services.RestaurantServiceImplement;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,8 +38,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RestController
 @RequestMapping("/api/v1/restaurants")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RestaurantController {
-        private final RestaurantService restaurantService;
+        final RestaurantServiceImplement restaurantService;
 
         @GetMapping("/{id}")
         public ResponseEntity<RestResponseDTO<RestaurantDetailResponseDTO>> handleGetDetailById(

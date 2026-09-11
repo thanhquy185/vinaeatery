@@ -1,20 +1,23 @@
 package vn.tuhoc.vinaeatery.modules.active.dtos.responses;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class FeedbackExperienceCrudResponseDTO {
-    private String id;
+    String id;
 
-    private String image;
+    String image;
 
-    private String name;
+    String name;
 
-    private Integer index;
+    Integer index;
 }

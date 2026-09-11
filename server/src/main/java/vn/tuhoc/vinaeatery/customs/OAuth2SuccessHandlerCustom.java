@@ -17,8 +17,8 @@ import vn.tuhoc.vinaeatery.modules.auth.domains.entities.AuthSessionEntity;
 import vn.tuhoc.vinaeatery.modules.auth.domains.entities.UserEntity;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.AuthLoginResponseDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserInfoResponseDTO;
-import vn.tuhoc.vinaeatery.modules.auth.services.AuthSessionService;
-import vn.tuhoc.vinaeatery.modules.auth.services.UserService;
+import vn.tuhoc.vinaeatery.modules.auth.services.AuthSessionServiceImplement;
+import vn.tuhoc.vinaeatery.modules.auth.services.UserServiceImplement;
 import vn.tuhoc.vinaeatery.utils.SecurityUtil;
 import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 
@@ -27,8 +27,8 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 public class OAuth2SuccessHandlerCustom implements AuthenticationSuccessHandler {
     @Value("${jwt.access-token-validity-in-seconds}")
     private long jwtRefreshTokenExpiration;
-    private final UserService userService;
-    private final AuthSessionService authSessionService;
+    private final UserServiceImplement userService;
+    private final AuthSessionServiceImplement authSessionService;
     private final SecurityUtil securityUtil;
 
     @Override
@@ -40,7 +40,7 @@ public class OAuth2SuccessHandlerCustom implements AuthenticationSuccessHandler 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String email = (String) oAuth2User.getAttributes().get("email");
 
-        UserEntity user = this.userService.getOneByUsername(email);
+        UserEntity user = this.userService.handleGetByUsername(email);
 
         boolean isNewUser = (user.getMethod() == null); // hoặc điều kiện bạn muốn
 
@@ -67,7 +67,7 @@ public class OAuth2SuccessHandlerCustom implements AuthenticationSuccessHandler 
         String accessToken = this.securityUtil.createAccessToken(user.getUsername(), restLogin);
         restLogin.setAccessToken(accessToken);
 
-        AuthSessionEntity authSessionEntity = this.authSessionService.getOneByUserIdAndRevokedIsNull(user.getId());
+        AuthSessionEntity authSessionEntity = this.authSessionService.handleGetByUserIdAndRevokedIsNull(user.getId());
         String currentRefreshToken = ValidationUtil.nonNull(authSessionEntity)
                 ? authSessionEntity.getRefreshToken()
                 : null;

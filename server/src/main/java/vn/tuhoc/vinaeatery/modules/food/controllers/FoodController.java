@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import vn.tuhoc.vinaeatery.modules.active.services.UseFoodService;
+import lombok.experimental.FieldDefaults;
+import vn.tuhoc.vinaeatery.modules.active.services.UseFoodServiceImplement;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.FoodCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.FoodDeleteRequestDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.FoodUpdateRequestDTO;
@@ -27,7 +29,7 @@ import vn.tuhoc.vinaeatery.modules.food.dtos.responses.FoodCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.FoodDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.FoodSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.repositories.criteria.FoodCriteria;
-import vn.tuhoc.vinaeatery.modules.food.services.FoodService;
+import vn.tuhoc.vinaeatery.modules.food.services.interfaces.FoodService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -36,9 +38,10 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @RestController
 @RequestMapping("/api/v1/foods")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class FoodController {
-        private final UseFoodService useFoodService;
-        private final FoodService foodService;
+        final UseFoodServiceImplement useFoodService;
+        final FoodService foodService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('FOODS__READ')")

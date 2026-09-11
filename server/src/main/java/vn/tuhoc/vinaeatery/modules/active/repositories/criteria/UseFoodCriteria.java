@@ -2,41 +2,44 @@ package vn.tuhoc.vinaeatery.modules.active.repositories.criteria;
 
 import java.util.Optional;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UseFoodCriteria {
-    private Integer page;
+    Integer page;
 
-    private Integer size;
+    Integer size;
 
-    private Optional<String> id;
+    Optional<String> id;
 
-    private Optional<String> restaurantId;
+    Optional<String> restaurantId;
 
-    private Optional<String> foodId;
+    Optional<String> foodId;
 
-    private Optional<String> foodName;
+    Optional<String> foodName;
 
-    private Optional<String> categoryFoodId;
+    Optional<String> categoryFoodId;
 
-    private Optional<String> employeeId;
+    Optional<String> employeeId;
 
-    private Optional<String> startAtStart;
+    Optional<String> startAtStart;
 
-    private Optional<String> startAtEnd;
+    Optional<String> startAtEnd;
 
-    private Optional<String> endAtStart;
+    Optional<String> endAtStart;
 
-    private Optional<String> endAtEnd;
+    Optional<String> endAtEnd;
 
-    private Optional<String> status;
+    Optional<String> status;
 
-    private Optional<String> sort;
+    Optional<String> sort;
 }

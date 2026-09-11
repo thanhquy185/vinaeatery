@@ -1,10 +1,12 @@
 package vn.tuhoc.vinaeatery.modules.active.dtos.responses;
 
 import jakarta.persistence.Convert;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.ReservationStatusConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.ReservationStatusEnum;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.EmployeeSubInfoResponseDTO;
@@ -15,30 +17,31 @@ import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantSubInfoRe
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReservationDetailResponseDTO {
-    private Integer id;
+    Integer id;
 
-    private RestaurantSubInfoResponseDTO restaurant;
+    RestaurantSubInfoResponseDTO restaurant;
 
-    private EmployeeSubInfoResponseDTO employee;
+    EmployeeSubInfoResponseDTO employee;
 
-    private CustomerInfoResponseDTO customer;
+    CustomerInfoResponseDTO customer;
 
-    private String createAt;
+    String createAt;
 
-    private String arriveAt;
+    String arriveAt;
 
-    private String customerFullname;
+    String customerFullname;
 
-    private String customerPhone;
+    String customerPhone;
 
-    private String customerEmail;
+    String customerEmail;
 
-    private Integer customerGuests;
+    Integer customerGuests;
 
-    private String customerNote;
+    String customerNote;
 
     @Convert(converter = ReservationStatusConverter.class)
-    private ReservationStatusEnum status;
+    ReservationStatusEnum status;
 
 }

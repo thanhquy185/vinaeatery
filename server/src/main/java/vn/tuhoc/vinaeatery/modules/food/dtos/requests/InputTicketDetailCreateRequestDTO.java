@@ -1,18 +1,21 @@
 package vn.tuhoc.vinaeatery.modules.food.dtos.requests;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class InputTicketDetailCreateRequestDTO {
-    private Integer ingredientId;
+    Integer ingredientId;
 
-    private Long quantity;
+    Long quantity;
 
-    private Long inputPrice;
+    Long inputPrice;
 
-    private String ingredientNameSnapshot;
+    String ingredientNameSnapshot;
 
-    private Long ingredientInputPriceSnapshot;
+    Long ingredientInputPriceSnapshot;
 
-    private Long totalInputPriceDetail;
+    Long totalInputPriceDetail;
 }

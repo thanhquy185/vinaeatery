@@ -20,10 +20,12 @@ import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.BillEntity;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.OrderSheetEntity;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.ReservationEntity;
@@ -44,6 +46,7 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedEntityGraph(name = "EmployeeEntity.half", attributeNodes = {
         @NamedAttributeNode("restaurant"),
         @NamedAttributeNode("user"),
@@ -58,60 +61,60 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 public class EmployeeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    Integer id;
 
-    private String image;
+    String image;
 
     @Column(nullable = false)
-    private String fullname;
+    String fullname;
 
     @Column(columnDefinition = "DATE", nullable = false)
-    private String birthdate;
+    String birthdate;
 
     @Column(columnDefinition = "VARCHAR(6)", nullable = false)
     @Convert(converter = CommonGenderConverter.class)
-    private CommonGenderEnum gender;
+    CommonGenderEnum gender;
 
     @Column(columnDefinition = "VARCHAR(11)", unique = true, nullable = false)
-    private String phone;
+    String phone;
 
     @Column(unique = true, nullable = false)
-    private String email;
+    String email;
 
     @Column(columnDefinition = "VARCHAR(25)", nullable = false)
-    private String houseNumber;
+    String houseNumber;
 
     @Column(columnDefinition = "VARCHAR(100)", nullable = false)
-    private String streetName;
+    String streetName;
 
     @Column(columnDefinition = "VARCHAR(30)", nullable = false)
-    private String ward;
+    String ward;
 
     @Column(columnDefinition = "VARCHAR(25)", nullable = false)
-    private String province;
+    String province;
 
     @Column(columnDefinition = "MEDIUMTEXT", nullable = true)
-    private String description;
+    String description;
 
     @Column(columnDefinition = "VARCHAR(8)", nullable = false)
     @Convert(converter = EmployeeStatusConverter.class)
-    private EmployeeStatusEnum status;
+    EmployeeStatusEnum status;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UserEntity user;
+    UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
-    private RestaurantEntity restaurant;
+    RestaurantEntity restaurant;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
-    private RoleEntity role;
+    RoleEntity role;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "permission_id", nullable = false)
-    private PermissionEntity permission;
+    PermissionEntity permission;
 
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore

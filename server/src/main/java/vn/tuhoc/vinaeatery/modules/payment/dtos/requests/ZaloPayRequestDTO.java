@@ -1,36 +1,38 @@
-// ZaloPayRequestDTO.java
 package vn.tuhoc.vinaeatery.modules.payment.dtos.requests;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ZaloPayRequestDTO {
-    private long appId;
+    long appId;
 
-    private String appTransId;
+    String appTransId;
 
-    private long appTime;
+    long appTime;
 
-    private long amount;
+    long amount;
 
-    private String appUser;
+    String appUser;
 
-    private String item; // JSON array
-    
-    private String description;
+    String item; // JSON array
 
-    private String bankCode;
+    String description;
 
-    private String callbackUrl;
+    String bankCode;
 
-    private String mac;
+    String callbackUrl;
+
+    String mac;
 }

@@ -1,6 +1,5 @@
 package vn.tuhoc.vinaeatery.modules.active.controllers;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,21 +12,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.UseFoodCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.UseFoodUpdateStatusRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.UseFoodDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.UseFoodSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.repositories.criteria.UseFoodCriteria;
-import vn.tuhoc.vinaeatery.modules.active.services.UseFoodService;
+import vn.tuhoc.vinaeatery.modules.active.services.interfaces.UseFoodService;
+import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 
 @RestController
 @RequestMapping("/api/v1/use-foods")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UseFoodController {
-        private final UseFoodService useFoodService;
+        final UseFoodService useFoodService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('USE_FOODS__READ')")
@@ -42,9 +45,9 @@ public class UseFoodController {
 
         @GetMapping("")
         @PreAuthorize("hasAuthority('USE_FOODS__READ')")
-        public ResponseEntity<RestResponseDTO<Page<UseFoodSummaryResponseDTO>>> handleGetSummary(
+        public ResponseEntity<RestResponseDTO<PageResponseDTO<UseFoodSummaryResponseDTO>>> handleGetSummary(
                         UseFoodCriteria useFoodCriteria) {
-                Page<UseFoodSummaryResponseDTO> useFoodSummary = this.useFoodService
+                PageResponseDTO<UseFoodSummaryResponseDTO> useFoodSummary = this.useFoodService
                                 .handleGetSummary(useFoodCriteria);
 
                 return RestResponseUtils.ok(

@@ -1,10 +1,12 @@
 package vn.tuhoc.vinaeatery.modules.auth.dtos.responses;
 
 import jakarta.persistence.Convert;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.auth.domains.converters.UserMethodConverter;
 import vn.tuhoc.vinaeatery.modules.auth.domains.converters.UserRoleConverter;
 import vn.tuhoc.vinaeatery.modules.auth.domains.enums.UserMethodEnum;
@@ -16,17 +18,18 @@ import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserInfoResponseDTO {
-    private Integer id;
+    Integer id;
 
     @Convert(converter = UserRoleConverter.class)
-    private UserRoleEnum role;
+    UserRoleEnum role;
 
-    private String username;
+    String username;
 
     @Convert(converter = UserMethodConverter.class)
-    private UserMethodEnum method;
+    UserMethodEnum method;
 
     @Convert(converter = CommonStatusConverter.class)
-    private CommonStatusEnum status;
+    CommonStatusEnum status;
 }

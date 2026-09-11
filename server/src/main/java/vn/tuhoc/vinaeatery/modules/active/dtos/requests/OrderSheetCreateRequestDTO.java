@@ -4,29 +4,32 @@ import java.util.List;
 
 import jakarta.persistence.Convert;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.OrderSheetStatusConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.OrderSheetStatusEnum;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderSheetCreateRequestDTO {
     @NotNull(message = "Mã nhà hàng không được để trống!")
-    private Integer restaurantId;
+    Integer restaurantId;
 
     @NotNull(message = "Mã sử dụng bàn ăn không được để trống!")
-    private Integer useTableId;
+    Integer useTableId;
 
     @NotNull(message = "Thời gian tạo đơn không được để trống!")
-    private String createAt;
+    String createAt;
 
     @NotNull(message = "Tổng tiền món ăn không được để trống!")
-    private Long totalPrice;
+    Long totalPrice;
 
-    private String note;
+    String note;
 
     @NotNull(message = "Trạng thái không được để trống!")
     @Convert(converter = OrderSheetStatusConverter.class)
-    private OrderSheetStatusEnum status;
+    OrderSheetStatusEnum status;
 
     List<OrderSheetDetailCreateRequestDTO> orderSheetDetails;
 }

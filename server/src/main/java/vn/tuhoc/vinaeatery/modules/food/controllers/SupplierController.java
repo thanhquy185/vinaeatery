@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.SupplierCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.SupplierDeleteRequestDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.SupplierUpdateRequestDTO;
@@ -24,7 +26,7 @@ import vn.tuhoc.vinaeatery.modules.food.dtos.responses.SupplierCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.SupplierDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.SupplierSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.repositories.criteria.SupplierCriteria;
-import vn.tuhoc.vinaeatery.modules.food.services.SupplierService;
+import vn.tuhoc.vinaeatery.modules.food.services.interfaces.SupplierService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -33,8 +35,9 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @RestController
 @RequestMapping("/api/v1/suppliers")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class SupplierController {
-        private final SupplierService supplierService;
+        final SupplierService supplierService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('SUPPLIERS__READ')")

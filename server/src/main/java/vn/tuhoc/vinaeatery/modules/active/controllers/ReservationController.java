@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.ReservationCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.ReservationCustomerCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.ReservationUpdateStatusRequestDTO;
@@ -23,7 +25,7 @@ import vn.tuhoc.vinaeatery.modules.active.dtos.responses.ReservationCustomerResp
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.ReservationDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.ReservationSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.repositories.criteria.ReservationCriteria;
-import vn.tuhoc.vinaeatery.modules.active.services.ReservationService;
+import vn.tuhoc.vinaeatery.modules.active.services.interfaces.ReservationService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -34,8 +36,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RestController
 @RequestMapping("/api/v1/reservations")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReservationController {
-        private final ReservationService reservationService;
+        final ReservationService reservationService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('RESERVATIONS__READ')")

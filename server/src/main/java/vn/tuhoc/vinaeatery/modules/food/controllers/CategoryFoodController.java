@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.CategoryFoodCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.CategoryFoodDeleteRequestDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.CategoryFoodUpdateRequestDTO;
@@ -26,7 +28,7 @@ import vn.tuhoc.vinaeatery.modules.food.dtos.responses.CategoryFoodCrudResponseD
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.CategoryFoodDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.CategoryFoodSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.repositories.criteria.CategoryFoodCriteria;
-import vn.tuhoc.vinaeatery.modules.food.services.CategoryFoodService;
+import vn.tuhoc.vinaeatery.modules.food.services.interfaces.CategoryFoodService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -35,8 +37,9 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @RestController
 @RequestMapping("/api/v1/category-foods")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CategoryFoodController {
-        private final CategoryFoodService categoryFoodService;
+        final CategoryFoodService categoryFoodService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('CATEGORY_FOODS__READ')")

@@ -8,8 +8,8 @@ import vn.tuhoc.vinaeatery.modules.payment.domains.enums.PaymentMachineProcessSt
 public class PaymentMachineProcessStatusConverter
         implements AttributeConverter<PaymentMachineProcessStatusEnum, String> {
     @Override
-    public String convertToDatabaseColumn(PaymentMachineProcessStatusEnum status) {
-        return (status != null) ? status.getValue() : null;
+    public String convertToDatabaseColumn(PaymentMachineProcessStatusEnum processStatus) {
+        return (processStatus != null) ? processStatus.getValue() : null;
     }
 
     @Override

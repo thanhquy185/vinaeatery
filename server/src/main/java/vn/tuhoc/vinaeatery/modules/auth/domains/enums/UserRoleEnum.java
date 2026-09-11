@@ -3,14 +3,18 @@ package vn.tuhoc.vinaeatery.modules.auth.domains.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public enum UserRoleEnum {
     ADMIN("ADMIN", "Quản trị hệ thống"),
     MANAGER("MANAGER", "Chủ nhà hàng"),
     CUSTOMER("CUSTOMER", "Khách hàng"),
     EMPLOYEE("EMPLOYEE", "Nhân viên nhà hàng");
 
-    private final String value;
-    private final String description;
+    final String value;
+    final String description;
 
     UserRoleEnum(String value, String description) {
         this.value = value;
@@ -37,11 +41,11 @@ public enum UserRoleEnum {
     }
 
     public static UserRoleEnum fromValue(String value) {
-        for (UserRoleEnum status : values()) {
-            if (status.getValue().equals(value)) {
-                return status;
+        for (UserRoleEnum role : values()) {
+            if (role.getValue().equals(value)) {
+                return role;
             }
         }
-        throw new IllegalArgumentException("Invalid status: " + value);
+        throw new IllegalArgumentException("Invalid role: " + value);
     }
 }

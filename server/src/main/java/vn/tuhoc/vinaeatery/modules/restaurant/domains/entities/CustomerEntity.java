@@ -18,10 +18,12 @@ import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.BillEntity;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.FeedbackEntity;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.ReservationEntity;
@@ -38,59 +40,60 @@ import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedEntityGraph(name = "CustomerEntity.full", attributeNodes = {
         @NamedAttributeNode("user"),
 })
 public class CustomerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    Integer id;
 
     @Column(nullable = true)
-    private String image;
+    String image;
 
     @Column(nullable = false)
-    private String fullname;
+    String fullname;
 
     @Column(columnDefinition = "DATE", nullable = false)
-    private String birthdate;
+    String birthdate;
 
     @Column(columnDefinition = "VARCHAR(6)", nullable = false)
     @Convert(converter = CommonGenderConverter.class)
-    private CommonGenderEnum gender;
+    CommonGenderEnum gender;
 
     @Column(columnDefinition = "VARCHAR(11)", unique = true, nullable = false)
-    private String phone;
+    String phone;
 
     @Column(unique = true, nullable = false)
-    private String email;
+    String email;
 
     @Column(columnDefinition = "VARCHAR(25)", nullable = true)
-    private String houseNumber;
+    String houseNumber;
 
     @Column(columnDefinition = "VARCHAR(100)", nullable = true)
-    private String streetName;
+    String streetName;
 
     @Column(columnDefinition = "VARCHAR(30)", nullable = true)
-    private String ward;
+    String ward;
 
     @Column(columnDefinition = "VARCHAR(25)", nullable = true)
-    private String province;
+    String province;
 
     @Column(columnDefinition = "MEDIUMTEXT", nullable = true)
-    private String description;
+    String description;
 
     @Column(nullable = false)
     @Convert(converter = CommonStatusConverter.class)
-    private CommonStatusEnum status;
+    CommonStatusEnum status;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    UserEntity user;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<FeedbackEntity> feedbacks;
+    List<FeedbackEntity> feedbacks;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore

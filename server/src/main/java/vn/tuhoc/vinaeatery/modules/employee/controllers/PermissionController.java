@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.requests.PermissionCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.requests.PermissionDeleteRequestDTO;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.requests.PermissionUpdateRequestDTO;
@@ -24,7 +26,7 @@ import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.PermissionDetailRespo
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.PermissionSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.PermissionCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.employee.repositories.criteria.PermissionCriteria;
-import vn.tuhoc.vinaeatery.modules.employee.services.PermissionService;
+import vn.tuhoc.vinaeatery.modules.employee.services.PermissionServiceImplement;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -33,8 +35,9 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @RestController
 @RequestMapping("/api/v1/permissions")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PermissionController {
-        private final PermissionService permissionService;
+        final PermissionServiceImplement permissionService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('PERMISSIONS__READ')")

@@ -1,18 +1,17 @@
 package vn.tuhoc.vinaeatery.modules.active.domains.mappers;
 
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
 
 import vn.tuhoc.vinaeatery.modules.employee.domains.mappers.EmployeeMapperHelper;
 import vn.tuhoc.vinaeatery.modules.payment.domains.mappers.PaymentMachineMapperHelper2;
 import vn.tuhoc.vinaeatery.modules.restaurant.domains.mappers.CustomerMapperHelper2;
 import vn.tuhoc.vinaeatery.modules.restaurant.domains.mappers.RestaurantMapperHelper;
 import vn.tuhoc.vinaeatery.modules.table.domains.mappers.TableMapperHelper;
+import vn.tuhoc.vinaeatery.configs.CentralMapperConfig;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.UseTableEntity;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.UseTableCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.UseTableUpdateStatusRequestDTO;
@@ -21,7 +20,7 @@ import vn.tuhoc.vinaeatery.modules.active.dtos.responses.UseTableDetailResponseD
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.UseTableInfoResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.UseTableSummaryResponseDTO;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {
+@Mapper(config = CentralMapperConfig.class, uses = {
                 RestaurantMapperHelper.class,
                 TableMapperHelper.class,
                 EmployeeMapperHelper.class,

@@ -1,10 +1,12 @@
 package vn.tuhoc.vinaeatery.modules.food.dtos.responses;
 
 import jakarta.persistence.Convert;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.EmployeeSubInfoResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.domains.converters.InputTicketPaymentStatusConverter;
 import vn.tuhoc.vinaeatery.modules.food.domains.converters.InputTicketStatusConverter;
@@ -15,20 +17,21 @@ import vn.tuhoc.vinaeatery.modules.food.domains.enums.InputTicketStatusEnum;
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class InputTicketSummaryResponseDTO {
-    private Integer id;
+    Integer id;
 
-    private EmployeeSubInfoResponseDTO employee;
+    EmployeeSubInfoResponseDTO employee;
 
-    private SupplierInfoResponseDTO supplier;
+    SupplierInfoResponseDTO supplier;
 
-    private String createAt;
+    String createAt;
 
-    private Long totalInputPrice;
+    Long totalInputPrice;
 
     @Convert(converter = InputTicketPaymentStatusConverter.class)
-    private InputTicketPaymentStatusEnum paymentStatus;
+    InputTicketPaymentStatusEnum paymentStatus;
 
     @Convert(converter = InputTicketStatusConverter.class)
-    private InputTicketStatusEnum status;
+    InputTicketStatusEnum status;
 }

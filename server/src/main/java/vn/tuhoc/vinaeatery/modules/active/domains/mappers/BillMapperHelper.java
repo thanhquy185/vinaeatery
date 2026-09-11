@@ -2,7 +2,9 @@ package vn.tuhoc.vinaeatery.modules.active.domains.mappers;
 
 import org.springframework.stereotype.Component;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.BillEntity;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillCustomerResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillDetailResponseDTO;
@@ -13,9 +15,10 @@ import vn.tuhoc.vinaeatery.modules.active.repositories.BillRepository;
 
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class BillMapperHelper {
-    private final BillRepository billRepository;
-    private final BillMapper billMapper;
+    final BillRepository billRepository;
+    final BillMapper billMapper;
 
     public BillEntity mapToEntity(Integer id) {
         return this.billRepository.findOneByIdToCrud(id)

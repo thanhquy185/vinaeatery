@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.modules.table.dtos.requests.FloorCreateRequestDTO;
@@ -26,15 +28,16 @@ import vn.tuhoc.vinaeatery.modules.table.dtos.responses.FloorDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.table.dtos.responses.FloorSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.table.dtos.responses.FloorCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.table.repositories.criteria.FloorCriteria;
-import vn.tuhoc.vinaeatery.modules.table.services.FloorService;
+import vn.tuhoc.vinaeatery.modules.table.services.interfaces.FloorService;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 
 @RestController
 @RequestMapping("/api/v1/floors")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class FloorController {
-        private final FloorService floorService;
+        final FloorService floorService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('FLOORS__READ')")

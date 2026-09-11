@@ -9,10 +9,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "recipes")
@@ -20,22 +22,23 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RecipeEntity {
     @EmbeddedId
-    private RecipeIdEntity id;
+    RecipeIdEntity id;
 
     @MapsId("foodId")
     @ManyToOne
     @JsonIgnore
-    private FoodEntity food;
+    FoodEntity food;
 
     @MapsId("ingredientId")
     @ManyToOne(fetch = FetchType.LAZY)
-    private IngredientEntity ingredient;
+    IngredientEntity ingredient;
 
     @Column(nullable = false)
-    private Long quantity;
+    Long quantity;
 
     @Column(nullable = true)
-    private String note;
+    String note;
 }

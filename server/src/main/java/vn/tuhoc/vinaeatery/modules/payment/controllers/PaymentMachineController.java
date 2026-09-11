@@ -11,19 +11,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.modules.payment.dtos.requests.PaymentMachineCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.payment.dtos.requests.PaymentMachineUpdateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.payment.dtos.responses.PaymentMachineDetailResponseDTO;
-import vn.tuhoc.vinaeatery.modules.payment.services.PaymentMachineService;
+import vn.tuhoc.vinaeatery.modules.payment.services.PaymentMachineServiceImplement;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 
 @RestController
 @RequestMapping("/api/v1/payment-machines")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PaymentMachineController {
-        private final PaymentMachineService paymentMachineService;
+        final PaymentMachineServiceImplement paymentMachineService;
 
         @GetMapping("/{id}")
         public ResponseEntity<RestResponseDTO<PaymentMachineDetailResponseDTO>> handleGetDetailById(
@@ -62,7 +65,8 @@ public class PaymentMachineController {
         public ResponseEntity<RestResponseDTO<PaymentMachineDetailResponseDTO>> handleUpdate(
                         @PathVariable("id") Integer id,
                         @RequestBody @Valid PaymentMachineUpdateRequestDTO paymentMachineUpdateRequestDTO) {
-                PaymentMachineDetailResponseDTO paymentMachineUpdated = this.paymentMachineService.handleUpdate(id,
+                PaymentMachineDetailResponseDTO paymentMachineUpdated = this.paymentMachineService.handleUpdate(
+                                id,
                                 paymentMachineUpdateRequestDTO);
 
                 return RestResponseUtils.ok(

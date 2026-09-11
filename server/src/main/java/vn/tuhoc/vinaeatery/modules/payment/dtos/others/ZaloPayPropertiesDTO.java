@@ -3,19 +3,22 @@ package vn.tuhoc.vinaeatery.modules.payment.dtos.others;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Component
 @ConfigurationProperties(prefix = "zalopay")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ZaloPayPropertiesDTO {
-    private String appId;
+    String appId;
 
-    private String key1;
+    String key1;
 
-    private String key2;
+    String key2;
 
-    private String endpoint;
+    String endpoint;
 
-    private String callbackUrl;
+    String callbackUrl;
 }

@@ -2,42 +2,45 @@ package vn.tuhoc.vinaeatery.modules.payment.dtos.responses;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MomoResponseDTO {
-    private int resultCode;
+    int resultCode;
 
-    private String partnerCode;
+    String partnerCode;
 
-    private String requestId;
+    String requestId;
 
-    private String orderId;
+    String orderId;
 
-    private String message;
+    String message;
 
-    private String payUrl;
+    String payUrl;
 
-    private String deeplink;
+    String deeplink;
 
-    private String qrCodeUrl;
+    String qrCodeUrl;
 
-    private String deeplinkMiniApp;
+    String deeplinkMiniApp;
 
-    private String signature;
+    String signature;
 
-    private Long responseTime;
+    Long responseTime;
 
-    private Long amount;
+    Long amount;
 
-    private Long useFee;
+    Long useFee;
 
-    private Long orderExpire;
+    Long orderExpire;
 }

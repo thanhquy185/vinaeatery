@@ -9,10 +9,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "auth_sessions")
@@ -20,24 +22,25 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthSessionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    Integer id;
 
     @Column(columnDefinition = "DATETIME", nullable = false)
-    private String createAt;
+    String createAt;
 
     @Column(columnDefinition = "DATETIME", nullable = false)
-    private String expiredAt;
+    String expiredAt;
 
     @Column(columnDefinition = "DATETIME", nullable = true)
-    private String revokedAt;
+    String revokedAt;
 
     @Column(columnDefinition = "MEDIUMTEXT", nullable = false)
-    private String refreshToken;
+    String refreshToken;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    UserEntity user;
 }

@@ -7,8 +7,8 @@ import vn.tuhoc.vinaeatery.modules.active.domains.enums.FeedbackExperienceEnum;
 @Converter(autoApply = true)
 public class FeedbackExperienceConverter implements AttributeConverter<FeedbackExperienceEnum, String> {
     @Override
-    public String convertToDatabaseColumn(FeedbackExperienceEnum status) {
-        return (status != null) ? status.getValue() : null;
+    public String convertToDatabaseColumn(FeedbackExperienceEnum experience) {
+        return (experience != null) ? experience.getValue() : null;
     }
 
     @Override

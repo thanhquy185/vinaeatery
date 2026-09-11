@@ -16,10 +16,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.UseTableEntity;
 import vn.tuhoc.vinaeatery.modules.employee.domains.entities.EmployeeEntity;
 import vn.tuhoc.vinaeatery.modules.payment.domains.converters.PaymentMachineStatusConverter;
@@ -34,54 +36,55 @@ import vn.tuhoc.vinaeatery.modules.payment.domains.enums.PaymentMachineProcessSt
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PaymentMachineEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    Integer id;
 
     @Column(columnDefinition = "DATETIME", nullable = false)
-    private String at;
+    String at;
 
     @Column(nullable = true)
-    private Long foodPrice;
+    Long foodPrice;
 
     @Column(nullable = true)
-    private Long categoryTableSurcharge;
+    Long categoryTableSurcharge;
 
     @Column(nullable = true)
-    private Long customerDiscount;
+    Long customerDiscount;
 
     @Column(nullable = true)
-    private Long totalPrice;
+    Long totalPrice;
 
     @Column(nullable = true)
-    private String paymentId;
+    String paymentId;
 
     @Column(nullable = true)
-    private Long paymentTotalPrice;
+    Long paymentTotalPrice;
 
     @Column(columnDefinition = "VARCHAR(9)", nullable = false)
     @Convert(converter = PaymentMachineProcessStatusConverter.class)
-    private PaymentMachineProcessStatusEnum processStatus;
+    PaymentMachineProcessStatusEnum processStatus;
 
     @Column(columnDefinition = "VARCHAR(10)", nullable = false)
     @Convert(converter = PaymentMachineStatusConverter.class)
-    private PaymentMachineStatusEnum status;
+    PaymentMachineStatusEnum status;
 
     @OneToOne(mappedBy = "paymentMachine", fetch = FetchType.LAZY)
-    private UseTableEntity useTable;
+    UseTableEntity useTable;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
-    private RestaurantEntity restaurant;
+    RestaurantEntity restaurant;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_method_id", nullable = false)
-    private PaymentMethodEntity paymentMethod;
+    PaymentMethodEntity paymentMethod;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
-    private EmployeeEntity employee;
+    EmployeeEntity employee;
 
     @OneToMany(mappedBy = "paymentMachine", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

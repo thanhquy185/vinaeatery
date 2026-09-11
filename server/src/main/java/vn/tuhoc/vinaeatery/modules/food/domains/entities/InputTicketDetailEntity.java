@@ -9,10 +9,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "input_ticket_details")
@@ -20,31 +22,32 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class InputTicketDetailEntity {
     @EmbeddedId
-    private InputTicketDetailIdEntity id;
+    InputTicketDetailIdEntity id;
 
     @MapsId("inputTicketId")
     @ManyToOne
     @JsonIgnore
-    private InputTicketEntity inputTicket;
+    InputTicketEntity inputTicket;
 
     @MapsId("ingredientId")
     @ManyToOne(fetch = FetchType.LAZY)
-    private IngredientEntity ingredient;
+    IngredientEntity ingredient;
 
     @Column(nullable = false)
-    private Long quantity;
+    Long quantity;
 
     @Column(nullable = false)
-    private Long inputPrice;
+    Long inputPrice;
 
     @Column(nullable = false)
-    private String ingredientNameSnapshot;
+    String ingredientNameSnapshot;
 
     @Column(nullable = false)
-    private Long ingredientInputPriceSnapshot;
+    Long ingredientInputPriceSnapshot;
 
     @Column(nullable = false)
-    private Long totalInputPriceDetail;
+    Long totalInputPriceDetail;
 }

@@ -8,18 +8,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.FunctionDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.FunctionSummaryResponseDTO;
-import vn.tuhoc.vinaeatery.modules.employee.services.FunctionService;
+import vn.tuhoc.vinaeatery.modules.employee.services.interfaces.FunctionService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 
 @RestController
 @RequestMapping("/api/v1/functions")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class FunctionController {
-        private final FunctionService functionService;
+        final FunctionService functionService;
 
         @GetMapping("/{id}")
         public ResponseEntity<RestResponseDTO<FunctionDetailResponseDTO>> handleGetDetailById(

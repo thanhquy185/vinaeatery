@@ -1,20 +1,23 @@
 package vn.tuhoc.vinaeatery.modules.active.dtos.requests;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderSheetDetailCreateRequestDTO {
-    private Integer foodId;
+    Integer foodId;
 
-    private Long quantity;
+    Long quantity;
 
-    private Long price;
+    Long price;
 
-    private String foodNameSnapshot;
+    String foodNameSnapshot;
 
-    private String foodUnitSnapshot;
+    String foodUnitSnapshot;
 
-    private Long foodPriceSnapshot;
+    Long foodPriceSnapshot;
 
-    private Long totalPriceDetail;
+    Long totalPriceDetail;
 }

@@ -18,10 +18,12 @@ import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.UseTableStatusConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.UseTableStatusEnum;
 import vn.tuhoc.vinaeatery.modules.employee.domains.entities.EmployeeEntity;
@@ -36,6 +38,7 @@ import vn.tuhoc.vinaeatery.modules.table.domains.entities.TableEntity;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedEntityGraph(name = "UseTableEntity.half", attributeNodes = {
                 @NamedAttributeNode("restaurant"),
                 // @NamedAttributeNode("paymentMachine"),
@@ -64,75 +67,75 @@ import vn.tuhoc.vinaeatery.modules.table.domains.entities.TableEntity;
 public class UseTableEntity {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+        Long id;
 
         @Column(columnDefinition = "DATETIME", nullable = false)
-        private String startAt;
+        String startAt;
 
         @Column(columnDefinition = "DATETIME", nullable = true)
-        private String endAt;
+        String endAt;
 
         @Column(nullable = true)
-        private String customerFullname;
+        String customerFullname;
 
         @Column(columnDefinition = "VARCHAR(11)", nullable = true)
-        private String customerPhone;
+        String customerPhone;
 
         @Column(nullable = true)
-        private String customerEmail;
+        String customerEmail;
 
         @Column(nullable = true)
-        private Integer customerAdult;
+        Integer customerAdult;
 
         @Column(nullable = true)
-        private Integer customerChild;
+        Integer customerChild;
 
         @Column(nullable = true)
-        private Integer customerGuests;
+        Integer customerGuests;
 
         @Column(columnDefinition = "VARCHAR(8)", nullable = false)
         @Convert(converter = UseTableStatusConverter.class)
-        private UseTableStatusEnum status;
+        UseTableStatusEnum status;
 
         @OneToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "payment_machine_id", nullable = true)
-        private PaymentMachineEntity paymentMachine;
+        PaymentMachineEntity paymentMachine;
 
         @OneToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "feedback_id", nullable = true)
-        private FeedbackEntity feedback;
+        FeedbackEntity feedback;
 
         @OneToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "message_id", nullable = true)
-        private MessageEntity message;
+        MessageEntity message;
 
         @OneToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "bill_id", nullable = true)
-        private BillEntity bill;
+        BillEntity bill;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "restaurant_id", nullable = false)
-        private RestaurantEntity restaurant;
+        RestaurantEntity restaurant;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "menu_id", nullable = true)
-        private MenuEntity menu;
+        MenuEntity menu;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "reservation_id", nullable = false)
-        private ReservationEntity reservation;
+        ReservationEntity reservation;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "table_id", nullable = false)
-        private TableEntity table;
+        TableEntity table;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "employee_id", nullable = true)
-        private EmployeeEntity employee;
+        EmployeeEntity employee;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "customer_id", nullable = true)
-        private CustomerEntity customer;
+        CustomerEntity customer;
 
         @OneToMany(mappedBy = "useTable", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
         List<OrderSheetEntity> orderSheets;

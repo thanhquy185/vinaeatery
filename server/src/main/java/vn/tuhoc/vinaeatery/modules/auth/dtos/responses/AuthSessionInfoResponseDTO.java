@@ -1,22 +1,25 @@
 package vn.tuhoc.vinaeatery.modules.auth.dtos.responses;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthSessionInfoResponseDTO {
-    private Integer id;
+    Integer id;
 
-    private String createdAt;
+    String createdAt;
 
-    private String expiredAt;
+    String expiredAt;
 
-    private String revokedAt;
+    String revokedAt;
 
-    private String refreshToken;
+    String refreshToken;
 }

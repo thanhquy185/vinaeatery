@@ -1,10 +1,12 @@
 package vn.tuhoc.vinaeatery.modules.active.dtos.responses;
 
 import jakarta.persistence.Convert;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.OrderSheetStatusConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.OrderSheetStatusEnum;
 
@@ -12,23 +14,24 @@ import vn.tuhoc.vinaeatery.modules.active.domains.enums.OrderSheetStatusEnum;
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderSheetSummaryResponseDTO {
-    private Integer id;
+    Integer id;
 
-    private UseTableInfoResponseDTO useTable;
+    UseTableInfoResponseDTO useTable;
 
-    private String createAt;
+    String createAt;
 
-    private String serviceAt;
+    String serviceAt;
 
-    private String cancelAt;
+    String cancelAt;
 
-    private Long totalPrice;
+    Long totalPrice;
 
-    private String note;
+    String note;
 
-    private String message;
+    String message;
 
     @Convert(converter = OrderSheetStatusConverter.class)
-    private OrderSheetStatusEnum status;
+    OrderSheetStatusEnum status;
 }

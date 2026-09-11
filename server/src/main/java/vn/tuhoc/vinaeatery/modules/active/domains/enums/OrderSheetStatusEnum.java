@@ -3,14 +3,18 @@ package vn.tuhoc.vinaeatery.modules.active.domains.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public enum OrderSheetStatusEnum {
     PENDING("PENDING", "Đang chờ xác nhận"),
     CANCELLED("CANCELLED", "Đã huỷ phiếu"),
     CONFIRMED("CONFIRMED", "Đang làm món"),
     SERVICED("SERVICED", "Đã phục vụ");
 
-    private final String value;
-    private final String description;
+    final String value;
+    final String description;
 
     OrderSheetStatusEnum(String value, String description) {
         this.value = value;

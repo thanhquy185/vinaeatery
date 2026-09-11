@@ -2,46 +2,35 @@ package vn.tuhoc.vinaeatery.modules.active.repositories.criteria;
 
 import java.util.Optional;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReservationCriteria {
-    private Integer page;
-
-    private Integer size;
-
-    private Optional<String> id;
-
-    private Optional<String> restaurantId;
-
-    private Optional<String> employeeId;
-
-    private Optional<String> customerId;
-
-    private Optional<String> createAtStart;
-
-    private Optional<String> createAtEnd;
-
-    private Optional<String> arriveAtStart;
-
-    private Optional<String> arriveAtEnd;
-
-    private Optional<String> customerFullname;
-
-    private Optional<String> customerPhone;
-
-    private Optional<String> customerEmail;
-
-    private Optional<String> status;
-
-    private Optional<String> sort;
+    Integer page;
+    Integer size;
+    Optional<String> id;
+    Optional<String> restaurantId;
+    Optional<String> employeeId;
+    Optional<String> customerId;
+    Optional<String> createAtStart;
+    Optional<String> createAtEnd;
+    Optional<String> arriveAtStart;
+    Optional<String> arriveAtEnd;
+    Optional<String> customerFullname;
+    Optional<String> customerPhone;
+    Optional<String> customerEmail;
+    Optional<String> status;
+    Optional<String> sort;
 
     public String getCacheKey() {
         StringBuilder cacheKey = new StringBuilder();

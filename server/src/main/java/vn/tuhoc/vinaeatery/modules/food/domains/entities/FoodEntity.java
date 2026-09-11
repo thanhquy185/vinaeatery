@@ -19,10 +19,12 @@ import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.UseFoodEntity;
 import vn.tuhoc.vinaeatery.modules.food.domains.converters.FoodStatusConverter;
 import vn.tuhoc.vinaeatery.modules.food.domains.enums.FoodStatusEnum;
@@ -34,6 +36,7 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedEntityGraph(name = "FoodEntity.half", attributeNodes = {
                 @NamedAttributeNode("restaurant"),
                 @NamedAttributeNode("categoryFood"),
@@ -44,33 +47,33 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 public class FoodEntity {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Integer id;
+        Integer id;
 
         @Column(nullable = true)
-        private String image;
+        String image;
 
         @Column(nullable = false)
-        private String name;
+        String name;
 
         @Column(nullable = false)
-        private String unit;
+        String unit;
 
         @Column(nullable = false)
-        private Long price;
+        Long price;
 
         @Column(columnDefinition = "MEDIUMTEXT", nullable = true)
-        private String description;
+        String description;
 
         @Convert(converter = FoodStatusConverter.class)
-        private FoodStatusEnum status;
+        FoodStatusEnum status;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "restaurant_id", nullable = false)
-        private RestaurantEntity restaurant;
+        RestaurantEntity restaurant;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "category_food_id", nullable = false)
-        private CategoryFoodEntity categoryFood;
+        CategoryFoodEntity categoryFood;
 
         @OneToMany(mappedBy = "food", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
         @JsonIgnore

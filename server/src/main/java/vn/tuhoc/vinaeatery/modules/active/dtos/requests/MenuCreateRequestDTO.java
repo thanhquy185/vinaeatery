@@ -6,33 +6,36 @@ import jakarta.persistence.Convert;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.MenuTypeConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.MenuTypeEnum;
 import vn.tuhoc.vinaeatery.modules.global.domains.converters.CommonStatusConverter;
 import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MenuCreateRequestDTO {
     @NotNull(message = "Mã nhà hàng không được để trống!")
-    private Integer restaurantId;
+    Integer restaurantId;
 
     @NotBlank(message = "Tên thực đơn không được để trống!")
-    private String name;
+    String name;
 
     @NotNull(message = "Loại thực đơn không được để trống!")
     @Convert(converter = MenuTypeConverter.class)
-    private MenuTypeEnum type;
+    MenuTypeEnum type;
 
     @NotNull(message = "Giá tiền không được để trống!")
     @Min(value = 0)
-    private Long price;
+    Long price;
 
-    private String description;
+    String description;
 
     @NotNull(message = "Trạng thái không được để trống!")
     @Convert(converter = CommonStatusConverter.class)
-    private CommonStatusEnum status;
+    CommonStatusEnum status;
 
     List<MenuDetailCreateRequestDTO> menuDetails;
 }

@@ -7,8 +7,8 @@ import vn.tuhoc.vinaeatery.modules.auth.domains.enums.UserRoleEnum;
 @Converter(autoApply = true)
 public class UserRoleConverter implements AttributeConverter<UserRoleEnum, String> {
     @Override
-    public String convertToDatabaseColumn(UserRoleEnum status) {
-        return (status != null) ? status.getValue() : null;
+    public String convertToDatabaseColumn(UserRoleEnum role) {
+        return (role != null) ? role.getValue() : null;
     }
 
     @Override

@@ -17,10 +17,12 @@ import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.MenuTypeConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.MenuTypeEnum;
 import vn.tuhoc.vinaeatery.modules.global.domains.converters.CommonStatusConverter;
@@ -33,41 +35,42 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedEntityGraph(name = "MenuEntity.half", attributeNodes = {
         @NamedAttributeNode("restaurant"),
 })
 public class MenuEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    Integer id;
 
     @Column(nullable = false)
-    private String name;
+    String name;
 
     @Column(columnDefinition = "VARCHAR(9)", nullable = false)
     @Convert(converter = MenuTypeConverter.class)
-    private MenuTypeEnum type;
+    MenuTypeEnum type;
 
     @Column(nullable = false)
-    private Long price;
+    Long price;
 
     @Column(columnDefinition = "MEDIUMTEXT", nullable = false)
-    private String description;
+    String description;
 
     @Column(columnDefinition = "VARCHAR(8)", nullable = false)
     @Convert(converter = CommonStatusConverter.class)
-    private CommonStatusEnum status;
+    CommonStatusEnum status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
-    private RestaurantEntity restaurant;
+    RestaurantEntity restaurant;
 
     @OneToMany(mappedBy = "menu", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UseTableEntity> useTable;
+    List<UseTableEntity> useTable;
 
     @OneToMany(mappedBy = "menu", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<MenuDetailEntity> menuDetails = new ArrayList<>();
+    List<MenuDetailEntity> menuDetails = new ArrayList<>();
 
     public void addMenuDetail(MenuDetailEntity menuDetailEntity) {
         this.menuDetails.add(menuDetailEntity);

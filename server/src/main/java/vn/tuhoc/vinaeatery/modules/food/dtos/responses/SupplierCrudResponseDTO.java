@@ -1,28 +1,31 @@
 package vn.tuhoc.vinaeatery.modules.food.dtos.responses;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class SupplierCrudResponseDTO {
-    private Integer id;
+    Integer id;
 
-    private String fullname;
+    String fullname;
 
-    private String phone;
+    String phone;
 
-    private String email;
+    String email;
 
-    private String houseNumber;
+    String houseNumber;
 
-    private String streetName;
+    String streetName;
 
-    private String ward;
+    String ward;
 
-    private String province;
+    String province;
 }

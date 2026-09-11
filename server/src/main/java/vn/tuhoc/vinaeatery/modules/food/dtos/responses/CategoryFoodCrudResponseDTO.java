@@ -1,20 +1,23 @@
 package vn.tuhoc.vinaeatery.modules.food.dtos.responses;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CategoryFoodCrudResponseDTO {
-    private Integer id;
+    Integer id;
 
-    private String image;
+    String image;
 
-    private String name;
+    String name;
 
-    private String description;
+    String description;
 }

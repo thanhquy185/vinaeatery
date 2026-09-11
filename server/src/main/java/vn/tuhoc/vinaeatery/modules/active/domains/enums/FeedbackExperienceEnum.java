@@ -3,6 +3,10 @@ package vn.tuhoc.vinaeatery.modules.active.domains.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public enum FeedbackExperienceEnum {
     TERRIBLE("TERRIBLE", "Dở tệ"),
     POOR("POOR", "Không hài lòng"),
@@ -10,8 +14,8 @@ public enum FeedbackExperienceEnum {
     GOOD("GOOD", "Hài lòng"),
     PERFECT("PERFECT", "Tuyệt vời");
 
-    private final String value;
-    private final String description;
+    final String value;
+    final String description;
 
     FeedbackExperienceEnum(String value, String description) {
         this.value = value;
@@ -29,20 +33,20 @@ public enum FeedbackExperienceEnum {
 
     @JsonCreator
     public static FeedbackExperienceEnum fromDescription(String description) {
-        for (FeedbackExperienceEnum status : values()) {
-            if (status.getDescription().equalsIgnoreCase(description)) {
-                return status;
+        for (FeedbackExperienceEnum experience : values()) {
+            if (experience.getDescription().equalsIgnoreCase(description)) {
+                return experience;
             }
         }
         throw new IllegalArgumentException("Không tìm thấy trạng thái: " + description);
     }
 
     public static FeedbackExperienceEnum fromValue(String value) {
-        for (FeedbackExperienceEnum status : values()) {
-            if (status.getValue().equals(value)) {
-                return status;
+        for (FeedbackExperienceEnum experience : values()) {
+            if (experience.getValue().equals(value)) {
+                return experience;
             }
         }
-        throw new IllegalArgumentException("Invalid status: " + value);
+        throw new IllegalArgumentException("Invalid experience: " + value);
     }
 }

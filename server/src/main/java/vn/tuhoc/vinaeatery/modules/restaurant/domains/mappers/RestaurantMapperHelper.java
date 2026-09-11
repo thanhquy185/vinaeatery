@@ -2,7 +2,9 @@ package vn.tuhoc.vinaeatery.modules.restaurant.domains.mappers;
 
 import org.springframework.stereotype.Component;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantDetailResponseDTO;
@@ -17,9 +19,10 @@ import vn.tuhoc.vinaeatery.modules.restaurant.repositories.RestaurantRepository;
 
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RestaurantMapperHelper {
-    private final RestaurantRepository restaurantRepository;
-    private final RestaurantMapper restaurantMapper;
+    final RestaurantRepository restaurantRepository;
+    final RestaurantMapper restaurantMapper;
 
     public RestaurantEntity mapToEntity(Integer id) {
         return this.restaurantRepository.findOneByIdToCrud(id)

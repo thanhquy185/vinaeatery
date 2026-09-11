@@ -7,8 +7,8 @@ import vn.tuhoc.vinaeatery.modules.dashboard.domains.enums.TimelineEnum;
 @Converter(autoApply = true)
 public class TimelineConverter implements AttributeConverter<TimelineEnum, String> {
     @Override
-    public String convertToDatabaseColumn(TimelineEnum status) {
-        return (status != null) ? status.getValue() : null;
+    public String convertToDatabaseColumn(TimelineEnum timeline) {
+        return (timeline != null) ? timeline.getValue() : null;
     }
 
     @Override

@@ -1,18 +1,21 @@
 package vn.tuhoc.vinaeatery.modules.payment.dtos.responses;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PaymentMethodCrudResponseDTO {
-    private Integer id;
+    Integer id;
 
-    private String image;
+    String image;
 
-    private String name;
+    String name;
 }

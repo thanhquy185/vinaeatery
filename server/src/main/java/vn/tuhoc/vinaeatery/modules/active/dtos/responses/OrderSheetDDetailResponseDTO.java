@@ -1,27 +1,30 @@
 package vn.tuhoc.vinaeatery.modules.active.dtos.responses;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.FoodInfoResponseDTO3;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderSheetDDetailResponseDTO {
-    private FoodInfoResponseDTO3 food;
+    FoodInfoResponseDTO3 food;
 
-    private Long quantity;
+    Long quantity;
 
-    private Long price;
+    Long price;
 
-    private String foodNameSnapshot;
+    String foodNameSnapshot;
 
-    private String foodUnitSnapshot;
+    String foodUnitSnapshot;
 
-    private Long foodPriceSnapshot;
+    Long foodPriceSnapshot;
 
-    private Long totalPriceDetail;
+    Long totalPriceDetail;
 }

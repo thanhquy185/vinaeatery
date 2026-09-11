@@ -7,8 +7,8 @@ import vn.tuhoc.vinaeatery.modules.food.domains.enums.InputTicketPaymentStatusEn
 @Converter(autoApply = true)
 public class InputTicketPaymentStatusConverter implements AttributeConverter<InputTicketPaymentStatusEnum, String> {
     @Override
-    public String convertToDatabaseColumn(InputTicketPaymentStatusEnum status) {
-        return (status != null) ? status.getValue() : null;
+    public String convertToDatabaseColumn(InputTicketPaymentStatusEnum paymentStatus) {
+        return (paymentStatus != null) ? paymentStatus.getValue() : null;
     }
 
     @Override

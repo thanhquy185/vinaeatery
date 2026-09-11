@@ -26,23 +26,26 @@ import org.springframework.stereotype.Service;
 
 import com.nimbusds.jose.util.Base64;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.auth.domains.enums.UserRoleEnum;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.AuthLoginResponseDTO;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class SecurityUtil {
     public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
 
     @Value("${jwt.base64-secret}")
-    private String jwtKey;
+    String jwtKey;
     @Value("${jwt.access-token-validity-in-seconds}")
-    private Long jwtAccessTokenExpiration;
+    Long jwtAccessTokenExpiration;
     @Value("${jwt.refresh-token-validity-in-seconds}")
-    private Long jwtRefreshTokenExpiration;
-    private final JwtEncoder jwtEncoder;
-    private final JwtAuthorityUtil jwtAuthorityUtil;
+    Long jwtRefreshTokenExpiration;
+    final JwtEncoder jwtEncoder;
+    final JwtAuthorityUtil jwtAuthorityUtil;
 
     private Map<String, Object> getUserClams(Boolean isAccessToken, AuthLoginResponseDTO restLoginDTO) {
         UserRoleEnum userRoleEnum = restLoginDTO.getUserInfo().getRole();

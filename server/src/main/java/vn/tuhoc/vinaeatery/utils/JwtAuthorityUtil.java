@@ -6,7 +6,9 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.employee.domains.entities.EmployeeEntity;
 import vn.tuhoc.vinaeatery.modules.employee.domains.entities.FunctionEntity;
 import vn.tuhoc.vinaeatery.modules.employee.domains.entities.PermissionDetailEntity;
@@ -15,9 +17,10 @@ import vn.tuhoc.vinaeatery.modules.employee.repositories.FunctionRepository;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class JwtAuthorityUtil {
-    private final FunctionRepository functionRepository;
-    private final EmployeeRepository employeeRepository;
+    final FunctionRepository functionRepository;
+    final EmployeeRepository employeeRepository;
 
     private String handleAction(String action) {
         if (action.equalsIgnoreCase("Xem")) {

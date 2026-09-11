@@ -9,10 +9,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "role_histories")
@@ -20,19 +22,20 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoleHistoryEntity {
     @EmbeddedId
-    private RoleHistoryIdEntity id;
+    RoleHistoryIdEntity id;
 
     @MapsId("employeeId")
     @ManyToOne
     @JsonIgnore
-    private EmployeeEntity employee;
+    EmployeeEntity employee;
 
     @MapsId("roleId")
     @ManyToOne(fetch = FetchType.LAZY)
-    private RoleEntity role;
+    RoleEntity role;
 
     @Column(columnDefinition = "DATE", nullable = true)
-    private String dateEnd;
+    String dateEnd;
 }

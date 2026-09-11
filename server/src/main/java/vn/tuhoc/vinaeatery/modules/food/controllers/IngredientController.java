@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.IngredientCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.IngredientDeleteRequestDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.IngredientUpdateRequestDTO;
@@ -24,7 +26,7 @@ import vn.tuhoc.vinaeatery.modules.food.dtos.responses.IngredientCrudResponseDTO
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.IngredientDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.responses.IngredientSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.food.repositories.criteria.IngredientCriteria;
-import vn.tuhoc.vinaeatery.modules.food.services.IngredientService;
+import vn.tuhoc.vinaeatery.modules.food.services.interfaces.IngredientService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -33,8 +35,9 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @RestController
 @RequestMapping("/api/v1/ingredients")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class IngredientController {
-        private final IngredientService ingredientService;
+        final IngredientService ingredientService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('INGREDIENTS__READ')")
@@ -89,7 +92,8 @@ public class IngredientController {
         public ResponseEntity<RestResponseDTO<IngredientDetailResponseDTO>> handleUpdate(
                         @PathVariable("id") Integer id,
                         @RequestBody @Valid IngredientUpdateRequestDTO ingredientUpdateRequestDTO) {
-                IngredientDetailResponseDTO ingredientUpdated = this.ingredientService.handleUpdate(id,
+                IngredientDetailResponseDTO ingredientUpdated = this.ingredientService.handleUpdate(
+                                id,
                                 ingredientUpdateRequestDTO);
 
                 return RestResponseUtils.ok(
@@ -102,7 +106,8 @@ public class IngredientController {
         public ResponseEntity<RestResponseDTO<IngredientDetailResponseDTO>> handleDelete(
                         @PathVariable("id") Integer id,
                         @RequestBody @Valid IngredientDeleteRequestDTO ingredientDeleteRequestDTO) {
-                IngredientDetailResponseDTO ingredientDeleted = this.ingredientService.handleDelete(id,
+                IngredientDetailResponseDTO ingredientDeleted = this.ingredientService.handleDelete(
+                                id,
                                 ingredientDeleteRequestDTO);
 
                 return RestResponseUtils.ok(

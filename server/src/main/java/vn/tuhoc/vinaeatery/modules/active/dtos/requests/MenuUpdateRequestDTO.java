@@ -6,24 +6,27 @@ import jakarta.persistence.Convert;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.MenuTypeConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.MenuTypeEnum;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MenuUpdateRequestDTO {
     @NotBlank(message = "Tên thực đơn không được để trống!")
-    private String name;
+    String name;
 
     @NotNull(message = "Loại thực đơn không được để trống!")
     @Convert(converter = MenuTypeConverter.class)
-    private MenuTypeEnum type;
+    MenuTypeEnum type;
 
     @NotNull(message = "Giá tiền không được để trống!")
     @Min(value = 0)
-    private Long price;
+    Long price;
 
-    private String description;
+    String description;
 
     List<MenuDetailUpdateRequestDTO> menuDetails;
 }

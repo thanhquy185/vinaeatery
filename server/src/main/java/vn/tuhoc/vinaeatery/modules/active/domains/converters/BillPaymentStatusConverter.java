@@ -7,8 +7,8 @@ import vn.tuhoc.vinaeatery.modules.active.domains.enums.BillPaymentStatusEnum;
 @Converter(autoApply = true)
 public class BillPaymentStatusConverter implements AttributeConverter<BillPaymentStatusEnum, String> {
     @Override
-    public String convertToDatabaseColumn(BillPaymentStatusEnum status) {
-        return (status != null) ? status.getValue() : null;
+    public String convertToDatabaseColumn(BillPaymentStatusEnum paymentStatus) {
+        return (paymentStatus != null) ? paymentStatus.getValue() : null;
     }
 
     @Override

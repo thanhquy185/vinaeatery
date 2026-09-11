@@ -13,10 +13,12 @@ import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.UseFoodStatusConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.UseFoodStatusEnum;
 import vn.tuhoc.vinaeatery.modules.employee.domains.entities.EmployeeEntity;
@@ -29,6 +31,7 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedEntityGraph(name = "UseFoodEntity.half", attributeNodes = {
                 @NamedAttributeNode("restaurant"),
                 @NamedAttributeNode(value = "food", subgraph = "foodSubgraph"),
@@ -48,27 +51,27 @@ import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.RestaurantEntity;
 public class UseFoodEntity {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+        Long id;
 
         @Column(columnDefinition = "DATETIME", nullable = false)
-        private String startAt;
+        String startAt;
 
         @Column(columnDefinition = "DATETIME", nullable = true)
-        private String endAt;
+        String endAt;
 
         @Column(columnDefinition = "VARCHAR(13)", nullable = false)
         @Convert(converter = UseFoodStatusConverter.class)
-        private UseFoodStatusEnum status;
+        UseFoodStatusEnum status;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "restaurant_id", nullable = false)
-        private RestaurantEntity restaurant;
+        RestaurantEntity restaurant;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "food_id", nullable = false)
-        private FoodEntity food;
+        FoodEntity food;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "employee_id", nullable = true)
-        private EmployeeEntity employee;
+        EmployeeEntity employee;
 }

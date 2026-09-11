@@ -3,13 +3,17 @@ package vn.tuhoc.vinaeatery.modules.dashboard.domains.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public enum RevenueTypeEnum {
     BILL("BILL", "Hoá đơn"),
     FOOD("FOOD", "Món ăn"),
     TABLE("TABLE", "Bàn ăn");
 
-    private final String value;
-    private final String description;
+    final String value;
+    final String description;
 
     RevenueTypeEnum(String value, String description) {
         this.value = value;
@@ -27,20 +31,20 @@ public enum RevenueTypeEnum {
 
     @JsonCreator
     public static RevenueTypeEnum fromDescription(String description) {
-        for (RevenueTypeEnum status : values()) {
-            if (status.getDescription().equalsIgnoreCase(description)) {
-                return status;
+        for (RevenueTypeEnum type : values()) {
+            if (type.getDescription().equalsIgnoreCase(description)) {
+                return type;
             }
         }
         throw new IllegalArgumentException("Không tìm thấy trạng thái: " + description);
     }
 
     public static RevenueTypeEnum fromValue(String value) {
-        for (RevenueTypeEnum status : values()) {
-            if (status.getValue().equals(value)) {
-                return status;
+        for (RevenueTypeEnum type : values()) {
+            if (type.getValue().equals(value)) {
+                return type;
             }
         }
-        throw new IllegalArgumentException("Invalid status: " + value);
+        throw new IllegalArgumentException("Invalid type: " + value);
     }
 }

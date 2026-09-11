@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.requests.EmployeeCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.requests.EmployeeDeleteRequestDTO;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.requests.EmployeeUpdateRequestDTO;
@@ -26,7 +28,7 @@ import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.EmployeeDetailRespons
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.EmployeeSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.EmployeeCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.employee.repositories.criteria.EmployeeCriteria;
-import vn.tuhoc.vinaeatery.modules.employee.services.EmployeeService;
+import vn.tuhoc.vinaeatery.modules.employee.services.EmployeeServiceImplement;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -35,8 +37,9 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @RestController
 @RequestMapping("/api/v1/employees")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EmployeeController {
-        private final EmployeeService employeeService;
+        final EmployeeServiceImplement employeeService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('EMPLOYEES__READ')")
@@ -79,7 +82,8 @@ public class EmployeeController {
         public ResponseEntity<RestResponseDTO<EmployeeDetailResponseDTO>> handleCreate(
                         @RequestPart(value = "image-file", required = false) MultipartFile imageFile,
                         @RequestPart("employee") @Valid EmployeeCreateRequestDTO employeeCreateRequestDTO) {
-                EmployeeDetailResponseDTO employeeCreated = this.employeeService.handleCreate(imageFile,
+                EmployeeDetailResponseDTO employeeCreated = this.employeeService.handleCreate(
+                                imageFile,
                                 employeeCreateRequestDTO);
 
                 return RestResponseUtils.created(

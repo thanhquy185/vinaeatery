@@ -5,41 +5,44 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.converters.ReservationStatusConverter;
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.ReservationStatusEnum;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReservationCustomerCreateRequestDTO {
     @NotNull(message = "Mã nhà hàng không được để trống!")
-    private Integer restaurantId;
+    Integer restaurantId;
 
     @NotNull(message = "Mã khách hàng không được để trống!")
-    private Integer customerId;
+    Integer customerId;
 
     @NotNull(message = "Thời gian đặt bàn không được để trống!")
-    private String createAt;
+    String createAt;
 
     @NotNull(message = "Thời gian nhận bàn không được để trống!")
-    private String arriveAt;
+    String arriveAt;
 
     @NotBlank(message = "Họ và tên khách hàng không được để trống!")
-    private String customerFullname;
+    String customerFullname;
 
     @NotBlank(message = "Số điện thoại khách hàng không được để trống!")
     @Pattern(regexp = "^(\\d{10}|\\d{11})$", message = "Số điện thoại chỉ chứa chữ số và có 10 hoặc 11 số!")
-    private String customerPhone;
+    String customerPhone;
 
     @NotBlank(message = "Email khách hàng không được để trống!")
     @Email(regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$", message = "Định dạng email không hợp lệ!")
-    private String customerEmail;
+    String customerEmail;
 
     @NotNull(message = "Số lượng khách hàng không được để trống!")
-    private Integer customerGuests;
+    Integer customerGuests;
 
-    private String customerNote;
+    String customerNote;
 
     @NotNull(message = "Trạng thái không được để trống!")
     @Convert(converter = ReservationStatusConverter.class)
-    private ReservationStatusEnum status;
+    ReservationStatusEnum status;
 }

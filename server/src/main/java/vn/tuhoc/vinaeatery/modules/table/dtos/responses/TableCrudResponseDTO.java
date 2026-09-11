@@ -1,24 +1,27 @@
 package vn.tuhoc.vinaeatery.modules.table.dtos.responses;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TableCrudResponseDTO {
-    private Integer id;
+    Integer id;
 
-    private FloorInfoResponseDTO floor;
+    FloorInfoResponseDTO floor;
 
-    private CategoryTableInfoResponseDTO categoryTable;
+    CategoryTableInfoResponseDTO categoryTable;
 
-    private String name;
+    String name;
 
-    private Integer seats;
+    Integer seats;
 
-    private String description;
+    String description;
 }

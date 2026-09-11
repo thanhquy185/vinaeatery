@@ -12,14 +12,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.requests.UserChangePasswordRequestDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.requests.UserCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.requests.UserDeleteRequestDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.auth.repositories.criteria.UserCriteria;
-import vn.tuhoc.vinaeatery.modules.auth.services.UserService;
+import vn.tuhoc.vinaeatery.modules.auth.services.UserServiceImplement;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 
@@ -28,8 +30,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserController {
-        private final UserService userService;
+        final UserServiceImplement userService;
 
         @GetMapping("/{id}")
         public ResponseEntity<RestResponseDTO<UserDetailResponseDTO>> handleGetDetailById(

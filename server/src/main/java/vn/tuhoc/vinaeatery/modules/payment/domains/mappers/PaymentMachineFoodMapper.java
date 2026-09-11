@@ -1,18 +1,17 @@
 package vn.tuhoc.vinaeatery.modules.payment.domains.mappers;
 
 import org.mapstruct.BeanMapping;
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
 
 import vn.tuhoc.vinaeatery.modules.payment.domains.entities.PaymentMachineFoodEntity;
 import vn.tuhoc.vinaeatery.modules.payment.dtos.requests.PaymentMachineFoodCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.payment.dtos.responses.PaymentMachineFoodDetailResponseDTO;
+import vn.tuhoc.vinaeatery.configs.CentralMapperConfig;
 import vn.tuhoc.vinaeatery.modules.food.domains.mappers.FoodMapperHelper2;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {
+@Mapper(config = CentralMapperConfig.class, uses = {
                 FoodMapperHelper2.class
 })
 public interface PaymentMachineFoodMapper {

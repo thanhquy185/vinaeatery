@@ -8,10 +8,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.food.domains.entities.FoodEntity;
 
 @Entity
@@ -20,16 +22,17 @@ import vn.tuhoc.vinaeatery.modules.food.domains.entities.FoodEntity;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MenuDetailEntity {
     @EmbeddedId
-    private MenuDetailIdEntity id;
+    MenuDetailIdEntity id;
 
     @MapsId("menuId")
     @ManyToOne
     @JsonIgnore
-    private MenuEntity menu;
+    MenuEntity menu;
 
     @MapsId("foodId")
     @ManyToOne(fetch = FetchType.LAZY)
-    private FoodEntity food;
+    FoodEntity food;
 }

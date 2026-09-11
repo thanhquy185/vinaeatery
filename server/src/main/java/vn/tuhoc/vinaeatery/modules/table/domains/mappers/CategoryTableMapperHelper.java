@@ -2,7 +2,9 @@ package vn.tuhoc.vinaeatery.modules.table.domains.mappers;
 
 import org.springframework.stereotype.Component;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.table.domains.entities.CategoryTableEntity;
 import vn.tuhoc.vinaeatery.modules.table.dtos.responses.CategoryTableCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.table.dtos.responses.CategoryTableDetailResponseDTO;
@@ -13,9 +15,10 @@ import vn.tuhoc.vinaeatery.modules.table.repositories.CategoryTableRepository;
 
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CategoryTableMapperHelper {
-    private final CategoryTableRepository categoryTableRepository;
-    private final CategoryTableMapper categoryTableMapper;
+    final CategoryTableRepository categoryTableRepository;
+    final CategoryTableMapper categoryTableMapper;
 
     public CategoryTableEntity mapToEntity(Integer id) {
         return this.categoryTableRepository.findOneByIdToCrud(id)
