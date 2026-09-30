@@ -8,7 +8,7 @@ import MainFilterInfoComponent from "../../../components/admin-manager/MainFilte
 import MainDataComponent from "../../../components/admin-manager/NewMainDataComponent";
 import DetailFoodModalComponent from "../../../components/admin-manager/modal/food/DetailFoodModalComponent";
 import CreateFoodModalComponent from "../../../components/admin-manager/modal/food/CreateFoodModalComponent";
-import UpdateRecipeModalComponent from "../../../components/admin-manager/modal/food/UpdateRecipeModalComponent";
+import UpdateFoodModalComponent from "../../../components/admin-manager/modal/food/UpdateFoodModalComponent";
 import LockModalComponent from "../../../components/admin-manager/modal/LockModalComponent";
 import CategoryFoodApiService from "../../../services/api/v1/CategoryFoodApiService";
 import IngredientApiService from "../../../services/api/v1/IngredientApiService";
@@ -121,21 +121,21 @@ const ManagerFoodsPage: React.FC<AdminManagerPageProps> = ({
   // - Cột thuộc tính
   const columns: ColumnsType<FoodSummaryResponseType> = [
     {
+      title: "",
+      dataIndex: "imageUrl",
+      key: "imageUrl",
+      width: "16%",
+      align: "center",
+      render: (imageUrl: string) => (
+        <Image src={imageUrl ?? ImageSourcePath + "no-image.png"} alt="" />
+      ),
+    },
+    {
       title: "#",
       dataIndex: "id",
       key: "id",
       width: "10%",
       sorter: (a, b) => a.id - b.id,
-    },
-    {
-      title: "Hình ảnh",
-      dataIndex: "image",
-      key: "image",
-      width: "16%",
-      align: "center",
-      render: (image: string) => (
-        <Image src={image ? image : ImageSourcePath + "no-image.png"} alt="" />
-      ),
     },
     {
       title: "Tên món ăn",
@@ -355,6 +355,7 @@ const ManagerFoodsPage: React.FC<AdminManagerPageProps> = ({
         defaultInputs={defaultInputs}
         restaurantId={restaurantIdForCrud}
         dataForCrud={{
+          infoLogin: infoLogin,
           categoryFoods: categoryFoods,
           ingredients: ingredients,
           units: FoodUnitValues,
@@ -363,7 +364,7 @@ const ManagerFoodsPage: React.FC<AdminManagerPageProps> = ({
       />
     ),
     update: (foodSummary: FoodSummaryResponseType) => (
-      <UpdateRecipeModalComponent
+      <UpdateFoodModalComponent
         objectVN={nameVN}
         objectEN={nameEN}
         defaultLabels={defaultLabels}

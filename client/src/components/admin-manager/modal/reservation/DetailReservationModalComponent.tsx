@@ -62,7 +62,7 @@ const DetailReservationModalComponent: React.FC<CrudObjectModalProps> = ({
                 {reservationDetail.employee ? (
                   <CardInfoInModalComponent
                     hasImage={true}
-                    image={reservationDetail.employee.image}
+                    image={reservationDetail.employee.imageUrl}
                     fullname={reservationDetail.employee.fullname}
                     phone={reservationDetail.employee.phone}
                     email={reservationDetail.employee.email}

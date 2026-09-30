@@ -93,7 +93,7 @@ const UpdateCategoryFoodModalComponent: React.FC<CrudObjectModalProps> = ({
                 <ImageUploadComponent
                   imageFile={imageFile}
                   setImageFile={setImageFile}
-                  defaultSrc={data.image as string}
+                  defaultSrc={categoryFoodDetail.imageUrl}
                   alt="image-preview"
                   htmlFor="update-image"
                   imageClassName="image-preview"

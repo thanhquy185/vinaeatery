@@ -3,6 +3,7 @@ import RestaurantApiService from "../../../services/api/v1/RestaurantApiService"
 import ManagerApiService from "../../../services/api/v1/ManagerApiService";
 import CustomerApiService from "../../../services/api/v1/CustomerApiService";
 import UserApiService from "../../../services/api/v1/UserApiService";
+import MenuApiService from "../../../services/api/v1/MenuApiService";
 import FloorApiService from "../../../services/api/v1/FloorApiService";
 import CategoryTableApiService from "../../../services/api/v1/CategoryTableApiService";
 import TableApiService from "../../../services/api/v1/TableApiService";
@@ -24,7 +25,6 @@ import {
 } from "../../../constants/values";
 import { openConfirmation } from "../../../utils/showConfirmationUtil";
 import type { CrudObjectModalProps } from "../../../constants/props";
-import MenuApiService from "../../../services/api/v1/MenuApiService";
 
 const ACTIVE_STATUS_MAP: Record<string, string> = {
   foods: FoodStatusValue.active,
@@ -116,8 +116,13 @@ const LockModalComponent: React.FC<CrudObjectModalProps> = ({
       } ${objectVN?.toLowerCase()} thất bại!`,
     },
     invalidateKeys: [
-      [objectENPrimary ? objectENPrimary : objectEN],
-      [objectEN.slice(0, objectEN.length - 1), fieldId],
+      [objectENPrimary ?? objectEN],
+      [
+        objectENPrimary
+          ? objectENPrimary.slice(0, objectENPrimary.length - 1)
+          : objectEN.slice(0, objectEN.length - 1),
+        fieldId,
+      ],
     ],
     api: getApiByObjectEN(objectEN)!,
   });

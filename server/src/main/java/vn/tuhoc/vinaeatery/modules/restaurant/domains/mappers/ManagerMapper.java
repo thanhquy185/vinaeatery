@@ -32,26 +32,31 @@ public interface ManagerMapper {
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
         @Mapping(target = "id", ignore = true)
         @Mapping(target = "user", source = "userId")
-        @Mapping(target = "image", source = "image")
+        @Mapping(target = "imageUrl", source = "imageUrl")
+        @Mapping(target = "imagePublicId", source = "imagePublicId")
         ManagerEntity createEntityFromRequest(
                         Integer userId,
-                        String image,
+                        String imageUrl,
+                        String imagePublicId,
                         ManagerCreateRequestDTO managerCreateRequestDTO);
 
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
         @Mapping(target = "id", ignore = true)
         @Mapping(target = "user", ignore = true)
-        @Mapping(target = "image", source = "image")
+        @Mapping(target = "imageUrl", source = "imageUrl")
+        @Mapping(target = "imagePublicId", source = "imagePublicId")
         @Mapping(target = "status", ignore = true)
         void updateEntityFromRequest(
-                        String image,
+                        String imageUrl,
+                        String imagePublicId,
                         ManagerUpdateRequestDTO managerUpdateRequestDTO,
                         @MappingTarget ManagerEntity managerEntity);
 
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
         @Mapping(target = "id", ignore = true)
         @Mapping(target = "user", ignore = true)
-        @Mapping(target = "image", ignore = true)
+        @Mapping(target = "imageUrl", ignore = true)
+        @Mapping(target = "imagePublicId", ignore = true)
         @Mapping(target = "fullname", ignore = true)
         @Mapping(target = "birthdate", ignore = true)
         @Mapping(target = "gender", ignore = true)

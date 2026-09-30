@@ -5,7 +5,8 @@ import type { UserEntityType, UserInfoResponseType } from "./UserType";
 export interface CustomerEntityType {
   id: number;
   user: UserEntityType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   fullname: string;
   birthdate: string;
   gender: CommonGenderEnum;
@@ -22,7 +23,8 @@ export interface CustomerEntityType {
 export interface CustomerDetailResponseType {
   id: number;
   user: UserInfoResponseType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   fullname: string;
   birthdate: string;
   gender: CommonGenderEnum;
@@ -39,7 +41,8 @@ export interface CustomerDetailResponseType {
 export interface CustomerSummaryResponseType {
   id: number;
   user: UserInfoResponseType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   fullname: string;
   birthdate: string;
   gender: CommonGenderEnum;
@@ -51,7 +54,8 @@ export interface CustomerSummaryResponseType {
 export interface CustomerInfoResponseType {
   id: number;
   user: UserInfoResponseType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   fullname: string;
   birthdate: string;
   gender: CommonGenderEnum;
@@ -68,7 +72,8 @@ export interface CustomerInfoResponseType {
 export interface CustomerCrudResponseType {
   id: number;
   user: UserInfoResponseType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   fullname: string;
   birthdate: string;
   gender: CommonGenderEnum;

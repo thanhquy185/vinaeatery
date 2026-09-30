@@ -25,6 +25,7 @@ import vn.tuhoc.vinaeatery.modules.auth.dtos.requests.UserCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.auth.services.UserServiceImplement;
 import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
+import vn.tuhoc.vinaeatery.modules.global.dtos.responses.CloudinaryUploadResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.services.CloudinaryService;
 import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.ManagerEntity;
@@ -161,6 +162,8 @@ public class ManagerServiceImplement implements ManagerService {
         this.handleExistsByPhone(managerCreateRequestDTO.getPhone());
         this.handleExistsByEmail(managerCreateRequestDTO.getEmail());
 
+        CloudinaryUploadResponseDTO image = this.cloudinaryService.newGetImage(imageFile, "managers");
+
         UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
                 .role(UserRoleEnum.MANAGER)
                 .username(managerCreateRequestDTO.getUserUsername())
@@ -170,10 +173,12 @@ public class ManagerServiceImplement implements ManagerService {
                 .build();
         UserDetailResponseDTO userDetailResponseDTO = this.userService.handleCreate(userCreateRequestDTO);
 
-        String image = this.cloudinaryService.getImage(imageFile);
-
         ManagerEntity managerEntity = this.managerMapper
-                .createEntityFromRequest(userDetailResponseDTO.getId(), image, managerCreateRequestDTO);
+                .createEntityFromRequest(
+                        userDetailResponseDTO.getId(),
+                        ValidationUtil.nonNull(image) ? image.getUrl() : null,
+                        ValidationUtil.nonNull(image) ? image.getPublicId() : null,
+                        managerCreateRequestDTO);
 
         return this.managerMapper.entityToDetailResponse(this.managerRepository.save(managerEntity));
     }
@@ -200,9 +205,18 @@ public class ManagerServiceImplement implements ManagerService {
             this.handleExistsByEmail(managerEmailRequest);
         }
 
-        String image = this.cloudinaryService.getImage(imageFile);
+        CloudinaryUploadResponseDTO image = this.cloudinaryService.newGetImage(imageFile, "managers");
+        if (ValidationUtil.nonNull(image)
+                && ValidationUtil.nonNull(managerEntity.getImageUrl())
+                && ValidationUtil.nonNull(managerEntity.getImagePublicId())) {
+            this.cloudinaryService.deleteImage(managerEntity.getImagePublicId());
+        }
 
-        this.managerMapper.updateEntityFromRequest(image, managerUpdateRequestDTO, managerEntity);
+        this.managerMapper.updateEntityFromRequest(
+                ValidationUtil.nonNull(image) ? image.getUrl() : null,
+                ValidationUtil.nonNull(image) ? image.getPublicId() : null,
+                managerUpdateRequestDTO,
+                managerEntity);
 
         return this.managerMapper.entityToDetailResponse(managerEntity);
     }

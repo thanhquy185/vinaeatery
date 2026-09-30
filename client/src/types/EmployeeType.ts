@@ -21,7 +21,8 @@ export interface EmployeeEntityType {
   user: UserEntityType;
   role: RoleEntityType;
   permission: PermissionEntityType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   fullname: string;
   birthdate: string;
   gender: string;
@@ -42,7 +43,8 @@ export interface EmployeeDetailResponseType {
   user: UserInfoResponseType;
   role: RoleInfoResponseType;
   permission: PermissionInfoResponseType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   fullname: string;
   birthdate: string;
   gender: string;
@@ -62,7 +64,8 @@ export interface EmployeeSummaryResponseType {
   user: UserInfoResponseType;
   role: RoleInfoResponseType;
   permission: PermissionInfoResponseType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   fullname: string;
   birthdate: string;
   gender: string;
@@ -76,7 +79,8 @@ export interface EmployeeCrudResponseType {
   user: UserInfoResponseType;
   role: RoleInfoResponseType;
   permission: PermissionInfoResponseType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   fullname: string;
   birthdate: string;
   gender: string;
@@ -94,7 +98,8 @@ export interface EmployeeInfoResponseType {
   user: UserInfoResponseType;
   role: RoleInfoResponseType;
   permission: PermissionInfoResponseType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   fullname: string;
   birthdate: string;
   gender: string;
@@ -109,7 +114,8 @@ export interface EmployeeInfoResponseType {
 
 export interface EmployeeSubInfoResponseType {
   id: number;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   fullname: string;
   birthdate: string;
   gender: string;

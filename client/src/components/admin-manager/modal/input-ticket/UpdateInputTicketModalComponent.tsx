@@ -167,7 +167,7 @@ const UpdateInputTicketModalComponent: React.FC<CrudObjectModalProps> = ({
               >
                 <CardInfoInModalComponent
                   hasImage={true}
-                  image={inputTicketDetail.employee.image}
+                  image={inputTicketDetail.employee.imageUrl}
                   fullname={inputTicketDetail.employee.fullname}
                   phone={inputTicketDetail.employee.phone}
                   email={inputTicketDetail.employee.email}

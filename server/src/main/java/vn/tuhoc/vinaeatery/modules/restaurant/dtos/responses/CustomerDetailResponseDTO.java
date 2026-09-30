@@ -23,7 +23,9 @@ public class CustomerDetailResponseDTO {
 
     UserInfoResponseDTO user;
 
-    String image;
+    String imageUrl;
+
+    String imagePublicId;
 
     String fullname;
 

@@ -21,7 +21,9 @@ public class CategoryFoodDetailResponseDTO {
 
     RestaurantSubInfoResponseDTO restaurant;
 
-    String image;
+    String imageUrl;
+
+    String imagePublicId;
 
     String name;
 

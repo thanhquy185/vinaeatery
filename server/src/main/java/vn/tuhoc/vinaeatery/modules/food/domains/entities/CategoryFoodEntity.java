@@ -44,7 +44,10 @@ public class CategoryFoodEntity {
     Integer id;
 
     @Column(nullable = true)
-    String image;
+    String imageUrl;
+
+     @Column(nullable = true)
+    String imagePublicId;
 
     @Column(nullable = false)
     String name;

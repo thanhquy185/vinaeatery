@@ -71,6 +71,7 @@ const FoodApiService = {
 
   async handleCreate({
     restaurantId,
+    employeeId,
     image,
     name,
     categoryFoodId,
@@ -88,6 +89,7 @@ const FoodApiService = {
         [
           JSON.stringify({
             restaurantId,
+            employeeId,
             name,
             categoryFoodId,
             unit,

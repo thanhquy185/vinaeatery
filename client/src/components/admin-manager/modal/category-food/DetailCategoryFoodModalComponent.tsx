@@ -40,7 +40,7 @@ const DetailCategoryFoodModalComponent: React.FC<CrudObjectModalProps> = ({
                 className="modal__form-group-item"
               >
                 <ImageUploadComponent
-                  defaultSrc={data?.image as string}
+                  defaultSrc={categoryFoodDetail.imageUrl}
                   alt="image-preview"
                   imageClassName="image-preview"
                   uploadClassName="image-uploader"

@@ -20,7 +20,7 @@ import java.util.Map;
 public class ZaloPayController {
     final PaymentService paymentService;
 
-    public ZaloPayController(@Qualifier("ZaloPayServiceImplement") PaymentService paymentService) {
+    public ZaloPayController(@Qualifier("zaloPayServiceImplement") PaymentService paymentService) {
         this.paymentService = paymentService;
     }
 

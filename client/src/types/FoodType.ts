@@ -19,7 +19,8 @@ export interface FoodEntityType {
   id: number;
   restaurant: RestaurantEntityType;
   categoryFood: CategoryFoodEntityType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   name: string;
   unit: FoodUnitEnum;
   price: number;
@@ -32,7 +33,8 @@ export interface FoodDetailResponseType {
   id: number;
   restaurant: RestaurantSubInfoResponseType;
   categoryFood: CategoryFoodInfoResponseType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   name: string;
   unit: FoodUnitEnum;
   price: number;
@@ -44,7 +46,8 @@ export interface FoodDetailResponseType {
 export interface FoodSummaryResponseType {
   id: number;
   categoryFood: CategoryFoodInfoResponseType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   name: string;
   unit: FoodUnitEnum;
   price: number;
@@ -54,7 +57,8 @@ export interface FoodSummaryResponseType {
 export interface FoodInfoResponseType {
   id: number;
   categoryFood: CategoryFoodInfoResponseType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   name: string;
   unit: FoodUnitEnum;
   price: number;
@@ -65,7 +69,8 @@ export interface FoodInfoResponseType {
 export interface FoodInfoResponse2Type {
   id: number;
   categoryFood: CategoryFoodInfoResponseType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   name: string;
   unit: FoodUnitEnum;
   price: number;
@@ -77,7 +82,8 @@ export interface FoodInfoResponse2Type {
 export interface FoodCrudResponseType {
   id: number;
   categoryFood: CategoryFoodInfoResponseType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   name: string;
   unit: FoodUnitEnum;
   price: number;
@@ -86,6 +92,7 @@ export interface FoodCrudResponseType {
 
 export interface FoodCreateRequestType {
   restaurantId: number;
+  employeeId: number;
   categoryFoodId: number;
   image: File | RcFile | undefined;
   name: string;

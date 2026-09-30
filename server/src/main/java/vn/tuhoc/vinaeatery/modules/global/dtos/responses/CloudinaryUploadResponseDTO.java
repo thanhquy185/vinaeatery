@@ -1,31 +1,21 @@
-package vn.tuhoc.vinaeatery.modules.food.dtos.responses;
+package vn.tuhoc.vinaeatery.modules.global.dtos.responses;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class FoodCrudResponseDTO {
-    Integer id;
+public class CloudinaryUploadResponseDTO {
+    String url;
 
-    CategoryFoodInfoResponseDTO categoryFood;
-
-    String imageUrl;
-
-    String imagePublicId;
-
-    String name;
-
-    String unit;
-
-    Long price;
-
-    String description;
+    String publicId;
 }

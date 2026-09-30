@@ -17,6 +17,8 @@ public class FoodCreateRequestDTO {
     @NotNull(message = "Mã nhà hàng không được để trống!")
     Integer restaurantId;
 
+    Integer employeeId;
+
     @NotBlank(message = "Tên món ăn không được để trống!")
     String name;
 

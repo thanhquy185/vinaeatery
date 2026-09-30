@@ -109,7 +109,8 @@ DROP TABLE IF EXISTS `category_foods`;
 CREATE TABLE `category_foods` (
   `id` int NOT NULL AUTO_INCREMENT,
   `description` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `image_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `image_public_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `restaurant_id` int NOT NULL,
   `status` varchar(8) COLLATE utf8mb4_general_ci NOT NULL,
@@ -125,7 +126,22 @@ CREATE TABLE `category_foods` (
 
 LOCK TABLES `category_foods` WRITE;
 /*!40000 ALTER TABLE `category_foods` DISABLE KEYS */;
-INSERT INTO `category_foods` VALUES (1,'Các món ăn nhẹ như gỏi, súp, chả giò dùng để khai vị.',NULL,'Khai vị',1,'ACTIVE'),(2,'Các món ăn chính như cơm, bún, phở, lẩu,...',NULL,'Món chính',1,'ACTIVE'),(3,'Các món ngọt hoặc trái cây dùng sau bữa ăn.',NULL,'Tráng miệng',1,'ACTIVE'),(4,'Nước ngọt, bia, rượu, sinh tố, nước ép,...',NULL,'Thức uống',1,'ACTIVE'),(5,'Món ăn chay sử dụng nguyên liệu từ thực vật.',NULL,'Món chay',1,'ACTIVE'),(6,'Các món rau trộn nhiều loại sốt đa dạng.',NULL,'Salad',1,'ACTIVE'),(7,'Món mì, bún xào, bún nước, hủ tiếu,...',NULL,'Mì & Bún',1,'ACTIVE'),(8,'Các món lẩu đa dạng như lẩu thái, lẩu nấm, lẩu bò,...',NULL,'Lẩu',1,'ACTIVE'),(9,'Các món nướng như thịt nướng, hải sản nướng,...',NULL,'Đồ nướng',1,'ACTIVE'),(10,'Các món chiên như gà rán, khoai tây chiên,...',NULL,'Đồ chiên',1,'ACTIVE'),(11,'Các món chế biến từ hải sản như tôm, cua, mực,...',NULL,'Hải sản',1,'ACTIVE'),(12,'Các món cơm dĩa, cơm phần, cơm chiên,...',NULL,'Cơm',1,'ACTIVE'),(13,'Hamburger, sandwich, xúc xích, gà rán,...',NULL,'Đồ ăn nhanh',1,'ACTIVE'),(14,'Món hấp như bánh bao, há cảo, cá hấp,...',NULL,'Đồ hấp',1,'ACTIVE'),(15,'Các loại canh, súp ăn kèm cơm hoặc khai vị.',NULL,'Canh & Súp',1,'ACTIVE');
+INSERT INTO `category_foods`
+VALUES (1,'Các món ăn nhẹ như gỏi, súp, chả giò dùng để khai vị.',NULL,NULL,'Khai vị',1,'ACTIVE'),
+(2,'Các món ăn chính như cơm, bún, phở, lẩu,...',NULL,NULL,'Món chính',1,'ACTIVE'),
+(3,'Các món ngọt hoặc trái cây dùng sau bữa ăn.',NULL,NULL,'Tráng miệng',1,'ACTIVE'),
+(4,'Nước ngọt, bia, rượu, sinh tố, nước ép,...',NULL,NULL,'Thức uống',1,'ACTIVE'),
+(5,'Món ăn chay sử dụng nguyên liệu từ thực vật.',NULL,NULL,'Món chay',1,'ACTIVE'),
+(6,'Các món rau trộn nhiều loại sốt đa dạng.',NULL,NULL,'Salad',1,'ACTIVE'),
+(7,'Món mì, bún xào, bún nước, hủ tiếu,...',NULL,NULL,'Mì & Bún',1,'ACTIVE'),
+(8,'Các món lẩu đa dạng như lẩu thái, lẩu nấm, lẩu bò,...',NULL,NULL,'Lẩu',1,'ACTIVE'),
+(9,'Các món nướng như thịt nướng, hải sản nướng,...',NULL,NULL,'Đồ nướng',1,'ACTIVE'),
+(10,'Các món chiên như gà rán, khoai tây chiên,...',NULL,NULL,'Đồ chiên',1,'ACTIVE'),
+(11,'Các món chế biến từ hải sản như tôm, cua, mực,...',NULL,NULL,'Hải sản',1,'ACTIVE'),
+(12,'Các món cơm dĩa, cơm phần, cơm chiên,...',NULL,NULL,'Cơm',1,'ACTIVE'),
+(13,'Hamburger, sandwich, xúc xích, gà rán,...',NULL,NULL,'Đồ ăn nhanh',1,'ACTIVE'),
+(14,'Món hấp như bánh bao, há cảo, cá hấp,...',NULL,NULL,'Đồ hấp',1,'ACTIVE'),
+(15,'Các loại canh, súp ăn kèm cơm hoặc khai vị.',NULL,NULL,'Canh & Súp',1,'ACTIVE');
 /*!40000 ALTER TABLE `category_foods` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -203,7 +219,8 @@ CREATE TABLE `customers` (
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `fullname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `gender` varchar(6) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `image_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `image_public_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `status` varchar(8) COLLATE utf8mb4_general_ci NOT NULL,
   `user_id` int NOT NULL,
@@ -225,7 +242,10 @@ CREATE TABLE `customers` (
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` VALUES (1,'2002-02-28','Dùng để khi xử lý cho khách hàng chưa có tài khoản trên hệ thống','khachahang@gmail.com','Khách hàng','MALE',NULL,'0000000000','ACTIVE',9,'1','Đường Hùng Vương','Phường Tân An','Tỉnh Tây Ninh'),(2,'2000-07-02',NULL,'tranvana@gmail.com','Trần Văn A','MALE',NULL,'0000000001','ACTIVE',10,'25','Đường Trần Hưng Đạo','Phường Ninh Kiều','Thành phố Cần Thơ'),(3,'2000-08-20',NULL,'nguyenthib@gmail.com','Nguyễn Thị B','FEMALE',NULL,'0000000002','ACTIVE',11,'102','Đường Nguyễn Văn Linh','Phường Hải Châu','Thành phố Đà Nẵng');
+INSERT INTO `customers` VALUES
+(1,'2002-02-28','Dùng để khi xử lý cho khách hàng chưa có tài khoản trên hệ thống','khachahang@gmail.com','Khách hàng','MALE',NULL,NULL,'0000000000','ACTIVE',9,'1','Đường Hùng Vương','Phường Tân An','Tỉnh Tây Ninh'),
+(2,'2000-07-02',NULL,'tranvana@gmail.com','Trần Văn A','MALE',NULL,NULL,'0000000001','ACTIVE',10,'25','Đường Trần Hưng Đạo','Phường Ninh Kiều','Thành phố Cần Thơ'),
+(3,'2000-08-20',NULL,'nguyenthib@gmail.com','Nguyễn Thị B','FEMALE',NULL,NULL,'0000000002','ACTIVE',11,'102','Đường Nguyễn Văn Linh','Phường Hải Châu','Thành phố Đà Nẵng');
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -242,7 +262,8 @@ CREATE TABLE `employees` (
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `fullname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `gender` varchar(6) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `image_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `image_public_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `permission_id` int NOT NULL,
   `phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `restaurant_id` int NOT NULL,
@@ -274,7 +295,12 @@ CREATE TABLE `employees` (
 
 LOCK TABLES `employees` WRITE;
 /*!40000 ALTER TABLE `employees` DISABLE KEYS */;
-INSERT INTO `employees` VALUES (1,'2003-09-10','quanly@gmail.com','Quản lý','MALE',NULL,1,'0000000000',1,'ACTIVE',4,'18','Nguyễn Đình Chiểu','Phường Võ Thị Sáu','Thành phố Hồ Chí Minh',NULL,1),(2,'1996-10-02','qlvanhanh@gmail.com','Quản lý vận hành','MALE',NULL,2,'0000000001',1,'ACTIVE',5,'45','Điện Biên Phủ','Phường Thạnh Mỹ Tây','Thành phố Hồ Chí Minh',NULL,2),(3,'2000-05-25','qlchongoi@gmail.com','Quản lý chổ ngồi','FEMALE',NULL,3,'0000000002',1,'ACTIVE',6,'72','Phan Văn Trị','Phường An Nhơn','Thành phố Hồ Chí Minh',NULL,3),(4,'2000-04-26','qlkhohang@gmail.com','Quản lý kho hàng','MALE',NULL,4,'0000000003',1,'ACTIVE',7,'126','Lũy Bán Bích','Phường Phú Thọ Hòa','Thành phố Hồ Chí Minh',NULL,4),(5,'2001-02-20','qlnhansu@gmail.com','Quản lý nhân sự','FEMALE',NULL,5,'0000000004',1,'ACTIVE',8,'39','Nguyễn Văn Linh','Phường Tân Mỹ','Thành phố Hồ Chí Minh',NULL,5);
+INSERT INTO `employees` VALUES
+(1,'2003-09-10','quanly@gmail.com','Quản lý','MALE',NULL,NULL,1,'0000000000',1,'ACTIVE',4,'18','Nguyễn Đình Chiểu','Phường Võ Thị Sáu','Thành phố Hồ Chí Minh',NULL,1),
+(2,'1996-10-02','qlvanhanh@gmail.com','Quản lý vận hành','MALE',NULL,NULL,2,'0000000001',1,'ACTIVE',5,'45','Điện Biên Phủ','Phường Thạnh Mỹ Tây','Thành phố Hồ Chí Minh',NULL,2),
+(3,'2000-05-25','qlchongoi@gmail.com','Quản lý chổ ngồi','FEMALE',NULL,NULL,3,'0000000002',1,'ACTIVE',6,'72','Phan Văn Trị','Phường An Nhơn','Thành phố Hồ Chí Minh',NULL,3),
+(4,'2000-04-26','qlkhohang@gmail.com','Quản lý kho hàng','MALE',NULL,NULL,4,'0000000003',1,'ACTIVE',7,'126','Lũy Bán Bích','Phường Phú Thọ Hòa','Thành phố Hồ Chí Minh',NULL,4),
+(5,'2001-02-20','qlnhansu@gmail.com','Quản lý nhân sự','FEMALE',NULL,NULL,5,'0000000004',1,'ACTIVE',8,'39','Nguyễn Văn Linh','Phường Tân Mỹ','Thành phố Hồ Chí Minh',NULL,5);
 /*!40000 ALTER TABLE `employees` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -406,7 +432,8 @@ CREATE TABLE `foods` (
   `id` int NOT NULL AUTO_INCREMENT,
   `category_food_id` int NOT NULL,
   `description` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `image_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `image_public_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `price` bigint NOT NULL,
   `restaurant_id` int NOT NULL,
@@ -426,7 +453,25 @@ CREATE TABLE `foods` (
 
 LOCK TABLES `foods` WRITE;
 /*!40000 ALTER TABLE `foods` DISABLE KEYS */;
-INSERT INTO `foods` VALUES (1,9,'Thịt ba rọi nướng thơm lừng với sả và gia vị đặc trưng.',NULL,'Ba rọi nướng sả',120000,1,'SELLING','Phần'),(2,2,'Thịt bò thăn mềm mại xào cùng cải thìa tươi xanh.',NULL,'Bò xào cải thìa',135000,1,'SELLING','Phần'),(3,1,'Món gỏi thanh mát với tôm sú, thịt heo và rau củ.',NULL,'Gỏi tôm thịt',95000,1,'SELLING','Phần'),(4,7,'Mì trứng xào bò với phô mai béo ngậy.',NULL,'Mì xào bò phô mai',100000,1,'SELLING','Phần'),(5,5,'Đậu hũ trắng kho cùng nấm kim châm và gia vị đậm đà.',NULL,'Đậu hũ kho nấm',75000,1,'SELLING','Phần'),(6,8,'Lẩu thịt dê nấu với lá chanh, sả, rau nhúng đa dạng.',NULL,'Lẩu dê lá chanh',250000,1,'SELLING','Nồi'),(7,15,'Súp ức gà nấu cùng nấm, cà rốt và hành ngò.',NULL,'Súp gà nấm',70000,1,'SELLING','Tô'),(8,10,'Ức gà phi lê chiên vàng với bơ thơm ngậy.',NULL,'Gà chiên bơ',95000,1,'SELLING','Phần'),(9,11,'Mực ống xào với sả, ớt và gia vị đậm đà.',NULL,'Mực xào cay',110000,1,'SELLING','Phần'),(10,15,'Canh thanh mát với rong biển và trứng gà ta.',NULL,'Canh rong biển trứng',65000,1,'SELLING','Tô'),(11,7,'Thịt ba rọi nướng ăn kèm bún tươi, rau sống.',NULL,'Bún thịt nướng',120000,1,'SELLING','Tô'),(12,10,'Khoai tây chiên giòn, ăn kèm tương ớt.',NULL,'Khoai tây chiên',45000,1,'SELLING','Phần'),(13,5,'Mì trứng xào cùng nấm, cà rốt và cải thìa.',NULL,'Mì xào chay rau củ',85000,1,'SELLING','Phần'),(14,5,'Đậu hũ chiên cuốn rau và bún, chấm nước mắm chay.',NULL,'Gỏi cuốn đậu hũ',70000,1,'SELLING','Phần'),(15,13,'Bánh mì giòn ăn kèm trứng gà ốp la và pate.',NULL,'Bánh mì ốp la',40000,1,'SELLING','Ổ'),(16,8,'Tôm, mực, cá cùng rau lẩu và nước lẩu chua cay.',NULL,'Lẩu hải sản chua cay',280000,1,'SELLING','Nồi'),(17,7,'Phở nước truyền thống với thịt bò tái.',NULL,'Phở bò tái',75000,1,'SELLING','Tô'),(18,8,'Lẩu thái chua cay ngon đến tê lưỡi!','https://res.cloudinary.com/dzneg8cnu/image/upload/v1785584251/ca3d4dd9-631e-4351-b2be-efb9953ae419_images.webp','Lẩu thái chua cay',100000,1,'SELLING','Nồi');
+INSERT INTO `foods` VALUES
+(1,9,'Thịt ba rọi nướng thơm lừng với sả và gia vị đặc trưng.',NULL,NULL,'Ba rọi nướng sả',120000,1,'SELLING','Phần'),
+(2,2,'Thịt bò thăn mềm mại xào cùng cải thìa tươi xanh.',NULL,NULL,'Bò xào cải thìa',135000,1,'SELLING','Phần'),
+(3,1,'Món gỏi thanh mát với tôm sú, thịt heo và rau củ.',NULL,NULL,'Gỏi tôm thịt',95000,1,'SELLING','Phần'),
+(4,7,'Mì trứng xào bò với phô mai béo ngậy.',NULL,NULL,'Mì xào bò phô mai',100000,1,'SELLING','Phần'),
+(5,5,'Đậu hũ trắng kho cùng nấm kim châm và gia vị đậm đà.',NULL,NULL,'Đậu hũ kho nấm',75000,1,'SELLING','Phần'),
+(6,8,'Lẩu thịt dê nấu với lá chanh, sả, rau nhúng đa dạng.',NULL,NULL,'Lẩu dê lá chanh',250000,1,'SELLING','Nồi'),
+(7,15,'Súp ức gà nấu cùng nấm, cà rốt và hành ngò.',NULL,NULL,'Súp gà nấm',70000,1,'SELLING','Tô'),
+(8,10,'Ức gà phi lê chiên vàng với bơ thơm ngậy.',NULL,NULL,'Gà chiên bơ',95000,1,'SELLING','Phần'),
+(9,11,'Mực ống xào với sả, ớt và gia vị đậm đà.',NULL,NULL,'Mực xào cay',110000,1,'SELLING','Phần'),
+(10,15,'Canh thanh mát với rong biển và trứng gà ta.',NULL,NULL,'Canh rong biển trứng',65000,1,'SELLING','Tô'),
+(11,7,'Thịt ba rọi nướng ăn kèm bún tươi, rau sống.',NULL,NULL,'Bún thịt nướng',120000,1,'SELLING','Tô'),
+(12,10,'Khoai tây chiên giòn, ăn kèm tương ớt.',NULL,NULL,'Khoai tây chiên',45000,1,'SELLING','Phần'),
+(13,5,'Mì trứng xào cùng nấm, cà rốt và cải thìa.',NULL,NULL,'Mì xào chay rau củ',85000,1,'SELLING','Phần'),
+(14,5,'Đậu hũ chiên cuốn rau và bún, chấm nước mắm chay.',NULL,NULL,'Gỏi cuốn đậu hũ',70000,1,'SELLING','Phần'),
+(15,13,'Bánh mì giòn ăn kèm trứng gà ốp la và pate.',NULL,NULL,'Bánh mì ốp la',40000,1,'SELLING','Ổ'),
+(16,8,'Tôm, mực, cá cùng rau lẩu và nước lẩu chua cay.',NULL,NULL,'Lẩu hải sản chua cay',280000,1,'SELLING','Nồi'),
+(17,7,'Phở nước truyền thống với thịt bò tái.',NULL,NULL,'Phở bò tái',75000,1,'SELLING','Tô'),
+(18,8,'Lẩu thái chua cay ngon đến tê lưỡi!',NULL,NULL,'Lẩu thái chua cay',100000,1,'SELLING','Nồi');
 /*!40000 ALTER TABLE `foods` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -453,7 +498,8 @@ CREATE TABLE `functions` (
 
 LOCK TABLES `functions` WRITE;
 /*!40000 ALTER TABLE `functions` DISABLE KEYS */;
-INSERT INTO `functions` VALUES (1,'Xem','dashboard','dashboard-profit','Thống kê Lợi nhuận'),(2,'Xem','dashboard','dashboard-revenue','Thống kê Doanh thu'),(3,'Xem','dashboard','dashboard-expense','Thống kê Chi tiêu'),(4,'Xem','dashboard','dashboard-feedback','Thống kê Đánh giá'),(5,'Xem','active','table-histories','Lịch sử bàn ăn'),(6,'Xem|Cập nhật','active','use-tables','Sử dụng bàn ăn'),(7,'Xem|Cập nhật','active','use-foods','Sử dụng món ăn'),(8,'Xem|Thêm|Cập nhật|Khóa','active','menus','Thực đơn'),(9,'Xem|Cập nhật','active','order-sheets','Phiếu gọi món'),(10,'Xem|Thêm','active','messages','Trò chuyện'),(11,'Xem|Thêm|Cập nhật','active','bills','Hoá đơn'),(12,'Xem|Thêm|Cập nhật','active','reservations','Đặt bàn'),(13,'Xem|Thêm|Cập nhật|Khóa','seat','floors','Tầng'),(14,'Xem|Thêm|Cập nhật|Khóa','seat','category-tables','Loại bàn ăn'),(15,'Xem|Thêm|Cập nhật|Khóa','seat','tables','Bàn ăn'),(16,'Xem|Thêm|Cập nhật','food','input-tickets','Phiếu nhập'),(17,'Xem|Thêm|Cập nhật|Khóa','food','suppliers','Nhà cung cấp'),(18,'Xem|Thêm|Cập nhật|Khóa','food','category-ingredients','Loại nguyên liệu'),(19,'Xem|Thêm|Cập nhật|Khóa','food','ingredients','Nguyên liệu'),(20,'Xem|Thêm|Cập nhật|Khóa','food','category-foods','Loại món ăn'),(21,'Xem|Thêm|Cập nhật|Khóa','food','foods','Món ăn'),(22,'Xem|Thêm|Cập nhật|Khóa','employee','roles','Chức vụ'),(23,'Xem|Thêm|Cập nhật|Khóa','employee','permissions','Quyền hạn'),(24,'Xem|Thêm|Cập nhật|Khóa','employee','employees','Nhân viên');
+INSERT INTO `functions` VALUES (1,'Xem','dashboard','dashboard-profit','Thống kê Lợi nhuận'),(
+  2,'Xem','dashboard','dashboard-revenue','Thống kê Doanh thu'),(3,'Xem','dashboard','dashboard-expense','Thống kê Chi tiêu'),(4,'Xem','dashboard','dashboard-feedback','Thống kê Đánh giá'),(5,'Xem','active','table-histories','Lịch sử bàn ăn'),(6,'Xem|Cập nhật','active','use-tables','Sử dụng bàn ăn'),(7,'Xem|Cập nhật','active','use-foods','Sử dụng món ăn'),(8,'Xem|Thêm|Cập nhật|Khóa','active','menus','Thực đơn'),(9,'Xem|Cập nhật','active','order-sheets','Phiếu gọi món'),(10,'Xem|Thêm','active','messages','Trò chuyện'),(11,'Xem|Thêm|Cập nhật','active','bills','Hoá đơn'),(12,'Xem|Thêm|Cập nhật','active','reservations','Đặt bàn'),(13,'Xem|Thêm|Cập nhật|Khóa','seat','floors','Tầng'),(14,'Xem|Thêm|Cập nhật|Khóa','seat','category-tables','Loại bàn ăn'),(15,'Xem|Thêm|Cập nhật|Khóa','seat','tables','Bàn ăn'),(16,'Xem|Thêm|Cập nhật','food','input-tickets','Phiếu nhập'),(17,'Xem|Thêm|Cập nhật|Khóa','food','suppliers','Nhà cung cấp'),(18,'Xem|Thêm|Cập nhật|Khóa','food','category-ingredients','Loại nguyên liệu'),(19,'Xem|Thêm|Cập nhật|Khóa','food','ingredients','Nguyên liệu'),(20,'Xem|Thêm|Cập nhật|Khóa','food','category-foods','Loại món ăn'),(21,'Xem|Thêm|Cập nhật|Khóa','food','foods','Món ăn'),(22,'Xem|Thêm|Cập nhật|Khóa','employee','roles','Chức vụ'),(23,'Xem|Thêm|Cập nhật|Khóa','employee','permissions','Quyền hạn'),(24,'Xem|Thêm|Cập nhật|Khóa','employee','employees','Nhân viên');
 /*!40000 ALTER TABLE `functions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -577,7 +623,8 @@ CREATE TABLE `managers` (
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `fullname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `gender` varchar(6) COLLATE utf8mb4_general_ci NOT NULL,
-  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `image_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `image_public_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `status` varchar(8) COLLATE utf8mb4_general_ci NOT NULL,
   `user_id` int NOT NULL,
@@ -597,7 +644,9 @@ CREATE TABLE `managers` (
 
 LOCK TABLES `managers` WRITE;
 /*!40000 ALTER TABLE `managers` DISABLE KEYS */;
-INSERT INTO `managers` VALUES (1,'2002-02-18',NULL,'thanhquy@gmail.com','Chủ cửa hàng Thanh Quy','MALE',NULL,'0000000001','ACTIVE',2,'123','Nguyễn Huệ','Bến Nghé','Thành phố Hồ Chí Minh'),(2,'1998-07-18',NULL,'phuoclong@gmail.com','Chủ nhà hàng Phước Long','MALE',NULL,'0000000002','ACTIVE',3,'45A','Lê Lợi','Phường 1','Tỉnh Đồng Nai');
+INSERT INTO `managers` VALUES
+(1,'2002-02-18',NULL,'thanhquy@gmail.com','Chủ cửa hàng Thanh Quy','MALE',NULL,NULL,'0000000001','ACTIVE',2,'123','Nguyễn Huệ','Bến Nghé','Thành phố Hồ Chí Minh'),
+(2,'1998-07-18',NULL,'phuoclong@gmail.com','Chủ nhà hàng Phước Long','MALE',NULL,NULL,'0000000002','ACTIVE',3,'45A','Lê Lợi','Phường 1','Tỉnh Đồng Nai');
 /*!40000 ALTER TABLE `managers` ENABLE KEYS */;
 UNLOCK TABLES;
 

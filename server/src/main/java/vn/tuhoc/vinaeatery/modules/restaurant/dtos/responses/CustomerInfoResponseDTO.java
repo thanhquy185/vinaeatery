@@ -20,7 +20,9 @@ import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
 public class CustomerInfoResponseDTO {
     Integer id;
 
-    String image;
+    String imageUrl;
+
+    String imagePublicId;
 
     String fullname;
 

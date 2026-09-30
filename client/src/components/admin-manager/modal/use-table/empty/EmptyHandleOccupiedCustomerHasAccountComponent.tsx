@@ -120,7 +120,9 @@ const EmptyHandleOccupiedCustomerHasAccountComponent: React.FC<
                   description={
                     <>
                       <img
-                        src={customer.image ?? ImageSourcePath + "no-image.png"}
+                        src={
+                          customer.imageUrl ?? ImageSourcePath + "no-image.png"
+                        }
                         alt={"avatar-customer-" + customer.id}
                         style={{ width: 80, height: 80 }}
                       />

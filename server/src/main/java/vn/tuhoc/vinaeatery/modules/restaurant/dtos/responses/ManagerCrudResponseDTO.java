@@ -23,7 +23,9 @@ public class ManagerCrudResponseDTO {
 
     UserInfoResponseDTO user;
 
-    String image;
+   String imageUrl;
+
+    String imagePublicId;
 
     String fullname;
 

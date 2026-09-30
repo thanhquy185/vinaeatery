@@ -23,7 +23,7 @@ import java.util.Map;
 public class MomoController {
     final PaymentService paymentService;
 
-    public MomoController(@Qualifier("MomoServiceImplement") PaymentService paymentService) {
+    public MomoController(@Qualifier("momoServiceImplement") PaymentService paymentService) {
         this.paymentService = paymentService;
     }
 

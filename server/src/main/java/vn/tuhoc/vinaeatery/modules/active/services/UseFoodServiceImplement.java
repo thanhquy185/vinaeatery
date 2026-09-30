@@ -93,9 +93,13 @@ public class UseFoodServiceImplement implements UseFoodService {
     }
 
     @Override
-    public UseFoodDetailResponseDTO handleCreateByFoodCreated(Integer restaurantId, Integer foodId) {
+    public UseFoodDetailResponseDTO handleCreateByFoodCreated(
+            Integer restaurantId,
+            Integer foodId,
+            Integer employeeId) {
         UseFoodCreateRequestDTO useFoodCreateRequestDTO = UseFoodCreateRequestDTO.builder()
                 .restaurantId(restaurantId)
+                .employeeId(employeeId)
                 .foodId(foodId)
                 .startAt(this.timeService.getCurrentDatetime())
                 .status(UseFoodStatusEnum.CAN_NOT_ORDER)

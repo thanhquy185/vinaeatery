@@ -5,8 +5,8 @@ import type { CategoryFoodCrudResponseType } from "../../types/CategoryFoodType"
 type CardFilterComponentProps = {
   key: number;
   className?: string;
-  object?: CategoryFoodCrudResponseType;
-  active?: boolean;
+  object: CategoryFoodCrudResponseType;
+  active: boolean;
   currentValue?: number | string;
   setSelectValue?: (value?: number | string) => void;
 };
@@ -32,11 +32,7 @@ const CardFilterComponent: React.FC<CardFilterComponentProps> = ({
       >
         <a className={"call-food__filter-action" + (active ? " active" : "")}>
           <img
-            src={
-              object?.image
-                ? (object?.image as string)
-                : ImageSourcePath + "no-image.png"
-            }
+            src={object.imageUrl ?? ImageSourcePath + "no-image.png"}
             alt=""
             className="call-food__filter-image"
           />

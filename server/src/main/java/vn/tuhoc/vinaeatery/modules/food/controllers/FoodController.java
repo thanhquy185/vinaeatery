@@ -87,7 +87,8 @@ public class FoodController {
 
                 this.useFoodService.handleCreateByFoodCreated(
                                 foodCreated.getRestaurant().getId(),
-                                foodCreated.getId());
+                                foodCreated.getId(),
+                                foodCreateRequestDTO.getEmployeeId());
 
                 return RestResponseUtils.created(
                                 "Thêm món ăn thành công!",

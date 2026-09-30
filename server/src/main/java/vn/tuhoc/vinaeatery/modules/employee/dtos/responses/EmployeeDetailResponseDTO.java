@@ -32,7 +32,9 @@ public class EmployeeDetailResponseDTO {
 
     PermissionSubInfoResponseDTO permission;
 
-    String image;
+    String imageUrl;
+
+    String imagePublicId;
 
     String fullname;
 

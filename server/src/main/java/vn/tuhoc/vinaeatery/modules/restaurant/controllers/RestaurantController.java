@@ -30,7 +30,7 @@ import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantPublicDet
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantPublicResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.repositories.criteria.RestaurantCriteria;
-import vn.tuhoc.vinaeatery.modules.restaurant.services.RestaurantServiceImplement;
+import vn.tuhoc.vinaeatery.modules.restaurant.services.interfaces.RestaurantService;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RestaurantController {
-        final RestaurantServiceImplement restaurantService;
+        final RestaurantService restaurantService;
 
         @GetMapping("/{id}")
         public ResponseEntity<RestResponseDTO<RestaurantDetailResponseDTO>> handleGetDetailById(

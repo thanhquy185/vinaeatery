@@ -82,7 +82,9 @@ const UpdateUseFoodModalComponent: React.FC<CrudObjectModalProps> = ({
       {useFoodDetail && (
         <>
           <Image
-            src={useFoodDetail.food.image ?? ImageSourcePath + "no-image.png"}
+            src={
+              useFoodDetail.food.imageUrl ?? ImageSourcePath + "no-image.png"
+            }
             alt=""
           />
           <div className="info">

@@ -75,6 +75,7 @@ const CreateFoodModalComponent: React.FC<CrudObjectModalProps> = ({
               const response = await createMutation.mutateAsync({
                 values: {
                   ...values,
+                  employeeId: dataForCrud?.infoLogin?.id!,
                   restaurantId: restaurantId,
                   image: imageFile ?? undefined,
                   recipes: recipes.map((recipe: any) => ({

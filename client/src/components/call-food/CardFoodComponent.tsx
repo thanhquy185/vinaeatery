@@ -50,7 +50,7 @@ const CardFoodComponent: React.FC<CardFoodComponentProps> = ({
       }}
     >
       <img
-        src={object.image ?? ImageSourcePath + "no-image.png"}
+        src={object.imageUrl ?? ImageSourcePath + "no-image.png"}
         alt=""
         className="call-food__food-image"
       />

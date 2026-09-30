@@ -25,6 +25,7 @@ import vn.tuhoc.vinaeatery.modules.auth.dtos.requests.UserCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.auth.services.UserServiceImplement;
 import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
+import vn.tuhoc.vinaeatery.modules.global.dtos.responses.CloudinaryUploadResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.services.CloudinaryService;
 import vn.tuhoc.vinaeatery.modules.restaurant.domains.entities.CustomerEntity;
@@ -179,6 +180,8 @@ public class CustomerServiceImplement implements CustomerService {
         this.handleExistsByPhone(customerCreateRequestDTO.getPhone());
         this.handleExistsByEmail(customerCreateRequestDTO.getEmail());
 
+        CloudinaryUploadResponseDTO image = this.cloudinaryService.newGetImage(imageFile, "customers");
+
         UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
                 .role(UserRoleEnum.CUSTOMER)
                 .username(customerCreateRequestDTO.getUserUsername())
@@ -188,10 +191,12 @@ public class CustomerServiceImplement implements CustomerService {
                 .build();
         UserDetailResponseDTO userDetailResponseDTO = this.userService.handleCreate(userCreateRequestDTO);
 
-        String image = this.cloudinaryService.getImage(imageFile);
-
         CustomerEntity customerEntity = this.customerMapper
-                .createEntityFromRequest(userDetailResponseDTO.getId(), image, customerCreateRequestDTO);
+                .createEntityFromRequest(
+                        userDetailResponseDTO.getId(),
+                        ValidationUtil.nonNull(image) ? image.getUrl() : null,
+                        ValidationUtil.nonNull(image) ? image.getPublicId() : null,
+                        customerCreateRequestDTO);
 
         return this.customerMapper.entityToDetailResponse(this.customerRepository.save(customerEntity));
     }
@@ -230,9 +235,18 @@ public class CustomerServiceImplement implements CustomerService {
             this.handleExistsByEmail(customerEmailRequest);
         }
 
-        String image = this.cloudinaryService.getImage(imageFile);
+        CloudinaryUploadResponseDTO image = this.cloudinaryService.newGetImage(imageFile, "customers");
+        if (ValidationUtil.nonNull(image)
+                && ValidationUtil.nonNull(customerEntity.getImageUrl())
+                && ValidationUtil.nonNull(customerEntity.getImagePublicId())) {
+            this.cloudinaryService.deleteImage(customerEntity.getImagePublicId());
+        }
 
-        this.customerMapper.updateEntityFromRequest(image, customerUpdateRequestDTO, customerEntity);
+        this.customerMapper.updateEntityFromRequest(
+                ValidationUtil.nonNull(image) ? image.getUrl() : null,
+                ValidationUtil.nonNull(image) ? image.getPublicId() : null,
+                customerUpdateRequestDTO,
+                customerEntity);
 
         return this.customerMapper.entityToDetailResponse(customerEntity);
     }

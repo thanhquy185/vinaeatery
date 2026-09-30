@@ -25,7 +25,9 @@ public class FoodDetailResponseDTO {
 
     CategoryFoodInfoResponseDTO categoryFood;
 
-    String image;
+    String imageUrl;
+
+    String imagePublicId;
 
     String name;
 

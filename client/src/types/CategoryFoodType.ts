@@ -8,7 +8,8 @@ import type {
 export interface CategoryFoodEntityType {
   id: number;
   restaurant: RestaurantEntityType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   name: string;
   description: string;
   status: CommonStatusEnum;
@@ -17,7 +18,8 @@ export interface CategoryFoodEntityType {
 export interface CategoryFoodDetailResponseType {
   id: number;
   restaurant: RestaurantSubInfoResponseType;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   name: string;
   description: string;
   status: CommonStatusEnum;
@@ -25,14 +27,16 @@ export interface CategoryFoodDetailResponseType {
 
 export interface CategoryFoodSummaryResponseType {
   id: number;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   name: string;
   status: CommonStatusEnum;
 }
 
 export interface CategoryFoodInfoResponseType {
   id: number;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   name: string;
   description: string;
   status: CommonStatusEnum;
@@ -40,7 +44,8 @@ export interface CategoryFoodInfoResponseType {
 
 export interface CategoryFoodCrudResponseType {
   id: number;
-  image: string;
+  imageUrl: string;
+  imagePublicId: string;
   name: string;
   description: string;
 }

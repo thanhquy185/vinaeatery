@@ -33,21 +33,27 @@ public interface FoodMapper {
 
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
         @Mapping(target = "id", ignore = true)
-        @Mapping(target = "image", source = "image")
         @Mapping(target = "restaurant", source = "foodCreateRequestDTO.restaurantId")
         @Mapping(target = "categoryFood", source = "foodCreateRequestDTO.categoryFoodId")
+        @Mapping(target = "imageUrl", source = "imageUrl")
+        @Mapping(target = "imagePublicId", source = "imagePublicId")
         @Mapping(target = "recipes", ignore = true)
-        FoodEntity createEntityFromRequest(String image, FoodCreateRequestDTO foodCreateRequestDTO);
+        FoodEntity createEntityFromRequest(
+                        String imageUrl,
+                        String imagePublicId,
+                        FoodCreateRequestDTO foodCreateRequestDTO);
 
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
         @Mapping(target = "id", ignore = true)
         @Mapping(target = "restaurant", ignore = true)
         @Mapping(target = "categoryFood", source = "foodUpdateRequestDTO.categoryFoodId")
-        @Mapping(target = "image", source = "image")
+        @Mapping(target = "imageUrl", source = "imageUrl")
+        @Mapping(target = "imagePublicId", source = "imagePublicId")
         @Mapping(target = "status", ignore = true)
         @Mapping(target = "recipes", ignore = true)
         void updateEntityFromRequest(
-                        String image,
+                        String imageUrl,
+                        String imagePublicId,
                         FoodUpdateRequestDTO foodUpdateRequestDTO,
                         @MappingTarget FoodEntity foodEntity);
 
@@ -55,7 +61,8 @@ public interface FoodMapper {
         @Mapping(target = "id", ignore = true)
         @Mapping(target = "restaurant", ignore = true)
         @Mapping(target = "categoryFood", ignore = true)
-        @Mapping(target = "image", ignore = true)
+        @Mapping(target = "imageUrl", ignore = true)
+        @Mapping(target = "imagePublicId", ignore = true)
         @Mapping(target = "name", ignore = true)
         @Mapping(target = "unit", ignore = true)
         @Mapping(target = "price", ignore = true)

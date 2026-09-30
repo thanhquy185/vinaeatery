@@ -129,22 +129,22 @@ const ManagerEmployeesPage: React.FC<AdminManagerPageProps> = ({
   // - Cột thuộc tính
   const columns: ColumnsType<EmployeeSummaryResponseType> = [
     {
+      title: "",
+      dataIndex: "imageUrl",
+      key: "imageUrl",
+      width: "8%",
+      fixed: "left",
+      render: (imageUrl: string) => (
+        <Image src={imageUrl ?? ImageSourcePath + "no-image.png"} alt="" />
+      ),
+    },
+    {
       title: "#",
       dataIndex: "id",
       key: "id",
       width: 100,
-      fixed: "left",
       className: "id",
       sorter: (a, b) => a.id - b.id,
-    },
-    {
-      title: "Hình ảnh",
-      dataIndex: "image",
-      key: "image",
-      width: "8%",
-      render: (image: string) => (
-        <Image src={image ? image : ImageSourcePath + "no-image.png"} alt="" />
-      ),
     },
     {
       title: "Họ và tên",

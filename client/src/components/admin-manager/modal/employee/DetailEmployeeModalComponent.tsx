@@ -57,7 +57,7 @@ const DetailEmployeeModalComponent: React.FC<CrudObjectModalProps> = ({
                 className="modal__form-group-item"
               >
                 <ImageUploadComponent
-                  defaultSrc={data.image as string}
+                  defaultSrc={employeeDetail.imageUrl}
                   alt="image-preview"
                   imageClassName="image-preview"
                   uploadClassName="image-uploader"

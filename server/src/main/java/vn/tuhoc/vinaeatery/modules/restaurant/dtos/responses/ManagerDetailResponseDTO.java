@@ -23,7 +23,9 @@ public class ManagerDetailResponseDTO {
 
     UserInfoResponseDTO user;
 
-    String image;
+    String imageUrl;
+
+    String imagePublicId;
 
     String fullname;
 

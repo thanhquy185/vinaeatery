@@ -15,7 +15,9 @@ import lombok.experimental.FieldDefaults;
 public class CategoryFoodCrudResponseDTO {
     Integer id;
 
-    String image;
+    String imageUrl;
+
+    String imagePublicId;
 
     String name;
 

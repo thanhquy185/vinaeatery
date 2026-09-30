@@ -27,7 +27,7 @@ import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.ManagerCrudResponse
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.ManagerDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.ManagerSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.repositories.criteria.ManagerCriteria;
-import vn.tuhoc.vinaeatery.modules.restaurant.services.ManagerServiceImplement;
+import vn.tuhoc.vinaeatery.modules.restaurant.services.interfaces.ManagerService;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ManagerController {
-        final ManagerServiceImplement managerService;
+        final ManagerService managerService;
 
         @GetMapping("/{id}")
         public ResponseEntity<RestResponseDTO<ManagerDetailResponseDTO>> handleGetDetailById(

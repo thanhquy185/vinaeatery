@@ -20,7 +20,9 @@ public class FoodInfoResponseDTO {
 
     CategoryFoodInfoResponseDTO categoryFood;
 
-    String image;
+    String imageUrl;
+
+    String imagePublicId;
 
     String name;
 

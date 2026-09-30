@@ -34,6 +34,7 @@ import vn.tuhoc.vinaeatery.modules.food.repositories.FoodRepository;
 import vn.tuhoc.vinaeatery.modules.food.repositories.criteria.CategoryFoodCriteria;
 import vn.tuhoc.vinaeatery.modules.food.repositories.specifications.CategoryFoodSpecification;
 import vn.tuhoc.vinaeatery.modules.food.services.interfaces.CategoryFoodService;
+import vn.tuhoc.vinaeatery.modules.global.dtos.responses.CloudinaryUploadResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.services.CloudinaryService;
 import vn.tuhoc.vinaeatery.utils.PageResponseUtil;
@@ -131,10 +132,12 @@ public class CategoryFoodServiceImplement implements CategoryFoodService {
         public CategoryFoodDetailResponseDTO handleCreate(
                         MultipartFile imageFile,
                         CategoryFoodCreateRequestDTO categoryFoodCreateRequestDTO) {
-                String image = this.cloudinaryService.getImage(imageFile);
+                CloudinaryUploadResponseDTO image = this.cloudinaryService.newGetImage(imageFile, "category-foods");
 
-                CategoryFoodEntity categoryFoodEntity = this.categoryFoodMapper
-                                .createEntityFromRequest(image, categoryFoodCreateRequestDTO);
+                CategoryFoodEntity categoryFoodEntity = this.categoryFoodMapper.createEntityFromRequest(
+                                ValidationUtil.nonNull(image) ? image.getUrl() : null,
+                                ValidationUtil.nonNull(image) ? image.getPublicId() : null,
+                                categoryFoodCreateRequestDTO);
 
                 return this.categoryFoodMapper
                                 .entityToDetailResponse(this.categoryFoodRepository.save(categoryFoodEntity));
@@ -152,11 +155,18 @@ public class CategoryFoodServiceImplement implements CategoryFoodService {
                         Integer id,
                         MultipartFile imageFile,
                         CategoryFoodUpdateRequestDTO categoryFoodUpdateRequestDTO) {
-                String image = this.cloudinaryService.getImage(imageFile);
-
                 CategoryFoodEntity categoryFoodEntity = this.getOneById(id);
+
+                CloudinaryUploadResponseDTO image = this.cloudinaryService.newGetImage(imageFile, "category-foods");
+                if (ValidationUtil.nonNull(image)
+                                && ValidationUtil.nonNull(categoryFoodEntity.getImageUrl())
+                                && ValidationUtil.nonNull(categoryFoodEntity.getImagePublicId())) {
+                        this.cloudinaryService.deleteImage(categoryFoodEntity.getImagePublicId());
+                }
+
                 this.categoryFoodMapper.updateEntityFromRequest(
-                                image,
+                                ValidationUtil.nonNull(image) ? image.getUrl() : null,
+                                ValidationUtil.nonNull(image) ? image.getPublicId() : null,
                                 categoryFoodUpdateRequestDTO,
                                 categoryFoodEntity);
 

@@ -22,7 +22,7 @@ import TableInputComponent, {
   type TableInputComponentRowData,
 } from "../../TableInputComponent";
 
-const UpdateRecipeModalComponent: React.FC<CrudObjectModalProps> = ({
+const UpdateFoodModalComponent: React.FC<CrudObjectModalProps> = ({
   objectVN,
   objectEN,
   defaultLabels,
@@ -126,7 +126,7 @@ const UpdateRecipeModalComponent: React.FC<CrudObjectModalProps> = ({
                 className="modal__form-group-item"
               >
                 <ImageUploadComponent
-                  defaultSrc={data.image as string}
+                  defaultSrc={foodDetail.imageUrl}
                   imageFile={imageFile}
                   setImageFile={setImageFile}
                   alt="image-preview"
@@ -256,4 +256,4 @@ const UpdateRecipeModalComponent: React.FC<CrudObjectModalProps> = ({
   );
 };
 
-export default UpdateRecipeModalComponent;
+export default UpdateFoodModalComponent;

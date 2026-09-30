@@ -16,7 +16,7 @@ const CardUseFoodComponent: React.FC<CardUseFoodComponentProps> = ({
     <Card
       cover={
         <img
-          src={useFood.food.image ?? ImageSourcePath + "no-image.png"}
+          src={useFood.food.imageUrl ?? ImageSourcePath + "no-image.png"}
           alt={"food-image-" + useFood.food.id}
         />
       }

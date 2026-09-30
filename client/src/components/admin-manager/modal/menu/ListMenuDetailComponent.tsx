@@ -83,7 +83,9 @@ const ListMenuDetailComponent: React.FC<ListMenuDetailComponentProps> = ({
               >
                 <Card
                   cover={
-                    <img src={food.image ?? ImageSourcePath + "no-image.png"} />
+                    <img
+                      src={food.imageUrl ?? ImageSourcePath + "no-image.png"}
+                    />
                   }
                   bodyStyle={{ padding: 0 }}
                   style={{

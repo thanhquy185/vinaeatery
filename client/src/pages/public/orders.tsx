@@ -501,7 +501,7 @@
 //                       <Image
 //                         src={
 //                           record.food?.image
-//                             ? (record.food.image as string)
+//                             ? (record.food.imageUrl as string)
 //                             : ImageSourcePath + "no-image.png"
 //                         }
 //                         width={100}

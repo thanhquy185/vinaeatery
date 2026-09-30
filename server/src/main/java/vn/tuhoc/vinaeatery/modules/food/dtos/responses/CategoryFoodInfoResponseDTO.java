@@ -18,7 +18,9 @@ import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
 public class CategoryFoodInfoResponseDTO {
     Integer id;
 
-    String image;
+    String imageUrl;
+
+    String imagePublicId;
 
     String name;
 

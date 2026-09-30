@@ -54,7 +54,7 @@ const DrawerShoppingCartComponent: React.FC<CallFoodPageProps> = ({
           {(shoppingCart || []).map((item, index) => (
             <div key={item.food.id} className="call-food__cart-item">
               <img
-                src={item.food.image ?? ImageSourcePath + "no-image.png"}
+                src={item.food.imageUrl ?? ImageSourcePath + "no-image.png"}
                 alt=""
                 className="call-food__cart-item-image"
               />

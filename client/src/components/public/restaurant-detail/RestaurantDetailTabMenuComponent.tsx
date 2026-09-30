@@ -47,7 +47,7 @@ const RestaurantDetailTabMenuComponent: React.FC<
                     }}
                   >
                     <Image
-                      src={food.image ?? ImageSourcePath + "no-image.png"}
+                      src={food.imageUrl ?? ImageSourcePath + "no-image.png"}
                       width={90}
                       height={90}
                       style={{

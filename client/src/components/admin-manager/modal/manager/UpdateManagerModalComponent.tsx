@@ -119,7 +119,7 @@ const UpdateManagerModalComponent: React.FC<CrudObjectModalProps> = ({
                 className="modal__form-group-item"
               >
                 <ImageUploadComponent
-                  defaultSrc={data?.image}
+                  defaultSrc={managerDetail.imageUrl}
                   imageFile={imageFile}
                   setImageFile={setImageFile}
                   alt="image-preview"

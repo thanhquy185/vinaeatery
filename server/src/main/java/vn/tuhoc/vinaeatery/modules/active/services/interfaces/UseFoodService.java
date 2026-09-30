@@ -14,7 +14,7 @@ public interface UseFoodService {
 
     UseFoodDetailResponseDTO handleCreate(UseFoodCreateRequestDTO useFoodCreateRequestDTO);
 
-    UseFoodDetailResponseDTO handleCreateByFoodCreated(Integer restaurantId, Integer foodId);
+    UseFoodDetailResponseDTO handleCreateByFoodCreated(Integer restaurantId, Integer foodId, Integer employeeId);
 
     UseFoodDetailResponseDTO handleUpdateStatus(
             Integer id,

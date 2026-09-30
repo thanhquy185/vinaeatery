@@ -63,7 +63,11 @@ public class EmployeeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
-    String image;
+    @Column(nullable = true)
+    String imageUrl;
+
+    @Column(nullable = true)
+    String imagePublicId;
 
     @Column(nullable = false)
     String fullname;

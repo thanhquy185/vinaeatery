@@ -49,6 +49,7 @@ import vn.tuhoc.vinaeatery.modules.employee.repositories.criteria.EmployeeCriter
 import vn.tuhoc.vinaeatery.modules.employee.repositories.specifications.EmployeeSpecification;
 import vn.tuhoc.vinaeatery.modules.employee.services.interfaces.EmployeeService;
 import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
+import vn.tuhoc.vinaeatery.modules.global.dtos.responses.CloudinaryUploadResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.services.CloudinaryService;
 import vn.tuhoc.vinaeatery.modules.global.services.TimeService;
@@ -181,6 +182,8 @@ public class EmployeeServiceImplement implements EmployeeService {
         this.handleExistsByPhone(employeeCreateRequestDTO.getPhone());
         this.handleExistsByEmail(employeeCreateRequestDTO.getEmail());
 
+        CloudinaryUploadResponseDTO image = this.cloudinaryService.newGetImage(imageFile, "employees");
+
         UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
                 .role(UserRoleEnum.EMPLOYEE)
                 .username(employeeCreateRequestDTO.getUserUsername())
@@ -190,10 +193,12 @@ public class EmployeeServiceImplement implements EmployeeService {
                 .build();
         UserDetailResponseDTO userDetailResponseDTO = this.userService.handleCreate(userCreateRequestDTO);
 
-        String image = this.cloudinaryService.getImage(imageFile);
-
         EmployeeEntity employeeEntity = this.employeeMapper
-                .createEntityFromRequest(userDetailResponseDTO.getId(), image, employeeCreateRequestDTO);
+                .createEntityFromRequest(
+                        userDetailResponseDTO.getId(),
+                        ValidationUtil.nonNull(image) ? image.getUrl() : null,
+                        ValidationUtil.nonNull(image) ? image.getPublicId() : null,
+                        employeeCreateRequestDTO);
 
         RoleHistoryCreateRequestDTO roleHistoryCreateRequestDTO = RoleHistoryCreateRequestDTO.builder()
                 .roleId(employeeCreateRequestDTO.getRoleId())
@@ -229,9 +234,18 @@ public class EmployeeServiceImplement implements EmployeeService {
             this.handleExistsByEmail(employeeEmailRequest);
         }
 
-        String image = this.cloudinaryService.getImage(imageFile);
+        CloudinaryUploadResponseDTO image = this.cloudinaryService.newGetImage(imageFile, "employees");
+        if (ValidationUtil.nonNull(image)
+                && ValidationUtil.nonNull(employeeEntity.getImageUrl())
+                && ValidationUtil.nonNull(employeeEntity.getImagePublicId())) {
+            this.cloudinaryService.deleteImage(employeeEntity.getImagePublicId());
+        }
 
-        this.employeeMapper.updateEntityFromRequest(image, employeeUpdateRequestDTO, employeeEntity);
+        this.employeeMapper.updateEntityFromRequest(
+                ValidationUtil.nonNull(image) ? image.getUrl() : null,
+                ValidationUtil.nonNull(image) ? image.getPublicId() : null,
+                employeeUpdateRequestDTO,
+                employeeEntity);
 
         RoleHistoryEntity currentRole = employeeEntity.getRoleHistories()
                 .stream()

@@ -31,28 +31,33 @@ public interface CategoryFoodMapper {
 
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
         @Mapping(target = "id", ignore = true)
-        @Mapping(target = "image", source = "image")
+        @Mapping(target = "imageUrl", source = "imageUrl")
+        @Mapping(target = "imagePublicId", source = "imagePublicId")
         @Mapping(target = "restaurant", source = "categoryFoodCreateRequestDTO.restaurantId")
         @Mapping(target = "foods", ignore = true)
         CategoryFoodEntity createEntityFromRequest(
-                        String image,
+                        String imageUrl,
+                        String imagePublicId,
                         CategoryFoodCreateRequestDTO categoryFoodCreateRequestDTO);
 
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
         @Mapping(target = "id", ignore = true)
         @Mapping(target = "restaurant", ignore = true)
-        @Mapping(target = "image", source = "image")
+        @Mapping(target = "imageUrl", source = "imageUrl")
+        @Mapping(target = "imagePublicId", source = "imagePublicId")
         @Mapping(target = "status", ignore = true)
         @Mapping(target = "foods", ignore = true)
         void updateEntityFromRequest(
-                        String image,
+                        String imageUrl,
+                        String imagePublicId,
                         CategoryFoodUpdateRequestDTO categoryFoodUpdateRequestDTO,
                         @MappingTarget CategoryFoodEntity categoryFoodEntity);
 
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
         @Mapping(target = "id", ignore = true)
         @Mapping(target = "restaurant", ignore = true)
-        @Mapping(target = "image", ignore = true)
+        @Mapping(target = "imageUrl", ignore = true)
+        @Mapping(target = "imagePublicId", ignore = true)
         @Mapping(target = "name", ignore = true)
         @Mapping(target = "description", ignore = true)
         @Mapping(target = "foods", ignore = true)

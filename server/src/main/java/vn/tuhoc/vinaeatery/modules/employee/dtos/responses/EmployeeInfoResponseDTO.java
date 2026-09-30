@@ -27,7 +27,9 @@ public class EmployeeInfoResponseDTO {
 
     PermissionInfoResponseDTO permission;
 
-    String image;
+    String imageUrl;
+
+    String imagePublicId;
 
     String fullname;
 

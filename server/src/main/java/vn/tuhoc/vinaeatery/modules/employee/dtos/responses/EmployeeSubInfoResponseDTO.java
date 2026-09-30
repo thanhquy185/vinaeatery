@@ -20,7 +20,9 @@ import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonGenderEnum;
 public class EmployeeSubInfoResponseDTO {
     Integer id;
 
-    String image;
+    String imageUrl;
+
+    String imagePublicId;
 
     String fullname;
 

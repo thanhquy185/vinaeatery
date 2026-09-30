@@ -149,7 +149,7 @@ const UpdateBillModalComponent: React.FC<CrudObjectModalProps> = ({
               >
                 <CardInfoInModalComponent
                   hasImage={true}
-                  image={billDetail.employee.image}
+                  image={billDetail.employee.imageUrl}
                   fullname={billDetail.employee.fullname}
                   phone={billDetail.employee.phone}
                   email={billDetail.employee.email}

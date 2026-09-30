@@ -46,12 +46,14 @@ public interface EmployeeMapper {
         @Mapping(target = "user", source = "userId")
         @Mapping(target = "role", source = "employeeCreateRequestDTO.roleId")
         @Mapping(target = "permission", source = "employeeCreateRequestDTO.permissionId")
-        @Mapping(target = "image", source = "image")
+        @Mapping(target = "imageUrl", source = "imageUrl")
+        @Mapping(target = "imagePublicId", source = "imagePublicId")
         @Mapping(target = "roleHistories", ignore = true)
         @Mapping(target = "inputTickets", ignore = true)
         EmployeeEntity createEntityFromRequest(
                         Integer userId,
-                        String image,
+                        String imageUrl,
+                        String imagePublicId,
                         EmployeeCreateRequestDTO employeeCreateRequestDTO);
 
         @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -60,12 +62,14 @@ public interface EmployeeMapper {
         @Mapping(target = "user", ignore = true)
         @Mapping(target = "role", source = "employeeUpdateRequestDTO.roleId")
         @Mapping(target = "permission", source = "employeeUpdateRequestDTO.permissionId")
-        @Mapping(target = "image", source = "image")
+        @Mapping(target = "imageUrl", source = "imageUrl")
+        @Mapping(target = "imagePublicId", source = "imagePublicId")
         @Mapping(target = "status", ignore = true)
         @Mapping(target = "roleHistories", ignore = true)
         @Mapping(target = "inputTickets", ignore = true)
         void updateEntityFromRequest(
-                        String image,
+                        String imageUrl,
+                        String imagePublicId,
                         EmployeeUpdateRequestDTO employeeUpdateRequestDTO,
                         @MappingTarget EmployeeEntity employeeEntity);
 
@@ -75,7 +79,8 @@ public interface EmployeeMapper {
         @Mapping(target = "user", ignore = true)
         @Mapping(target = "role", ignore = true)
         @Mapping(target = "permission", ignore = true)
-        @Mapping(target = "image", ignore = true)
+        @Mapping(target = "imageUrl", ignore = true)
+        @Mapping(target = "imagePublicId", ignore = true)
         @Mapping(target = "fullname", ignore = true)
         @Mapping(target = "birthdate", ignore = true)
         @Mapping(target = "gender", ignore = true)

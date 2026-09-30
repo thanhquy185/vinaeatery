@@ -35,6 +35,7 @@ import vn.tuhoc.vinaeatery.modules.food.repositories.FoodRepository;
 import vn.tuhoc.vinaeatery.modules.food.repositories.criteria.FoodCriteria;
 import vn.tuhoc.vinaeatery.modules.food.repositories.specifications.FoodSpecification;
 import vn.tuhoc.vinaeatery.modules.food.services.interfaces.FoodService;
+import vn.tuhoc.vinaeatery.modules.global.dtos.responses.CloudinaryUploadResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.services.CloudinaryService;
 import vn.tuhoc.vinaeatery.utils.PageResponseUtil;
@@ -129,10 +130,13 @@ public class FoodServiceImplement implements FoodService {
     public FoodDetailResponseDTO handleCreate(
             MultipartFile imageFile,
             FoodCreateRequestDTO foodCreateRequestDTO) {
-        String image = this.cloudinaryService.getImage(imageFile);
+        CloudinaryUploadResponseDTO image = this.cloudinaryService.newGetImage(imageFile, "foods");
 
         FoodEntity foodEntity = this.foodMapper
-                .createEntityFromRequest(image, foodCreateRequestDTO);
+                .createEntityFromRequest(
+                        ValidationUtil.nonNull(image) ? image.getUrl() : null,
+                        ValidationUtil.nonNull(image) ? image.getPublicId() : null,
+                        foodCreateRequestDTO);
 
         foodCreateRequestDTO.getRecipes().stream().forEach((recipeCreateRequestDTO) -> {
             RecipeEntity recipeEntity = this.recipeMapper.createEntityFromRequest(recipeCreateRequestDTO);
@@ -155,10 +159,19 @@ public class FoodServiceImplement implements FoodService {
             Integer id,
             MultipartFile imageFile,
             FoodUpdateRequestDTO foodUpdateRequestDTO) {
-        String image = this.cloudinaryService.getImage(imageFile);
-
         FoodEntity foodEntity = this.getOneById(id);
-        this.foodMapper.updateEntityFromRequest(image, foodUpdateRequestDTO, foodEntity);
+
+        CloudinaryUploadResponseDTO image = this.cloudinaryService.newGetImage(imageFile, "foods");
+        if (ValidationUtil.nonNull(image)
+                && ValidationUtil.nonNull(foodEntity.getImageUrl())
+                && ValidationUtil.nonNull(foodEntity.getImagePublicId())) {
+            this.cloudinaryService.deleteImage(foodEntity.getImagePublicId());
+        }
+
+        this.foodMapper.updateEntityFromRequest(
+                ValidationUtil.nonNull(image) ? image.getUrl() : null,
+                ValidationUtil.nonNull(image) ? image.getPublicId() : null,
+                foodUpdateRequestDTO, foodEntity);
 
         foodEntity.getRecipes().clear();
         this.entityManager.flush();

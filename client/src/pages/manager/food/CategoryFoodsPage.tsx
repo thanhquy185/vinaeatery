@@ -93,20 +93,20 @@ const ManagerCategoryFoodsPage: React.FC<AdminManagerPageProps> = ({
   // - Cột thuộc tính
   const columns: ColumnsType<CategoryFoodSummaryResponseType> = [
     {
+      title: "",
+      dataIndex: "imageUrl",
+      key: "imageUrl",
+      width: "20%",
+      render: (imageUrl: string) => (
+        <Image src={imageUrl ?? ImageSourcePath + "no-image.png"} alt="" />
+      ),
+    },
+    {
       title: "#",
       dataIndex: "id",
       key: "id",
       width: "14%",
       sorter: (a, b) => a.id - b.id,
-    },
-    {
-      title: "Hình ảnh",
-      dataIndex: "image",
-      key: "image",
-      width: "20%",
-      render: (image: string) => (
-        <Image src={image ? image : ImageSourcePath + "no-image.png"} alt="" />
-      ),
     },
     {
       title: "Tên loại món ăn",
