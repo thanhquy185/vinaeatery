@@ -22,10 +22,10 @@ import java.util.Map;
 
 @Configuration
 @EnableCaching
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RedisConfig {
-    final StringRedisSerializer STRING_SERIALIZER = new StringRedisSerializer();
-    final GenericJackson2JsonRedisSerializer JSON_SERIALIZER = new GenericJackson2JsonRedisSerializer();
+    StringRedisSerializer STRING_SERIALIZER = new StringRedisSerializer();
+    GenericJackson2JsonRedisSerializer JSON_SERIALIZER = new GenericJackson2JsonRedisSerializer();
 
     private Map<String, RedisCacheConfiguration> generateRedisCacheConfiguration(
             RedisCacheConfiguration defaultConfig) {

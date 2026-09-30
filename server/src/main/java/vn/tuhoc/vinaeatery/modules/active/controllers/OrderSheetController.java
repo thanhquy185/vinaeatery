@@ -28,9 +28,9 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @RestController
 @RequestMapping("/api/v1/order-sheets")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OrderSheetController {
-        final OrderSheetService orderSheetService;
+        OrderSheetService orderSheetService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('ORDER_SHEETS__READ')")

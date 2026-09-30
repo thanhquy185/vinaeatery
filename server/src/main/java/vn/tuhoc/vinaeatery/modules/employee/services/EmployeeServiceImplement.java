@@ -59,14 +59,14 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EmployeeServiceImplement implements EmployeeService {
-    final CloudinaryService cloudinaryService;
-    final TimeService timeService;
-    final UserServiceImplement userService;
-    final EmployeeRepository employeeRepository;
-    final EmployeeMapper employeeMapper;
-    final RoleHistoryMapper roleHistoryMapper;
+    CloudinaryService cloudinaryService;
+    TimeService timeService;
+    UserServiceImplement userService;
+    EmployeeRepository employeeRepository;
+    EmployeeMapper employeeMapper;
+    RoleHistoryMapper roleHistoryMapper;
 
     private Boolean existsByPhone(String phone) {
         return this.employeeRepository.existsByPhone(phone);

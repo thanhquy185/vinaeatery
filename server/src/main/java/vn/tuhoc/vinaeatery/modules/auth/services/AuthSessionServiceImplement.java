@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import vn.tuhoc.vinaeatery.modules.auth.domains.entities.AuthSessionEntity;
 import vn.tuhoc.vinaeatery.modules.auth.domains.mappers.AuthSessionMapper;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.requests.AuthSessionCreateRequestDTO;
@@ -24,13 +25,14 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthSessionServiceImplement implements AuthSessionService {
+    @NonFinal
     @Value("${jwt.refresh-token-validity-in-seconds}")
     Long jwtRefreshTokenExpiration;
-    final TimeService timeService;
-    final AuthSessionRepository authSessionRepository;
-    final AuthSessionMapper authSessionMapper;
+    TimeService timeService;
+    AuthSessionRepository authSessionRepository;
+    AuthSessionMapper authSessionMapper;
 
     private AuthSessionEntity getOneByUserIdAndRevokedIsNull(Integer userId) {
         return this.authSessionRepository.findOneByUserIdAndRevokedAtIsNull(userId).orElse(null);

@@ -16,9 +16,9 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/zalopay")
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ZaloPayController {
-    final PaymentService paymentService;
+    PaymentService paymentService;
 
     public ZaloPayController(@Qualifier("zaloPayServiceImplement") PaymentService paymentService) {
         this.paymentService = paymentService;

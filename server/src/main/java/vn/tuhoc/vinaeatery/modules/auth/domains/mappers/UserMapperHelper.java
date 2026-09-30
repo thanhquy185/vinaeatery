@@ -13,10 +13,10 @@ import vn.tuhoc.vinaeatery.modules.auth.repositories.UserRepository;
 
 @Component
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserMapperHelper {
-    final UserRepository userRepository;
-    final UserMapper userMapper;
+    UserRepository userRepository;
+    UserMapper userMapper;
 
     public UserEntity mapToEntity(Integer id) {
         return this.userRepository.findById(id).get();

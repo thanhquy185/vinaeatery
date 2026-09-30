@@ -22,9 +22,9 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @RestController
 @RequestMapping("/api/v1/feedbacks")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FeedbackController {
-        final FeedbackService feedbackService;
+        FeedbackService feedbackService;
 
         @GetMapping("/{id}")
         public ResponseEntity<RestResponseDTO<FeedbackDetailResponseDTO>> handleGetDetailById(

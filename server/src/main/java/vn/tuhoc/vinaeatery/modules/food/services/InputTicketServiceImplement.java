@@ -38,11 +38,11 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class InputTicketServiceImplement implements InputTicketService {
-        final InputTicketRepository inputTicketRepository;
-        final InputTicketMapper inputTicketMapper;
-        final InputTicketDetailMapper inputTicketDetailMapper;
+        InputTicketRepository inputTicketRepository;
+        InputTicketMapper inputTicketMapper;
+        InputTicketDetailMapper inputTicketDetailMapper;
 
         private InputTicketEntity getOneById(Integer id) {
                 return this.inputTicketRepository.findOneById(id)

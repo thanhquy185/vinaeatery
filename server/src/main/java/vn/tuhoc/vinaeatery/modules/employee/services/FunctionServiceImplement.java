@@ -19,10 +19,10 @@ import vn.tuhoc.vinaeatery.modules.employee.services.interfaces.FunctionService;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FunctionServiceImplement implements FunctionService {
-    final FunctionRepository functionRepository;
-    final FunctionMapper functionMapper;
+    FunctionRepository functionRepository;
+    FunctionMapper functionMapper;
 
     private FunctionEntity getOneById(Integer id) {
         return this.functionRepository.findById(id)

@@ -17,10 +17,10 @@ import vn.tuhoc.vinaeatery.modules.employee.repositories.FunctionRepository;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtAuthorityUtil {
-    final FunctionRepository functionRepository;
-    final EmployeeRepository employeeRepository;
+    FunctionRepository functionRepository;
+    EmployeeRepository employeeRepository;
 
     private String handleAction(String action) {
         if (action.equalsIgnoreCase("Xem")) {

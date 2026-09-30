@@ -40,11 +40,11 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FloorServiceImplement implements FloorService {
-    final FloorRepository floorRepository;
-    final TableRepository tableRepository;
-    final FloorMapper floorMapper;
+    TableRepository tableRepository;
+    FloorRepository floorRepository;
+    FloorMapper floorMapper;
 
     private FloorEntity getOneById(Integer id) {
         return this.floorRepository.findOneById(id)

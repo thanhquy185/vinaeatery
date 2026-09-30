@@ -4,25 +4,20 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum BillStatusEnum {
     PENDING("PENDING", "Đang chờ xác nhận"),
     CANCELLED("CANCELLED", "Đã huỷ đơn"),
     CONFIRMED("CONFIRMED", "Đã xác nhận");
 
-    final String value;
-    final String description;
-
-    BillStatusEnum(String value, String description) {
-        this.value = value;
-        this.description = description;
-    }
-
-    public String getValue() {
-        return value;
-    }
+    String value;
+    String description;
 
     @JsonValue
     public String getDescription() {

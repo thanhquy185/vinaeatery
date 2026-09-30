@@ -40,10 +40,10 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SupplierServiceImplement implements SupplierService {
-    final SupplierRepository supplierRepository;
-    final SupplierMapper supplierMapper;
+    SupplierRepository supplierRepository;
+    SupplierMapper supplierMapper;
 
     private Boolean existsByPhone(String phone) {
         return this.supplierRepository.existsByPhone(phone);

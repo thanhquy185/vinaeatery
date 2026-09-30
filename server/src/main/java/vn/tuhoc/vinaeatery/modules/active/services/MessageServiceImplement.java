@@ -37,13 +37,13 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MessageServiceImplement implements MessageService {
-    final TimeService timeService;
-    final UseTableRepository useTableRepository;
-    final MessageRepository messageRepository;
-    final MessageMapper messageMapper;
-    final MessageDetailMapper messageDetailMapper;
+    TimeService timeService;
+    UseTableRepository useTableRepository;
+    MessageRepository messageRepository;
+    MessageMapper messageMapper;
+    MessageDetailMapper messageDetailMapper;
 
     private MessageEntity getOneById(Integer id) {
         return this.messageRepository.findOneById(id)

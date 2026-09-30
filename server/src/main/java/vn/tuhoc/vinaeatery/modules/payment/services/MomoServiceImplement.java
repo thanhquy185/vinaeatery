@@ -29,12 +29,12 @@ import vn.tuhoc.vinaeatery.utils.MomoClientUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class MomoServiceImplement implements PaymentService {
-    final MomoPropertiesDTO momoPropertiesDTO;
-    final MomoClientUtil momoClientUtil;
-    final PaymentMachineServiceImplement paymentMachineService;
+    MomoPropertiesDTO momoPropertiesDTO;
+    MomoClientUtil momoClientUtil;
+    PaymentMachineServiceImplement paymentMachineService;
 
     private static String signHmacSHA256(String data, String key) throws Exception {
         Mac hmacSHA256 = Mac.getInstance("HmacSHA256");

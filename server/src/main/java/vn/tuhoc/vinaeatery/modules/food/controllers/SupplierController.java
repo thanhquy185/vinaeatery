@@ -35,9 +35,9 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @RestController
 @RequestMapping("/api/v1/suppliers")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SupplierController {
-        final SupplierService supplierService;
+        SupplierService supplierService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('SUPPLIERS__READ')")

@@ -18,10 +18,10 @@ import vn.tuhoc.vinaeatery.modules.active.services.interfaces.FeedbackExperience
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FeedbackExperienceServiceImplement implements FeedbackExperienceService {
-    final FeedbackExperienceRepository feedbackExperienceRepository;
-    final FeedbackExperienceMapper feedbackExperienceMapper;
+    FeedbackExperienceRepository feedbackExperienceRepository;
+    FeedbackExperienceMapper feedbackExperienceMapper;
 
     private List<FeedbackExperienceEntity> getAll() {
         return this.feedbackExperienceRepository.findAll();

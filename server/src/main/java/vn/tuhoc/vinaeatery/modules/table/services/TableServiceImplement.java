@@ -38,10 +38,10 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TableServiceImplement implements TableService {
-    final TableRepository tableRepository;
-    final TableMapper tableMapper;
+    TableRepository tableRepository;
+    TableMapper tableMapper;
 
     private TableEntity getOneById(Integer id) {
         return this.tableRepository.findOneById(id)

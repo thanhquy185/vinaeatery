@@ -34,6 +34,7 @@ import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.RevenueTableResponse
 import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.RevenueTableTableBodyResponseDTO;
 import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.RevenueTableTableFootResponseDTO;
 import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.TimeRangeResponseDTO;
+import vn.tuhoc.vinaeatery.modules.dashboard.services.interfaces.RevenueService;
 import vn.tuhoc.vinaeatery.modules.restaurant.domains.mappers.RestaurantMapper;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantSubInfoResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.repositories.RestaurantRepository;
@@ -43,13 +44,13 @@ import vn.tuhoc.vinaeatery.utils.TimeRangeUtil;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class RevenueService {
-        final RestaurantRepository restaurantRepository;
-        final UseTableRepository useTableRepository;
-        final BillRepository billRepository;
-        final TableRepository tableRepository;
-        final RestaurantMapper restaurantMapper;
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class RevenueServiceImplement implements RevenueService {
+        RestaurantRepository restaurantRepository;
+        UseTableRepository useTableRepository;
+        BillRepository billRepository;
+        TableRepository tableRepository;
+        RestaurantMapper restaurantMapper;
 
         private RevenueResponseDTO handleDashboardTypeBill(RevenueRequestDTO revenueRequestDTO) {
                 int restaurantId = revenueRequestDTO.getRestaurantId();
@@ -409,6 +410,7 @@ public class RevenueService {
                                 .build();
         }
 
+        @Override
         @Cacheable(value = "dashboard__revenue", key = "'restaurantId=' + #revenueRequestDTO.getRestaurantId() + 'type=' + #revenueRequestDTO.getType() + 'timeline=' + #revenueRequestDTO.getTimeline() + 'timeDetail=' + #revenueRequestDTO.getTimeDetail()", unless = "#result == null")
         public RevenueResponseDTO handleDashboard(RevenueRequestDTO revenueRequestDTO) {
                 RevenueTypeEnum type = revenueRequestDTO.getType();

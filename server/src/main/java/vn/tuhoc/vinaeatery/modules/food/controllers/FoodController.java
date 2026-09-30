@@ -21,7 +21,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import vn.tuhoc.vinaeatery.modules.active.services.UseFoodServiceImplement;
+import vn.tuhoc.vinaeatery.modules.active.services.interfaces.UseFoodService;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.FoodCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.FoodDeleteRequestDTO;
 import vn.tuhoc.vinaeatery.modules.food.dtos.requests.FoodUpdateRequestDTO;
@@ -38,10 +38,10 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @RestController
 @RequestMapping("/api/v1/foods")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FoodController {
-        final UseFoodServiceImplement useFoodService;
-        final FoodService foodService;
+        UseFoodService useFoodService;
+        FoodService foodService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('FOODS__READ')")

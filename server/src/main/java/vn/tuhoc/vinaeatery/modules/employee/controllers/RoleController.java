@@ -26,7 +26,7 @@ import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.RoleDetailResponseDTO
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.RoleSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.RoleCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.employee.repositories.criteria.RoleCriteria;
-import vn.tuhoc.vinaeatery.modules.employee.services.RoleServiceImplement;
+import vn.tuhoc.vinaeatery.modules.employee.services.interfaces.RoleService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -35,9 +35,9 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @RestController
 @RequestMapping("/api/v1/roles")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RoleController {
-        final RoleServiceImplement roleService;
+        RoleService roleService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('ROLES__READ')")

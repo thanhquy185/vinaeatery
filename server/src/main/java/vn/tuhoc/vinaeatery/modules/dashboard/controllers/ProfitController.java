@@ -7,10 +7,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.dashboard.dtos.requests.ProfitRequestDTO;
 import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.ProfitResponseDTO;
-import vn.tuhoc.vinaeatery.modules.dashboard.services.ProfitService;
+import vn.tuhoc.vinaeatery.modules.dashboard.services.interfaces.ProfitService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 
@@ -19,8 +21,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RestController
 @RequestMapping("/api/v1/dashboard-profit")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProfitController {
-    private final ProfitService profitService;
+    ProfitService profitService;
 
     @PostMapping("")
     @PreAuthorize("hasAuthority('DASHBOARD_PROFIT__READ')")

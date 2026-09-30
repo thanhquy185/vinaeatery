@@ -17,10 +17,10 @@ import vn.tuhoc.vinaeatery.modules.active.services.interfaces.FeedbackService;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FeedbackServiceImplement implements FeedbackService {
-    final FeedbackRepository feedbackRepository;
-    final FeedbackMapper feedbackMapper;
+    FeedbackRepository feedbackRepository;
+    FeedbackMapper feedbackMapper;
 
     private FeedbackEntity getOneById(Integer id) {
         return this.feedbackRepository.findOneById(id)

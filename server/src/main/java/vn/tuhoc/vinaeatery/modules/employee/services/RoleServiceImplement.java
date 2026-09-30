@@ -40,11 +40,11 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RoleServiceImplement implements RoleService {
-    final RoleHistoryRepository roleHistoryRepository;
-    final RoleRepository roleRepository;
-    final RoleMapper roleMapper;
+    RoleHistoryRepository roleHistoryRepository;
+    RoleRepository roleRepository;
+    RoleMapper roleMapper;
 
     private RoleEntity getOneById(Integer id) {
         return this.roleRepository.findOneById(id)

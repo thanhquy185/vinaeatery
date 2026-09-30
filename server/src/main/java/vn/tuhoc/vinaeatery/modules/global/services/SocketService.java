@@ -9,9 +9,9 @@ import lombok.experimental.FieldDefaults;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SocketService {
-    final SimpMessagingTemplate simpMessagingTemplate;
+    SimpMessagingTemplate simpMessagingTemplate;
 
     public void handleConvertAndSend(String destination, Object payload) {
         this.simpMessagingTemplate.convertAndSend(destination, payload);

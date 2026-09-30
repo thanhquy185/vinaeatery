@@ -50,13 +50,13 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RestaurantServiceImplement implements RestaurantService {
-    final EntityManager entityManager;
-    final CloudinaryService cloudinaryService;
-    final RestaurantRepository restaurantRepository;
-    final RestaurantMapper restaurantMapper;
-    final RestaurantImageMapper restaurantImageMapper;
+    EntityManager entityManager;
+    CloudinaryService cloudinaryService;
+    RestaurantRepository restaurantRepository;
+    RestaurantMapper restaurantMapper;
+    RestaurantImageMapper restaurantImageMapper;
 
     private Boolean existsByPhone(String phone) {
         return this.restaurantRepository.existsByPhone(phone);

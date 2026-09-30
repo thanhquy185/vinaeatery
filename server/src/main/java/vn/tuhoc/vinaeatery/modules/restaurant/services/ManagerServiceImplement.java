@@ -52,13 +52,13 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ManagerServiceImplement implements ManagerService {
-    final CloudinaryService cloudinaryService;
-    final UserServiceImplement userService;
-    final ManagerRepository managerRepository;
-    final RestaurantRepository restaurantRepository;
-    final ManagerMapper managerMapper;
+    CloudinaryService cloudinaryService;
+    UserServiceImplement userService;
+    ManagerRepository managerRepository;
+    RestaurantRepository restaurantRepository;
+    ManagerMapper managerMapper;
 
     private Boolean existsByPhone(String phone) {
         return this.managerRepository.existsByPhone(phone);

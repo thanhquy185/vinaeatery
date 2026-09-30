@@ -35,9 +35,9 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @RestController
 @RequestMapping("/api/v1/floors")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FloorController {
-        final FloorService floorService;
+        FloorService floorService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('FLOORS__READ')")

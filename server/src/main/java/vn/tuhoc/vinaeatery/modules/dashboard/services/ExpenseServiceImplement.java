@@ -30,6 +30,7 @@ import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.ExpenseSupplierTable
 import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.ExpenseTableResponseDTO;
 import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.PieChartResponseDTO;
 import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.TimeRangeResponseDTO;
+import vn.tuhoc.vinaeatery.modules.dashboard.services.interfaces.ExpenseService;
 import vn.tuhoc.vinaeatery.modules.food.domains.entities.InputTicketDetailEntity;
 import vn.tuhoc.vinaeatery.modules.food.domains.entities.InputTicketEntity;
 import vn.tuhoc.vinaeatery.modules.food.domains.entities.SupplierEntity;
@@ -42,12 +43,12 @@ import vn.tuhoc.vinaeatery.utils.TimeRangeUtil;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class ExpenseService {
-        final RestaurantRepository restaurantRepository;
-        final InputTicketRepository inputTicketRepository;
-        final SupplierRepository supplierRepository;
-        final RestaurantMapper restaurantMapper;
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class ExpenseServiceImplement implements ExpenseService {
+        RestaurantRepository restaurantRepository;
+        InputTicketRepository inputTicketRepository;
+        SupplierRepository supplierRepository;
+        RestaurantMapper restaurantMapper;
 
         private ExpenseResponseDTO handleDashboardTypeInputTicket(ExpenseRequestDTO expenseRequestDTO) {
                 int restaurantId = expenseRequestDTO.getRestaurantId();
@@ -410,6 +411,7 @@ public class ExpenseService {
                                 .build();
         }
 
+        @Override
         @Cacheable(value = "dashboard__expense", key = "'restaurantId=' + #expenseRequestDTO.getRestaurantId() + 'type=' + #expenseRequestDTO.getType() + 'timeline=' + #expenseRequestDTO.getTimeline() + 'timeDetail=' + #expenseRequestDTO.getTimeDetail()", unless = "#result == null")
         public ExpenseResponseDTO handleDashboard(ExpenseRequestDTO expenseRequestDTO) {
                 ExpenseTypeEnum type = expenseRequestDTO.getType();

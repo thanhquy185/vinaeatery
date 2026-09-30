@@ -37,12 +37,12 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MenuServiceImplement implements MenuService {
-    final EntityManager entityManager;
-    final MenuRepository menuRepository;
-    final MenuMapper menuMapper;
-    final MenuDetailMapper menuDetailMapper;
+    EntityManager entityManager;
+    MenuRepository menuRepository;
+    MenuMapper menuMapper;
+    MenuDetailMapper menuDetailMapper;
 
     private MenuEntity getOneById(Integer id) {
         return this.menuRepository.findOneById(id)

@@ -28,9 +28,9 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @RestController
 @RequestMapping("/api/v1/use-foods")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UseFoodController {
-        final UseFoodService useFoodService;
+        UseFoodService useFoodService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('USE_FOODS__READ')")

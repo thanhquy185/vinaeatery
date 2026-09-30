@@ -30,9 +30,9 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @RestController
 @RequestMapping("/api/v1/menus")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MenuController {
-        final MenuService menuService;
+        MenuService menuService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('MENUS__READ')")

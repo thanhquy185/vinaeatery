@@ -13,7 +13,7 @@ import vn.tuhoc.vinaeatery.modules.global.domains.converters.CommonStatusConvert
 import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonGenderEnum;
 import vn.tuhoc.vinaeatery.modules.global.domains.enums.CommonStatusEnum;
 
-@NoArgsConstructor
+@NoArgsConstructor 
 @AllArgsConstructor
 @Getter
 @Setter

@@ -45,16 +45,16 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UseTableServiceImplement implements UseTableService {
-    final TimeService timeService;
-    final UseTableRepository useTableRepository;
-    final UseFoodRepository useFoodRepository;
-    final MessageRepository messageRepository;
-    final OrderSheetRepository orderSheetRepository;
-    final UseTableMapper useTableMapper;
-    final MessageMapper messageMapper;
-    final OrderSheetMapper orderSheetMapper;
+    TimeService timeService;
+    UseTableRepository useTableRepository;
+    UseFoodRepository useFoodRepository;
+    MessageRepository messageRepository;
+    OrderSheetRepository orderSheetRepository;
+    UseTableMapper useTableMapper;
+    MessageMapper messageMapper;
+    OrderSheetMapper orderSheetMapper;
 
     private UseTableEntity getOneById(Long id) {
         return this.useTableRepository.findOneById(id)

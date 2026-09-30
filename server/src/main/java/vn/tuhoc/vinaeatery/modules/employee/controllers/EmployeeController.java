@@ -28,7 +28,7 @@ import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.EmployeeDetailRespons
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.EmployeeSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.EmployeeCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.employee.repositories.criteria.EmployeeCriteria;
-import vn.tuhoc.vinaeatery.modules.employee.services.EmployeeServiceImplement;
+import vn.tuhoc.vinaeatery.modules.employee.services.interfaces.EmployeeService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -37,9 +37,9 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @RestController
 @RequestMapping("/api/v1/employees")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EmployeeController {
-        final EmployeeServiceImplement employeeService;
+        EmployeeService employeeService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('EMPLOYEES__READ')")

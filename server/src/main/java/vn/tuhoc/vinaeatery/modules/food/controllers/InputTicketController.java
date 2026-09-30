@@ -29,9 +29,9 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @RestController
 @RequestMapping("/api/v1/input-tickets")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class InputTicketController {
-        private final InputTicketService inputTicketService;
+        InputTicketService inputTicketService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('INPUT_TICKETS__READ')")

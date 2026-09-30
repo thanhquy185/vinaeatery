@@ -26,9 +26,9 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @RestController
 @RequestMapping("/api/v1/messages")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MessageController {
-        final MessageService messageService;
+        MessageService messageService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('MESSAGES__READ')")

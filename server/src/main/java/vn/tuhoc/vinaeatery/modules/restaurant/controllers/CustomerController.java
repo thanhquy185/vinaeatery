@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.restaurant.repositories.criteria.CustomerCriteria;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
@@ -33,8 +35,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RestController
 @RequestMapping("/api/v1/customers")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomerController {
-        private final CustomerService customerService;
+        CustomerService customerService;
 
         @GetMapping("/{id}")
         public ResponseEntity<RestResponseDTO<CustomerDetailResponseDTO>> handleGetDetailById(

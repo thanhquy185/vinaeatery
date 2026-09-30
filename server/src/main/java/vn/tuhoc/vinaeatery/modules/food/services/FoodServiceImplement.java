@@ -44,13 +44,13 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FoodServiceImplement implements FoodService {
-    final EntityManager entityManager;
-    final CloudinaryService cloudinaryService;
-    final FoodRepository foodRepository;
-    final FoodMapper foodMapper;
-    final RecipeMapper recipeMapper;
+    EntityManager entityManager;
+    CloudinaryService cloudinaryService;
+    FoodRepository foodRepository;
+    FoodMapper foodMapper;
+    RecipeMapper recipeMapper;
 
     private FoodEntity getOneById(Integer id) {
         return this.foodRepository.findOneById(id)

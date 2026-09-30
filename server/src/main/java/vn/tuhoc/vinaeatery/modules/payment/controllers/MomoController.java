@@ -19,9 +19,9 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/momo")
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MomoController {
-    final PaymentService paymentService;
+    PaymentService paymentService;
 
     public MomoController(@Qualifier("momoServiceImplement") PaymentService paymentService) {
         this.paymentService = paymentService;

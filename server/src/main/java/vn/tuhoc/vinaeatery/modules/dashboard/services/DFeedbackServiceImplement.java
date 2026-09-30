@@ -26,6 +26,7 @@ import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.FeedbackTableFootRes
 import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.FeedbackTableResponseDTO;
 import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.PieChartResponseDTO;
 import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.TimeRangeResponseDTO;
+import vn.tuhoc.vinaeatery.modules.dashboard.services.interfaces.DFeedbackService;
 import vn.tuhoc.vinaeatery.modules.restaurant.domains.mappers.RestaurantMapper;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantSubInfoResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.repositories.RestaurantRepository;
@@ -33,13 +34,13 @@ import vn.tuhoc.vinaeatery.utils.TimeRangeUtil;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class DFeedbackService {
-    final RestaurantRepository restaurantRepository;
-    final FeedbackExperienceRepository feedbackExperienceRepository;
-    final FeedbackScoreRepository feedbackScoreRepository;
-    final FeedbackRepository feedbackRepository;
-    final RestaurantMapper restaurantMapper;
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class DFeedbackServiceImplement implements DFeedbackService {
+    RestaurantRepository restaurantRepository;
+    FeedbackExperienceRepository feedbackExperienceRepository;
+    FeedbackScoreRepository feedbackScoreRepository;
+    FeedbackRepository feedbackRepository;
+    RestaurantMapper restaurantMapper;
 
     private void handleCalScore(int[] scores, Integer feedbackScore) {
         if (feedbackScore != null && feedbackScore >= 1 && feedbackScore <= 5) {
@@ -47,6 +48,7 @@ public class DFeedbackService {
         }
     }
 
+    @Override
     @Cacheable(value = "dashboard__feedback", key = "'restaurantId=' + #feedbackRequestDTO.getRestaurantId() + 'timeline=' + #feedbackRequestDTO.getTimeline() + 'timeDetail=' + #feedbackRequestDTO.getTimeDetail()", unless = "#result == null")
     public FeedbackResponseDTO handleDashboard(FeedbackRequestDTO feedbackRequestDTO) {
         int restaurantId = feedbackRequestDTO.getRestaurantId();

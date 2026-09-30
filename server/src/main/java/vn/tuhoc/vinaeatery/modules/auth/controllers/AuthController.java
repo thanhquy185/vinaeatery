@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.requests.AuthRegisterRequestDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.AuthLoginResponseDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.requests.AuthLoginRequestDTO;
-import vn.tuhoc.vinaeatery.modules.auth.services.AuthServiceImplement;
+import vn.tuhoc.vinaeatery.modules.auth.services.interfaces.AuthService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.CustomerDetailResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -22,9 +22,9 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-@FieldDefaults (level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthController {
-        final AuthServiceImplement authService;
+        AuthService authService;
 
         @PostMapping("/customer/register")
         public ResponseEntity<RestResponseDTO<CustomerDetailResponseDTO>> handleSignUp(

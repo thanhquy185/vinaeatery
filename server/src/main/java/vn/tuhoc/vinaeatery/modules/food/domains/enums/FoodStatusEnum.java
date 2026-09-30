@@ -4,24 +4,19 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum FoodStatusEnum {
     SELLING("SELLING", "Đang bán"),
     STOP_SELLING("STOP_SELLING", "Dừng bán");
 
-    final String value;
-    final String description;
-
-    FoodStatusEnum(String value, String description) {
-        this.value = value;
-        this.description = description;
-    }
-
-    public String getValue() {
-        return value;
-    }
+    String value;
+    String description;
 
     @JsonValue
     public String getDescription() {

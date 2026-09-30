@@ -38,9 +38,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RestController
 @RequestMapping("/api/v1/restaurants")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RestaurantController {
-        final RestaurantService restaurantService;
+        RestaurantService restaurantService;
 
         @GetMapping("/{id}")
         public ResponseEntity<RestResponseDTO<RestaurantDetailResponseDTO>> handleGetDetailById(

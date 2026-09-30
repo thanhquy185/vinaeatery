@@ -42,14 +42,14 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OrderSheetServiceImplement implements OrderSheetService {
-    final OrderSheetRepository orderSheetRepository;
-    final RecipeRepository recipeRepository;
-    final OrderSheetMapper orderSheetMapper;
-    final OrderSheetDetailMapper orderSheetDetailMapper;
-    final RecipeMapper2 recipeMapper2;
-    final EmployeeMapperHelper employeeMapperHelper;
+    OrderSheetRepository orderSheetRepository;
+    RecipeRepository recipeRepository;
+    OrderSheetMapper orderSheetMapper;
+    OrderSheetDetailMapper orderSheetDetailMapper;
+    RecipeMapper2 recipeMapper2;
+    EmployeeMapperHelper employeeMapperHelper;
 
     private OrderSheetEntity getOneById(Integer id) {
         return this.orderSheetRepository.findOneById(id)

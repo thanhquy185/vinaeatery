@@ -18,10 +18,10 @@ import vn.tuhoc.vinaeatery.modules.active.services.interfaces.FeedbackScoreServi
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FeedbackScoreServiceImplement implements FeedbackScoreService {
-    final FeedbackScoreRepository feedbackScoreRepository;
-    final FeedbackScoreMapper feedbackScoreMapper;
+    FeedbackScoreRepository feedbackScoreRepository;
+    FeedbackScoreMapper feedbackScoreMapper;
 
     private List<FeedbackScoreEntity> getAll() {
         return this.feedbackScoreRepository.findAll();

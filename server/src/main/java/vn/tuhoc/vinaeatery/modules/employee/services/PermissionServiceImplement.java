@@ -43,13 +43,13 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PermissionServiceImplement implements PermissionService {
-    final EntityManager entityManager;
-    final EmployeeRepository employeeRepository;
-    final PermissionRepository permissionRepository;
-    final PermissionMapper permissionMapper;
-    final PermissionDetailMapper permissionDetailMapper;
+    EntityManager entityManager;
+    EmployeeRepository employeeRepository;
+    PermissionRepository permissionRepository;
+    PermissionMapper permissionMapper;
+    PermissionDetailMapper permissionDetailMapper;
 
     private PermissionEntity getOneById(Integer id) {
         return this.permissionRepository.findOneById(id)

@@ -52,12 +52,12 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomerServiceImplement implements CustomerService {
-    final UserServiceImplement userService;
-    final CloudinaryService cloudinaryService;
-    final CustomerRepository customerRepository;
-    final CustomerMapper customerMapper;
+    UserServiceImplement userService;
+    CloudinaryService cloudinaryService;
+    CustomerRepository customerRepository;
+    CustomerMapper customerMapper;
 
     private Boolean existsByPhone(String phone) {
         return this.customerRepository.existsByPhone(phone);

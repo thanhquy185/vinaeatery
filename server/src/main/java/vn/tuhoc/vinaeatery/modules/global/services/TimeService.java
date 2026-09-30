@@ -9,11 +9,11 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
 @Service
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TimeService {
-    final String DATE_FORMAT = "yyyy-MM-dd";
-    final String TIME_FORMAT = "HH:mm:ss";
-    final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    String DATE_FORMAT = "yyyy-MM-dd";
+    String TIME_FORMAT = "HH:mm:ss";
+    String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public LocalDateTime getLocalDateTime(String datetime) {
         return LocalDateTime.parse(

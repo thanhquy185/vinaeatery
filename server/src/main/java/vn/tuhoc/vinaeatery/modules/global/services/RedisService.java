@@ -12,10 +12,10 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RedisService {
-    final RedisTemplate<String, Object> redisTemplate;
-    final StringRedisTemplate stringRedisTemplate;
+    RedisTemplate<String, Object> redisTemplate;
+    StringRedisTemplate stringRedisTemplate;
 
     public void set(String key, Object value) {
         this.redisTemplate.opsForValue().set(key, value);

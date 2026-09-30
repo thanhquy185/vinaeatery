@@ -61,21 +61,21 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PaymentMachineServiceImplement implements PaymentMachineService {
-        final EntityManager entityManager;
-        final SocketService socketService;
-        final TimeService timeService;
-        final PaymentMachineRepository paymentMachineRepository;
-        final UseTableRepository useTableRepository;
-        final FeedbackRepository feedbackRepository;
-        final BillRepository billRepository;
-        final PaymentMachineMapper paymentMachineMapper;
-        final PaymentMachineFoodMapper paymentMachineFoodMapper;
-        final UseTableMapper useTableMapper;
-        final FeedbackMapper feedbackMapper;
-        final BillMapper billMapper;
-        final BillDetailMapper billDetailMapper;
+        EntityManager entityManager;
+        SocketService socketService;
+        TimeService timeService;
+        PaymentMachineRepository paymentMachineRepository;
+        UseTableRepository useTableRepository;
+        FeedbackRepository feedbackRepository;
+        BillRepository billRepository;
+        PaymentMachineMapper paymentMachineMapper;
+        PaymentMachineFoodMapper paymentMachineFoodMapper;
+        UseTableMapper useTableMapper;
+        FeedbackMapper feedbackMapper;
+        BillMapper billMapper;
+        BillDetailMapper billDetailMapper;
 
         private PaymentMachineEntity getOneById(Integer id) {
                 return this.paymentMachineRepository.findOneById(id)

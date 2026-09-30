@@ -35,9 +35,9 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @RestController
 @RequestMapping("/api/v1/category-ingredients")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CategoryIngredientController {
-        final CategoryIngredientService categoryIngredientService;
+        CategoryIngredientService categoryIngredientService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('CATEGORY_INGREDIENTS__READ')")

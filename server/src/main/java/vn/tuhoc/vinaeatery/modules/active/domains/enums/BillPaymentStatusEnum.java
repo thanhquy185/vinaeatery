@@ -4,24 +4,19 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum BillPaymentStatusEnum {
     PAID("PAID", "Đã thanh toán"),
     UNPAID("UNPAID", "Chưa thanh toán");
 
-    final String value;
-    final String description;
-
-    BillPaymentStatusEnum(String value, String description) {
-        this.value = value;
-        this.description = description;
-    }
-
-    public String getValue() {
-        return value;
-    }
+    String value;
+    String description;
 
     @JsonValue
     public String getDescription() {
@@ -35,6 +30,7 @@ public enum BillPaymentStatusEnum {
                 return paymentStatus;
             }
         }
+
         throw new IllegalArgumentException("Không tìm thấy trạng thái: " + description);
     }
 
@@ -44,6 +40,7 @@ public enum BillPaymentStatusEnum {
                 return paymentStatus;
             }
         }
+
         throw new IllegalArgumentException("Invalid payment status: " + value);
     }
 }

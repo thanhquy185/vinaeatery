@@ -15,7 +15,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.ReservationEntity;
 import vn.tuhoc.vinaeatery.modules.active.domains.mappers.ReservationMapper;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.ReservationCreateRequestDTO;
@@ -37,9 +39,10 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ReservationServiceImplement implements ReservationService {
-    final ReservationRepository reservationRepository;
-    final ReservationMapper reservationMapper;
+    ReservationRepository reservationRepository;
+    ReservationMapper reservationMapper;
 
     private ReservationEntity getOneById(Integer id) {
         return this.reservationRepository.findOneById(id)

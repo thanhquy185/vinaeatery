@@ -20,10 +20,10 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class CloudinaryService {
-    final Cloudinary cloudinary;
+    Cloudinary cloudinary;
 
     // Sinh public_id dạng uuid_filename
     private String generatePublicId(String fileName) {

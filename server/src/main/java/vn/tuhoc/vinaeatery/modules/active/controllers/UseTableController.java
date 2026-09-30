@@ -29,9 +29,9 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @RestController
 @RequestMapping("/api/v1/use-tables")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UseTableController {
-        final UseTableService useTableService;
+        UseTableService useTableService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('USE_TABLES__READ')")

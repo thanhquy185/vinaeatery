@@ -24,9 +24,9 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @RestController
 @RequestMapping("/api/v1/payment-machines")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PaymentMachineController {
-        final PaymentMachineServiceImplement paymentMachineService;
+        PaymentMachineServiceImplement paymentMachineService;
 
         @GetMapping("/{id}")
         public ResponseEntity<RestResponseDTO<PaymentMachineDetailResponseDTO>> handleGetDetailById(

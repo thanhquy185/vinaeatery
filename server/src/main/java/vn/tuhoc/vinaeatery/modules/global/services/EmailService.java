@@ -10,16 +10,18 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.CustomerDetailResponseDTO;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EmailService {
+  @NonFinal
   @Value("${app.frontend_url}")
   String frontendUrl;
-  final JavaMailSender mailSender;
+  JavaMailSender mailSender;
 
   @Async
   public void sendRegisterSuccessEmail(

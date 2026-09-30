@@ -18,9 +18,9 @@ import vn.tuhoc.vinaeatery.modules.active.services.interfaces.FeedbackScoreServi
 @RestController
 @RequestMapping("/api/v1/feedback-scores")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FeedbackScoreController {
-        final FeedbackScoreService feedbackScoreService;
+        FeedbackScoreService feedbackScoreService;
 
         @GetMapping("/crud")
         public ResponseEntity<RestResponseDTO<List<FeedbackScoreCrudResponseDTO>>> handleGetCrud() {

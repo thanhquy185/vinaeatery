@@ -26,7 +26,7 @@ import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.PermissionDetailRespo
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.PermissionSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.PermissionCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.employee.repositories.criteria.PermissionCriteria;
-import vn.tuhoc.vinaeatery.modules.employee.services.PermissionServiceImplement;
+import vn.tuhoc.vinaeatery.modules.employee.services.interfaces.PermissionService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -35,9 +35,9 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @RestController
 @RequestMapping("/api/v1/permissions")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PermissionController {
-        final PermissionServiceImplement permissionService;
+        PermissionService permissionService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('PERMISSIONS__READ')")

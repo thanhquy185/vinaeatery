@@ -21,7 +21,7 @@ import vn.tuhoc.vinaeatery.modules.auth.dtos.requests.UserDeleteRequestDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.auth.dtos.responses.UserSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.auth.repositories.criteria.UserCriteria;
-import vn.tuhoc.vinaeatery.modules.auth.services.UserServiceImplement;
+import vn.tuhoc.vinaeatery.modules.auth.services.interfaces.UserService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 
@@ -30,9 +30,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
-        final UserServiceImplement userService;
+        UserService userService;
 
         @GetMapping("/{id}")
         public ResponseEntity<RestResponseDTO<UserDetailResponseDTO>> handleGetDetailById(

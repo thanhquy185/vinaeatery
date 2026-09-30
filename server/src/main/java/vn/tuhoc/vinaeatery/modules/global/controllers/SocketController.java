@@ -3,7 +3,9 @@ package vn.tuhoc.vinaeatery.modules.global.controllers;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.MessageEntity;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.OrderSheetDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.services.MessageServiceImplement;
@@ -17,10 +19,11 @@ import vn.tuhoc.vinaeatery.modules.global.services.SocketService;
 
 @Controller
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SocketController {
-        private final SocketService socketService;
-        private final MessageServiceImplement messageService;
-        private final OrderSheetServiceImplement orderSheetService;
+        SocketService socketService;
+        MessageServiceImplement messageService;
+        OrderSheetServiceImplement orderSheetService;
 
         @MessageMapping("/open-payment-machine")
         public void handleOpenPaymentMachine(

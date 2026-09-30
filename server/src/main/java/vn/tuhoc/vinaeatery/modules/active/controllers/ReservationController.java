@@ -36,9 +36,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RestController
 @RequestMapping("/api/v1/reservations")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ReservationController {
-        final ReservationService reservationService;
+        ReservationService reservationService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('RESERVATIONS__READ')")

@@ -19,7 +19,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import vn.tuhoc.vinaeatery.modules.active.services.UseTableServiceImplement;
+import vn.tuhoc.vinaeatery.modules.active.services.interfaces.UseTableService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.modules.table.dtos.requests.TableCreateRequestDTO;
@@ -29,17 +29,17 @@ import vn.tuhoc.vinaeatery.modules.table.dtos.responses.TableDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.table.dtos.responses.TableSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.table.dtos.responses.TableCrudResponseDTO;
 import vn.tuhoc.vinaeatery.modules.table.repositories.criteria.TableCriteria;
-import vn.tuhoc.vinaeatery.modules.table.services.TableServiceImplement;
+import vn.tuhoc.vinaeatery.modules.table.services.interfaces.TableService;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 
 @RestController
 @RequestMapping("/api/v1/tables")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TableController {
-        final UseTableServiceImplement useTableService;
-        final TableServiceImplement tableService;
+        UseTableService useTableService;
+        TableService tableService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('TABLES__READ')")

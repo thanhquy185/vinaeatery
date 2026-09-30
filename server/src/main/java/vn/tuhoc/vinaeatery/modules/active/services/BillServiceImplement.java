@@ -45,11 +45,11 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BillServiceImplement implements BillService {
-    final BillRepository billRepository;
-    final BillMapper billMapper;
-    final BillDetailMapper billDetailMapper;
+    BillRepository billRepository;
+    BillMapper billMapper;
+    BillDetailMapper billDetailMapper;
 
     private BillEntity getOneById(Integer id) {
         return this.billRepository.findOneById(id)

@@ -29,6 +29,7 @@ import com.nimbusds.jose.util.Base64;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import vn.tuhoc.vinaeatery.customs.AccessDeniedHandlerCustom;
 import vn.tuhoc.vinaeatery.customs.AuthenticationEntryPointCustom;
 import vn.tuhoc.vinaeatery.customs.BearerTokenResolverCustom;
@@ -43,11 +44,12 @@ import vn.tuhoc.vinaeatery.utils.SecurityUtil;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecurityConfig {
+    @NonFinal
     @Value("${jwt.base64-secret}")
     String jwtKey;
-    final UserDetailsServiceCustom userDetailsServiceCustom;
+    UserDetailsServiceCustom userDetailsServiceCustom;
 
     SecurityConfig(UserDetailsServiceCustom userDetailsServiceCustom) {
         this.userDetailsServiceCustom = userDetailsServiceCustom;

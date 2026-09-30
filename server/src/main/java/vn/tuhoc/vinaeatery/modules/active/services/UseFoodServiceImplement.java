@@ -31,11 +31,11 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UseFoodServiceImplement implements UseFoodService {
-    final TimeService timeService;
-    final UseFoodRepository useFoodRepository;
-    final UseFoodMapper useFoodMapper;
+    TimeService timeService;
+    UseFoodRepository useFoodRepository;
+    UseFoodMapper useFoodMapper;
 
     private UseFoodEntity getOneById(Integer id) {
         return this.useFoodRepository.findOneById(id)

@@ -43,12 +43,12 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CategoryFoodServiceImplement implements CategoryFoodService {
-        final CloudinaryService cloudinaryService;
-        final CategoryFoodRepository categoryFoodRepository;
-        final FoodRepository foodRepository;
-        final CategoryFoodMapper categoryFoodMapper;
+        CloudinaryService cloudinaryService;
+        CategoryFoodRepository categoryFoodRepository;
+        FoodRepository foodRepository;
+        CategoryFoodMapper categoryFoodMapper;
 
         private CategoryFoodEntity getOneById(Integer id) {
                 return this.categoryFoodRepository.findOneById(id)

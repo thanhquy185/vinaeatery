@@ -32,11 +32,11 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImplement implements UserService {
-    final PasswordUtil passwordUtil;
-    final UserRepository userRepository;
-    final UserMapper userMapper;
+    PasswordUtil passwordUtil;
+    UserRepository userRepository;
+    UserMapper userMapper;
 
     private Boolean existsByUsername(String username) {
         return this.userRepository.existsByUsername(username);

@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import vn.tuhoc.vinaeatery.modules.auth.domains.entities.AuthSessionEntity;
 import vn.tuhoc.vinaeatery.modules.auth.domains.entities.UserEntity;
 import vn.tuhoc.vinaeatery.modules.auth.domains.enums.UserMethodEnum;
@@ -42,19 +43,20 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthServiceImplement implements AuthService {
+        @NonFinal
         @Value("${jwt.refresh-token-validity-in-seconds}")
         Long jwtRefreshTokenExpiration;
-        final AuthenticationManager authenticationManager;
-        final SecurityUtil securityUtil;
-        final TimeService timeService;
-        final EmailService emailService;
-        final UserServiceImplement userService;
-        final AuthSessionServiceImplement authSessionService;
-        final ManagerServiceImplement managerService;
-        final CustomerServiceImplement customerService;
-        final EmployeeServiceImplement employeeService;
+        AuthenticationManager authenticationManager;
+        SecurityUtil securityUtil;
+        TimeService timeService;
+        EmailService emailService;
+        UserServiceImplement userService;
+        AuthSessionServiceImplement authSessionService;
+        ManagerServiceImplement managerService;
+        CustomerServiceImplement customerService;
+        EmployeeServiceImplement employeeService;
 
         @Override
         public CustomerDetailResponseDTO handleCustomerRegister(AuthRegisterRequestDTO authRegisterRequestDTO) {

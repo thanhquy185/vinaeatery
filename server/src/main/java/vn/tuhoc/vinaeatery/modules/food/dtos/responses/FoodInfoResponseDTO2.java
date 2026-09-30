@@ -22,7 +22,7 @@ public class FoodInfoResponseDTO2 {
 
     CategoryFoodInfoResponseDTO categoryFood;
 
-   String imageUrl;
+    String imageUrl;
 
     String imagePublicId;
 

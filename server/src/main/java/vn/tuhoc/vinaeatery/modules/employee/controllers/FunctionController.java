@@ -20,9 +20,9 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @RestController
 @RequestMapping("/api/v1/functions")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FunctionController {
-        final FunctionService functionService;
+        FunctionService functionService;
 
         @GetMapping("/{id}")
         public ResponseEntity<RestResponseDTO<FunctionDetailResponseDTO>> handleGetDetailById(

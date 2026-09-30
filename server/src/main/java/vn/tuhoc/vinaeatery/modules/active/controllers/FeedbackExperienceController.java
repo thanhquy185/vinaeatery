@@ -18,9 +18,9 @@ import vn.tuhoc.vinaeatery.modules.active.services.interfaces.FeedbackExperience
 @RestController
 @RequestMapping("/api/v1/feedback-experiences")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FeedbackExperienceController {
-        final FeedbackExperienceService feedbackExperienceService;
+        FeedbackExperienceService feedbackExperienceService;
 
         @GetMapping("/crud")
         public ResponseEntity<RestResponseDTO<List<FeedbackExperienceCrudResponseDTO>>> handleGetCrud() {

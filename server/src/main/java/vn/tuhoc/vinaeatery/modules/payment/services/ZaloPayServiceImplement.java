@@ -34,10 +34,10 @@ import java.util.TimeZone;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ZaloPayServiceImplement implements PaymentService {
-    final ZaloPayPropertiesDTO zaloPayPropertiesDTO;
-    final PaymentMachineServiceImplement paymentMachineService;
+    ZaloPayPropertiesDTO zaloPayPropertiesDTO;
+    PaymentMachineServiceImplement paymentMachineService;
 
     private String getCurrentDateYYMMDD() {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+7"));

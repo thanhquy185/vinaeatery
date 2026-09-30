@@ -19,10 +19,10 @@ import vn.tuhoc.vinaeatery.modules.payment.services.interfaces.PaymentMethodServ
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PaymentMethodServiceImplement implements PaymentMethodService {
-    final PaymentMethodRepository paymentMethodRepository;
-    final PaymentMethodMapper paymentMethodMapper;
+    PaymentMethodRepository paymentMethodRepository;
+    PaymentMethodMapper paymentMethodMapper;
 
     private PaymentMethodEntity getOneById(Integer id) {
         return this.paymentMethodRepository.findOneById(id)

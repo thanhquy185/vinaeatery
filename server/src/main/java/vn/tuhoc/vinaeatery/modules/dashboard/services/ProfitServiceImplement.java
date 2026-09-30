@@ -19,6 +19,7 @@ import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.ProfitTableBodyRespo
 import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.ProfitTableFootResponseDTO;
 import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.ProfitTableResponseDTO;
 import vn.tuhoc.vinaeatery.modules.dashboard.dtos.responses.TimeRangeResponseDTO;
+import vn.tuhoc.vinaeatery.modules.dashboard.services.interfaces.ProfitService;
 import vn.tuhoc.vinaeatery.modules.food.domains.entities.InputTicketEntity;
 import vn.tuhoc.vinaeatery.modules.food.repositories.InputTicketRepository;
 import vn.tuhoc.vinaeatery.modules.restaurant.domains.mappers.RestaurantMapper;
@@ -28,13 +29,14 @@ import vn.tuhoc.vinaeatery.utils.TimeRangeUtil;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProfitService {
-        final RestaurantRepository restaurantRepository;
-        final BillRepository billRepository;
-        final InputTicketRepository inputTicketRepository;
-        final RestaurantMapper restaurantMapper;
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class ProfitServiceImplement implements ProfitService {
+        RestaurantRepository restaurantRepository;
+        BillRepository billRepository;
+        InputTicketRepository inputTicketRepository;
+        RestaurantMapper restaurantMapper;
 
+        @Override
         @Cacheable(value = "dashboard__profit", key = "'restaurantId=' + #profitRequestDTO.getRestaurantId() + 'timeline=' + #profitRequestDTO.getTimeline() + 'timeDetail=' + #profitRequestDTO.getTimeDetail()", unless = "#result == null")
         public ProfitResponseDTO handleDashboard(ProfitRequestDTO profitRequestDTO) {
                 int restaurantId = profitRequestDTO.getRestaurantId();

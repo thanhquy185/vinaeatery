@@ -35,9 +35,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RestController
 @RequestMapping("/api/v1/managers")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ManagerController {
-        final ManagerService managerService;
+        ManagerService managerService;
 
         @GetMapping("/{id}")
         public ResponseEntity<RestResponseDTO<ManagerDetailResponseDTO>> handleGetDetailById(

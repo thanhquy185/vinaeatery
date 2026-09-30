@@ -31,9 +31,9 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @RestController
 @RequestMapping("/api/v1/bills")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BillController {
-        final BillService billService;
+        BillService billService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('BILLS__READ')")
