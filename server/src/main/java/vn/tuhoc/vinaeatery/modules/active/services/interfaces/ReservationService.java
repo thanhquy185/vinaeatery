@@ -17,7 +17,9 @@ public interface ReservationService {
 
     PageResponseDTO<ReservationSummaryResponseDTO> handleGetSummary(ReservationCriteria reservationCriteria);
 
-    PageResponseDTO<ReservationCustomerResponseDTO> handleGetAllByCustomerId(ReservationCriteria reservationCriteria);
+    PageResponseDTO<ReservationCustomerResponseDTO> handleGetAllByCustomerId(
+            ReservationCriteria reservationCriteria,
+            Integer customerId);
 
     List<ReservationCrudResponseDTO> handleGetCrud();
 
@@ -30,5 +32,10 @@ public interface ReservationService {
 
     ReservationDetailResponseDTO handleUpdateStatus(
             Integer id,
+            ReservationUpdateStatusRequestDTO reservationUpdateStatusRequestDTO);
+
+    ReservationDetailResponseDTO handleCustomerUpdateStatus(
+            Integer id,
+            Integer customerId,
             ReservationUpdateStatusRequestDTO reservationUpdateStatusRequestDTO);
 }

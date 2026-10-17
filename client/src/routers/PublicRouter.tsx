@@ -3,7 +3,7 @@ import PublicLayout from "../layouts/PublicLayout";
 import PublicHomePage from "../pages/public/HomePage";
 import PublicRestaurantsPage from "../pages/public/RestaurantsPage";
 import PublicProfilePage from "../pages/public/ProfilePage";
-// import PublicOrdersPage from "../pages/public/orders";
+import PublicBillsPage from "../pages/public/BillsPage";
 import PublicReservationsPage from "../pages/public/ReservationsPage";
 import PublicChangePasswordPage from "../pages/public/ChangePasswordPage";
 import type { RouteObject } from "react-router-dom";
@@ -62,10 +62,15 @@ const PublicRouter = ({
           />
         ),
       },
-      // {
-      //   path: "orders",
-      //   element: <PublicOrdersPage />,
-      // },
+      {
+        path: "orders",
+        element: (
+          <PublicBillsPage
+            isCustomer={isCustomer}
+            customerLogin={infoLogin as CustomerDetailResponseType}
+          />
+        ),
+      },
       {
         path: "change-password",
         element: <PublicChangePasswordPage />,

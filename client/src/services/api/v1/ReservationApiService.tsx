@@ -15,6 +15,29 @@ import type {
 
 const FEATURE_NAME = "reservations";
 
+const buildCustomerReservationParams = ({
+  page,
+  size,
+  findType,
+  findValue,
+  statusValue,
+  restaurantId,
+}: FilterDataProps): Record<string, string> => {
+  const params: Record<string, string> = {};
+  if (page && !isNaN(page)) params.page = String(page - 1);
+  if (size && !isNaN(size)) params.size = String(size);
+  if (findValue && findType) {
+    if (findType === "id") params.id = findValue;
+    if (findType === "customer-fullname") params.customerFullname = findValue;
+    if (findType === "customer-phone") params.customerPhone = findValue;
+    if (findType === "customer-email") params.customerEmail = findValue;
+  }
+  if (statusValue!) params.status = statusValue! as unknown as string;
+  if (restaurantId && !isNaN(restaurantId))
+    params.restaurantId = String(restaurantId);
+  return params;
+};
+
 const ReservationApiService = {
   async handleGetDetailById({
     id,
@@ -64,39 +87,26 @@ const ReservationApiService = {
     );
   },
 
-  async handleGetAllByCustomerId({
-    page,
-    size,
-    findType,
-    findValue,
-    statusValue,
-    restaurantId,
-    customerId,
-  }: FilterDataProps): Promise<
+  async handleGetCurrentCustomerReservations(
+    filters: FilterDataProps,
+  ): Promise<
     AxiosResponse<PageResponseType<ReservationCustomerResponseType>, any>
   > {
-    const params: Record<string, string> = {};
-    if (page && !isNaN(page)) {
-      params.page = String(page - 1);
-    }
-    if (size && !isNaN(size)) {
-      params.size = String(size);
-    }
-    if (findValue && findType) {
-      if (findType === "id") params.id = findValue;
-      if (findType === "customer-fullname") params.customerFullname = findValue;
-      if (findType === "customer-phone") params.customerPhone = findValue;
-      if (findType === "customer-email") params.customerEmail = findValue;
-    }
-    if (statusValue!) params.status = statusValue! as unknown as string;
-    if (restaurantId && !isNaN(restaurantId))
-      params.restaurantId = String(restaurantId);
-    if (customerId && !isNaN(customerId))
-      params.customerId = String(customerId);
-
     return instance.get<PageResponseType<ReservationCustomerResponseType>, any>(
-      `/api/v1/${FEATURE_NAME}/customer`,
-      { params },
+      `/api/v1/${FEATURE_NAME}/customer/me`,
+      { params: buildCustomerReservationParams(filters) },
+    );
+  },
+
+  async handleGetAllByCustomerId({
+    customerId,
+    ...filters
+  }: FilterDataProps & { customerId: number }): Promise<
+    AxiosResponse<PageResponseType<ReservationCustomerResponseType>, any>
+  > {
+    return instance.get<PageResponseType<ReservationCustomerResponseType>, any>(
+      `/api/v1/${FEATURE_NAME}/customer/${customerId}`,
+      { params: buildCustomerReservationParams(filters) },
     );
   },
 
@@ -155,7 +165,6 @@ const ReservationApiService = {
 
   async handleCustomerCreate({
     restaurantId,
-    customerId,
     createAt,
     arriveAt,
     customerFullname,
@@ -171,7 +180,6 @@ const ReservationApiService = {
       `/api/v1/${FEATURE_NAME}/customer`,
       {
         restaurantId,
-        customerId,
         createAt,
         arriveAt,
         customerFullname,

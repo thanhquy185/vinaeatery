@@ -24,12 +24,21 @@ public class AuthorizationConfig {
 
                 auth.requestMatchers(
                                 HttpMethod.GET,
+                                "/api/v1/feedbacks/*")
+                                .hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE");
+
+                auth.requestMatchers(
+                                HttpMethod.GET,
                                 "/api/v1/restaurants/manager/*")
                                 .hasRole("MANAGER");
 
                 auth.requestMatchers(
                                 HttpMethod.GET,
-                                "/api/v1/bills/customer/*")
+                                "/api/v1/bills/customer/me")
+                                .hasRole("CUSTOMER");
+                auth.requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/bills/customer/me/*")
                                 .hasRole("CUSTOMER");
                 auth.requestMatchers(
                                 HttpMethod.POST,
@@ -37,15 +46,19 @@ public class AuthorizationConfig {
                                 .hasRole("CUSTOMER");
                 auth.requestMatchers(
                                 HttpMethod.GET,
-                                "/api/v1/reservations/customer")
+                                "/api/v1/reservations/customer/me")
                                 .hasRole("CUSTOMER");
                 auth.requestMatchers(
                                 HttpMethod.POST,
                                 "/api/v1/reservations/customer")
                                 .hasRole("CUSTOMER");
                 auth.requestMatchers(
-                                HttpMethod.DELETE,
-                                "/api/v1/reservations/customer/**")
+                                HttpMethod.PATCH,
+                                "/api/v1/reservations/customer/*/status")
+                                .hasRole("CUSTOMER");
+                auth.requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/feedbacks")
                                 .hasRole("CUSTOMER");
 
                 auth.requestMatchers(

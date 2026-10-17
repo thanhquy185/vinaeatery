@@ -1,6 +1,6 @@
 import RestaurantLocationPickerComponent from "../RestaurantLocationPicker";
-import { Button, Col, Divider, Modal, Row, Typography } from "antd";
-import { getStatusTag } from "../../pages/public/ReservationsPage";
+import { Button, Divider, Modal, Typography } from "antd";
+import ReservationStatusTagComponent from "../public/ReservationStatusTagComponent";
 import type { Dispatch, SetStateAction } from "react";
 import type { ReservationCustomerResponseType } from "../../types/ReservationType";
 
@@ -16,86 +16,75 @@ const PublicReservationModalComponent: React.FC<
   return (
     <Modal
       open={openModal}
-      title={<p className="text-4xl">Chi tiết đơn đặt bàn</p>}
+      title={
+        <div className="pr-6">
+          <div className="public-reservation-detail-modal__title font-bold text-stone-900">
+            Chi tiết đặt bàn
+          </div>
+          {selectedReservation && (
+            <div className="public-reservation-detail-modal__subtitle mt-1 font-medium text-stone-500">
+              #{String(selectedReservation.id).padStart(6, "0")} · {selectedReservation.restaurant.name}
+            </div>
+          )}
+        </div>
+      }
       centered
-      width={600}
+      width={680}
       footer={null}
-      style={{ borderRadius: 12 }}
+      className="public-reservation-detail-modal"
       onCancel={() => setOpenModal(false)}
     >
       {selectedReservation && (
         <>
-          <Divider />
-          <Row style={{ marginBottom: 14 }}>
-            <Col className="flex-1">
-              <Typography.Paragraph
-                strong
-                style={{ marginBottom: 0, fontSize: 16 }}
-              >
+          <Divider className="my-4!" />
+          <div className="public-reservation-detail-summary">
+            <div className="public-reservation-detail-summary__field">
+              <Typography.Text className="public-reservation-detail-summary__label">
                 Thời gian đặt bàn
-              </Typography.Paragraph>
-              <Typography.Paragraph style={{ fontSize: 15 }}>
+              </Typography.Text>
+              <div className="public-reservation-detail-summary__value">
                 {selectedReservation.createAt}
-              </Typography.Paragraph>
-            </Col>
-            <Col className="flex-1">
-              <Typography.Paragraph
-                strong
-                style={{ marginBottom: 0, fontSize: 16 }}
-              >
+              </div>
+            </div>
+            <div className="public-reservation-detail-summary__field">
+              <Typography.Text className="public-reservation-detail-summary__label">
                 Thời gian dự kiến
-              </Typography.Paragraph>
-              <Typography.Paragraph style={{ fontSize: 15 }}>
+              </Typography.Text>
+              <div className="public-reservation-detail-summary__value">
                 {selectedReservation.arriveAt}
-              </Typography.Paragraph>
-            </Col>
-          </Row>
-          <Row style={{ marginBottom: 14 }}>
-            <Col className="flex-1">
-              <Typography.Paragraph
-                strong
-                style={{ marginBottom: 0, fontSize: 16 }}
-              >
+              </div>
+            </div>
+            <div className="public-reservation-detail-summary__field">
+              <Typography.Text className="public-reservation-detail-summary__label">
                 Số lượng khách
-              </Typography.Paragraph>
-              <Typography.Paragraph style={{ fontSize: 15 }}>
+              </Typography.Text>
+              <div className="public-reservation-detail-summary__value">
                 {selectedReservation.customerGuests} khách
-              </Typography.Paragraph>
-            </Col>
-            <Col className="flex-1">
-              <Typography.Paragraph
-                strong
-                style={{ marginBottom: 0, fontSize: 16 }}
-              >
+              </div>
+            </div>
+            <div className="public-reservation-detail-summary__field">
+              <Typography.Text className="public-reservation-detail-summary__label">
                 Trạng thái
-              </Typography.Paragraph>
-              <Typography.Paragraph style={{ fontSize: 15 }}>
-                {getStatusTag(selectedReservation.status)}
-              </Typography.Paragraph>
-            </Col>
-          </Row>
-          <div style={{ marginBottom: 14 }}>
-            <Typography.Paragraph
-              strong
-              style={{ marginBottom: 0, fontSize: 16 }}
-            >
+              </Typography.Text>
+              <div className="public-reservation-detail-summary__status">
+                <ReservationStatusTagComponent status={selectedReservation.status} />
+              </div>
+            </div>
+          </div>
+          <div className="mb-5">
+            <Typography.Title level={5} className="mb-2!">
               Nhà hàng đã đặt
-            </Typography.Paragraph>
-            <Typography.Paragraph style={{ marginBottom: 0, fontSize: 15 }}>
-              Tên nhà hàng: {selectedReservation.restaurant.name}
-            </Typography.Paragraph>
-            <Typography.Paragraph style={{ marginBottom: 0, fontSize: 15 }}>
-              Số điện thoại: {selectedReservation.restaurant.phone}
-            </Typography.Paragraph>
-            <Typography.Paragraph style={{ marginBottom: 0, fontSize: 15 }}>
-              Email: {selectedReservation.restaurant.email}
-            </Typography.Paragraph>
-            <Typography.Paragraph style={{ marginBottom: 0, fontSize: 15 }}>
-              Địa chỉ: {selectedReservation.restaurant.houseNumber}{" "}
-              {selectedReservation.restaurant.streetName},{" "}
-              {selectedReservation.restaurant.ward},{" "}
-              {selectedReservation.restaurant.province}
-            </Typography.Paragraph>
+            </Typography.Title>
+            <div className="public-reservation-detail-meta mb-3 grid gap-x-6 gap-y-1 text-sm text-stone-600 sm:grid-cols-2">
+              <p className="m-0"><b>Điện thoại:</b> {selectedReservation.restaurant.phone}</p>
+              <p className="m-0"><b>Email:</b> {selectedReservation.restaurant.email}</p>
+              <p className="m-0 sm:col-span-2">
+                <b>Địa chỉ:</b> {selectedReservation.restaurant.houseNumber}{" "}
+                {selectedReservation.restaurant.streetName},{" "}
+                {selectedReservation.restaurant.ward},{" "}
+                {selectedReservation.restaurant.province}
+              </p>
+            </div>
             <RestaurantLocationPickerComponent
               key={selectedReservation.restaurant.id}
               type="detail"
@@ -106,29 +95,20 @@ const PublicReservationModalComponent: React.FC<
               longitude={selectedReservation.restaurant.longitude}
             />
           </div>
-          <div style={{ marginBottom: 14 }}>
-            <Typography.Paragraph
-              strong
-              style={{ marginBottom: 0, fontSize: 16 }}
-            >
+          <div className="public-reservation-detail-customer-card rounded-2xl border border-stone-200 p-4 sm:p-5">
+            <Typography.Title level={5} className="mb-3!">
               Thông tin bạn gửi
-            </Typography.Paragraph>
-            <Typography.Paragraph style={{ marginBottom: 0, fontSize: 15 }}>
-              Họ và tên: {selectedReservation?.customerFullname}
-            </Typography.Paragraph>
-            <Typography.Paragraph style={{ marginBottom: 0, fontSize: 15 }}>
-              Số điện thoại: {selectedReservation?.customerPhone}
-            </Typography.Paragraph>
-            <Typography.Paragraph style={{ marginBottom: 0, fontSize: 15 }}>
-              Email: {selectedReservation?.customerEmail}
-            </Typography.Paragraph>
-            <Typography.Paragraph style={{ marginBottom: 0, fontSize: 15 }}>
-              Ghi chú: {selectedReservation?.customerNote}
-            </Typography.Paragraph>
+            </Typography.Title>
+            <div className="public-reservation-detail-customer-info grid gap-x-6 gap-y-2 text-sm text-stone-600 sm:grid-cols-2">
+              <p className="m-0"><b>Họ và tên:</b> {selectedReservation.customerFullname}</p>
+              <p className="m-0"><b>Số điện thoại:</b> {selectedReservation.customerPhone}</p>
+              <p className="m-0"><b>Email:</b> {selectedReservation.customerEmail}</p>
+              <p className="m-0 sm:col-span-2"><b>Ghi chú:</b> {selectedReservation.customerNote || "Không có"}</p>
+            </div>
           </div>
-          <Divider />
-          <div style={{ textAlign: "right", marginTop: 6 }}>
-            <Button onClick={() => setOpenModal(false)} type="primary">
+          <Divider className="my-4!" />
+          <div className="flex justify-end">
+            <Button onClick={() => setOpenModal(false)} type="primary" size="large">
               Đóng
             </Button>
           </div>

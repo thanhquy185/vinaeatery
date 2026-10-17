@@ -26,6 +26,7 @@ import vn.tuhoc.vinaeatery.modules.active.dtos.responses.ReservationDetailRespon
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.ReservationSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.repositories.criteria.ReservationCriteria;
 import vn.tuhoc.vinaeatery.modules.active.services.interfaces.ReservationService;
+import vn.tuhoc.vinaeatery.modules.restaurant.services.interfaces.CustomerService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -39,6 +40,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ReservationController {
         ReservationService reservationService;
+        CustomerService customerService;
+
+        private ResponseEntity<RestResponseDTO<PageResponseDTO<ReservationCustomerResponseDTO>>> getCustomerReservations(
+                        ReservationCriteria reservationCriteria,
+                        Integer customerId) {
+                PageResponseDTO<ReservationCustomerResponseDTO> reservationCustomer = this.reservationService
+                                .handleGetAllByCustomerId(reservationCriteria, customerId);
+
+                return RestResponseUtils.ok(
+                                "Truy vấn danh sách đơn đặt bàn của khách hàng thành công!",
+                                reservationCustomer);
+        }
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('RESERVATIONS__READ')")
@@ -102,20 +115,28 @@ public class ReservationController {
                                 reservationUpdateStatus);
         }
 
-        @GetMapping("/customer")
+        @GetMapping("/customer/{customerId}")
+        @PreAuthorize("hasAuthority('RESERVATIONS__READ')")
         public ResponseEntity<RestResponseDTO<PageResponseDTO<ReservationCustomerResponseDTO>>> handleGetAllByCustomerId(
+                        @PathVariable("customerId") Integer customerId,
                         ReservationCriteria reservationCriteria) {
-                PageResponseDTO<ReservationCustomerResponseDTO> reservationCustomer = this.reservationService
-                                .handleGetAllByCustomerId(reservationCriteria);
+                return this.getCustomerReservations(reservationCriteria, customerId);
+        }
 
-                return RestResponseUtils.ok(
-                                "Truy vấn danh sách đơn đặt bàn theo mã khách hàng thành công!",
-                                reservationCustomer);
+        @GetMapping("/customer/me")
+        @PreAuthorize("hasRole('CUSTOMER')")
+        public ResponseEntity<RestResponseDTO<PageResponseDTO<ReservationCustomerResponseDTO>>> handleGetCurrentCustomerReservations(
+                        ReservationCriteria reservationCriteria) {
+                Integer customerId = this.customerService.handleGetCurrentCustomerId();
+
+                return this.getCustomerReservations(reservationCriteria, customerId);
         }
 
         @PostMapping(value = "/customer", consumes = MediaType.APPLICATION_JSON_VALUE)
+        @PreAuthorize("hasRole('CUSTOMER')")
         public ResponseEntity<RestResponseDTO<ReservationDetailResponseDTO>> handleCustomerCreate(
                         @RequestBody @Valid ReservationCustomerCreateRequestDTO reservationCustomerCreateRequestDTO) {
+                reservationCustomerCreateRequestDTO.setCustomerId(this.customerService.handleGetCurrentCustomerId());
                 ReservationDetailResponseDTO reservationCustomerCreated = this.reservationService
                                 .handleCustomerCreate(reservationCustomerCreateRequestDTO);
 
@@ -125,12 +146,18 @@ public class ReservationController {
         }
 
         @PatchMapping(value = "/customer/{id}/status", consumes = MediaType.APPLICATION_JSON_VALUE)
+        @PreAuthorize("hasRole('CUSTOMER')")
         public ResponseEntity<RestResponseDTO<ReservationDetailResponseDTO>> handleCustomerUpdateStatus(
                         @PathVariable("id") Integer id,
                         @RequestBody @Valid ReservationUpdateStatusRequestDTO reservationUpdateStatusRequestDTO) {
-                ReservationDetailResponseDTO reservationUpdateStatus = this.reservationService.handleUpdateStatus(
-                                id,
-                                reservationUpdateStatusRequestDTO);
+                Integer customerId = this.customerService.handleGetCurrentCustomerId();
+                reservationUpdateStatusRequestDTO.setEmployeeId(null);
+                
+                ReservationDetailResponseDTO reservationUpdateStatus = this.reservationService
+                                .handleCustomerUpdateStatus(
+                                                id,
+                                                customerId,
+                                                reservationUpdateStatusRequestDTO);
 
                 return RestResponseUtils.ok(
                                 "Khách hàng trạng thái đơn đặt bàn thành công!",

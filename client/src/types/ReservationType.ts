@@ -107,20 +107,6 @@ export interface ReservationCreateRequestType {
 
 export interface ReservationCustomerCreateRequestType {
   restaurantId: number;
-  customerId: number;
-  createAt: string;
-  arriveAt: string;
-  customerFullname: string;
-  customerPhone: string;
-  customerEmail: string;
-  customerGuests: string;
-  customerNote: string;
-  status: ReservationStatusEnum;
-}
-
-export interface ReservationCustomerCreateRequestType {
-  restaurantId: number;
-  customerId: number;
   createAt: string;
   arriveAt: string;
   customerFullname: string;

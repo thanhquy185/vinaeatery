@@ -1,5 +1,7 @@
 package vn.tuhoc.vinaeatery.modules.active.dtos.requests;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Convert;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +19,7 @@ public class FeedbackCreateRequestDTO {
     @NotNull(message = "Mã nhà hàng không được để trống!")
     Integer restaurantId;
 
-    @NotNull(message = "Mã khách hàng không được để trống!")
+    @JsonIgnore
     Integer customerId;
 
     @NotNull(message = "Thời gian không được để trống!")

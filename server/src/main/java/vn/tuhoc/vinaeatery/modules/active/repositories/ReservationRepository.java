@@ -32,6 +32,17 @@ public interface ReservationRepository
                         """)
         Optional<ReservationEntity> findOneById(@Param("id") Integer id);
 
+        @EntityGraph(value = ReservationEntityGraph.FULL)
+        @Query("""
+                                select distinct r
+                                from ReservationEntity r
+                                where r.id = :id
+                                    and r.customer.id = :customerId
+                        """)
+        Optional<ReservationEntity> findOneByIdAndCustomerId(
+                        @Param("id") Integer id,
+                        @Param("customerId") Integer customerId);
+
         @EntityGraph(value = ReservationEntityGraph.ONLY_RESTAURANT)
         Page<ReservationEntity> findAll(Specification<ReservationEntity> specification, Pageable pageable);
 

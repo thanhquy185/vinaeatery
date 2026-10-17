@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,6 +48,7 @@ import vn.tuhoc.vinaeatery.modules.restaurant.repositories.criteria.CustomerCrit
 import vn.tuhoc.vinaeatery.modules.restaurant.repositories.specifications.CustomerSpecification;
 import vn.tuhoc.vinaeatery.modules.restaurant.services.interfaces.CustomerService;
 import vn.tuhoc.vinaeatery.utils.PageResponseUtil;
+import vn.tuhoc.vinaeatery.utils.SecurityUtil;
 import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 
 @Service
@@ -58,6 +60,7 @@ public class CustomerServiceImplement implements CustomerService {
     CloudinaryService cloudinaryService;
     CustomerRepository customerRepository;
     CustomerMapper customerMapper;
+    SecurityUtil securityUtil;
 
     private Boolean existsByPhone(String phone) {
         return this.customerRepository.existsByPhone(phone);
@@ -144,6 +147,19 @@ public class CustomerServiceImplement implements CustomerService {
     @Override
     public CustomerDetailResponseDTO handleGetDetailByEmail(String email) {
         return this.customerMapper.entityToDetailResponse(this.getOneByEmail(email));
+    }
+
+    @Override
+    public Integer handleGetCurrentCustomerId() {
+        String username = this.securityUtil.getCurrentUserLogin()
+                .orElseThrow(() -> new AccessDeniedException("Yêu cầu đăng nhập tài khoản khách hàng!"));
+        UserDetailResponseDTO currentUser = this.userService.handleGetDetailByUsername(username);
+
+        if (currentUser.getRole() != UserRoleEnum.CUSTOMER) {
+            throw new AccessDeniedException("Chỉ khách hàng đang đăng nhập mới được truy cập tài nguyên này!");
+        }
+
+        return this.getOneByUserId(currentUser.getId()).getId();
     }
 
     @Override

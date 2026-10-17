@@ -1,7 +1,5 @@
 package vn.tuhoc.vinaeatery.modules.active.controllers;
 
-import java.util.List;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,10 +18,12 @@ import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.BillCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.BillUpdateStatusRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillCustomerResponseDTO;
+import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillCustomerDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.repositories.criteria.BillCriteria;
 import vn.tuhoc.vinaeatery.modules.active.services.interfaces.BillService;
+import vn.tuhoc.vinaeatery.modules.restaurant.services.interfaces.CustomerService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
@@ -34,6 +34,7 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BillController {
         BillService billService;
+        CustomerService customerService;
 
         @GetMapping("/{id}")
         @PreAuthorize("hasAuthority('BILLS__READ')")
@@ -57,15 +58,44 @@ public class BillController {
                                 billSummary);
         }
 
-        @GetMapping("/customer/{customerId}")
-        public ResponseEntity<RestResponseDTO<List<BillCustomerResponseDTO>>> handleGetAllByCustomerId(
-                        @PathVariable("customerId") Integer customerId) {
-                List<BillCustomerResponseDTO> billCustomer = this.billService
-                                .handleGetAllByCustomerId(customerId);
+        @GetMapping("/customer/me")
+        @PreAuthorize("hasRole('CUSTOMER')")
+        public ResponseEntity<RestResponseDTO<PageResponseDTO<BillCustomerResponseDTO>>> handleGetCurrentCustomerBills(
+                        BillCriteria billCriteria) {
+                Integer customerId = this.customerService.handleGetCurrentCustomerId();
+                return this.getCustomerBills(billCriteria, customerId);
+        }
+
+        @GetMapping("/customer/me/{id}")
+        @PreAuthorize("hasRole('CUSTOMER')")
+        public ResponseEntity<RestResponseDTO<BillCustomerDetailResponseDTO>> handleGetCurrentCustomerBillDetail(
+                        @PathVariable("id") Integer id) {
+                Integer customerId = this.customerService.handleGetCurrentCustomerId();
+                BillCustomerDetailResponseDTO billDetail = this.billService
+                                .handleGetCustomerDetailById(id, customerId);
 
                 return RestResponseUtils.ok(
-                                "Truy vấn danh sách hoá đơn theo mã khách hàng thành công!",
+                                "Truy vấn chi tiết hoá đơn của khách hàng thành công!",
+                                billDetail);
+        }
+
+        private ResponseEntity<RestResponseDTO<PageResponseDTO<BillCustomerResponseDTO>>> getCustomerBills(
+                        BillCriteria billCriteria,
+                        Integer customerId) {
+                PageResponseDTO<BillCustomerResponseDTO> billCustomer = this.billService
+                                .handleGetAllByCustomerId(billCriteria, customerId);
+
+                return RestResponseUtils.ok(
+                                "Truy vấn danh sách hoá đơn của khách hàng thành công!",
                                 billCustomer);
+        }
+
+        @GetMapping("/customer/{customerId}")
+        @PreAuthorize("hasAuthority('BILLS__READ')")
+        public ResponseEntity<RestResponseDTO<PageResponseDTO<BillCustomerResponseDTO>>> handleGetAllByCustomerId(
+                        @PathVariable("customerId") Integer customerId,
+                        BillCriteria billCriteria) {
+                return this.getCustomerBills(billCriteria, customerId);
         }
 
         @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE)

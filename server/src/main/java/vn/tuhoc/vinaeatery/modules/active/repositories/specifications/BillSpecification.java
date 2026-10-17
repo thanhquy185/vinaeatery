@@ -15,6 +15,10 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 
 public class BillSpecification {
         public static Specification<BillEntity> filterBills(BillCriteria billCriteria) {
+                return filterBills(billCriteria, null);
+        }
+
+        public static Specification<BillEntity> filterBills(BillCriteria billCriteria, Integer targetCustomerId) {
                 if (ValidationUtil.isNull(billCriteria.getId())
                                 && ValidationUtil.isNull(billCriteria.getRestaurantId())
                                 && ValidationUtil.isNull(billCriteria.getEmployeeId())
@@ -24,7 +28,8 @@ public class BillSpecification {
                                 && ValidationUtil.isNull(billCriteria.getCreateAtEnd())
                                 && ValidationUtil.isNull(billCriteria.getPaymentStatus())
                                 && ValidationUtil.isNull(billCriteria.getStatus())
-                                && ValidationUtil.isNull(billCriteria.getSort())) {
+                                && ValidationUtil.isNull(billCriteria.getSort())
+                                && ValidationUtil.isNull(targetCustomerId)) {
                         return null;
                 }
 
@@ -60,7 +65,8 @@ public class BillSpecification {
                                                                                 Long.valueOf(employeeId))));
                         }
                         // Customer Id
-                        if (ValidationUtil.nonNull(billCriteria.getCustomerId())) {
+                        if (ValidationUtil.isNull(targetCustomerId)
+                                        && ValidationUtil.nonNull(billCriteria.getCustomerId())) {
                                 billCriteria.getCustomerId()
                                                 .filter(ValidationUtil::isNumeric)
                                                 .ifPresent(customerId -> predicates.add(
@@ -68,6 +74,12 @@ public class BillSpecification {
                                                                                 root.get(BillEntity_.CUSTOMER)
                                                                                                 .get("id"),
                                                                                 Long.valueOf(customerId))));
+                        }
+                        // A customer ID supplied by the controller takes precedence over query parameters.
+                        if (ValidationUtil.nonNull(targetCustomerId)) {
+                                predicates.add(criteriaBuilder.equal(
+                                                root.get(BillEntity_.CUSTOMER).get("id"),
+                                                targetCustomerId));
                         }
                         // Payment Method Id
                         if (ValidationUtil.nonNull(billCriteria.getPaymentMethodId())) {

@@ -22,6 +22,8 @@ public interface CustomerService {
 
         CustomerDetailResponseDTO handleGetDetailByEmail(String email);
 
+        Integer handleGetCurrentCustomerId();
+
         CustomerEntity handleGetOneByEmailNotThrowException(String email);
 
         PageResponseDTO<CustomerSummaryResponseDTO> handleGetSummary(CustomerCriteria customerCriteria);

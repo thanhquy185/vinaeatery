@@ -2,6 +2,7 @@ import PublicHeaderComponent from "../components/layout/PublicHeaderComponent";
 import PublicFooterComponent from "../components/layout/PublicFooterComponent";
 import { useEffect } from "react";
 import { Outlet, useRouteLoaderData } from "react-router-dom";
+import "../assets/styles/css/components/public-account.css";
 import type { CustomerDetailResponseType } from "../types/CustomerType";
 import type { EmployeeDetailResponseType } from "../types/EmployeeType";
 import type { ManagerDetailResponseType } from "../types/ManagerType";
@@ -19,7 +20,6 @@ const PublicLayout: React.FC = () => {
       | CustomerDetailResponseType) || undefined;
 
   useEffect(() => {
-    // Đảm bảo CSS được import nếu cần
     import("../assets/styles/tailwind.css");
   }, []);
 

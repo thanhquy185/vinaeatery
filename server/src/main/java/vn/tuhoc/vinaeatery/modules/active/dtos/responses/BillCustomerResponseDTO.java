@@ -1,6 +1,7 @@
 package vn.tuhoc.vinaeatery.modules.active.dtos.responses;
 
 import jakarta.persistence.Convert;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import vn.tuhoc.vinaeatery.modules.active.domains.converters.BillStatusConverter
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.BillPaymentStatusEnum;
 import vn.tuhoc.vinaeatery.modules.active.domains.enums.BillStatusEnum;
 import vn.tuhoc.vinaeatery.modules.payment.dtos.responses.PaymentMethodInfoResponseDTO;
+import vn.tuhoc.vinaeatery.modules.table.dtos.responses.TableInfoResponseDTO;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -44,4 +46,8 @@ public class BillCustomerResponseDTO {
 
     @Convert(converter = BillPaymentStatusConverter.class)
     BillPaymentStatusEnum paymentStatus;
+
+    List<BillCustomerItemResponseDTO> items;
+
+    List<TableInfoResponseDTO> tables;
 }

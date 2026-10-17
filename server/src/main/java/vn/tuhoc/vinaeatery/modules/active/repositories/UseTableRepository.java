@@ -56,6 +56,27 @@ public interface UseTableRepository
                         @Param("restaurantId") Integer restaurantId,
                         @Param("tableId") Integer tableId);
 
+        @Query("""
+                        select distinct ut
+                        from UseTableEntity ut
+                        left join fetch ut.table t
+                        left join fetch t.floor
+                        left join fetch t.categoryTable
+                        left join fetch ut.bill b
+                        where b.id in :billIds
+                        """)
+        List<UseTableEntity> findAllWithTableInfoByBillIds(@Param("billIds") List<Integer> billIds);
+
+        @Query("""
+                        select distinct ut
+                        from UseTableEntity ut
+                        left join fetch ut.table t
+                        left join fetch t.floor
+                        left join fetch t.categoryTable
+                        where ut.bill.id = :billId
+                        """)
+        List<UseTableEntity> findAllWithTableInfoByBillId(@Param("billId") Integer billId);
+
         @EntityGraph(value = UseTableEntityGraph.ONLY_TABLE)
         Page<UseTableEntity> findAll(Specification<UseTableEntity> specification, Pageable pageable);
 

@@ -623,7 +623,8 @@ CREATE TABLE `managers` (
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `fullname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `gender` varchar(6) COLLATE utf8mb4_general_ci NOT NULL,
-  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `image_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `image_public_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `status` varchar(8) COLLATE utf8mb4_general_ci NOT NULL,
   `user_id` int NOT NULL,
@@ -643,7 +644,9 @@ CREATE TABLE `managers` (
 
 LOCK TABLES `managers` WRITE;
 /*!40000 ALTER TABLE `managers` DISABLE KEYS */;
-INSERT INTO `managers` VALUES (1,'2002-02-18',NULL,'thanhquy@gmail.com','Chủ cửa hàng Thanh Quy','MALE',NULL,'0000000001','ACTIVE',2,'123','Nguyễn Huệ','Bến Nghé','Thành phố Hồ Chí Minh'),(2,'1998-07-18',NULL,'phuoclong@gmail.com','Chủ nhà hàng Phước Long','MALE',NULL,'0000000002','ACTIVE',3,'45A','Lê Lợi','Phường 1','Tỉnh Đồng Nai');
+INSERT INTO `managers` VALUES
+(1,'2002-02-18',NULL,'thanhquy@gmail.com','Chủ cửa hàng Thanh Quy','MALE',NULL,NULL,'0000000001','ACTIVE',2,'123','Nguyễn Huệ','Bến Nghé','Thành phố Hồ Chí Minh'),
+(2,'1998-07-18',NULL,'phuoclong@gmail.com','Chủ nhà hàng Phước Long','MALE',NULL,NULL,'0000000002','ACTIVE',3,'45A','Lê Lợi','Phường 1','Tỉnh Đồng Nai');
 /*!40000 ALTER TABLE `managers` ENABLE KEYS */;
 UNLOCK TABLES;
 

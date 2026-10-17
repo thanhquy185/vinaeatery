@@ -1,14 +1,11 @@
 import useEntityMutation from "../../hooks/useEntityMutation";
 import ReservationApiService from "../../services/api/v1/ReservationApiService";
-import { List, Row, Col, Button, Typography } from "antd";
-import {
-  CloseCircleOutlined,
-  CalendarOutlined,
-  InfoCircleOutlined,
-} from "@ant-design/icons";
+import ReservationStatusTagComponent from "../public/ReservationStatusTagComponent";
 import { ReservationStatusValue } from "../../constants/values";
-import { getStatusTag } from "../../pages/public/ReservationsPage";
 import { openConfirmation } from "../../utils/showConfirmationUtil";
+import { Button, Empty, List, Typography } from "antd";
+import { CalendarDays, Clock3, MapPin, UsersRound, X } from "lucide-react";
+import dayjs from "dayjs";
 import type { Dispatch, SetStateAction } from "react";
 import type { ReservationStatusEnum } from "../../constants/enums";
 import type { PageResponseType } from "../../types/PageResponseType";
@@ -44,8 +41,8 @@ const PublicReservationListComponent: React.FC<
     ReservationDetailResponseType
   >({
     messages: {
-      success: `Huỷ đơn đặt bàn thành công!`,
-      error: `Huỷ đơn đặt bàn thất bại!`,
+      success: "Huỷ đơn đặt bàn thành công!",
+      error: "Huỷ đơn đặt bàn thất bại!",
     },
     invalidateKeys: [["reservations"]],
     api: ReservationApiService.handleCustomerUpdateStatus,
@@ -53,102 +50,133 @@ const PublicReservationListComponent: React.FC<
 
   return (
     <List
+      className="public-reservation-list"
       dataSource={reservationData?.content || []}
       loading={isLoading}
-      pagination={{
-        current: (reservationData?.number ?? 0) + 1,
-        pageSize: reservationData?.size ?? 10,
-        total: reservationData?.totalElements ?? 0,
-
-        showSizeChanger: true,
-        pageSizeOptions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-
-        showTotal: (total, range) =>
-          `${range[0]}-${range[1]} trong tổng số ${total} bản ghi`,
-        onChange: (page, pageSize) => {
-          setPage(page);
-          setSize(pageSize);
-        },
+      locale={{
+        emptyText: (
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={
+              <span>Bạn chưa có lịch đặt bàn phù hợp.</span>
+            }
+          />
+        ),
       }}
-      renderItem={(reservation) => (
-        <List.Item
-          style={{
-            padding: 0,
-            border: "none",
-          }}
-        >
-          <Row
-            gutter={8}
-            style={{ width: "100%", alignItems: "center" }}
-            className="public-reservation-restaurant"
-          >
-            <Col xs={24} md={10}>
-              <Typography.Title
-                level={5}
-                style={{ margin: 0, fontWeight: 700 }}
-              >
-                {reservation.restaurant?.name}
-              </Typography.Title>
-              <Typography.Paragraph
-                style={{
-                  margin: "8px 0 0 0",
-                  color: "#555",
-                  fontSize: 16,
-                }}
-              >
-                <CalendarOutlined style={{ marginRight: 8 }} />
-                {reservation.arriveAt?.split(" ")[0]} lúc{" "}
-                {reservation.arriveAt?.split(" ")[1]}
-              </Typography.Paragraph>
-            </Col>
-            <Col xs={12} md={6} style={{ textAlign: "center" }}>
-              <div style={{ marginBottom: 4 }}>
-                {getStatusTag(reservation.status)}
+      pagination={
+        (reservationData?.totalElements ?? 0) > 0
+          ? {
+              current: (reservationData?.number ?? 0) + 1,
+              pageSize: reservationData?.size ?? 5,
+              total: reservationData?.totalElements ?? 0,
+              showSizeChanger: true,
+              pageSizeOptions: [5, 10, 15, 20],
+              showTotal: (total, range) =>
+                `${range[0]}–${range[1]} / ${total} lịch đặt`,
+              onChange: (nextPage, pageSize) => {
+                setPage(nextPage);
+                setSize(pageSize);
+              },
+            }
+          : false
+      }
+      renderItem={(reservation) => {
+        const arriveAt = dayjs(reservation.arriveAt);
+        const restaurantAddress = [
+          reservation.restaurant?.houseNumber,
+          reservation.restaurant?.streetName,
+          reservation.restaurant?.ward,
+          reservation.restaurant?.province,
+        ]
+          .filter(Boolean)
+          .join(", ");
+
+        return (
+          <List.Item className="public-reservation-list__item">
+            <article className="public-reservation-row">
+              <div className="public-reservation-date">
+                <span className="public-reservation-date__month">
+                  {arriveAt.isValid() ? `Tháng ${arriveAt.format("MM")}` : "Ngày"}
+                </span>
+                <span className="public-reservation-date__day">
+                  {arriveAt.isValid() ? arriveAt.format("DD") : "—"}
+                </span>
               </div>
-            </Col>
-            <Col xs={12} md={8} style={{ display: "flex", gap: 10 }}>
-              <Button
-                variant="solid"
-                color="blue"
-                icon={<InfoCircleOutlined />}
-                style={{ marginLeft: "auto" }}
-                onClick={() => {
-                  setSelectedReservation(reservation);
-                  setOpenModal(true);
-                }}
-              >
-                Chi tiết
-              </Button>
-              {reservation.status === ReservationStatusValue.pending && (
+
+              <div className="public-reservation-info">
+                <div className="public-reservation-info__title-row">
+                  <Typography.Title
+                    level={5}
+                    className="public-reservation-info__title"
+                  >
+                    {reservation.restaurant?.name || "Nhà hàng"}
+                  </Typography.Title>
+                  <ReservationStatusTagComponent status={reservation.status} />
+                </div>
+                <Typography.Text type="secondary" className="public-reservation-info__code">
+                  Mã đặt bàn #{String(reservation.id).padStart(6, "0")}
+                </Typography.Text>
+
+                <div className="public-reservation-info__facts">
+                  <span>
+                    <Clock3 size={15} />
+                    {arriveAt.isValid() ? arriveAt.format("HH:mm") : "Chưa xác định"}
+                  </span>
+                  <span>
+                    <UsersRound size={15} />
+                    {reservation.customerGuests} khách
+                  </span>
+                </div>
+                {restaurantAddress && (
+                  <div className="public-reservation-info__address">
+                    <MapPin size={15} />
+                    <span>{restaurantAddress}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="public-reservation-actions">
                 <Button
-                  variant="outlined"
-                  color="red"
-                  icon={<CloseCircleOutlined />}
-                  onClick={async () => {
-                    const answer = await openConfirmation({
-                      title: `Bạn có chắc chắn huỷ đặt bàn ?`,
-                      content: "Hành động này không thể hoàn tác.",
-                    });
-                    if (answer) {
-                      const response = await updateMutation.mutateAsync({
-                        values: {
-                          id: reservation.id,
-                          status:
-                            ReservationStatusValue.cancelled as ReservationStatusEnum,
-                        },
-                      });
-                      if (response) {
-                      }
-                    }
+                  type="text"
+                  className="public-reservation-actions__detail"
+                  icon={<CalendarDays size={15} />}
+                  onClick={() => {
+                    setSelectedReservation(reservation);
+                    setOpenModal(true);
                   }}
                 >
-                  Hủy đặt
+                  Chi tiết
                 </Button>
-              )}
-            </Col>
-          </Row>
-        </List.Item>
-      )}
+                {reservation.status === ReservationStatusValue.pending && (
+                  <Button
+                    type="text"
+                    danger
+                    className="public-reservation-actions__cancel"
+                    icon={<X size={15} />}
+                    loading={updateMutation.isPending}
+                    onClick={async () => {
+                      const answer = await openConfirmation({
+                        title: "Bạn có chắc chắn muốn hủy đặt bàn?",
+                        content: "Hành động này không thể hoàn tác.",
+                      });
+                      if (answer) {
+                        await updateMutation.mutateAsync({
+                          values: {
+                            id: reservation.id,
+                            status: ReservationStatusValue.cancelled as ReservationStatusEnum,
+                          },
+                        });
+                      }
+                    }}
+                  >
+                    Hủy đặt
+                  </Button>
+                )}
+              </div>
+            </article>
+          </List.Item>
+        );
+      }}
     />
   );
 };

@@ -17,8 +17,10 @@ import type {
 } from "./PaymentMethodType";
 import type {
   BillDetailCreateRequestType,
+  BillDDetailResponseType,
   BillDetailEntityType,
 } from "./BillDetailType";
+import type { TableInfoResponseType } from "./TableType";
 
 export interface BillEntityType {
   id: number;
@@ -55,7 +57,26 @@ export interface BillDetailResponseType {
   paymentAt: string;
   paymentTotalPrice: number;
   paymentStatus: BillPaymentStatusEnum;
-  billDetails: BillDetailEntityType[];
+  billDetails: BillDDetailResponseType[];
+  tables?: TableInfoResponseType[];
+}
+
+export interface BillCustomerDetailResponseType {
+  id: number;
+  restaurant: RestaurantSubInfoResponseType;
+  createAt: string;
+  customerFullname: string;
+  customerPhone: string;
+  customerEmail: string;
+  totalPrice: number;
+  status: BillStatusEnum;
+  paymentId: string;
+  paymentMethod: PaymentMethodInfoResponseType;
+  paymentAt: string;
+  paymentTotalPrice: number;
+  paymentStatus: BillPaymentStatusEnum;
+  billDetails: BillDDetailResponseType[];
+  tables: TableInfoResponseType[];
 }
 
 export interface BillSummaryResponseType {
@@ -101,6 +122,15 @@ export interface BillCustomerResponseType {
   paymentAt: string;
   paymentTotalPrice: number;
   paymentStatus: BillPaymentStatusEnum;
+  items: BillCustomerItemResponseType[];
+  tables: TableInfoResponseType[];
+}
+
+export interface BillCustomerItemResponseType {
+  foodName: string;
+  foodUnit: string;
+  quantity: number;
+  totalPrice: number;
 }
 
 export interface BillCreateRequestType {

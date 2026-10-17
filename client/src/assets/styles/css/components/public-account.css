@@ -1,0 +1,854 @@
+.public-account-layout.ant-layout {
+  min-height: calc(100vh - 90px) !important;
+  background: #f4f6fa !important;
+}
+
+.public-account-page {
+  box-sizing: border-box;
+  width: min(1320px, 100% - 48px);
+  margin: 0 auto;
+  padding: 32px 0 40px;
+}
+
+.public-account-page__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.public-account-page__title.ant-typography {
+  margin: 0 !important;
+  color: #292524;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.public-account-page__action.ant-btn {
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 7px;
+  box-shadow: none;
+  font-weight: 600;
+}
+
+.public-account-page__action--secondary.ant-btn {
+  border-color: #d8d2d0;
+  background: #fff;
+  color: #44403c;
+}
+
+.public-account-card.ant-card {
+  min-height: max(560px, 100vh - 120px);
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(41, 37, 36, 0.04);
+}
+
+.public-account-card.ant-card .ant-card-body {
+  display: flex;
+  min-height: inherit;
+  flex-direction: column;
+  padding: 0;
+}
+
+.public-account-card__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px 24px;
+  padding: 24px 28px 0;
+  border-bottom: 1px solid #eeecea;
+}
+
+.public-account-card__title.ant-typography {
+  margin: 0 0 4px !important;
+  color: #292524;
+}
+
+.public-account-card__content {
+  flex: 1;
+  padding: 0 28px 24px;
+}
+
+.public-account-filter {
+  display: flex;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  white-space: nowrap;
+}
+
+.public-account-filter__item {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 -1px;
+  padding: 13px 14px 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #78716c;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.public-account-filter__item:hover {
+  color: #292524;
+}
+
+.public-account-filter__item:focus-visible {
+  outline: 2px solid #b91c1c;
+  outline-offset: -2px;
+}
+
+.public-account-filter__item.is-active {
+  border-bottom-color: #b91c1c;
+  color: #9f1d1d;
+  font-weight: 600;
+}
+
+.public-account-filter__count {
+  min-width: 20px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #f4f2f1;
+  color: #78716c;
+  font-size: 11px;
+  line-height: 16px;
+  text-align: center;
+}
+
+.public-account-filter__item.is-active .public-account-filter__count {
+  background: #fff0ed;
+  color: #9f1d1d;
+}
+
+.public-account-state {
+  display: flex;
+  flex: 1;
+  min-height: 460px;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 20px;
+  text-align: center;
+}
+
+.public-account-summary {
+  display: flex;
+  min-height: 48px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  margin-bottom: 16px;
+  padding: 10px 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(41, 37, 36, 0.04);
+  font-size: 13px;
+}
+
+.public-account-summary__item {
+  color: #78716c;
+  white-space: nowrap;
+}
+
+.public-account-summary__item b {
+  margin-left: 4px;
+  color: #292524;
+  font-weight: 600;
+}
+
+.public-account-summary__item--total {
+  margin-left: auto;
+}
+
+.public-account-summary__item--total b {
+  color: #9f1d1d;
+}
+
+.public-account-summary__separator {
+  height: 20px;
+  border-left: 1px solid #e5e7eb;
+}
+
+.public-reservation-list.ant-list .ant-list-item {
+  padding: 0;
+  border: 0;
+}
+
+.public-reservation-list.ant-list .ant-list-empty {
+  display: flex;
+  min-height: 360px;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.public-reservation-list.ant-list .ant-list-empty-text {
+  padding: 28px 16px;
+}
+
+.public-reservation-list.ant-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.public-reservation-row {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 76px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 0;
+  border-bottom: 1px solid #eeecea;
+}
+
+.public-reservation-list .ant-list-item:last-child .public-reservation-row {
+  border-bottom: 0;
+}
+
+.public-reservation-date {
+  display: flex;
+  width: 76px;
+  height: 76px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #f1d8d4;
+  border-radius: 9px;
+  background: #fff8f6;
+  color: #b91c1c;
+}
+
+.public-reservation-date__month {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.public-reservation-date__day {
+  margin-top: 1px;
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 30px;
+}
+
+.public-reservation-info {
+  min-width: 0;
+}
+
+.public-reservation-info__title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+}
+
+.public-reservation-info__title.ant-typography {
+  max-width: 100%;
+  overflow: hidden;
+  margin: 0 !important;
+  color: #292524;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.public-reservation-info__code {
+  color: #78716c;
+  font-size: 12px;
+}
+
+.public-reservation-info__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin-top: 12px;
+  color: #57534e;
+  font-size: 14px;
+}
+
+.public-reservation-info__facts span,
+.public-reservation-info__address {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.public-reservation-info__facts svg,
+.public-reservation-info__address svg {
+  flex: 0 0 auto;
+  color: #a8a29e;
+}
+
+.public-reservation-info__address {
+  align-items: flex-start;
+  margin-top: 8px;
+  color: #78716c;
+  font-size: 13px;
+  line-height: 19px;
+}
+
+.public-reservation-info__address svg {
+  margin-top: 2px;
+}
+
+.public-reservation-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.public-reservation-actions__detail.ant-btn,
+.public-bill-item__detail-action.ant-btn {
+  color: #9f1d1d;
+  font-weight: 600;
+}
+
+.public-reservation-actions__detail.ant-btn,
+.public-reservation-actions__cancel.ant-btn,
+.public-bill-item__detail-action.ant-btn {
+  padding-inline: 9px;
+}
+
+.public-reservation-list .ant-list-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 0 !important;
+  padding: 16px 0 18px !important;
+  border-top: 1px solid #eeecea;
+}
+
+.reservation-status-tag.ant-tag {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 6px 13px;
+  border: 0;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+.reservation-status-tag--pending.ant-tag {
+  background: #f1f3f5;
+  color: #667085;
+}
+
+.reservation-status-tag--confirmed.ant-tag {
+  background: #ecfdf3;
+  color: #16803c;
+}
+
+.reservation-status-tag--cancelled.ant-tag {
+  background: #fef3f2;
+  color: #c4322b;
+}
+
+.public-reservation-detail-modal .public-reservation-detail-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 32px;
+  margin-bottom: 20px;
+  padding: 26px 28px;
+  border-radius: 16px;
+  background: #fafaf9;
+}
+
+.public-reservation-detail-summary__field {
+  min-width: 0;
+}
+
+.public-reservation-detail-modal .public-reservation-detail-summary__label {
+  color: #8b8580;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+  line-height: 20px;
+  text-transform: uppercase;
+}
+
+.public-reservation-detail-summary__value {
+  margin-top: 7px;
+  color: #292524;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.public-reservation-detail-summary__status {
+  margin-top: 8px;
+}
+
+.public-reservation-detail-modal .public-reservation-detail-summary__status .reservation-status-tag.ant-tag {
+  padding: 5px 12px;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.public-reservation-detail-modal .public-reservation-detail-meta,
+.public-reservation-detail-modal .public-reservation-detail-customer-info {
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.public-reservation-detail-modal .public-reservation-detail-customer-card {
+  margin-top: 16px;
+}
+
+.public-reservation-detail-modal .public-reservation-detail-modal__title {
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.public-reservation-detail-modal .public-reservation-detail-modal__subtitle {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.public-bill-detail-modal .ant-modal-body {
+  max-height: min(72vh, 760px);
+  overflow-y: auto;
+}
+
+.public-bill-detail-summary {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.public-bill-detail-section {
+  margin-bottom: 22px;
+}
+
+.public-bill-detail-restaurant {
+  padding-top: 2px;
+}
+
+.public-bill-detail-items {
+  overflow: hidden;
+  border: 1px solid #e7e5e4;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.public-bill-detail-item,
+.public-bill-detail-item__main,
+.public-bill-detail-item__price {
+  display: flex;
+}
+
+.public-bill-detail-item {
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 13px 16px;
+  border-bottom: 1px solid #eeecea;
+}
+
+.public-bill-detail-item__main,
+.public-bill-detail-item__price {
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.public-bill-detail-item__price {
+  flex: 0 0 auto;
+  align-items: flex-end;
+}
+
+.public-bill-detail-expand-row {
+  display: flex;
+  justify-content: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #eeecea;
+}
+
+.public-bill-detail-expand.ant-btn {
+  color: #9f1d1d;
+  font-weight: 600;
+}
+
+.public-bill-detail-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 15px 16px;
+  background: #fafaf9;
+  color: #57534e;
+  font-weight: 600;
+}
+
+.public-bill-detail-total .ant-typography {
+  font-size: 16px;
+}
+
+.public-bill-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 0 24px;
+}
+
+.public-bill-list__pagination.ant-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 0 !important;
+  padding: 16px 0 18px !important;
+  border-top: 1px solid #eeecea;
+}
+
+.public-bill-item {
+  padding: 18px 20px;
+  border: 1px solid #e8e3e1;
+  border-radius: 10px;
+  background: #fff;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.public-bill-item:hover {
+  border-color: #dcc3bf;
+  box-shadow: 0 3px 12px rgba(41, 37, 36, 0.05);
+}
+
+.public-bill-item__header,
+.public-bill-item__identity {
+  display: flex;
+  align-items: center;
+}
+
+.public-bill-item__header {
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 13px;
+  border-bottom: 1px dashed #e8e3e1;
+}
+
+.public-bill-item__identity {
+  min-width: 0;
+  gap: 12px;
+}
+
+.public-bill-item__code {
+  min-width: max-content;
+}
+
+.public-bill-item__eyebrow {
+  color: #78716c;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.public-bill-item__number {
+  color: #292524;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+}
+
+.public-bill-item__date {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: 4px;
+  padding-left: 14px;
+  border-left: 1px solid #e5e7eb;
+  color: #78716c;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.public-bill-item__date svg {
+  color: #a8a29e;
+}
+
+.public-bill-item__status.ant-tag {
+  margin: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.public-bill-item__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  align-items: center;
+  gap: 24px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #f0edeb;
+}
+
+.public-bill-item__details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.public-bill-item__detail {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  color: #a8a29e;
+}
+
+.public-bill-item__detail > svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.public-bill-item__detail > svg.is-paid {
+  color: #39804b;
+}
+
+.public-bill-item__detail > svg.is-unpaid {
+  color: #b7791f;
+}
+
+.public-bill-item__value {
+  margin-top: 2px;
+  color: #44403c;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 19px;
+}
+
+.public-bill-item__value.is-paid {
+  color: #39804b;
+}
+
+.public-bill-item__value.is-unpaid {
+  color: #a66d27;
+}
+
+.public-bill-item__paid-date {
+  margin-top: 3px;
+  color: #a8a29e;
+  font-size: 11px;
+}
+
+.public-bill-item__total {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #faf8f7;
+  text-align: right;
+}
+
+.public-bill-item__total-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.public-bill-item__amount {
+  margin-top: 2px;
+  color: #9f1d1d;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.public-bill-item__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 20px;
+  margin-top: 15px;
+  padding: 15px 0;
+}
+
+.public-bill-item__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.public-bill-item__facts .public-bill-item__detail {
+  min-width: 0;
+}
+
+.public-bill-item__facts .public-bill-item__value {
+  overflow-wrap: anywhere;
+}
+
+.public-bill-item__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+  padding-top: 8px;
+  border-top: 1px solid #f0edeb;
+}
+
+.public-bill-item__detail-action.ant-btn {
+  white-space: nowrap;
+}
+
+.public-bill-list__loading {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 0;
+}
+
+.public-bill-list__skeleton {
+  padding: 18px 20px;
+  border: 1px solid #eeecea;
+  border-radius: 10px;
+}
+
+@media (max-width: 767px) {
+  .public-account-page {
+    width: calc(100% - 32px);
+    padding: 24px 0 32px;
+  }
+  .public-account-page__heading {
+    align-items: flex-start;
+  }
+  .public-account-page__title.ant-typography {
+    font-size: 25px;
+  }
+  .public-account-page__action.ant-btn {
+    height: 40px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+  .public-account-card__header {
+    align-items: stretch;
+    gap: 10px;
+    padding: 20px 18px 0;
+  }
+  .public-account-card__content {
+    padding: 0 18px 18px;
+  }
+  .public-account-filter__item {
+    padding: 12px 11px 10px;
+    font-size: 13px;
+  }
+  .public-account-summary {
+    gap: 8px 14px;
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+  .public-account-summary__separator {
+    display: none;
+  }
+  .public-account-summary__item--total {
+    margin-left: 0;
+  }
+  .public-reservation-detail-modal .public-reservation-detail-summary {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    padding: 20px;
+  }
+  .public-reservation-detail-summary__value {
+    font-size: 14px;
+  }
+
+  .public-bill-detail-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .public-bill-detail-item {
+    gap: 10px;
+    padding: 12px;
+  }
+  .public-reservation-row {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 14px;
+    padding: 18px 0;
+  }
+  .public-reservation-date {
+    width: 64px;
+    height: 68px;
+  }
+  .public-reservation-date__day {
+    font-size: 24px;
+  }
+  .public-reservation-info__title.ant-typography {
+    font-size: 16px;
+  }
+  .public-reservation-actions {
+    grid-column: 2;
+    flex-wrap: wrap;
+  }
+  .public-account-state {
+    min-height: 360px;
+    padding: 28px 12px;
+  }
+  .public-account-card.ant-card {
+    min-height: max(520px, 100vh - 100px);
+  }
+  .public-bill-item {
+    padding: 15px 14px;
+  }
+  .public-bill-item__identity {
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+  .public-bill-item__date {
+    width: 100%;
+    margin-left: 0;
+    padding-left: 0;
+    border-left: 0;
+    font-size: 12px;
+  }
+  .public-bill-item__body {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 12px;
+    padding-top: 13px;
+  }
+
+  .public-bill-item__facts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+    padding: 13px 0;
+  }
+
+  .public-bill-item__actions {
+    margin-top: 12px;
+    padding-top: 6px;
+  }
+
+  .public-bill-item__detail-action.ant-btn {
+    font-size: 13px;
+  }
+  .public-bill-item__details {
+    grid-template-columns: 1fr;
+    gap: 13px;
+  }
+  .public-bill-item__total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    text-align: left;
+  }
+  .public-bill-item__amount {
+    margin: 0;
+    font-size: 16px;
+  }
+}

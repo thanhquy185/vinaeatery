@@ -35,19 +35,32 @@ public interface BillRepository
             """)
     Optional<BillEntity> findOneById(@Param("id") Integer id);
 
-    @EntityGraph(value = BillEntityGraph.ONLY_PAYMENT_METHOD)
-    Page<BillEntity> findAll(Specification<BillEntity> specification, Pageable pageable);
+    @EntityGraph(value = BillEntityGraph.HALF)
+    @Query("""
+                select distinct b
+                from BillEntity b
+                left join fetch b.billDetails bd
+                left join fetch bd.food f
+                left join fetch f.categoryFood cf
+                where b.id = :id
+                  and b.customer.id = :customerId
+            """)
+    Optional<BillEntity> findOneByIdAndCustomerId(
+            @Param("id") Integer id,
+            @Param("customerId") Integer customerId);
+
+    @Query("""
+                select distinct b
+                from BillEntity b
+                left join fetch b.billDetails bd
+                left join fetch bd.food f
+                left join fetch f.categoryFood cf
+                where b.id in :ids
+            """)
+    List<BillEntity> findAllByIdInWithDetails(@Param("ids") List<Integer> ids);
 
     @EntityGraph(value = BillEntityGraph.ONLY_PAYMENT_METHOD)
-    @Query("""
-                    select distinct b
-                    from BillEntity b
-                    left join fetch b.billDetails bd
-                    left join fetch bd.food f
-                    left join fetch f.categoryFood cf
-                    where b.customer.id = :customerId
-            """)
-    List<BillEntity> findAllByCustomerId(@Param("customerId") Integer customerId);
+    Page<BillEntity> findAll(Specification<BillEntity> specification, Pageable pageable);
 
     @Query("""
                 select distinct b

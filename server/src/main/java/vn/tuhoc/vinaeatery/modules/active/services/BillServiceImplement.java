@@ -27,18 +27,23 @@ import vn.tuhoc.vinaeatery.modules.active.domains.mappers.BillMapper;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.BillCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.BillUpdateStatusRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillCustomerResponseDTO;
+import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillCustomerDetailResponseDTO;
+import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillCustomerItemResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillSummaryResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.exceptions.BillIngredientInsufficientInventory;
 import vn.tuhoc.vinaeatery.modules.active.exceptions.BillNotFoundByIdException;
 import vn.tuhoc.vinaeatery.modules.active.domains.entities.BillDetailEntity;
 import vn.tuhoc.vinaeatery.modules.active.repositories.BillRepository;
+import vn.tuhoc.vinaeatery.modules.active.repositories.UseTableRepository;
 import vn.tuhoc.vinaeatery.modules.active.repositories.criteria.BillCriteria;
 import vn.tuhoc.vinaeatery.modules.active.repositories.specifications.BillSpecification;
 import vn.tuhoc.vinaeatery.modules.active.services.interfaces.BillService;
 import vn.tuhoc.vinaeatery.modules.food.domains.entities.IngredientEntity;
 import vn.tuhoc.vinaeatery.modules.food.domains.entities.RecipeEntity;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.PageResponseDTO;
+import vn.tuhoc.vinaeatery.modules.table.domains.mappers.TableMapper;
+import vn.tuhoc.vinaeatery.modules.table.dtos.responses.TableInfoResponseDTO;
 import vn.tuhoc.vinaeatery.utils.PageResponseUtil;
 import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 
@@ -50,6 +55,8 @@ public class BillServiceImplement implements BillService {
     BillRepository billRepository;
     BillMapper billMapper;
     BillDetailMapper billDetailMapper;
+    UseTableRepository useTableRepository;
+    TableMapper tableMapper;
 
     private BillEntity getOneById(Integer id) {
         return this.billRepository.findOneById(id)
@@ -57,6 +64,10 @@ public class BillServiceImplement implements BillService {
     }
 
     private Page<BillEntity> getAll(BillCriteria billCriteria) {
+        return this.getAll(billCriteria, null);
+    }
+
+    private Page<BillEntity> getAll(BillCriteria billCriteria, Integer targetCustomerId) {
         Sort sort = Sort.unsorted();
         if (ValidationUtil.nonNull(billCriteria.getSort())) {
             String sortString = billCriteria.getSort().filter(ValidationUtil::hasText).get();
@@ -79,19 +90,36 @@ public class BillServiceImplement implements BillService {
                     sort);
         }
 
-        Specification<BillEntity> specification = BillSpecification.filterBills(billCriteria);
+        Specification<BillEntity> specification = BillSpecification.filterBills(billCriteria, targetCustomerId);
 
         return this.billRepository.findAll(specification, pageable);
-    }
-
-    private List<BillEntity> getAllByCustomerId(Integer customerId) {
-        return this.billRepository.findAllByCustomerId(customerId);
     }
 
     @Override
     @Cacheable(value = "bill__detail", key = "#id", unless = "#result == null")
     public BillDetailResponseDTO handleGetDetailById(Integer id) {
-        return this.billMapper.entityToDetailResponse(this.getOneById(id));
+        return this.toDetailResponse(this.getOneById(id));
+    }
+
+    @Override
+    public BillCustomerDetailResponseDTO handleGetCustomerDetailById(Integer id, Integer customerId) {
+        BillEntity billEntity = this.billRepository.findOneByIdAndCustomerId(id, customerId)
+                .orElseThrow(() -> new BillNotFoundByIdException(id));
+        BillCustomerDetailResponseDTO response = this.billMapper.entityToCustomerDetailResponse(billEntity);
+        response.setTables(this.getTablesByBillId(billEntity.getId()));
+        return response;
+    }
+
+    private BillDetailResponseDTO toDetailResponse(BillEntity billEntity) {
+        BillDetailResponseDTO response = this.billMapper.entityToDetailResponse(billEntity);
+        response.setTables(this.getTablesByBillId(billEntity.getId()));
+        return response;
+    }
+
+    private List<TableInfoResponseDTO> getTablesByBillId(Integer billId) {
+        return this.useTableRepository.findAllWithTableInfoByBillId(billId).stream()
+                .map(useTable -> this.tableMapper.entityToInfoResponse(useTable.getTable()))
+                .toList();
     }
 
     @Override
@@ -103,11 +131,46 @@ public class BillServiceImplement implements BillService {
     }
 
     @Override
-    @Cacheable(value = "bill__customer", key = "#customerId", unless = "#result == null")
-    public List<BillCustomerResponseDTO> handleGetAllByCustomerId(Integer customerId) {
-        return this.getAllByCustomerId(customerId).stream()
-                .map(this.billMapper::entityToCustomerResponse)
-                .collect(Collectors.toList());
+    @Cacheable(
+            value = "bill__customer",
+            key = "#customerId + ':' + #billCriteria.getCacheKey()",
+            unless = "#result == null")
+    public PageResponseDTO<BillCustomerResponseDTO> handleGetAllByCustomerId(
+            BillCriteria billCriteria,
+            Integer customerId) {
+        Page<BillEntity> billEntityPage = this.getAll(billCriteria, customerId);
+        List<Integer> billIds = billEntityPage.getContent().stream()
+                .map(BillEntity::getId)
+                .toList();
+        Map<Integer, List<BillCustomerItemResponseDTO>> itemsByBillId = billIds.isEmpty()
+                ? Map.of()
+                : this.billRepository.findAllByIdInWithDetails(billIds).stream()
+                        .collect(Collectors.toMap(
+                                BillEntity::getId,
+                                bill -> bill.getBillDetails().stream()
+                                        .map(detail -> new BillCustomerItemResponseDTO(
+                                                detail.getFoodNameSnapshot(),
+                                                detail.getFoodUnitSnapshot(),
+                                                detail.getQuantity(),
+                                                detail.getTotalPriceDetail()))
+                                        .toList()));
+        Map<Integer, List<TableInfoResponseDTO>> tablesByBillId = billIds.isEmpty()
+                ? Map.of()
+                : this.useTableRepository.findAllWithTableInfoByBillIds(billIds).stream()
+                        .collect(Collectors.groupingBy(
+                                useTable -> useTable.getBill().getId(),
+                                Collectors.mapping(
+                                        useTable -> this.tableMapper.entityToInfoResponse(useTable.getTable()),
+                                        Collectors.toList())));
+
+        Page<BillCustomerResponseDTO> page = billEntityPage.map(bill -> {
+            BillCustomerResponseDTO response = this.billMapper.entityToCustomerResponse(bill);
+            response.setItems(itemsByBillId.getOrDefault(bill.getId(), List.of()));
+            response.setTables(tablesByBillId.getOrDefault(bill.getId(), List.of()));
+            return response;
+        });
+
+        return PageResponseUtil.convert(page);
     }
 
     @Override
@@ -126,7 +189,7 @@ public class BillServiceImplement implements BillService {
             billEntity.addBillDetail(billDetailEntity);
         });
 
-        return this.billMapper.entityToDetailResponse(this.billRepository.save(billEntity));
+        return this.toDetailResponse(this.billRepository.save(billEntity));
     }
 
     @Override
@@ -190,6 +253,6 @@ public class BillServiceImplement implements BillService {
             }));
         }
 
-        return this.billMapper.entityToDetailResponse(billEntity);
+        return this.toDetailResponse(billEntity);
     }
 }

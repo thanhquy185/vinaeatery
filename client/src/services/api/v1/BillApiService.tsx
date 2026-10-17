@@ -6,12 +6,30 @@ import type { RestResponseType } from "../../../types/RestResponseType";
 import type {
   BillCreateRequestType,
   BillCustomerResponseType,
+  BillCustomerDetailResponseType,
   BillDetailResponseType,
   BillSummaryResponseType,
   BillUpdateStatusRequestType,
 } from "../../../types/BillType";
 
 const FEATURE_NAME = "bills";
+type CustomerBillResponse =
+  | PageResponseType<BillCustomerResponseType>
+  | BillCustomerResponseType[];
+
+const buildCustomerBillParams = ({
+  page,
+  size,
+  sort,
+  statusValue,
+}: FilterDataProps): Record<string, string> => {
+  const params: Record<string, string> = {};
+  if (page && !isNaN(page)) params.page = String(page - 1);
+  if (size && !isNaN(size)) params.size = String(size);
+  if (sort) params.sort = sort;
+  if (statusValue?.length) params.status = statusValue[0];
+  return params;
+};
 
 const BillApiService = {
   async handleGetDetailById({
@@ -55,39 +73,36 @@ const BillApiService = {
     );
   },
 
-  async handleGetAllByCustomerId({
-    page,
-    size,
-    findType,
-    findValue,
-    statusValue,
-    restaurantId,
-    customerId,
-  }: FilterDataProps): Promise<
-    AxiosResponse<PageResponseType<BillCustomerResponseType>, any>
+  async handleGetCurrentCustomerBills(
+    filters: FilterDataProps,
+  ): Promise<
+    AxiosResponse<CustomerBillResponse, any>
   > {
-    const params: Record<string, string> = {};
-    if (page && !isNaN(page)) {
-      params.page = String(page - 1);
-    }
-    if (size && !isNaN(size)) {
-      params.size = String(size);
-    }
-    if (findValue && findType) {
-      if (findType === "id") params.id = findValue;
-      if (findType === "customer-fullname") params.customerFullname = findValue;
-      if (findType === "customer-phone") params.customerPhone = findValue;
-      if (findType === "customer-email") params.customerEmail = findValue;
-    }
-    if (statusValue!) params.status = statusValue! as unknown as string;
-    if (restaurantId && !isNaN(restaurantId))
-      params.restaurantId = String(restaurantId);
-    if (customerId && !isNaN(customerId))
-      params.customerId = String(customerId);
+    return instance.get<PageResponseType<BillCustomerResponseType>>(
+      `/api/v1/${FEATURE_NAME}/customer/me`,
+      { params: buildCustomerBillParams(filters) },
+    );
+  },
 
-    return instance.get<PageResponseType<BillCustomerResponseType>, any>(
-      `/api/v1/${FEATURE_NAME}/customer`,
-      { params },
+  async handleGetCurrentCustomerBillDetail({
+    id,
+  }: FilterDataProps): Promise<AxiosResponse<BillCustomerDetailResponseType, any>> {
+    return instance.get<BillCustomerDetailResponseType>(
+      `/api/v1/${FEATURE_NAME}/customer/me/${id}`,
+    );
+  },
+
+  async handleGetAllByCustomerId({
+    customerId,
+    ...filters
+  }: {
+    customerId: number;
+  } & FilterDataProps): Promise<
+    AxiosResponse<CustomerBillResponse, any>
+  > {
+    return instance.get<PageResponseType<BillCustomerResponseType>>(
+      `/api/v1/${FEATURE_NAME}/customer/${customerId}`,
+      { params: buildCustomerBillParams(filters) },
     );
   },
 

@@ -92,7 +92,6 @@ const RestaurantDetailHeaderReservationComponent: React.FC<
               values: {
                 ...values,
                 restaurantId: restaurant.id,
-                customerId: customerLogin.id,
                 createAt: values.createAt
                   ? dayjs(values.createAt).format("YYYY-MM-DD HH:mm:ss")
                   : dayjs().format("YYYY-MM-DD HH:mm:s"),

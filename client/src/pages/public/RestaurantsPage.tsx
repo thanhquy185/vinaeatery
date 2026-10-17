@@ -27,7 +27,7 @@ const PublicRestaurantsPage: React.FC<PublicPageProps> = ({
         {restaurantData && restaurantData?.content && (
           <RestaurantMapComponent
             isCustomer={isCustomer}
-            customerLogin={customerLogin}
+            customerLogin={customerLogin! }
             restaurants={restaurantData?.content}
           />
         )}

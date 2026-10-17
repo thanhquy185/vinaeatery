@@ -2,6 +2,7 @@ package vn.tuhoc.vinaeatery.modules.active.controllers;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.FeedbackCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.FeedbackDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.services.interfaces.FeedbackService;
+import vn.tuhoc.vinaeatery.modules.restaurant.services.interfaces.CustomerService;
 import vn.tuhoc.vinaeatery.modules.global.dtos.responses.RestResponseDTO;
 import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 
@@ -25,8 +27,10 @@ import vn.tuhoc.vinaeatery.utils.RestResponseUtils;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FeedbackController {
         FeedbackService feedbackService;
+        CustomerService customerService;
 
         @GetMapping("/{id}")
+        @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'EMPLOYEE')")
         public ResponseEntity<RestResponseDTO<FeedbackDetailResponseDTO>> handleGetDetailById(
                         @PathVariable("id") Integer id) {
                 FeedbackDetailResponseDTO feedbackDetail = this.feedbackService.handleGetDetailById(id);
@@ -37,8 +41,10 @@ public class FeedbackController {
         }
 
         @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE)
+        @PreAuthorize("hasRole('CUSTOMER')")
         public ResponseEntity<RestResponseDTO<FeedbackDetailResponseDTO>> handleCreate(
                         @RequestBody @Valid FeedbackCreateRequestDTO feedbackCreateRequestDTO) {
+                feedbackCreateRequestDTO.setCustomerId(this.customerService.handleGetCurrentCustomerId());
                 FeedbackDetailResponseDTO feedbackCreated = this.feedbackService.handleCreate(feedbackCreateRequestDTO);
 
                 return RestResponseUtils.created(

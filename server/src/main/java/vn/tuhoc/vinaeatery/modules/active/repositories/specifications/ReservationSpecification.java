@@ -14,6 +14,12 @@ import vn.tuhoc.vinaeatery.utils.ValidationUtil;
 
 public class ReservationSpecification {
         public static Specification<ReservationEntity> filterReservations(ReservationCriteria reservationCriteria) {
+                return filterReservations(reservationCriteria, null);
+        }
+
+        public static Specification<ReservationEntity> filterReservations(
+                        ReservationCriteria reservationCriteria,
+                        Integer targetCustomerId) {
                 if (ValidationUtil.isNull(reservationCriteria.getId())
                                 && ValidationUtil.isNull(reservationCriteria.getRestaurantId())
                                 && ValidationUtil.isNull(reservationCriteria.getEmployeeId())
@@ -26,7 +32,8 @@ public class ReservationSpecification {
                                 && ValidationUtil.isNull(reservationCriteria.getCustomerPhone())
                                 && ValidationUtil.isNull(reservationCriteria.getCustomerEmail())
                                 && ValidationUtil.isNull(reservationCriteria.getStatus())
-                                && ValidationUtil.isNull(reservationCriteria.getSort())) {
+                                && ValidationUtil.isNull(reservationCriteria.getSort())
+                                && ValidationUtil.isNull(targetCustomerId)) {
                         return null;
                 }
 
@@ -62,7 +69,8 @@ public class ReservationSpecification {
                                                                                 Long.valueOf(employeeId))));
                         }
                         // Customer Id
-                        if (ValidationUtil.nonNull(reservationCriteria.getCustomerId())) {
+                        if (ValidationUtil.isNull(targetCustomerId)
+                                        && ValidationUtil.nonNull(reservationCriteria.getCustomerId())) {
                                 reservationCriteria.getCustomerId()
                                                 .filter(ValidationUtil::isNumeric)
                                                 .ifPresent(customerId -> predicates.add(
@@ -70,6 +78,12 @@ public class ReservationSpecification {
                                                                                 root.get(ReservationEntity_.CUSTOMER)
                                                                                                 .get("id"),
                                                                                 Long.valueOf(customerId))));
+                        }
+                        // A customer ID supplied by the controller takes precedence over query parameters.
+                        if (ValidationUtil.nonNull(targetCustomerId)) {
+                                predicates.add(criteriaBuilder.equal(
+                                                root.get(ReservationEntity_.CUSTOMER).get("id"),
+                                                targetCustomerId));
                         }
                         // Create At Start
                         if (ValidationUtil.nonNull(reservationCriteria.getCreateAtStart())) {

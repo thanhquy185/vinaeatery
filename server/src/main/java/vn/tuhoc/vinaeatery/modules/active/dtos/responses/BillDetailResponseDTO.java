@@ -17,6 +17,7 @@ import vn.tuhoc.vinaeatery.modules.employee.dtos.responses.EmployeeSubInfoRespon
 import vn.tuhoc.vinaeatery.modules.payment.dtos.responses.PaymentMethodInfoResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.CustomerInfoResponseDTO;
 import vn.tuhoc.vinaeatery.modules.restaurant.dtos.responses.RestaurantSubInfoResponseDTO;
+import vn.tuhoc.vinaeatery.modules.table.dtos.responses.TableInfoResponseDTO;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -57,4 +58,6 @@ public class BillDetailResponseDTO {
     BillPaymentStatusEnum paymentStatus;
 
     List<BillDDetailResponseDTO> billDetails;
+
+    List<TableInfoResponseDTO> tables;
 }

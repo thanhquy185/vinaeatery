@@ -15,6 +15,7 @@ import vn.tuhoc.vinaeatery.modules.active.domains.entities.BillEntity;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.BillCreateRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.requests.BillUpdateStatusRequestDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillCustomerResponseDTO;
+import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillCustomerDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillDetailResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillInfoResponseDTO;
 import vn.tuhoc.vinaeatery.modules.active.dtos.responses.BillSummaryResponseDTO;
@@ -32,6 +33,8 @@ public interface BillMapper {
         BillSummaryResponseDTO entityToSummaryResponse(BillEntity billEntity);
 
         BillCustomerResponseDTO entityToCustomerResponse(BillEntity billEntity);
+
+        BillCustomerDetailResponseDTO entityToCustomerDetailResponse(BillEntity billEntity);
 
         BillInfoResponseDTO entityToInfoResponse(BillEntity billEntity);
 

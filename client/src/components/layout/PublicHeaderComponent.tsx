@@ -183,7 +183,7 @@ const PublicHeaderComponent: React.FC<PublicHeaderComponentProps> = ({
       {
         key: isCustomer ? "orders" : "",
         label: isCustomer ? (
-          <NavLink to="/public/orders">Hoá đơn nhà hàng</NavLink>
+          <NavLink to="/public/orders">Hóa đơn bàn ăn</NavLink>
         ) : (
           ""
         ),

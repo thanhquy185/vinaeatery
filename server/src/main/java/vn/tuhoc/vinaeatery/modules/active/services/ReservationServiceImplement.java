@@ -50,6 +50,10 @@ public class ReservationServiceImplement implements ReservationService {
     }
 
     private Page<ReservationEntity> getAll(ReservationCriteria reservationCriteria) {
+        return this.getAll(reservationCriteria, null);
+    }
+
+    private Page<ReservationEntity> getAll(ReservationCriteria reservationCriteria, Integer targetCustomerId) {
         Sort sort = Sort.unsorted();
         if (ValidationUtil.nonNull(reservationCriteria.getSort())) {
             String sortString = reservationCriteria.getSort().filter(ValidationUtil::hasText).get();
@@ -73,7 +77,7 @@ public class ReservationServiceImplement implements ReservationService {
         }
 
         Specification<ReservationEntity> specification = ReservationSpecification
-                .filterReservations(reservationCriteria);
+                .filterReservations(reservationCriteria, targetCustomerId);
 
         return this.reservationRepository.findAll(specification, pageable);
     }
@@ -101,11 +105,15 @@ public class ReservationServiceImplement implements ReservationService {
         return PageResponseUtil.convert(page);
     }
 
-    @Cacheable(value = "reservation__customer", key = "#reservationCriteria.getCacheKey()", unless = "#result == null")
+    @Cacheable(
+            value = "reservation__customer",
+            key = "#customerId + ':' + #reservationCriteria.getCacheKey()",
+            unless = "#result == null")
     @Override
     public PageResponseDTO<ReservationCustomerResponseDTO> handleGetAllByCustomerId(
-            ReservationCriteria reservationCriteria) {
-        Page<ReservationCustomerResponseDTO> page = this.getAll(reservationCriteria)
+            ReservationCriteria reservationCriteria,
+            Integer customerId) {
+        Page<ReservationCustomerResponseDTO> page = this.getAll(reservationCriteria, customerId)
                 .map(this.reservationMapper::entityToCustomerResponse);
 
         return PageResponseUtil.convert(page);
@@ -170,6 +178,30 @@ public class ReservationServiceImplement implements ReservationService {
             Integer id,
             ReservationUpdateStatusRequestDTO reservationUpdateStatusRequestDTO) {
         ReservationEntity reservationEntity = this.getOneById(id);
+        return this.updateStatus(reservationEntity, reservationUpdateStatusRequestDTO);
+    }
+
+    @Caching(put = {
+            @CachePut(value = "reservation__detail", key = "#id")
+    }, evict = {
+            @CacheEvict(value = "reservation__summary", allEntries = true),
+            @CacheEvict(value = "reservation__customer", allEntries = true),
+            @CacheEvict(value = "reservation__crud_all", allEntries = true),
+            @CacheEvict(value = "reservation__crud", allEntries = true)
+    })
+    @Override
+    public ReservationDetailResponseDTO handleCustomerUpdateStatus(
+            Integer id,
+            Integer customerId,
+            ReservationUpdateStatusRequestDTO reservationUpdateStatusRequestDTO) {
+        ReservationEntity reservationEntity = this.reservationRepository.findOneByIdAndCustomerId(id, customerId)
+                .orElseThrow(() -> new ReservationNotFoundByIdException(id));
+        return this.updateStatus(reservationEntity, reservationUpdateStatusRequestDTO);
+    }
+
+    private ReservationDetailResponseDTO updateStatus(
+            ReservationEntity reservationEntity,
+            ReservationUpdateStatusRequestDTO reservationUpdateStatusRequestDTO) {
         this.reservationMapper.updateStatusEntityFromRequest(
                 reservationUpdateStatusRequestDTO,
                 reservationEntity);

@@ -171,7 +171,7 @@ const PublicProfilePage: React.FC = ({}) => {
     <Layout
       style={{ minHeight: "calc(100vh - 90px)", backgroundColor: "#f4f6fa" }}
     >
-      <div className="flex justify-center container mx-auto sm:px-6 lg:px-8 py-8 py-14!">
+      <div className="flex justify-center container mx-auto sm:px-6 lg:px-8 py-14!">
         <Card
           style={{
             width: 900,
@@ -226,8 +226,8 @@ const PublicProfilePage: React.FC = ({}) => {
                 src={
                   imageFile && previewImage
                     ? previewImage
-                    : infoLogin.image
-                      ? (infoLogin.image as string)
+                    : infoLogin.imageUrl
+                      ? (infoLogin.imageUrl as string)
                       : ImageSourcePath + "no-image.png"
                 }
                 icon={<UserOutlined />}
