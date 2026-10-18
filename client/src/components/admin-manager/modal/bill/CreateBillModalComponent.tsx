@@ -1,6 +1,6 @@
 import useEntityMutation from "../../../../hooks/useEntityMutation";
-import CardInfoInModalComponent from "../../CardInfoInModalComponent";
-import TableInputComponent from "../../TableInputComponent";
+import CardInfoInModalComponent from "../../cards/CardInfoInModalComponent";
+import TableInputComponent from "../../tables/TableInputComponent";
 import BillApiService from "../../../../services/api/v1/BillApiService";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
@@ -24,7 +24,7 @@ import {
 } from "../../../../utils/otherEvents";
 import { openConfirmation } from "../../../../utils/showConfirmationUtil";
 import type { CrudObjectModalProps } from "../../../../constants/props";
-import type { TableInputComponentRowData } from "../../TableInputComponent";
+import type { TableInputComponentRowData } from "../../tables/TableInputComponent";
 import type {
   BillCreateRequestType,
   BillDetailResponseType,
@@ -169,7 +169,7 @@ const CreateBillModalComponent: React.FC<CrudObjectModalProps> = ({
               >
                 <CardInfoInModalComponent
                   hasImage={true}
-                  image={dataForCrud.infoLogin?.image}
+                  image={dataForCrud.infoLogin?.imageUrl}
                   fullname={dataForCrud.infoLogin?.fullname!}
                   phone={dataForCrud.infoLogin?.phone!}
                   email={dataForCrud.infoLogin?.email!}

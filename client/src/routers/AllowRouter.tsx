@@ -1,8 +1,9 @@
-import OAuth2RedirectHandler from "../components/OAuth2RedirectHandler";
-import PublicLayout from "../layouts/PublicLayout";
-import CallFoodLayout from "../layouts/CallFoodLayout";
+import OAuth2RedirectHandler from "../components/auth/OAuth2RedirectHandler";
+import PublicLayout from "../layouts/public/PublicLayout";
+import CallFoodLayout from "../layouts/call-food/CallFoodLayout";
 import PublicHomePage from "../pages/public/HomePage";
 import PublicRestaurantsPage from "../pages/public/RestaurantsPage";
+import PartnerRegisterPage from "../pages/public/PartnerRegisterPage";
 import OtherLoginPage from "../pages/public/LoginPage";
 import OtherErrorPage from "../pages/other/ErrorPage";
 import type { RouteObject } from "react-router-dom";
@@ -50,6 +51,10 @@ const AllowRouter = ({}: AllowRouterProps): RouteObject[] => {
         {
           path: "",
           element: <PublicHomePage />,
+        },
+        {
+          path: "partner",
+          element: <PartnerRegisterPage />,
         },
         {
           path: "restaurant",

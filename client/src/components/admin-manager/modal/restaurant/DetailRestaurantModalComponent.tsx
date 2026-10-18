@@ -1,7 +1,7 @@
 import useEntityQuery from "../../../../hooks/useEntityQuery2";
-import RestaurantLocationPickerComponent from "../../../RestaurantLocationPicker";
-import CardInfoInModalComponent from "../../CardInfoInModalComponent";
-import ImagesUploadComponent from "../../../ImagesUploadComponent";
+import RestaurantLocationPickerComponent from "../../../shared/RestaurantLocationPicker";
+import CardInfoInModalComponent from "../../cards/CardInfoInModalComponent";
+import ImagesUploadComponent from "../../../shared/ImagesUploadComponent";
 import TextArea from "antd/es/input/TextArea";
 import RestaurantApiService from "../../../../services/api/v1/RestaurantApiService";
 import { Form, Input, InputNumber, Select, Spin, type UploadFile } from "antd";

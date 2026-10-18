@@ -1,6 +1,6 @@
 import useEntityQuery from "../../../../hooks/useEntityQuery2";
-import PrintTicketModalComponent from "../../PrintTicketModalComponent";
-import TableBillDetailsComponent from "../../TableBillDetailsComponent";
+import PrintTicketModalComponent from "../../printing/PrintTicketModalComponent";
+import TableBillDetailsComponent from "../../tables/TableBillDetailsComponent";
 import BillApiService from "../../../../services/api/v1/BillApiService";
 import { Spin } from "antd";
 import {

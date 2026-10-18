@@ -1,7 +1,7 @@
-import type { UserType } from "../common/types";
+import type { UserDetailResponseType } from "./UserType";
 
 export interface RestResponseType<T = any> {
-  userLogin: UserType;
+  userLogin: UserDetailResponseType;
   status: number;
   error: string;
   message: string;

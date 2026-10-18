@@ -1,7 +1,7 @@
 import useEntityQuery from "../../../../hooks/useEntityQuery2";
 import useEntityMutation from "../../../../hooks/useEntityMutation";
-import TableInputComponent from "../../TableInputComponent";
-import CardInfoInModalComponent from "../../CardInfoInModalComponent";
+import TableInputComponent from "../../tables/TableInputComponent";
+import CardInfoInModalComponent from "../../cards/CardInfoInModalComponent";
 import InputTicketApiService from "../../../../services/api/v1/InputTicketApiService";
 import { Form, Input, Spin } from "antd";
 import {
@@ -20,7 +20,7 @@ import type {
   InputTicketPaymentStatusEnum,
   InputTicketStatusEnum,
 } from "../../../../constants/enums";
-import type { TableInputComponentRowData } from "../../TableInputComponent";
+import type { TableInputComponentRowData } from "../../tables/TableInputComponent";
 import type {
   InputTicketDetailResponseType,
   InputTicketUpdatePaymentStatusRequestType,

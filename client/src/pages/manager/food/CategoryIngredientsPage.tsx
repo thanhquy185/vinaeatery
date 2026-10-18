@@ -2,30 +2,20 @@ import useModal from "../../../hooks/useModal";
 import useEntityQuery from "../../../hooks/useEntityQuery2";
 import useRestaurantContext from "../../../hooks/useRestaurantContext";
 import CategoryIngredientApiService from "../../../services/api/v1/CategoryIngredientApiService";
-import ModalComponent from "../../../components/ModalComponent";
-import TableRUDActionsComponent from "../../../components/TableRUDActionsComponent";
+import ModalComponent from "../../../components/shared/ModalComponent";
 import MainHeaderComponent from "../../../components/admin-manager/MainHeaderComponent";
-import MainFilterInfoComponent from "../../../components/admin-manager/MainFilterInfoComponent";
-import MainDataComponent from "../../../components/admin-manager/NewMainDataComponent";
+import MainFilterInfoComponent from "../../../components/admin-manager/filters/MainFilterInfoComponent";
+import CategoryIngredientsTableComponent from "../../../components/pages/manager/food/CategoryIngredientsTableComponent";
 import DetailCategoryIngredientModalComponent from "../../../components/admin-manager/modal/category-ingredient/DetailCategoryIngredientModalComponent";
 import CreateCategoryIngredientModalComponent from "../../../components/admin-manager/modal/category-ingredient/CreateCategoryIngredientModalComponent";
 import UpdateCategoryIngredientModalComponent from "../../../components/admin-manager/modal/category-ingredient/UpdateCategoryIngredientModalComponent";
 import LockModalComponent from "../../../components/admin-manager/modal/LockModalComponent";
 import { useState } from "react";
-import { Tag } from "antd";
-import {
-  CommonStatusValue,
-  ModalTitleValue,
-  ModalWidthValue,
-} from "../../../constants/values";
-import {
-  actionIndexes,
-  getActionNameEn,
-} from "../../../utils/defaultActionsUtil";
+import { CommonStatusValue, ModalTitleValue, ModalWidthValue } from "../../../constants/values";
+import { actionIndexes, getActionNameEn } from "../../../utils/defaultActionsUtil";
 import { hasPermission } from "../../../utils/hasPermissionsUtil";
 import { getFilterSelectValueToShow } from "../../../utils/otherEvents";
 import type { SelectProps } from "antd";
-import type { ColumnsType } from "antd/es/table";
 import type { AdminManagerPageProps } from "../../../constants/props";
 import type { PageResponseType } from "../../../types/PageResponseType";
 import type { CategoryIngredientSummaryResponseType } from "../../../types/CategoryIngredientType";
@@ -89,57 +79,6 @@ const ManagerCategoryIngredientsPage: React.FC<AdminManagerPageProps> = ({
     },
     api: CategoryIngredientApiService.handleGetSummary,
   });
-  // - Các thuộc tính
-  const columns: ColumnsType<CategoryIngredientSummaryResponseType> = [
-    {
-      title: "#",
-      dataIndex: "id",
-      key: "id",
-      width: "20%",
-      sorter: (a, b) => a.id - b.id,
-    },
-    {
-      title: "Tên loại nguyên liệu",
-      dataIndex: "name",
-      key: "name",
-      width: "40%",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      width: "20%",
-      render: (status: string) => (
-        <Tag
-          color={status === CommonStatusValue.active ? "green" : "red"}
-          bordered={false}
-        >
-          {status}
-        </Tag>
-      ),
-    },
-    {
-      title: "",
-      dataIndex: "",
-      key: "actions",
-      width: "20%",
-      className: "buttons",
-      render: (record: CategoryIngredientSummaryResponseType) => (
-        <TableRUDActionsComponent
-          nameEN={nameEN}
-          nameVN={nameVN}
-          isManager={isManager}
-          restaurantIdForCrud={restaurantIdForCrud}
-          validActions={validActions!}
-          record={record}
-          modalWidth={ModalWidthValue.split2}
-          managerModals={ManagerCategoryIngredientModals}
-          openModal={openModal}
-        />
-      ),
-    },
-  ];
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -245,10 +184,18 @@ const ManagerCategoryIngredientsPage: React.FC<AdminManagerPageProps> = ({
             })
           }
         />
-        <MainDataComponent<CategoryIngredientSummaryResponseType>
+        <CategoryIngredientsTableComponent
+          context={{
+            nameEN,
+            nameVN,
+            isManager,
+            restaurantIdForCrud,
+            validActions,
+            ManagerCategoryIngredientModals,
+            openModal,
+          }}
           tableKey={tableKey}
           object={nameEN}
-          columns={columns}
           data={categoryIngredientData}
           isLoading={isLoading}
           onPageChange={(page, size) => {

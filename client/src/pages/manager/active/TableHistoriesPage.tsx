@@ -1,30 +1,17 @@
 import useModal from "../../../hooks/useModal";
 import useEntityQuery from "../../../hooks/useEntityQuery2";
 import useRestaurantContext from "../../../hooks/useRestaurantContext";
-import ModalComponent from "../../../components/ModalComponent";
+import ModalComponent from "../../../components/shared/ModalComponent";
 import MainHeaderComponent from "../../../components/admin-manager/MainHeaderComponent";
-import MainFilterActiveComponent from "../../../components/admin-manager/MainFilterActiveComponent";
-import MainDataComponent from "../../../components/admin-manager/NewMainDataComponent";
+import MainFilterActiveComponent from "../../../components/admin-manager/filters/MainFilterActiveComponent";
+import TableHistoriesTableComponent from "../../../components/pages/manager/active/TableHistoriesTableComponent";
 import DetailTableHistoryModalComponent from "../../../components/admin-manager/modal/table-history/DetailTableHistoryModalComponent";
 import FloorApiService from "../../../services/api/v1/FloorApiService";
 import UseTableApiService from "../../../services/api/v1/UseTableApiService";
-import dayjs from "dayjs";
 import { useState } from "react";
-import { Button, DatePicker, Tag } from "antd";
-import { Menu } from "lucide-react";
-import {
-  ModalTitleValue,
-  ModalWidthValue,
-  UseTableStatusValue,
-} from "../../../constants/values";
-import { hasPermission } from "../../../utils/hasPermissionsUtil";
-import {
-  actionIndexes,
-  getActionNameEn,
-} from "../../../utils/defaultActionsUtil";
+import { UseTableStatusValue } from "../../../constants/values";
 import { getFilterSelectValueToShow } from "../../../utils/otherEvents";
 import type { SelectProps } from "antd";
-import type { ColumnsType } from "antd/es/table";
 import type { PageResponseType } from "../../../types/PageResponseType";
 import type { AdminManagerPageProps } from "../../../constants/props";
 import type { FloorCrudResponseType } from "../../../types/FloorType";
@@ -112,194 +99,6 @@ const ManagerTableHistoriesPage: React.FC<AdminManagerPageProps> = ({
     },
     api: UseTableApiService.handleGetSummary,
   });
-  // - Cột thuộc tính
-  const columns: ColumnsType<UseTableSummaryResponseType> = [
-    {
-      title: "#",
-      dataIndex: "id",
-      key: "id",
-      width: "10%",
-      sorter: (a, b) => a.id - b.id,
-    },
-    {
-      title: "Thời gian bắt đầu",
-      dataIndex: "startAt",
-      key: "startAt",
-      width: "18%",
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
-        <div style={{ padding: 8 }}>
-          <DatePicker.RangePicker
-            showTime
-            format="YYYY-MM-DD HH:mm:ss"
-            style={{ display: "flex" }}
-            value={
-              selectedKeys[0]
-                ? (() => {
-                    const [start, end] = JSON.parse(
-                      selectedKeys[0] as string,
-                    ) as [string, string];
-                    return [dayjs(start), dayjs(end)];
-                  })()
-                : null
-            }
-            onChange={(dates) =>
-              setSelectedKeys(
-                dates
-                  ? [
-                      JSON.stringify([
-                        dates[0]?.toISOString(),
-                        dates[1]?.toISOString(),
-                      ]),
-                    ]
-                  : [],
-              )
-            }
-          />
-          <Button
-            type="primary"
-            size="small"
-            style={{ width: "100%", marginTop: 8 }}
-            onClick={() => confirm()}
-          >
-            Lọc
-          </Button>
-        </div>
-      ),
-      onFilter: (value, record) => {
-        if (!value) return true;
-        const [start, end] = JSON.parse(value as string) as [string, string];
-        const date = dayjs(record.startAt);
-
-        return (
-          date.isSame(dayjs(start)) ||
-          date.isSame(dayjs(end)) ||
-          (date.isAfter(dayjs(start)) && date.isBefore(dayjs(end)))
-        );
-      },
-      sorter: (a, b) => dayjs(a.startAt).valueOf() - dayjs(b.startAt).valueOf(),
-      render: (val) => (val ? dayjs(val).format("YYYY-MM-DD HH:mm:ss") : ""),
-    },
-    {
-      title: "Thời gian kết thúc",
-      dataIndex: "endAt",
-      key: "endAt",
-      width: "18%",
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
-        <div style={{ padding: 8 }}>
-          <DatePicker.RangePicker
-            showTime
-            format="YYYY-MM-DD HH:mm:ss"
-            style={{ display: "flex" }}
-            value={
-              selectedKeys[0]
-                ? (() => {
-                    const [start, end] = JSON.parse(
-                      selectedKeys[0] as string,
-                    ) as [string, string];
-                    return [dayjs(start), dayjs(end)];
-                  })()
-                : null
-            }
-            onChange={(dates) =>
-              setSelectedKeys(
-                dates
-                  ? [
-                      JSON.stringify([
-                        dates[0]?.toISOString(),
-                        dates[1]?.toISOString(),
-                      ]),
-                    ]
-                  : [],
-              )
-            }
-          />
-          <Button
-            type="primary"
-            size="small"
-            style={{ width: "100%", marginTop: 8 }}
-            onClick={() => confirm()}
-          >
-            Lọc
-          </Button>
-        </div>
-      ),
-      onFilter: (value, record) => {
-        if (!value) return true;
-        const [start, end] = JSON.parse(value as string) as [string, string];
-        const date = dayjs(record.endAt);
-
-        return (
-          date.isSame(dayjs(start)) ||
-          date.isSame(dayjs(end)) ||
-          (date.isAfter(dayjs(start)) && date.isBefore(dayjs(end)))
-        );
-      },
-      sorter: (a, b) => dayjs(a.endAt).valueOf() - dayjs(b.endAt).valueOf(),
-      render: (val) => (val ? dayjs(val).format("YYYY-MM-DD HH:mm:ss") : ""),
-    },
-    {
-      title: "Bàn ăn",
-      key: "table",
-      width: "36%",
-      className: "left",
-      sorter: (a, b) => a.table.id - b.table.id,
-      render: (record) =>
-        `#${record.table.id} - ${record.table.name} - ${record.table.floor?.name} - ${record.table.categoryTable.name} - Số chỗ: ${record.table?.seats}`,
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      width: "12%",
-      render: (status: string) => (
-        <Tag
-          color={
-            status === UseTableStatusValue.occupied
-              ? "red"
-              : status === UseTableStatusValue.reserved
-                ? "yellow"
-                : status === UseTableStatusValue.empty
-                  ? "green"
-                  : "default"
-          }
-          bordered={false}
-        >
-          {status}
-        </Tag>
-      ),
-    },
-    {
-      title: "",
-      dataIndex: "",
-      key: "actions",
-      width: "6%",
-      className: "buttons",
-      render: (record: UseTableSummaryResponseType) => (
-        <>
-          {hasPermission({
-            isManager,
-            restaurantIdForCrud,
-            validActions,
-            requiredActionId: actionIndexes.detail,
-          }) && (
-            <button
-              className={"action " + getActionNameEn(actionIndexes.detail)}
-              onClick={() =>
-                openModal({
-                  title: ModalTitleValue.detail(nameVN.toLowerCase()),
-                  width: ModalWidthValue.active,
-                  className: `${nameEN}`,
-                  children: ManagerTableHistoryModals.detail(record),
-                })
-              }
-            >
-              <Menu />
-            </button>
-          )}
-        </>
-      ),
-    },
-  ];
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -345,10 +144,18 @@ const ManagerTableHistoriesPage: React.FC<AdminManagerPageProps> = ({
             setTableKey((prev) => prev + 1);
           }}
         />
-        <MainDataComponent<UseTableSummaryResponseType>
+        <TableHistoriesTableComponent
+          context={{
+            isManager,
+            restaurantIdForCrud,
+            validActions,
+            openModal,
+            nameVN,
+            nameEN,
+            ManagerTableHistoryModals,
+          }}
           tableKey={tableKey}
           object={nameEN}
-          columns={columns}
           data={useTableData}
           isLoading={isLoading}
           isScroll={true}

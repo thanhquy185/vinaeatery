@@ -1,11 +1,12 @@
 import OtherErrorPage from "../pages/other/ErrorPage";
-import PublicLayout from "../layouts/PublicLayout";
+import PublicLayout from "../layouts/public/PublicLayout";
 import PublicHomePage from "../pages/public/HomePage";
 import PublicRestaurantsPage from "../pages/public/RestaurantsPage";
 import PublicProfilePage from "../pages/public/ProfilePage";
 import PublicBillsPage from "../pages/public/BillsPage";
 import PublicReservationsPage from "../pages/public/ReservationsPage";
 import PublicChangePasswordPage from "../pages/public/ChangePasswordPage";
+import PartnerRegisterPage from "../pages/public/PartnerRegisterPage";
 import type { RouteObject } from "react-router-dom";
 import type { ManagerDetailResponseType } from "../types/ManagerType";
 import type { EmployeeDetailResponseType } from "../types/EmployeeType";
@@ -39,6 +40,10 @@ const PublicRouter = ({
       {
         path: "",
         element: <PublicHomePage />,
+      },
+      {
+        path: "partner",
+        element: <PartnerRegisterPage />,
       },
       {
         path: "restaurant",

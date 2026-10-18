@@ -1,5 +1,5 @@
 import useEntityMutation from "../../../../hooks/useEntityMutation";
-import CheckPasswordListComponent from "../../../CheckPasswordListComponent";
+import CheckPasswordListComponent from "../../../auth/CheckPasswordListComponent";
 import UserApiService from "../../../../services/api/v1/UserApiService";
 import { useState } from "react";
 import { Form, Input } from "antd";

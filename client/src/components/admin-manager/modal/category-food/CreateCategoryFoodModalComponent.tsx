@@ -1,6 +1,6 @@
 import useEntityMutation from "../../../../hooks/useEntityMutation";
 import TextArea from "antd/es/input/TextArea";
-import ImageUploadComponent from "../../../ImageUploadComponent";
+import ImageUploadComponent from "../../../shared/ImageUploadComponent";
 import CategoryFoodApiService from "../../../../services/api/v1/CategoryFoodApiService";
 import { useState } from "react";
 import { Form, Input, Select } from "antd";

@@ -1,7 +1,7 @@
 import useProvinces from "../../../../hooks/useProvinces";
 import useWards from "../../../../hooks/useWards";
 import useEntityMutation from "../../../../hooks/useEntityMutation";
-import ImageUploadComponent from "../../../ImageUploadComponent";
+import ImageUploadComponent from "../../../shared/ImageUploadComponent";
 import EmployeeApiService from "../../../../services/api/v1/EmployeeApiService";
 import dayjs from "dayjs";
 import { useState } from "react";

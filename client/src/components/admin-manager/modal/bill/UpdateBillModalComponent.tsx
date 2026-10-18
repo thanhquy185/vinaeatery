@@ -1,7 +1,7 @@
 import useEntityQuery from "../../../../hooks/useEntityQuery2";
 import useEntityMutation from "../../../../hooks/useEntityMutation";
-import CardInfoInModalComponent from "../../CardInfoInModalComponent";
-import TableInputComponent from "../../TableInputComponent";
+import CardInfoInModalComponent from "../../cards/CardInfoInModalComponent";
+import TableInputComponent from "../../tables/TableInputComponent";
 import BillApiService from "../../../../services/api/v1/BillApiService";
 import dayjs from "dayjs";
 import { DatePicker, Form, Input, Spin } from "antd";
@@ -18,7 +18,7 @@ import { openConfirmation } from "../../../../utils/showConfirmationUtil";
 import { openNotification } from "../../../../utils/showNotificationUtil";
 import type { CrudObjectModalProps } from "../../../../constants/props";
 import type { BillStatusEnum } from "../../../../constants/enums";
-import type { TableInputComponentRowData } from "../../TableInputComponent";
+import type { TableInputComponentRowData } from "../../tables/TableInputComponent";
 import type {
   BillDetailResponseType,
   BillUpdateStatusRequestType,

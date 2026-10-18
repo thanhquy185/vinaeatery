@@ -1,5 +1,5 @@
 import useEntityMutation from "../../../../hooks/useEntityMutation";
-import CardInfoInModalComponent from "../../CardInfoInModalComponent";
+import CardInfoInModalComponent from "../../cards/CardInfoInModalComponent";
 import ReservationApiService from "../../../../services/api/v1/ReservationApiService";
 import TextArea from "antd/es/input/TextArea";
 import dayjs from "dayjs";

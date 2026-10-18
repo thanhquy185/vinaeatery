@@ -3,7 +3,7 @@ import useProvinces from "../../../../hooks/useProvinces";
 import useEntityQuery from "../../../../hooks/useEntityQuery2";
 import useEntityMutation from "../../../../hooks/useEntityMutation";
 import TextArea from "antd/es/input/TextArea";
-import ImageUploadComponent from "../../../ImageUploadComponent";
+import ImageUploadComponent from "../../../shared/ImageUploadComponent";
 import ManagerApiService from "../../../../services/api/v1/ManagerApiService";
 import dayjs from "dayjs";
 import { useState } from "react";

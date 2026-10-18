@@ -1,4 +1,4 @@
-import SpinnerComponent from "./components/SpinnerComponent";
+import SpinnerComponent from "./components/shared/SpinnerComponent";
 import { useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";

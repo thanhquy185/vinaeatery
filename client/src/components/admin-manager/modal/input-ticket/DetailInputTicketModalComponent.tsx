@@ -1,6 +1,6 @@
 import useEntityQuery from "../../../../hooks/useEntityQuery2";
-import CardInfoInModalComponent from "../../CardInfoInModalComponent";
-import TableInputComponent from "../../TableInputComponent";
+import CardInfoInModalComponent from "../../cards/CardInfoInModalComponent";
+import TableInputComponent from "../../tables/TableInputComponent";
 import InputTicketApiService from "../../../../services/api/v1/InputTicketApiService";
 import { Form, Input, Spin } from "antd";
 import { ModalLayout } from "../../../../constants/values";
@@ -9,7 +9,7 @@ import {
   numberToVietnamWords,
 } from "../../../../utils/otherEvents";
 import type { CrudObjectModalProps } from "../../../../constants/props";
-import type { TableInputComponentRowData } from "../../TableInputComponent";
+import type { TableInputComponentRowData } from "../../tables/TableInputComponent";
 import type { InputTicketDetailResponseType } from "../../../../types/InputTicketType";
 
 const DetailInputTicketModalComponent: React.FC<CrudObjectModalProps> = ({

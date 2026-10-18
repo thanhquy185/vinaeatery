@@ -1,12 +1,12 @@
 import useEntityQuery from "../../../../hooks/useEntityQuery2";
 import FoodApiService from "../../../../services/api/v1/FoodApiService";
 import TextArea from "antd/es/input/TextArea";
-import ImageUploadComponent from "../../../ImageUploadComponent";
+import ImageUploadComponent from "../../../shared/ImageUploadComponent";
 import { Form, Input, InputNumber, Select, Spin } from "antd";
 import { ModalLayout } from "../../../../constants/values";
 import TableInputComponent, {
   type TableInputComponentRowData,
-} from "../../TableInputComponent";
+} from "../../tables/TableInputComponent";
 import {
   inputNumberFormatter,
   inputNumberParse,

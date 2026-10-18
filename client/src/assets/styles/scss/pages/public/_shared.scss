@@ -1,0 +1,75 @@
+.ve-home a,
+.ve-partner a {
+  text-decoration: none;
+}
+
+.ve-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #66705f;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: .14em;
+  line-height: 1.4;
+}
+
+.ve-eyebrow__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ve-red);
+  box-shadow: 0 0 0 4px rgba(185, 28, 28, .09);
+}
+
+.ve-button {
+  display: inline-flex;
+  min-height: 49px;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  padding: 0 19px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-size: 15px;
+  font-weight: 700;
+  transition: transform .18s ease, background-color .18s ease, border-color .18s ease;
+}
+
+.ve-button:hover {
+  transform: translateY(-2px);
+}
+
+.ve-button--primary {
+  background: var(--ve-red);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(145, 27, 27, .15);
+}
+
+.ve-button--primary:hover {
+  background: #9d1717;
+  color: #fff;
+}
+
+.ve-button--quiet {
+  border-color: #dfded4;
+  background: rgba(255, 255, 255, .32);
+  color: #4f574f;
+}
+
+.ve-button--quiet:hover {
+  border-color: #aaa99f;
+  color: #242b24;
+}
+
+.ve-button--light {
+  min-width: max-content;
+  margin-left: auto;
+  background: #fff;
+  color: #2d372d;
+}
+
+.ve-button--light:hover {
+  background: #f5eee2;
+  color: #2d372d;
+}

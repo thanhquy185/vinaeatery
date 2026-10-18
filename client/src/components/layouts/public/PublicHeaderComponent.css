@@ -1,0 +1,159 @@
+.ve-public-header {
+  position: sticky;
+  z-index: 1000;
+  top: 0;
+  border-bottom: 1px solid #edede7;
+  background: rgba(255, 255, 255, .94);
+  backdrop-filter: blur(14px);
+  font-family: Inter, "Segoe UI", sans-serif;
+  letter-spacing: 0;
+}
+
+.ve-public-header__container {
+  width: min(1200px, calc(100% - 56px));
+  margin: 0 auto;
+}
+
+.ve-public-header__inner {
+  display: flex;
+  height: 80px;
+  align-items: center;
+}
+
+.ve-public-header__brand {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 10px;
+  color: #a91f1f;
+}
+
+.ve-public-header__brand:hover { color: #8f1717; }
+
+.ve-public-header__brand-image {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.ve-public-header__wordmark {
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1;
+}
+
+.ve-public-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 25px;
+}
+
+.ve-public-header__nav-link {
+  display: inline-flex;
+  min-height: 41px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 11px;
+  border-radius: 999px;
+  color: #586056;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  transition: color .16s ease, background-color .16s ease;
+}
+
+.ve-public-header__nav-link:hover,
+.ve-public-header__nav-link.is-active {
+  background: #fbf0ef;
+  color: #a91f1f;
+}
+
+.ve-public-header__nav-link.is-active { font-weight: 700; }
+
+.ve-public-header__nav-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+}
+
+.ve-public-header__nav-icon svg {
+  width: 19px;
+  height: 19px;
+  stroke-width: 1.9;
+}
+
+.ve-public-header__nav-label { white-space: nowrap; }
+
+.ve-public-header__actions {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  padding-left: 16px;
+  border-left: 1px solid #e8e8e1;
+}
+
+.ve-public-header__auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.ve-public-header__auth-buttons .ant-btn {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 16px;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.ve-public-header__login-button.ant-btn-primary {
+  border-color: #b91c1c;
+  background: #b91c1c;
+}
+
+.ve-public-header__login-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.ve-public-header__greeting {
+  color: #5d655b;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+@media (max-width: 960px) {
+  .ve-public-header__container { width: calc(100% - 40px); }
+  .ve-public-header__nav { display: none; }
+  .ve-public-header__wordmark { font-size: 19px; }
+}
+
+@media (max-width: 520px) {
+  .ve-public-header__container { width: calc(100% - 24px); }
+  .ve-public-header__inner { height: 68px; }
+  .ve-public-header__brand { gap: 7px; }
+  .ve-public-header__brand-image { width: 35px; height: 35px; }
+  .ve-public-header__wordmark { font-size: 16px; }
+  .ve-public-header__actions { padding-left: 8px; }
+  .ve-public-header__auth-buttons { gap: 6px; }
+  .ve-public-header__auth-buttons .ant-btn {
+    min-height: 37px;
+    padding: 0 9px;
+    font-size: 14px;
+  }
+  .ve-public-header__login-icon { display: none; }
+}
+
+@media (max-width: 365px) {
+  .ve-public-header__wordmark { font-size: 14px; }
+  .ve-public-header__brand-image { width: 31px; height: 31px; }
+  .ve-public-header__auth-buttons .ant-btn { padding: 0 7px; font-size: 13px; }
+}

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ReactQueryGetData } from "../constants/values";
 import { openNotification } from "../utils/showNotificationUtil";
 import type { AxiosResponse } from "axios";
-import type { FilterDataProps } from "../common/props";
+import type { FilterDataProps } from "../constants/props";
 
 interface UseEntityQueryProps<T> {
   keys: any[];

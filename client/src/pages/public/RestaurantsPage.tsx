@@ -1,5 +1,5 @@
 import useEntityQuery from "../../hooks/useEntityQuery2";
-import RestaurantMapComponent from "../../components/public/RestaurantMapComponent";
+import RestaurantMapComponent from "../../components/pages/public/restaurants/RestaurantMapComponent";
 import RestaurantApiService from "../../services/api/v1/RestaurantApiService";
 import { Layout, Spin } from "antd";
 import type { PageResponseType } from "../../types/PageResponseType";

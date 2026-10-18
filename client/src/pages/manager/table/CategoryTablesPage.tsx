@@ -1,35 +1,21 @@
 import useModal from "../../../hooks/useModal";
 import useEntityQuery from "../../../hooks/useEntityQuery2";
 import useRestaurantContext from "../../../hooks/useRestaurantContext";
-import ModalComponent from "../../../components/ModalComponent";
-import TableRUDActionsComponent from "../../../components/TableRUDActionsComponent";
+import ModalComponent from "../../../components/shared/ModalComponent";
 import MainHeaderComponent from "../../../components/admin-manager/MainHeaderComponent";
-import MainFilterInfoComponent from "../../../components/admin-manager/MainFilterInfoComponent";
-import MainDataComponent from "../../../components/admin-manager/NewMainDataComponent";
+import MainFilterInfoComponent from "../../../components/admin-manager/filters/MainFilterInfoComponent";
+import CategoryTablesTableComponent from "../../../components/pages/manager/table/CategoryTablesTableComponent";
 import DetailCategoryTableModalComponent from "../../../components/admin-manager/modal/category-table/DetailCategoryTableModalComponent";
 import CreateCategoryTableModalComponent from "../../../components/admin-manager/modal/category-table/CreateCategoryTableModalComponent";
 import UpdateCategoryTableModalComponent from "../../../components/admin-manager/modal/category-table/UpdateCategoryTableModalComponent";
 import LockModalComponent from "../../../components/admin-manager/modal/LockModalComponent";
 import CategoryTableApiService from "../../../services/api/v1/CategoryTableApiService";
 import { useState } from "react";
-import { Button, InputNumber, Select, Tag } from "antd";
-import {
-  CategoryTableSurchargeTypeValue,
-  CommonStatusValue,
-  ModalTitleValue,
-  ModalWidthValue,
-} from "../../../constants/values";
+import { CommonStatusValue, ModalTitleValue, ModalWidthValue } from "../../../constants/values";
 import { hasPermission } from "../../../utils/hasPermissionsUtil";
-import {
-  actionIndexes,
-  getActionNameEn,
-} from "../../../utils/defaultActionsUtil";
-import {
-  getFilterSelectValueToShow,
-  vietnamMoneyFormat,
-} from "../../../utils/otherEvents";
+import { actionIndexes, getActionNameEn } from "../../../utils/defaultActionsUtil";
+import { getFilterSelectValueToShow } from "../../../utils/otherEvents";
 import type { SelectProps } from "antd";
-import type { ColumnsType } from "antd/es/table";
 import type { AdminManagerPageProps } from "../../../constants/props";
 import type { PageResponseType } from "../../../types/PageResponseType";
 import type { CategoryTableSummaryResponseType } from "../../../types/CategoryTableType";
@@ -93,151 +79,6 @@ const ManagerCategoryTablesPage: React.FC<AdminManagerPageProps> = ({
     },
     api: CategoryTableApiService.handleGetSummary,
   });
-  // - Cột thuộc tính
-  const columns: ColumnsType<CategoryTableSummaryResponseType> = [
-    {
-      title: "#",
-      dataIndex: "id",
-      key: "id",
-      width: "12%",
-      sorter: (a, b) => a.id - b.id,
-    },
-    {
-      title: "Tên loại bàn ăn",
-      dataIndex: "name",
-      key: "name",
-      width: "30%",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-      title: "Loại phụ thu",
-      dataIndex: "surchargeType",
-      key: "surchargeType",
-      width: "17%",
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
-        <div style={{ width: 250, padding: 8 }}>
-          <Select
-            allowClear
-            value={selectedKeys[0]}
-            placeholder="Chọn Loại phụ thu"
-            style={{ width: "100%" }}
-            options={[
-              {
-                label: CategoryTableSurchargeTypeValue.fixed,
-                value: CategoryTableSurchargeTypeValue.fixed,
-              },
-              {
-                label: CategoryTableSurchargeTypeValue.percent,
-                value: CategoryTableSurchargeTypeValue.percent,
-              },
-            ]}
-            onChange={(val) => setSelectedKeys(val ? [val] : [])}
-          ></Select>
-          <Button
-            type="primary"
-            size="small"
-            style={{ width: "100%", marginTop: 8 }}
-            onClick={() => confirm()}
-          >
-            Lọc
-          </Button>
-        </div>
-      ),
-      onFilter: (value, record) => record.surchargeType === value,
-      sorter: (a, b) => a.surchargeType.localeCompare(b.surchargeType),
-    },
-    {
-      title: "Giá trị phụ thu",
-      dataIndex: "surchargeValue",
-      key: "surchargeValue",
-      width: "17%",
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => {
-        let min = 0,
-          max = 0;
-        if (selectedKeys[0]) {
-          try {
-            [min, max] = JSON.parse(selectedKeys[0] as string) as [
-              number,
-              number,
-            ];
-          } catch {}
-        }
-
-        return (
-          <div style={{ padding: 8 }}>
-            <InputNumber
-              placeholder="Tối thiểu"
-              style={{ marginBottom: 8, display: "block", width: "100%" }}
-              value={min || undefined}
-              onChange={(val) => {
-                setSelectedKeys([JSON.stringify([val ?? 0, max ?? 0])]);
-              }}
-            />
-            <InputNumber
-              placeholder="Tối đa"
-              style={{ marginBottom: 8, display: "block", width: "100%" }}
-              value={max || undefined}
-              onChange={(val) => {
-                setSelectedKeys([JSON.stringify([min ?? 0, val ?? 0])]);
-              }}
-            />
-            <Button
-              type="primary"
-              size="small"
-              style={{ width: "100%" }}
-              onClick={() => confirm()}
-            >
-              Lọc
-            </Button>
-          </div>
-        );
-      },
-      onFilter: (value, record) => {
-        if (!value) return true;
-        const [min, max] = JSON.parse(value as string) as [number, number];
-        const surchargeValue = record.surchargeValue ?? 0;
-        if (min && surchargeValue < min) return false;
-        if (max && surchargeValue > max) return false;
-        return true;
-      },
-      sorter: (a, b) => a.surchargeValue - b.surchargeValue,
-      render: (surchargeValue: number) => vietnamMoneyFormat(surchargeValue),
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      width: "12%",
-      render: (status: string) => (
-        <Tag
-          color={status === CommonStatusValue.active ? "green" : "red"}
-          bordered={false}
-        >
-          {status}
-        </Tag>
-      ),
-    },
-    {
-      title: "",
-      dataIndex: "",
-      key: "actions",
-      width: "12%",
-      className: "buttons",
-      render: (record: CategoryTableSummaryResponseType) => (
-        <TableRUDActionsComponent
-          nameEN={nameEN}
-          nameVN={nameVN}
-          isManager={isManager}
-          restaurantIdForCrud={restaurantIdForCrud}
-          validActions={validActions!}
-          record={record}
-          modalWidth={ModalWidthValue.split2}
-          managerModals={ManagerCategoryTableModals}
-          openModal={openModal}
-        />
-      ),
-    },
-  ];
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -343,10 +184,18 @@ const ManagerCategoryTablesPage: React.FC<AdminManagerPageProps> = ({
             })
           }
         />
-        <MainDataComponent<CategoryTableSummaryResponseType>
+        <CategoryTablesTableComponent
+          context={{
+            nameEN,
+            nameVN,
+            isManager,
+            restaurantIdForCrud,
+            validActions,
+            ManagerCategoryTableModals,
+            openModal,
+          }}
           tableKey={tableKey}
           object={nameEN}
-          columns={columns}
           data={categoryTableData}
           isLoading={isLoading}
           onPageChange={(page, size) => {

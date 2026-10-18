@@ -1,11 +1,10 @@
 import useModal from "../../../hooks/useModal";
 import useEntityQuery from "../../../hooks/useEntityQuery2";
 import useRestaurantContext from "../../../hooks/useRestaurantContext";
-import ModalComponent from "../../../components/ModalComponent";
-import TableRUDActionsComponent from "../../../components/TableRUDActionsComponent";
+import ModalComponent from "../../../components/shared/ModalComponent";
 import MainHeaderComponent from "../../../components/admin-manager/MainHeaderComponent";
-import MainFilterInfoComponent from "../../../components/admin-manager/MainFilterInfoComponent";
-import MainDataComponent from "../../../components/admin-manager/NewMainDataComponent";
+import MainFilterInfoComponent from "../../../components/admin-manager/filters/MainFilterInfoComponent";
+import TablesTableComponent from "../../../components/pages/manager/table/TablesTableComponent";
 import DetailTableModalComponent from "../../../components/admin-manager/modal/table/DetailTableModalComponent";
 import CreateTableModalComponent from "../../../components/admin-manager/modal/table/CreateTableModalComponent";
 import UpdateTableModalComponent from "../../../components/admin-manager/modal/table/UpdateTableModalComponent";
@@ -14,20 +13,11 @@ import FloorApiService from "../../../services/api/v1/FloorApiService";
 import CategoryTableApiService from "../../../services/api/v1/CategoryTableApiService";
 import TableApiService from "../../../services/api/v1/TableApiService";
 import { useState } from "react";
-import { Button, Select, Tag } from "antd";
-import {
-  CommonStatusValue,
-  ModalTitleValue,
-  ModalWidthValue,
-} from "../../../constants/values";
+import { CommonStatusValue, ModalTitleValue, ModalWidthValue } from "../../../constants/values";
 import { hasPermission } from "../../../utils/hasPermissionsUtil";
 import { getFilterSelectValueToShow } from "../../../utils/otherEvents";
-import {
-  actionIndexes,
-  getActionNameEn,
-} from "../../../utils/defaultActionsUtil";
+import { actionIndexes, getActionNameEn } from "../../../utils/defaultActionsUtil";
 import type { SelectProps } from "antd";
-import type { ColumnsType } from "antd/es/table";
 import type { AdminManagerPageProps } from "../../../constants/props";
 import type { PageResponseType } from "../../../types/PageResponseType";
 import type { FloorCrudResponseType } from "../../../types/FloorType";
@@ -113,129 +103,6 @@ const ManagerTablesPage: React.FC<AdminManagerPageProps> = ({
     },
     api: TableApiService.handleGetSummary,
   });
-  // - Cột thuộc tính
-  const columns: ColumnsType<TableSummaryResponseType> = [
-    {
-      title: "#",
-      dataIndex: "id",
-      key: "id",
-      width: "10%",
-      sorter: (a, b) => a.id - b.id,
-    },
-    {
-      title: "Tên loại bàn ăn",
-      dataIndex: "name",
-      key: "name",
-      width: "24%",
-      className: "left",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-      title: "Số chỗ ngồi",
-      dataIndex: "seats",
-      key: "seats",
-      width: "12%",
-      sorter: (a, b) => a.seats - b.seats,
-    },
-    {
-      title: "Loại bàn ăn",
-      key: "categoryTable",
-      width: "17%",
-      className: "left",
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
-        <div style={{ width: 250, padding: 8 }}>
-          <Select
-            allowClear
-            value={selectedKeys[0]}
-            placeholder="Chọn Loại bàn ăn"
-            style={{ width: "100%" }}
-            options={categoryTables?.map((categoryTable) => ({
-              label: `#${categoryTable.id} - ${categoryTable.name}`,
-              value: categoryTable.id,
-            }))}
-            onChange={(val) => setSelectedKeys(val ? [val] : [])}
-          ></Select>
-          <Button
-            type="primary"
-            size="small"
-            style={{ width: "100%", marginTop: 8 }}
-            onClick={() => confirm()}
-          >
-            Lọc
-          </Button>
-        </div>
-      ),
-      onFilter: (value, record) => record.categoryTable.id === value,
-      sorter: (a, b) => a.categoryTable.id - b.categoryTable.id,
-      render: (record) =>
-        `#${record.categoryTable.id} - ${record.categoryTable.name}`,
-    },
-    {
-      title: "Tầng",
-      key: "floor",
-      width: "17%",
-      className: "left",
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
-        <div style={{ width: 250, padding: 8 }}>
-          <Select
-            allowClear
-            value={selectedKeys[0]}
-            placeholder="Chọn Tầng"
-            style={{ width: "100%" }}
-            options={floors?.map((floor) => ({
-              label: `#${floor.id} - ${floor.name}`,
-              value: floor.id,
-            }))}
-            onChange={(val) => setSelectedKeys(val ? [val] : [])}
-          ></Select>
-          <Button
-            type="primary"
-            size="small"
-            style={{ width: "100%", marginTop: 8 }}
-            onClick={() => confirm()}
-          >
-            Lọc
-          </Button>
-        </div>
-      ),
-      onFilter: (value, record) => record.floor.id === value,
-      sorter: (a, b) => a.floor.id - b.floor.id,
-      render: (record) => `#${record.floor.id} - ${record.floor.name}`,
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      width: "10%",
-      render: (status: string) => (
-        <Tag
-          color={status === CommonStatusValue.active ? "green" : "red"}
-          bordered={false}
-        >
-          {status}
-        </Tag>
-      ),
-    },
-    {
-      title: "",
-      dataIndex: "",
-      width: "10%",
-      className: "buttons",
-      render: (record: TableSummaryResponseType) => (
-        <TableRUDActionsComponent
-          nameEN={nameEN}
-          nameVN={nameVN}
-          isManager={isManager}
-          restaurantIdForCrud={restaurantIdForCrud}
-          validActions={validActions!}
-          record={record}
-          modalWidth={ModalWidthValue.split2}
-          managerModals={ManagerTableModals}
-          openModal={openModal}
-        />
-      ),
-    },
-  ];
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -351,10 +218,20 @@ const ManagerTablesPage: React.FC<AdminManagerPageProps> = ({
             })
           }
         />
-        <MainDataComponent<TableSummaryResponseType>
+        <TablesTableComponent
+          context={{
+            categoryTables,
+            floors,
+            nameEN,
+            nameVN,
+            isManager,
+            restaurantIdForCrud,
+            validActions,
+            ManagerTableModals,
+            openModal,
+          }}
           tableKey={tableKey}
           object={nameEN}
-          columns={columns}
           data={tableData}
           isLoading={isLoading}
           onPageChange={(page, size) => {

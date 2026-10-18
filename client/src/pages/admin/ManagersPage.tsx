@@ -1,31 +1,20 @@
 import useModal from "../../hooks/useModal";
+import ManagersTableComponent from "../../components/pages/admin/ManagersTableComponent";
 import useEntityQuery from "../../hooks/useEntityQuery2";
-import ModalComponent from "../../components/ModalComponent";
-import ConfigVNComponent from "../../components/ConfigVNComponent";
-import TableRUDActionsComponent from "../../components/TableRUDActionsComponent";
+import ModalComponent from "../../components/shared/ModalComponent";
 import MainHeaderComponent from "../../components/admin-manager/MainHeaderComponent";
-import MainFilterInfoComponent from "../../components/admin-manager/MainFilterInfoComponent";
-import MainDataComponent from "../../components/admin-manager/NewMainDataComponent";
+import MainFilterInfoComponent from "../../components/admin-manager/filters/MainFilterInfoComponent";
 import DetailManagerModalComponent from "../../components/admin-manager/modal/manager/DetailManagerModalComponent";
 import CreateManagerModalComponent from "../../components/admin-manager/modal/manager/CreateManagerModalComponent";
 import UpdateManagerModalComponent from "../../components/admin-manager/modal/manager/UpdateManagerModalComponent";
 import LockModalComponent from "../../components/admin-manager/modal/LockModalComponent";
 import ChangePasswordModalComponent from "../../components/admin-manager/modal/ChangePasswordModalComponent";
 import ManagerApiService from "../../services/api/v1/ManagerApiService";
-import dayjs from "dayjs";
 import { useState } from "react";
-import { Button, DatePicker, Image, Select, Tag } from "antd";
-import {
-  CommonGenderValue,
-  CommonStatusValue,
-  ModalTitleValue,
-  ModalWidthValue,
-} from "../../constants/values";
-import { ImageSourcePath } from "../../constants/values";
+import { CommonStatusValue, ModalTitleValue, ModalWidthValue } from "../../constants/values";
 import { getFilterSelectValueToShow } from "../../utils/otherEvents";
 import { actionIndexes, getActionNameEn } from "../../utils/defaultActionsUtil";
 import type { SelectProps } from "antd";
-import type { ColumnsType } from "antd/es/table";
 import type { AdminManagerPageProps } from "../../constants/props";
 import type { PageResponseType } from "../../types/PageResponseType";
 import type { ManagerSummaryResponseType } from "../../types/ManagerType";
@@ -83,209 +72,6 @@ const AdminManagersPage: React.FC<AdminManagerPageProps> = ({
     },
     api: ManagerApiService.handleGetSummary,
   });
-  // - Cột thuộc tính
-  const columns: ColumnsType<ManagerSummaryResponseType> = [
-    {
-      title: "",
-      dataIndex: "imageUrl",
-      key: "imageUrl",
-      width: "8%",
-      fixed: "left",
-      render: (imageUrl: string) => (
-        <Image src={imageUrl ?? ImageSourcePath + "no-image.png"} alt="" />
-      ),
-    },
-    {
-      title: "#",
-      dataIndex: "id",
-      key: "id",
-      width: 100,
-      sorter: (a, b) => a.id - b.id,
-    },
-    {
-      title: "Họ và tên",
-      dataIndex: "fullname",
-      key: "fullname",
-      width: "24%",
-      className: "left",
-      sorter: (a, b) => a.fullname.localeCompare(b.fullname),
-    },
-    {
-      title: "Tên tài khoản",
-      dataIndex: ["user", "username"],
-      key: "username",
-      width: "20%",
-      sorter: (a, b) => a.user.username.localeCompare(b.user.username),
-    },
-    {
-      title: "Ngày sinh",
-      dataIndex: "birthdate",
-      key: "birthdate",
-      width: "12%",
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
-        <div style={{ padding: 8 }}>
-          <ConfigVNComponent
-            children={
-              <DatePicker.RangePicker
-                placeholder={["Bắt đầu", "Kết thúc"]}
-                format="YYYY-MM-DD"
-                style={{ display: "flex" }}
-                value={
-                  selectedKeys[0]
-                    ? (() => {
-                        const [start, end] = JSON.parse(
-                          selectedKeys[0] as string,
-                        ) as [string, string];
-                        return [dayjs(start), dayjs(end)];
-                      })()
-                    : null
-                }
-                onChange={(dates) =>
-                  setSelectedKeys(
-                    dates
-                      ? [
-                          JSON.stringify([
-                            dates[0]?.toISOString(),
-                            dates[1]?.toISOString(),
-                          ]),
-                        ]
-                      : [],
-                  )
-                }
-              />
-            }
-          />
-          <Button
-            type="primary"
-            size="small"
-            style={{ width: "100%", marginTop: 8 }}
-            onClick={() => confirm()}
-          >
-            Lọc
-          </Button>
-        </div>
-      ),
-      onFilter: (value, record) => {
-        if (!value) return true;
-        const [start, end] = JSON.parse(value as string) as [string, string];
-        const date = dayjs(record.birthdate);
-
-        return (
-          date.isSame(dayjs(start)) ||
-          date.isSame(dayjs(end)) ||
-          (date.isAfter(dayjs(start)) && date.isBefore(dayjs(end)))
-        );
-      },
-      sorter: (a, b) =>
-        dayjs(a.birthdate).valueOf() - dayjs(b.birthdate).valueOf(),
-    },
-    {
-      title: "Giới tính",
-      dataIndex: "gender",
-      key: "gender",
-      width: "12%",
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
-        <div style={{ width: 250, padding: 8 }}>
-          <Select
-            allowClear
-            value={selectedKeys[0]}
-            placeholder="Chọn Giới tính"
-            style={{ width: "100%" }}
-            options={[
-              { label: CommonGenderValue.male, value: CommonGenderValue.male },
-              {
-                label: CommonGenderValue.female,
-                value: CommonGenderValue.female,
-              },
-            ]}
-            onChange={(val) => setSelectedKeys(val ? [val] : [])}
-          ></Select>
-          <Button
-            type="primary"
-            size="small"
-            style={{ width: "100%", marginTop: 8 }}
-            onClick={() => confirm()}
-          >
-            Lọc
-          </Button>
-        </div>
-      ),
-      onFilter: (value, record) => record.gender === value,
-      sorter: (a, b) => a.gender.localeCompare(b.gender),
-      render: (gender: string) => (
-        <Tag
-          color={gender === CommonGenderValue.male ? "geekblue" : "magenta"}
-          bordered={false}
-        >
-          {gender}
-        </Tag>
-      ),
-    },
-    {
-      title: "Số điện thoại",
-      dataIndex: "phone",
-      key: "phone",
-      width: "12%",
-      sorter: (a, b) => a.phone.localeCompare(b.phone),
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-      width: "20%",
-      sorter: (a, b) => a.email.localeCompare(b.email),
-    },
-    {
-      title: "Thông tin",
-      dataIndex: "status",
-      key: "status",
-      width: "8%",
-      render: (status: string) => (
-        <Tag
-          color={status === CommonStatusValue.active ? "green" : "red"}
-          bordered={false}
-        >
-          {status}
-        </Tag>
-      ),
-    },
-    {
-      title: "Tài khoản",
-      dataIndex: ["user", "status"],
-      key: "userStatus",
-      width: "8%",
-      render: (userStatus: string) => (
-        <Tag
-          color={userStatus === CommonStatusValue.active ? "green" : "red"}
-          bordered={false}
-        >
-          {userStatus}
-        </Tag>
-      ),
-    },
-    {
-      title: "",
-      dataIndex: "",
-      key: "actions",
-      width: 200,
-      fixed: "right",
-      className: "buttons",
-      render: (record: ManagerSummaryResponseType) => (
-        <TableRUDActionsComponent
-          nameEN={nameEN}
-          nameVN={nameVN}
-          isAdmin={true}
-          hasLockUser={true}
-          hasChangePasswordUser={true}
-          record={record}
-          modalWidth={ModalWidthValue.split3}
-          managerModals={AdminManagerModals}
-          openModal={openModal}
-        />
-      ),
-    },
-  ];
-
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
   const { modal, openModal, closeModal } = useModal();
@@ -430,13 +216,14 @@ const AdminManagersPage: React.FC<AdminManagerPageProps> = ({
             })
           }
         />
-        <MainDataComponent<ManagerSummaryResponseType>
+        <ManagersTableComponent
           tableKey={tableKey}
-          object={nameEN}
-          columns={columns}
+          nameEN={nameEN}
+          nameVN={nameVN}
+          managerModals={AdminManagerModals}
+          openModal={openModal}
           data={managerData}
           isLoading={isLoading}
-          isScroll={true}
           onPageChange={(page, size) => {
             setPage(page);
             setSize(size);

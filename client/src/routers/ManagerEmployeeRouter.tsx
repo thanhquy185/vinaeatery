@@ -1,4 +1,4 @@
-import AdminManagerLayout from "../layouts/AdminManagerLayout";
+import AdminManagerLayout from "../layouts/admin-manager/AdminManagerLayout";
 import OtherErrorPage from "../pages/other/ErrorPage";
 import ManagerRestaurantPage from "../pages/manager/other/RestaurantPage";
 import ManagerSummaryPage from "../pages/manager/other/SummaryPage";

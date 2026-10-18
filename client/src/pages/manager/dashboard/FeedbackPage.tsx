@@ -1,10 +1,10 @@
 import useEntityQuery from "../../../hooks/useEntityQuery2";
 import useRestaurantContext from "../../../hooks/useRestaurantContext";
-import StatisticCardComponent from "../../../components/admin-manager/StatisticCardComponent";
-import PieChartComponent from "../../../components/admin-manager/PieChartComponent";
+import StatisticCardComponent from "../../../components/admin-manager/dashboard/StatisticCardComponent";
+import PieChartComponent from "../../../components/admin-manager/dashboard/PieChartComponent";
 import MainHeaderComponent from "../../../components/admin-manager/MainHeaderComponent";
-import MainFilterDashboardComponent from "../../../components/admin-manager/MainFilterDashboardComponent";
-import MainTableFeedbackDashboardComponent from "../../../components/admin-manager/MainTableFeedbackDashboardComponent";
+import MainFilterDashboardComponent from "../../../components/admin-manager/dashboard/MainFilterDashboardComponent";
+import MainTableFeedbackDashboardComponent from "../../../components/admin-manager/dashboard/MainTableFeedbackDashboardComponent";
 import DFeedbackApiService from "../../../services/api/v1/DFeedbackApiService";
 import dayjs from "dayjs";
 import { useState } from "react";

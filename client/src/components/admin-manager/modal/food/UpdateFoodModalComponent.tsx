@@ -1,7 +1,7 @@
 import useEntityQuery from "../../../../hooks/useEntityQuery2";
 import useEntityMutation from "../../../../hooks/useEntityMutation";
 import TextArea from "antd/es/input/TextArea";
-import ImageUploadComponent from "../../../ImageUploadComponent";
+import ImageUploadComponent from "../../../shared/ImageUploadComponent";
 import FoodApiService from "../../../../services/api/v1/FoodApiService";
 import { useMemo, useState } from "react";
 import { Form, Input, InputNumber, Select, Spin } from "antd";
@@ -20,7 +20,7 @@ import type {
 } from "../../../../types/FoodType";
 import TableInputComponent, {
   type TableInputComponentRowData,
-} from "../../TableInputComponent";
+} from "../../tables/TableInputComponent";
 
 const UpdateFoodModalComponent: React.FC<CrudObjectModalProps> = ({
   objectVN,

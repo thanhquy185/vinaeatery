@@ -1,0 +1,1688 @@
+.ve-restaurants-map {
+  --restaurant-ink: #293027;
+  --restaurant-muted: #777d73;
+  --restaurant-red: #b91c1c;
+  --restaurant-green: #698267;
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 90px);
+  height: calc(100svh - 90px);
+  background: #ebece6;
+
+  &__toggle {
+    position: absolute;
+    z-index: 1100;
+    top: 15px;
+    left: 14px;
+    display: inline-flex;
+    height: 44px;
+    align-items: center;
+    gap: 8px;
+    padding: 0 15px;
+    border: 1px solid rgba(125, 20, 20, .12);
+    border-radius: 10px;
+    background: #b91c1c;
+    box-shadow: 0 5px 17px rgba(72, 34, 24, .22);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    transition: background .18s ease, box-shadow .18s ease, transform .18s ease;
+  }
+
+  &__toggle:hover {
+    transform: translateY(-1px);
+    background: #a71919;
+    box-shadow: 0 7px 20px rgba(72, 34, 24, .25);
+    color: #fff;
+  }
+}
+
+.ve-restaurants-sidebar {
+  position: absolute;
+  z-index: 1000;
+  top: 12px;
+  bottom: 12px;
+  left: 68px;
+  display: flex;
+  width: min(54%, 760px);
+  min-width: 480px;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(61, 70, 57, .13);
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 18px 48px rgba(29, 35, 27, .19), 0 3px 10px rgba(29, 35, 27, .08);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-16px) scale(.99);
+  transform-origin: top left;
+  transition: opacity .22s ease, transform .24s ease;
+  cursor: auto;
+
+  &.is-open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0) scale(1);
+  }
+
+  .restaurant-detail-card {
+    height: auto;
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: #fff;
+    overscroll-behavior: contain;
+    scrollbar-color: #d6d8d0 transparent;
+    scrollbar-width: thin;
+  }
+
+  > .ant-spin-nested-loading {
+    display: flex;
+    height: 100%;
+    min-height: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+  }
+
+  > .ant-spin-nested-loading > .ant-spin-container {
+    display: flex;
+    height: 100%;
+    min-height: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+  }
+
+}
+
+.ve-restaurant-explorer {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  background: #fff;
+  color: #293027;
+  font-family: Inter, "Segoe UI", sans-serif;
+  letter-spacing: 0;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 21px 23px 15px;
+  }
+
+  &__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #7c8477;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: .13em;
+  }
+
+  &__eyebrow i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--restaurant-red);
+    box-shadow: 0 0 0 4px rgba(185, 28, 28, .09);
+  }
+
+  &__header h2 {
+    margin: 8px 0 4px;
+    color: #2d342a;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 27px;
+    font-weight: 500;
+    letter-spacing: -.035em;
+    line-height: 1.15;
+  }
+
+  &__header p {
+    margin: 0;
+    color: #858b80;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  &__count {
+    display: inline-flex;
+    min-width: 54px;
+    height: 48px;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ecece5;
+    border-radius: 10px;
+    background: #fafaf7;
+    color: #4e5d48;
+    font-size: 16px;
+    font-weight: 750;
+    line-height: 1.1;
+  }
+
+  &__count small {
+    margin-top: 3px;
+    color: #92978d;
+    font-size: 9px;
+    font-weight: 600;
+  }
+
+  &__controls {
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) auto;
+    align-items: center;
+    gap: 10px 13px;
+    padding: 0 23px 15px;
+    border-bottom: 1px solid #eeefe9;
+  }
+
+  &__controls .ant-input-affix-wrapper {
+    height: 42px;
+    border-color: #e8e9e3;
+    border-radius: 8px;
+    background: #fbfbf9;
+    box-shadow: none;
+    font-size: 13px;
+  }
+
+  &__controls .ant-input-affix-wrapper:hover,
+  &__controls .ant-input-affix-wrapper-focused {
+    border-color: #aab4a1;
+  }
+
+  &__controls .ant-input-prefix {
+    margin-right: 9px;
+    color: #85917f;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    grid-column: 1;
+  }
+
+  &__chips button {
+    display: inline-flex;
+    min-height: 31px;
+    align-items: center;
+    gap: 6px;
+    padding: 0 11px;
+    border: 1px solid #e8e9e2;
+    border-radius: 999px;
+    background: #fff;
+    color: #697165;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 650;
+    transition: border-color .18s ease, background .18s ease, color .18s ease;
+  }
+
+  &__chips button:hover,
+  &__chips button.is-active {
+    border-color: #a9b4a0;
+    background: #f1f4ee;
+    color: #4b6048;
+  }
+
+  &__chips button i,
+  .ve-restaurant-card__status i {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: #b57568;
+  }
+
+  &__chips button i.is-open,
+  .ve-restaurant-card__status.is-open i {
+    background: #6ca273;
+  }
+
+  &__result-count {
+    grid-column: 2;
+    grid-row: 2;
+    color: #858c81;
+    font-size: 11px;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  &__results {
+    display: grid;
+    min-height: 0;
+    align-content: start;
+    gap: 10px;
+    overflow-y: auto;
+    padding: 15px 18px 18px;
+    scrollbar-color: #d6d8d0 transparent;
+    scrollbar-width: thin;
+  }
+
+  &__empty {
+    display: flex;
+    min-height: 220px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #858b80;
+    text-align: center;
+  }
+
+  &__empty > span {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 13px;
+    place-items: center;
+    border-radius: 50%;
+    background: #f0f2ec;
+    color: #76836f;
+    font-size: 17px;
+  }
+
+  &__empty strong {
+    color: #4d554a;
+    font-size: 14px;
+  }
+
+  &__empty p {
+    margin: 5px 0 0;
+    font-size: 12px;
+  }
+}
+
+.ve-restaurant-card {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: stretch;
+  gap: 15px;
+  padding: 10px;
+  border: 1px solid #eceee7;
+  border-radius: 11px;
+  background: #fff;
+  color: #293027;
+  cursor: pointer;
+  font-family: Inter, "Segoe UI", sans-serif;
+  text-align: left;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: #cbd3c5;
+    box-shadow: 0 7px 18px rgba(45, 50, 39, .075);
+  }
+
+  &.is-selected {
+    border-color: #95a58e;
+    background: #f7f9f5;
+    box-shadow: 0 0 0 2px rgba(105, 130, 103, .1);
+  }
+
+  &__media {
+    position: relative;
+    display: block;
+    width: 132px;
+    min-height: 112px;
+    flex: 0 0 132px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #eeeae0;
+  }
+
+  &__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 112px;
+    object-fit: cover;
+    transition: transform .28s ease;
+  }
+
+  &:hover &__media img {
+    transform: scale(1.045);
+  }
+
+  &__status {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 8px;
+    border: 1px solid rgba(255, 255, 255, .74);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .95);
+    color: #777d73;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  &__content {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 3px 2px 1px 0;
+  }
+
+  &__name {
+    display: -webkit-box;
+    max-width: 100%;
+    overflow: hidden;
+    color: #30372e;
+    font-size: 16px;
+    font-weight: 720;
+    line-height: 1.35;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  &__meta {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 7px;
+    margin-top: 8px;
+    color: #7d857a;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  &__meta svg {
+    flex: 0 0 auto;
+    margin-top: 2px;
+    color: #7f8d78;
+    font-size: 12px;
+  }
+
+  &__address {
+    display: -webkit-box;
+    max-width: 100%;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  &__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: auto;
+    padding-top: 8px;
+    color: var(--restaurant-red);
+    font-size: 12px;
+    font-weight: 700;
+  }
+}
+
+.ve-restaurants-sidebar {
+  .restaurant-detail-card > .header.ve-restaurant-detail {
+    padding: 0;
+  }
+
+  .ve-restaurant-detail {
+    border-bottom: 1px solid #eceee8;
+
+    &__cover {
+      position: relative;
+      height: 205px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #e7e4d9, #d5d9cc);
+    }
+
+    &__cover-image,
+    &__cover-image .ant-image-img {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover;
+    }
+
+    &__cover-shade {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(19, 24, 18, .32), transparent 43%, rgba(19, 24, 18, .46));
+      pointer-events: none;
+    }
+
+    &__back {
+      position: absolute;
+      z-index: 2;
+      top: 15px;
+      left: 16px;
+      height: 38px;
+      gap: 7px;
+      border: 1px solid rgba(255, 255, 255, .66);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .96);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, .12);
+      color: #343a32;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    &__back:hover {
+      border-color: #fff;
+      background: #fff;
+      color: var(--restaurant-red);
+    }
+
+    &__cover-label {
+      position: absolute;
+      bottom: 15px;
+      left: 20px;
+      color: rgba(255, 255, 255, .93);
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: .14em;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+    }
+
+    &__body {
+      padding: 19px 22px 18px;
+    }
+
+    &__eyebrow {
+      color: #92978d;
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: .14em;
+    }
+
+    &__title.ant-typography {
+      margin: 5px 0 8px;
+      color: #2b3229;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(27px, 2.2vw, 34px);
+      font-weight: 550;
+      letter-spacing: -.035em;
+      line-height: 1.15;
+    }
+
+    &__status-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 9px 15px;
+    }
+
+    &__status,
+    &__hours {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: #777f73;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    &__status {
+      color: #a2473b;
+      font-weight: 700;
+    }
+
+    &__status.is-open {
+      color: #547a50;
+    }
+
+    &__status i {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ba766b;
+    }
+
+    &__status.is-open i {
+      background: #69a06d;
+      box-shadow: 0 0 0 3px rgba(105, 160, 109, .14);
+    }
+
+    &__hours svg {
+      color: #8a9384;
+    }
+
+    &__actions {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin: 16px -2px 0;
+      padding: 2px 2px 8px;
+      scrollbar-width: thin;
+    }
+
+    &__action.ant-btn {
+      display: inline-flex;
+      min-width: max-content;
+      height: 40px;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 0 12px;
+      border: 1px solid #e6e9e2;
+      border-radius: 8px;
+      background: #f8f9f6;
+      box-shadow: none;
+      color: #4f5b4a;
+      font-size: 12px;
+      font-weight: 650;
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    }
+
+    &__action.ant-btn:hover {
+      transform: translateY(-1px);
+      border-color: #cbd4c5;
+      background: #f1f4ee;
+      color: #344530;
+      box-shadow: 0 3px 10px rgba(38, 47, 34, .07);
+    }
+
+    &__action--primary.ant-btn,
+    &__action--primary.ant-btn:hover {
+      border-color: #b91c1c;
+      background: #b91c1c;
+      color: #fff;
+    }
+
+    &__action.is-active.ant-btn {
+      border-color: #a84c3d;
+      background: #faefec;
+      color: #9f392e;
+    }
+
+    &__action svg {
+      flex: 0 0 auto;
+      stroke-width: 1.9;
+    }
+
+    &__facts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    &__fact {
+      display: flex;
+      min-width: 0;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 11px 12px;
+      border: 1px solid #edeee8;
+      border-radius: 9px;
+      background: #fcfcfa;
+    }
+
+    &__fact--address {
+      grid-column: 1 / -1;
+    }
+
+    &__fact-icon {
+      display: grid;
+      width: 31px;
+      height: 31px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 8px;
+      background: #eff2eb;
+      color: #6d8065;
+    }
+
+    &__fact > span:last-child {
+      display: block;
+      min-width: 0;
+    }
+
+    &__fact small,
+    &__fact strong {
+      display: block;
+    }
+
+    &__fact small {
+      margin: 1px 0 3px;
+      color: #92978d;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    &__fact strong {
+      overflow-wrap: anywhere;
+      color: #424a3e;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    &__links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    &__links a {
+      display: inline-flex;
+      min-height: 31px;
+      align-items: center;
+      gap: 6px;
+      padding: 0 9px;
+      border: 1px solid #eceee8;
+      border-radius: 999px;
+      color: #6b7466;
+      font-size: 11px;
+      font-weight: 600;
+      transition: border-color .16s ease, background .16s ease, color .16s ease;
+    }
+
+    &__links a:hover {
+      border-color: #d5dccf;
+      background: #f4f6f1;
+      color: #42573e;
+    }
+  }
+
+  .restaurant-detail-card > .ant-tabs {
+    padding: 0 20px 10px;
+  }
+
+  .restaurant-detail-card > .ant-tabs .ant-tabs-nav {
+    margin-bottom: 12px;
+  }
+
+  .restaurant-detail-card > .ant-tabs .ant-tabs-tab {
+    padding: 13px 3px;
+    font-size: 13px;
+  }
+}
+
+.ve-restaurants-map .restaurant-map-marker--selected .restaurant-map-marker-card {
+  transform: translateY(-2px) scale(1.08);
+  border-color: #fff;
+  background: #b91c1c;
+}
+
+.ve-restaurants-map .restaurant-map-marker--selected .restaurant-map-marker-card svg {
+  color: #fff;
+}
+
+.ve-restaurants-map .restaurant-map-marker--selected .restaurant-map-marker-card::after {
+  border-color: #fff;
+  background: #b91c1c;
+}
+
+@media (max-width: 900px) {
+  .ve-restaurants-sidebar {
+    width: min(62%, 700px);
+    min-width: 410px;
+  }
+}
+
+@media (max-width: 620px) {
+  .ve-restaurants-map {
+    height: calc(100vh - 72px);
+    height: calc(100svh - 72px);
+
+    &__toggle {
+      top: 12px;
+      left: 11px;
+      height: 42px;
+      padding: 0 12px;
+      font-size: 12px;
+    }
+  }
+
+  .ve-restaurants-sidebar {
+    top: 10px;
+    right: 10px;
+    bottom: 10px;
+    left: 62px;
+    width: auto;
+    min-width: 0;
+    border-radius: 12px;
+  }
+
+  .ve-restaurant-explorer {
+    &__header {
+      gap: 10px;
+      padding: 16px 15px 12px;
+    }
+
+    &__header h2 {
+      font-size: 24px;
+    }
+
+    &__header p {
+      font-size: 12px;
+    }
+
+    &__count {
+      min-width: 48px;
+      height: 43px;
+    }
+
+    &__controls {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 9px;
+      padding: 0 13px 12px;
+    }
+
+    &__controls .ant-input-affix-wrapper {
+      height: 40px;
+      font-size: 12px;
+    }
+
+    &__chips {
+      grid-column: 1;
+    }
+
+    &__chips button {
+      min-height: 29px;
+      padding: 0 9px;
+      font-size: 10px;
+    }
+
+    &__result-count {
+      display: none;
+    }
+
+    &__results {
+      gap: 8px;
+      padding: 11px 9px 14px;
+    }
+  }
+
+  .ve-restaurant-card {
+    gap: 9px;
+    padding: 8px;
+
+    &__media {
+      width: 88px;
+      min-height: 100px;
+      flex-basis: 88px;
+    }
+
+    &__media img {
+      min-height: 100px;
+    }
+
+    &__name {
+      font-size: 13px;
+    }
+
+    &__meta {
+      gap: 5px;
+      margin-top: 6px;
+      font-size: 10px;
+    }
+
+    &__action {
+      font-size: 10px;
+    }
+
+    &__status {
+      right: 4px;
+      bottom: 4px;
+      gap: 4px;
+      padding: 4px 6px;
+      font-size: 9px;
+    }
+  }
+
+  .ve-restaurants-sidebar {
+    .ve-restaurant-detail {
+      &__cover {
+        height: 165px;
+      }
+
+      &__body {
+        padding: 16px 14px 15px;
+      }
+
+      &__title.ant-typography {
+        font-size: 26px;
+      }
+
+      &__facts {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      &__fact--address {
+        grid-column: auto;
+      }
+    }
+
+    .restaurant-detail-card > .ant-tabs {
+      padding-right: 13px;
+      padding-left: 13px;
+    }
+
+    .restaurant-detail-card > .ant-tabs .ant-tabs-tab {
+      margin-left: 14px;
+      font-size: 12px;
+    }
+  }
+}
+
+.restaurant-reservation-panel {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  color: #293027;
+  font-family: Inter, "Segoe UI", sans-serif;
+  letter-spacing: 0;
+
+  &__header {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 22px 24px 19px;
+    border-bottom: 1px solid #eceee8;
+    background: linear-gradient(125deg, #fbfaf6 0%, #fff 70%);
+  }
+
+  &__back.ant-btn {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid #e8e9e2;
+    border-radius: 10px;
+    background: #fff;
+    color: #596451;
+  }
+
+  &__back.ant-btn:hover {
+    border-color: #cbd4c5;
+    background: #f3f5ef;
+    color: #42573e;
+  }
+
+  &__heading {
+    min-width: 0;
+  }
+
+  &__eyebrow {
+    display: block;
+    color: #8d9588;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: .13em;
+  }
+
+  &__heading h3.ant-typography {
+    margin: 5px 0 4px;
+    color: #2b3229;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(23px, 2vw, 29px);
+    font-weight: 550;
+    letter-spacing: -.03em;
+    line-height: 1.2;
+  }
+
+  &__heading p {
+    margin: 0;
+    color: #7e8679;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  &__form.ant-form {
+    display: flex;
+    min-height: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+  }
+
+  &__fields {
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 20px 24px 8px;
+    overscroll-behavior: contain;
+    scrollbar-color: #d6d8d0 transparent;
+    scrollbar-width: thin;
+  }
+
+  &__section-heading {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin: 3px 0 15px;
+  }
+
+  &__section-heading > span {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 9px;
+    background: #eff2eb;
+    color: #6d8065;
+  }
+
+  &__section-heading strong,
+  &__section-heading small {
+    display: block;
+  }
+
+  &__section-heading strong {
+    color: #41493d;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  &__section-heading small {
+    margin-top: 3px;
+    color: #8b9287;
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  &__field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 18px;
+  }
+
+  .ant-form-item {
+    min-width: 0;
+    margin-bottom: 17px;
+  }
+
+  .ant-form-item-label > label {
+    color: #525b4d;
+    font-size: 12px;
+    font-weight: 650;
+  }
+
+  .ant-picker,
+  .ant-input,
+  .ant-input-number {
+    border-color: #e3e6df;
+    border-radius: 8px;
+    box-shadow: none;
+  }
+
+  .ant-picker:hover,
+  .ant-input:hover,
+  .ant-input-number:hover {
+    border-color: #aab7a2;
+  }
+
+  .ant-input-number {
+    width: 100%;
+  }
+
+  .ant-input-number-input {
+    height: 38px;
+  }
+
+  .ant-input-textarea textarea {
+    min-height: 112px;
+    border-color: #e3e6df;
+    border-radius: 8px;
+    resize: vertical;
+  }
+
+  &__actions {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex: 0 0 auto;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 24px;
+    border-top: 1px solid #eceee8;
+    background: rgba(255, 255, 255, .97);
+  }
+
+  &__cancel.ant-btn,
+  &__submit.ant-btn {
+    min-height: 42px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  &__cancel.ant-btn {
+    border-color: #e3e6df;
+    color: #596451;
+  }
+
+  &__submit.ant-btn {
+    min-width: 190px;
+    border-color: #b91c1c;
+    background: #b91c1c;
+    box-shadow: 0 5px 13px rgba(145, 27, 27, .16);
+  }
+}
+
+@media (max-width: 620px) {
+  .restaurant-reservation-panel {
+    &__header {
+      gap: 10px;
+      padding: 16px 14px 14px;
+    }
+
+    &__back.ant-btn {
+      width: 36px;
+      height: 36px;
+    }
+
+    &__heading h3.ant-typography {
+      font-size: 22px;
+    }
+
+    &__heading p {
+      font-size: 12px;
+    }
+
+    &__fields {
+      padding: 17px 14px 6px;
+    }
+
+    &__field-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    &__actions {
+      padding: 11px 14px;
+    }
+
+    &__cancel.ant-btn {
+      flex: 1;
+    }
+
+    &__submit.ant-btn {
+      min-width: 0;
+      flex: 1.2;
+      padding-inline: 9px;
+    }
+  }
+}
+
+// Detail cover: make the Ant Design image wrapper fill the whole hero.
+.ve-restaurants-sidebar .ve-restaurant-detail__cover > .ant-image,
+.ve-restaurants-sidebar .ve-restaurant-detail__cover > .ve-restaurant-detail__cover-image {
+  position: absolute !important;
+  inset: 0;
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.ve-restaurants-sidebar .ve-restaurant-detail__cover-image .ant-image-img,
+.ve-restaurants-sidebar img.ve-restaurant-detail__cover-image {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}
+
+.ve-restaurants-sidebar .ve-restaurant-detail__cover-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background:
+    radial-gradient(circle at 50% 33%, rgba(255,255,255,.48), transparent 28%),
+    linear-gradient(135deg, #e7e4d9, #d5d9cc);
+  color: #586252;
+  text-align: center;
+}
+
+.ve-restaurant-detail__cover-fallback > span {
+  display: grid;
+  width: 56px;
+  height: 56px;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.75);
+  border-radius: 16px;
+  background: rgba(255,255,255,.56);
+}
+
+.ve-restaurant-detail__cover-fallback strong {
+  margin-top: 5px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.ve-restaurant-detail__cover-fallback small {
+  color: #6c7468;
+  font-size: 12px;
+}
+
+.ve-restaurant-tabs-section {
+  padding-top: 3px;
+  background: #fff;
+
+  &__heading {
+    padding: 22px 22px 14px;
+  }
+
+  &__heading > span {
+    color: #93998e;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: .13em;
+  }
+
+  &__heading h3 {
+    margin: 5px 0 4px;
+    color: #30372e;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 23px;
+    font-weight: 550;
+    letter-spacing: -.025em;
+  }
+
+  &__heading p {
+    margin: 0;
+    color: #7d857a;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+}
+
+.ve-restaurants-sidebar .restaurant-detail-card > .ant-tabs.ve-restaurant-tabs {
+  padding: 0 16px 22px;
+}
+
+.ve-restaurants-sidebar .ve-restaurant-tabs .ant-tabs-nav {
+  position: sticky;
+  z-index: 4;
+  top: 0;
+  margin: 0;
+  border-bottom: 1px solid #eceee8;
+  background: rgba(255,255,255,.97);
+  backdrop-filter: blur(12px);
+}
+
+.ve-restaurants-sidebar .ve-restaurant-tabs .ant-tabs-nav::before {
+  border-bottom: 0;
+}
+
+.ve-restaurants-sidebar .ve-restaurant-tabs .ant-tabs-nav-list {
+  gap: 5px;
+}
+
+.ve-restaurants-sidebar .ve-restaurant-tabs .ant-tabs-tab {
+  margin: 0 !important;
+  padding: 12px 13px;
+  border-radius: 8px 8px 0 0;
+  color: #747d70;
+  font-size: 12px;
+  font-weight: 650;
+  transition: color .16s ease, background .16s ease;
+}
+
+.ve-restaurants-sidebar .ve-restaurant-tabs .ant-tabs-tab:hover {
+  background: #f6f7f3;
+  color: #495b43;
+}
+
+.ve-restaurants-sidebar .ve-restaurant-tabs .ant-tabs-tab.ant-tabs-tab-active {
+  background: #f4f6f1;
+}
+
+.ve-restaurants-sidebar .ve-restaurant-tabs .ant-tabs-tab-btn {
+  color: inherit;
+}
+
+.ve-restaurant-tabs__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.ve-restaurant-tabs__label svg {
+  color: #84917d;
+  stroke-width: 1.9;
+}
+
+.ve-restaurants-sidebar .ve-restaurant-tabs .ant-tabs-tab-active .ve-restaurant-tabs__label,
+.ve-restaurants-sidebar .ve-restaurant-tabs .ant-tabs-tab-active .ve-restaurant-tabs__label svg {
+  color: #a92323;
+}
+
+.ve-restaurant-tabs__label small {
+  display: inline-grid;
+  min-width: 18px;
+  height: 18px;
+  place-items: center;
+  padding: 0 5px;
+  border-radius: 99px;
+  background: #ecefe8;
+  color: #66715f;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.ve-restaurant-tabs .ant-tabs-content-holder {
+  min-width: 0;
+}
+
+.ve-restaurant-tabs .ant-tabs-tabpane {
+  outline: 0;
+}
+
+.ve-restaurant-overview,
+.ve-restaurant-introduction,
+.ve-restaurant-photos,
+.ve-restaurant-menu,
+.ve-restaurant-reviews {
+  padding: 17px 20px 25px;
+  color: #343b31;
+}
+
+.ve-restaurant-overview .ant-space-vertical {
+  gap: 16px !important;
+}
+
+.ve-restaurant-overview__summary,
+.ve-restaurant-overview__traffic,
+.ve-restaurant-overview__amenities {
+  padding: 18px;
+  border: 1px solid #eceee8;
+  border-radius: 11px;
+  background: #fff;
+}
+
+.ve-restaurant-overview__summary {
+  background: linear-gradient(145deg, #fbfbf8, #fff 72%);
+}
+
+.ve-restaurant-overview__title.ant-typography {
+  margin: 0 0 12px;
+  color: #384033;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.ve-restaurant-overview__info .ant-descriptions-item-label {
+  color: #7f877a;
+}
+
+.ve-restaurant-overview__info .ant-descriptions-item-content {
+  color: #41493d;
+  font-weight: 600;
+}
+
+.ve-restaurant-overview__ratings .ant-flex {
+  min-height: 34px;
+  gap: 10px;
+  border-bottom: 1px solid #f0f1ec;
+}
+
+.ve-restaurant-overview__ratings .ant-flex:last-child {
+  border-bottom: 0;
+}
+
+.ve-restaurant-overview__ratings .ant-typography-secondary {
+  font-size: 12px;
+}
+
+.ve-restaurant-overview__ratings .ant-rate {
+  font-size: 13px;
+}
+
+.ve-restaurant-overview__traffic > .ant-flex {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ve-restaurant-overview__traffic .ant-select {
+  max-width: 130px;
+}
+
+.ve-restaurant-overview__traffic .MuiCharts-root {
+  width: 100%;
+  margin: 7px 0 0;
+}
+
+.ve-restaurant-overview__amenity {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 11px;
+  border: 1px solid #e7ebe3;
+  border-radius: 999px;
+  background: #f8f9f6;
+  color: #5d6d56;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ve-restaurant-overview__amenity svg {
+  width: 15px;
+  height: 15px;
+}
+
+.ve-restaurant-introduction .ant-space-vertical {
+  gap: 17px !important;
+}
+
+.ve-restaurant-introduction__story,
+.ve-restaurant-introduction__team,
+.ve-restaurant-introduction__milestones {
+  padding: 19px;
+  border: 1px solid #eceee8;
+  border-radius: 11px;
+  background: #fff;
+}
+
+.ve-restaurant-introduction__story {
+  background: linear-gradient(135deg, #f6f7f1, #fff 76%);
+}
+
+.ve-restaurant-introduction__eyebrow {
+  color: #91998b;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .14em;
+}
+
+.ve-restaurant-introduction__title.ant-typography {
+  margin: 5px 0 12px;
+  color: #384033;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.ve-restaurant-introduction__copy.ant-typography {
+  margin: 0;
+  color: #687064;
+  font-size: 14px;
+  line-height: 1.85;
+}
+
+.ve-restaurant-introduction__team .ant-card {
+  height: 100%;
+  border-color: #eceee8;
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.ve-restaurant-introduction__team .ant-card-body {
+  padding: 18px 14px;
+}
+
+.ve-restaurant-introduction__team .ant-typography {
+  color: #424a3e;
+}
+
+.ve-restaurant-introduction__milestones .ant-timeline-item-label {
+  color: #8a9284;
+  font-size: 11px;
+}
+
+.ve-restaurant-introduction__milestones .ant-timeline-item-content {
+  min-height: 0;
+  padding-bottom: 10px;
+}
+
+.ve-restaurant-photos__heading,
+.ve-restaurant-menu__heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 17px;
+}
+
+.ve-restaurant-photos__heading span,
+.ve-restaurant-menu__heading > span {
+  color: #93998e;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .13em;
+}
+
+.ve-restaurant-photos__heading h4 {
+  margin: 5px 0 0;
+  color: #384033;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.ve-restaurant-photos__heading > small {
+  padding: 6px 9px;
+  border-radius: 99px;
+  background: #f0f2ec;
+  color: #65715e;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.ve-restaurant-photos__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ve-restaurant-photos__item {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #f0eee7;
+}
+
+.ve-restaurant-photos__item .ant-image,
+.ve-restaurant-photos__item .ant-image-img {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.ve-restaurant-photos__item .ant-image-img {
+  object-fit: cover;
+  transition: transform .25s ease;
+}
+
+.ve-restaurant-photos__item:hover .ant-image-img {
+  transform: scale(1.04);
+}
+
+.ve-restaurant-photos__empty {
+  display: grid;
+  min-height: 190px;
+  place-items: center;
+  border: 1px dashed #dfe3da;
+  border-radius: 10px;
+  background: #fafbf8;
+}
+
+.ve-restaurant-menu__heading {
+  display: block;
+}
+
+.ve-restaurant-menu__heading h4.ant-typography {
+  margin: 5px 0 4px;
+  color: #384033;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.ve-restaurant-menu__heading p {
+  margin: 0;
+  color: #7d857a;
+  font-size: 13px;
+}
+
+.ve-restaurant-menu__list .ant-list-items {
+  row-gap: 11px;
+}
+
+.ve-restaurant-menu__card.ant-card {
+  height: 100%;
+  border-color: #eceee8;
+  border-radius: 10px;
+  box-shadow: none;
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+.ve-restaurant-menu__card.ant-card:hover {
+  transform: translateY(-2px);
+  border-color: #d4dccd;
+  box-shadow: 0 8px 20px rgba(45, 50, 39, .07);
+}
+
+.ve-restaurant-menu__card .ant-image,
+.ve-restaurant-menu__card .ant-image-img {
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.ve-restaurant-menu__card .ant-typography-ellipsis {
+  color: #6f776a;
+}
+
+.ve-restaurant-reviews {
+  &__summary {
+    padding: 18px;
+    border: 1px solid #eceee8;
+    border-radius: 11px;
+    background: linear-gradient(140deg, #fbfbf8, #fff 72%);
+  }
+
+  &__distribution .ant-space-item > div {
+    gap: 10px;
+  }
+
+  &__distribution .ant-progress {
+    flex: 1;
+  }
+
+  &__score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 145px;
+    border-left: 1px solid #eceee8;
+    text-align: center;
+  }
+
+  &__score h1.ant-typography {
+    color: #30372e;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 45px;
+    font-weight: 600;
+  }
+
+  &__toolbar,
+  &__list {
+    margin-top: 15px;
+  }
+
+  &__filters {
+    flex-wrap: wrap;
+  }
+
+  &__filters .ant-input-affix-wrapper,
+  &__filters .ant-select {
+    width: auto !important;
+    min-width: 180px;
+    flex: 1;
+  }
+
+  &__card.ant-card {
+    border-color: #eceee8;
+    border-radius: 11px;
+    box-shadow: 0 5px 18px rgba(45, 50, 39, .04);
+  }
+
+  &__card .ant-card-body {
+    padding: 19px;
+  }
+}
+
+@media (max-width: 620px) {
+  .ve-restaurant-tabs-section__heading {
+    padding: 18px 14px 11px;
+  }
+
+  .ve-restaurants-sidebar .restaurant-detail-card > .ant-tabs.ve-restaurant-tabs {
+    padding: 0 9px 18px;
+  }
+
+  .ve-restaurants-sidebar .ve-restaurant-tabs .ant-tabs-nav-list {
+    gap: 2px;
+  }
+
+  .ve-restaurants-sidebar .ve-restaurant-tabs .ant-tabs-tab {
+    padding: 10px 8px;
+    font-size: 11px;
+  }
+
+  .ve-restaurant-tabs__label {
+    gap: 5px;
+  }
+
+  .ve-restaurant-tabs__label svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .ve-restaurant-overview,
+  .ve-restaurant-introduction,
+  .ve-restaurant-photos,
+  .ve-restaurant-menu,
+  .ve-restaurant-reviews {
+    padding: 14px 7px 20px;
+  }
+
+  .ve-restaurant-overview__summary,
+  .ve-restaurant-overview__traffic,
+  .ve-restaurant-overview__amenities,
+  .ve-restaurant-introduction__story,
+  .ve-restaurant-introduction__team,
+  .ve-restaurant-introduction__milestones,
+  .ve-restaurant-reviews__summary {
+    padding: 14px;
+  }
+
+  .ve-restaurant-photos__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .ve-restaurant-reviews__score {
+    min-height: 0;
+    padding-top: 14px;
+    border-top: 1px solid #eceee8;
+    border-left: 0;
+  }
+
+  .ve-restaurant-reviews__filters .ant-input-affix-wrapper,
+  .ve-restaurant-reviews__filters .ant-select {
+    min-width: 100%;
+  }
+}

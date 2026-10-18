@@ -1,9 +1,9 @@
 import useEntityQuery from "../../../hooks/useEntityQuery2";
 import useRestaurantContext from "../../../hooks/useRestaurantContext";
-import LineChartComponent from "../../../components/admin-manager/LineChartComponent";
+import LineChartComponent from "../../../components/admin-manager/dashboard/LineChartComponent";
 import MainHeaderComponent from "../../../components/admin-manager/MainHeaderComponent";
-import MainFilterDashboardComponent from "../../../components/admin-manager/MainFilterDashboardComponent";
-import MainTableProfitDashboardComponent from "../../../components/admin-manager/MainTableProfitDashboardComponent";
+import MainFilterDashboardComponent from "../../../components/admin-manager/dashboard/MainFilterDashboardComponent";
+import MainTableProfitDashboardComponent from "../../../components/admin-manager/dashboard/MainTableProfitDashboardComponent";
 import ProfitApiService from "../../../services/api/v1/ProfitApiService";
 import dayjs from "dayjs";
 import { useState } from "react";

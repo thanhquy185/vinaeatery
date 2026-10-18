@@ -1,7 +1,7 @@
 import useEntityQuery from "../../../../hooks/useEntityQuery2";
 import useEntityMutation from "../../../../hooks/useEntityMutation";
 import TextArea from "antd/es/input/TextArea";
-import CardInfoInModalComponent from "../../CardInfoInModalComponent";
+import CardInfoInModalComponent from "../../cards/CardInfoInModalComponent";
 import ReservationApiService from "../../../../services/api/v1/ReservationApiService";
 import dayjs from "dayjs";
 import { DatePicker, Form, Input, InputNumber, Spin } from "antd";

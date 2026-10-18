@@ -1,11 +1,16 @@
 import useEntityQuery from "../../hooks/useEntityQuery2";
 import useEntityMutation from "../../hooks/useEntityMutation";
-import PaymentMachineInfoComponent from "../../components/other/payment/PaymentMachineInfoComponent";
-import PaymentMachineMethodsComponent from "../../components/other/payment/PaymentMachineMethodsComponent";
-import PaymentMachineHandleComponent from "../../components/other/payment/PaymentMachineHandleComponent";
-import PaymentMachineResultComponent from "../../components/other/payment/PaymentMachineResultComponent";
-import PaymentMachineInformComponent from "../../components/other/payment/PaymentMachineInformComponent";
+import PaymentMachineInfoComponent from "../../components/pages/other/payment/PaymentMachineInfoComponent";
+import PaymentMachineActionsComponent from "../../components/pages/other/payment/PaymentMachineActionsComponent";
+import PaymentMachineMethodsComponent from "../../components/pages/other/payment/PaymentMachineMethodsComponent";
+import PaymentMachineHandleComponent from "../../components/pages/other/payment/PaymentMachineHandleComponent";
+import PaymentMachineResultComponent from "../../components/pages/other/payment/PaymentMachineResultComponent";
+import PaymentMachineInformComponent from "../../components/pages/other/payment/PaymentMachineInformComponent";
 import PaymentMachineApiService from "../../services/api/v1/PaymentMachineApiService";
+import FeedbackExperienceApiService from "../../services/api/v1/FeedbackExperienceApiService";
+import FeedbackScoreApiService from "../../services/api/v1/FeedbackScoreApiService";
+import MoMoApiService from "../../services/api/v1/MoMoApiService";
+import ZaloPayApiService from "../../services/api/v1/ZaloPayApiService";
 import SockJS from "sockjs-client";
 import confetti from "canvas-confetti";
 import { useEffect, useRef, useState } from "react";
@@ -15,6 +20,9 @@ import {
   ImageSourcePath,
   PaymentMachineProcessStatusValue,
   PaymentMachineStatusValue,
+  PaymentMethodAtmInfoValue,
+  PaymentMethodImageValue,
+  PaymentMethodTitleValue,
 } from "../../constants/values";
 import { openNotification } from "../../utils/showNotificationUtil";
 import { openConfirmation } from "../../utils/showConfirmationUtil";
@@ -30,6 +38,8 @@ import type {
   PaymentMachineDetailResponseType,
   PaymentMachineUpdateRequestType,
 } from "../../types/PaymentMachineType";
+import type { FeedbackExperienceCrudResponseType } from "../../types/FeedbackExperienceType";
+import type { FeedbackScoreCrudResponseType } from "../../types/FeedbackScoreType";
 
 // Giá trị chung
 // -
@@ -86,6 +96,25 @@ const PaymentMachinePage: React.FC = () => {
   const [score05Value, setScore05Value] = useState<number>(0);
   const [commentValue, setCommentValue] = useState<string>("");
 
+  const feedbackQueriesEnabled =
+    current === 2 &&
+    paymentMachineDetail?.processStatus ===
+      PaymentMachineProcessStatusValue.feedback;
+  const { data: feedbackExperiences } =
+    useEntityQuery<FeedbackExperienceCrudResponseType[]>({
+      keys: ["feedback-experiences-crud"],
+      enabled: feedbackQueriesEnabled,
+      params: {},
+      api: FeedbackExperienceApiService.handleGetCrud,
+    });
+  const { data: feedbackScores } =
+    useEntityQuery<FeedbackScoreCrudResponseType[]>({
+      keys: ["feedback-scores-crud"],
+      enabled: feedbackQueriesEnabled,
+      params: {},
+      api: FeedbackScoreApiService.handleGetCrud,
+    });
+
   // Sự kiện chuyển step
   const prev = () => {
     if (current > 0) {
@@ -138,7 +167,7 @@ const PaymentMachinePage: React.FC = () => {
 
     button.currentTarget.classList.toggle("active");
 
-    setExperienceValue(button.currentTarget.textContent);
+    setExperienceValue(button.currentTarget.textContent ?? "");
   };
   // Thông báo: Khách hàng đổi phương thức thanh toán khác
   const handleSendPendingPaymentMachineInform = () => {
@@ -172,9 +201,300 @@ const PaymentMachinePage: React.FC = () => {
     api: PaymentMachineApiService.handleUpdate,
   });
 
-  // Các biến giữ ref
-  const changePaymentMethodButtonRef = useRef<HTMLButtonElement>(null);
-  const completedPaymentButtonRef = useRef<HTMLButtonElement>(null);
+  const handleSendSelectedPaymentMachineInform = () => {
+    const client = stompClientCommonRef.current;
+    if (!client || !client.connected) {
+      console.warn("WebSocket chưa kết nối");
+    } else {
+      client.send("/app/selected-payment-machine", {}, undefined);
+    }
+  };
+
+  const handleSelectPaymentMethod = async (
+    method: "money" | "momo" | "atm" | "zalopay",
+  ) => {
+    if (!paymentMachineDetail) return;
+
+    const methodTitle =
+      method === "money"
+        ? PaymentMethodTitleValue.moneyTitle
+        : method === "momo"
+          ? PaymentMethodTitleValue.moneyTitle
+          : method === "atm"
+            ? PaymentMethodTitleValue.atmTitle
+            : PaymentMethodTitleValue.zalopayTitle;
+    const answer = await openConfirmation({
+      title: "Thanh toán phương thức này ?",
+      content: `Bạn sắp chọn phương thức thanh toán "${methodTitle}" để thanh toán hoá đơn.`,
+    });
+    if (!answer) return;
+
+    const methodIds = { money: 1, atm: 2, momo: 4, zalopay: 5 };
+    const response = await updateMutation.mutateAsync({
+      values: {
+        id: paymentMachineDetail.id,
+        paymentMethodId: methodIds[method],
+        paymentTotalPrice: undefined,
+        processStatus:
+          PaymentMachineProcessStatusValue.selected as PaymentMachineProcessStatusEnum,
+        status:
+          PaymentMachineStatusValue.processing as PaymentMachineStatusEnum,
+        feedbackExperience: undefined,
+        feedbackScore1: undefined,
+        feedbackScore2: undefined,
+        feedbackScore3: undefined,
+        feedbackScore4: undefined,
+        feedbackScore5: undefined,
+        feedbackMessage: undefined,
+      },
+    });
+    if (!response) return;
+
+    if (method === "momo") {
+      const momoResponse = await MoMoApiService.handleCreateOrder({
+        paymentMachineId: paymentMachineDetail.id,
+      });
+      const momoData = momoResponse.data;
+
+      if (momoData) {
+        console.log(momoData);
+        updateMethodInfo({
+          image: PaymentMethodImageValue.momoLogo,
+          title: PaymentMethodTitleValue.momoTitle,
+        });
+        updatePaymentInfo({
+          id: momoData.orderId,
+          logo: PaymentMethodImageValue.momoLogo,
+          qrCodeUrl: momoData.qrCodeUrl,
+          responseTime: momoData.responseTime,
+          totalPrice: momoData.amount,
+        });
+        handleSendSelectedPaymentMachineInform();
+      }
+      return;
+    }
+
+    if (method === "zalopay") {
+      const zalopayResponse = await ZaloPayApiService.handleCreateOrder({
+        paymentMachineId: paymentMachineDetail.id,
+      });
+      const zalopayData = zalopayResponse.data as {
+        app_trans_id: string;
+        order_url: string;
+        app_time: number;
+        amount: number;
+      };
+
+      if (zalopayData) {
+        console.log(zalopayData);
+        updateMethodInfo({
+          image: PaymentMethodImageValue.zalopayLogo,
+          title: PaymentMethodTitleValue.zalopayTitle,
+        });
+        updatePaymentInfo({
+          id: zalopayData.app_trans_id,
+          logo: PaymentMethodImageValue.zalopayLogo,
+          qrCodeUrl: zalopayData.order_url,
+          responseTime: zalopayData.app_time,
+          totalPrice: zalopayData.amount,
+        });
+        handleSendSelectedPaymentMachineInform();
+      }
+      return;
+    }
+
+    if (method === "money") {
+      updateMethodInfo({
+        image: PaymentMethodImageValue.moneyImage,
+        title: PaymentMethodTitleValue.moneyTitle,
+      });
+      updatePaymentInfo({
+        id: "Lưu trữ nội bộ",
+        logo: "",
+        qrCodeUrl: "",
+        responseTime: Date.now(),
+        totalPrice: paymentMachineDetail.totalPrice,
+      });
+    } else {
+      updateMethodInfo({
+        image: PaymentMethodImageValue.atmLogo,
+        title: PaymentMethodTitleValue.atmTitle,
+      });
+      updatePaymentInfo({
+        id: "Lưu trữ nội bộ",
+        logo: PaymentMethodAtmInfoValue.mbbankLogo,
+        qrCodeUrl: PaymentMethodAtmInfoValue.atmQRCodeUrl,
+        responseTime: Date.now(),
+        totalPrice: paymentMachineDetail.totalPrice,
+      });
+    }
+    handleSendSelectedPaymentMachineInform();
+  };
+
+  const handlePaymentTimeout = async () => {
+    if (!paymentMachineDetail) return;
+
+    const response = await updateMutation.mutateAsync({
+      values: {
+        id: paymentMachineDetail.id,
+        paymentMethodId: undefined,
+        paymentTotalPrice: undefined,
+        processStatus:
+          PaymentMachineProcessStatusValue.pending as PaymentMachineProcessStatusEnum,
+        status:
+          PaymentMachineStatusValue.processing as PaymentMachineStatusEnum,
+        feedbackExperience: undefined,
+        feedbackScore1: undefined,
+        feedbackScore2: undefined,
+        feedbackScore3: undefined,
+        feedbackScore4: undefined,
+        feedbackScore5: undefined,
+        feedbackMessage: undefined,
+      },
+    });
+    if (response) {
+      updateMethodInfo({ image: "", title: "" });
+      updatePaymentInfo({
+        id: "",
+        logo: "",
+        qrCodeUrl: "",
+        responseTime: 0,
+        totalPrice: 0,
+      });
+      handleSendPendingPaymentMachineInform();
+    }
+  };
+
+  const handleChangePaymentMethod = async () => {
+    if (!paymentMachineDetail) return;
+
+    const answer = await openConfirmation({
+      title: "Đổi phương thức hiện tại ?",
+      content:
+        "Bạn có chắc muốn đổi phương thức này ? Sau khi đổi, bạn có thể chọn phương thức thanh toán khác để hoàn tất đơn hàng.",
+    });
+    if (!answer) return;
+
+    const response = await updateMutation.mutateAsync({
+      values: {
+        id: paymentMachineDetail.id,
+        paymentMethodId: undefined,
+        paymentTotalPrice: undefined,
+        processStatus:
+          PaymentMachineProcessStatusValue.pending as PaymentMachineProcessStatusEnum,
+        status:
+          PaymentMachineStatusValue.processing as PaymentMachineStatusEnum,
+        feedbackExperience: undefined,
+        feedbackScore1: undefined,
+        feedbackScore2: undefined,
+        feedbackScore3: undefined,
+        feedbackScore4: undefined,
+        feedbackScore5: undefined,
+        feedbackMessage: undefined,
+      },
+    });
+    if (response) {
+      updateMethodInfo({ image: "", title: "" });
+      updatePaymentInfo({
+        id: "",
+        logo: "",
+        qrCodeUrl: "",
+        responseTime: 0,
+        totalPrice: 0,
+      });
+      handleSendPendingPaymentMachineInform();
+    }
+  };
+
+  const handleCompletePayment = async (): Promise<boolean> => {
+    if (!paymentMachineDetail) return true;
+
+    const answer = await openConfirmation({
+      title: "Hoàn tất việc đánh giá ?",
+      content:
+        "Nếu khách hàng hài lòng về đánh giá của mình thì hãy hoàn tất nhé !",
+    });
+    if (!answer) return true;
+
+    const requiredFeedback = [
+      {
+        value: experienceValue,
+        message: "Xin vui lòng khách hàng hãy phản hồi mục trải nghiệm!",
+      },
+      {
+        value: score01Value,
+        message:
+          "Xin vui lòng khách hàng hãy phản hồi mục chất lượng món ăn!",
+      },
+      {
+        value: score02Value,
+        message: "Xin vui lòng khách hàng hãy phản hồi mục tốc độ phục vụ!",
+      },
+      {
+        value: score03Value,
+        message: "Xin vui lòng khách hàng hãy phản hồi mục thái độ nhân viên!",
+      },
+      {
+        value: score04Value,
+        message: "Xin vui lòng khách hàng hãy phản hồi mục dịch vụ mang lại!",
+      },
+      {
+        value: score05Value,
+        message:
+          "Xin vui lòng khách hàng hãy phản hồi mục không gian và vệ sinh!",
+      },
+      { value: commentValue, message: "Xin vui lòng khách hàng hãy góp ý cửa hàng!" },
+    ];
+    const missingFeedback = requiredFeedback.find(({ value }) => !value);
+    if (missingFeedback) {
+      openNotification({
+        type: "warning",
+        message: "Cảnh báo",
+        description: missingFeedback.message,
+      });
+      return false;
+    }
+
+    const response = await updateMutation.mutateAsync({
+      values: {
+        id: paymentMachineDetail.id,
+        paymentMethodId: paymentMachineDetail.paymentMethod.id,
+        paymentTotalPrice: paymentMachineDetail.paymentTotalPrice,
+        processStatus:
+          PaymentMachineProcessStatusValue.completed as PaymentMachineProcessStatusEnum,
+        status:
+          PaymentMachineStatusValue.completed as PaymentMachineStatusEnum,
+        feedbackExperience: experienceValue as FeedbackExperienceEnum,
+        feedbackScore1: score01Value,
+        feedbackScore2: score02Value,
+        feedbackScore3: score03Value,
+        feedbackScore4: score04Value,
+        feedbackScore5: score05Value,
+        feedbackMessage: commentValue,
+      },
+    });
+    if (response) {
+      setExperienceValue("");
+      setScore01Value(0);
+      setScore02Value(0);
+      setScore03Value(0);
+      setScore04Value(0);
+      setScore05Value(0);
+      setCommentValue("");
+      updateMethodInfo({ image: "", title: "" });
+      updatePaymentInfo({
+        id: "",
+        logo: "",
+        qrCodeUrl: "",
+        responseTime: 0,
+        totalPrice: 0,
+      });
+    }
+
+    handleSendCompletedPaymentMachineInform();
+    setCurrent(-1);
+    return true;
+  };
 
   //
   useEffect(() => {
@@ -315,7 +635,7 @@ const PaymentMachinePage: React.FC = () => {
       score01Value === score04Value &&
       score01Value === score05Value
     ) {
-      var defaults = {
+      const defaults = {
         spread: 400,
         ticks: 200,
         gravity: 0,
@@ -384,20 +704,13 @@ const PaymentMachinePage: React.FC = () => {
               paymentMachineDetail.processStatus ===
                 PaymentMachineProcessStatusValue.pending && (
                 <PaymentMachineMethodsComponent
-                  paymentMachine={paymentMachineDetail}
-                  queryKey={queryKey}
-                  updateMutation={updateMutation}
-                  stomp={stompClientCommonRef}
-                  updateMethodInfo={updateMethodInfo}
-                  updatePaymentInfo={updatePaymentInfo}
+                  onSelectPaymentMethod={handleSelectPaymentMethod}
                 />
               )}
             {current === 1 &&
               paymentMachineDetail.processStatus ===
                 PaymentMachineProcessStatusValue.selected && (
                 <PaymentMachineHandleComponent
-                  paymentMachine={paymentMachineDetail}
-                  queryKey={queryKey}
                   methodTitle={methodTitle}
                   methodImage={methodImage}
                   paymentId={paymentId}
@@ -405,17 +718,15 @@ const PaymentMachinePage: React.FC = () => {
                   paymentQRCodeUrl={paymentQRCodeUrl}
                   paymentResponseTime={paymentResponseTime}
                   paymentTotalPrice={paymentTotalPrice}
-                  updateMutation={updateMutation}
-                  stomp={stompClientCommonRef}
-                  updateMethodInfo={updateMethodInfo}
-                  updatePaymentInfo={updatePaymentInfo}
+                  onPaymentTimeout={handlePaymentTimeout}
                 />
               )}
             {current === 2 &&
               paymentMachineDetail.processStatus ===
                 PaymentMachineProcessStatusValue.feedback && (
                 <PaymentMachineResultComponent
-                  paymentMachine={paymentMachineDetail}
+                  feedbackExperiences={feedbackExperiences}
+                  feedbackScores={feedbackScores}
                   score01Value={score01Value}
                   score02Value={score02Value}
                   score03Value={score03Value}
@@ -431,225 +742,14 @@ const PaymentMachinePage: React.FC = () => {
                   handleClickExperienceButtons={handleClickExperienceButtons}
                 />
               )}
-            <div className="payment-machine__main-buttons">
-              {current === 0 &&
-                paymentMachineDetail.processStatus ===
-                  PaymentMachineProcessStatusValue.pending && (
-                  <button className="btn right" onClick={() => next()}>
-                    Tiếp tục
-                  </button>
-                )}
-              {current === 1 &&
-                paymentMachineDetail.processStatus ===
-                  PaymentMachineProcessStatusValue.pending && (
-                  <button className="btn" onClick={() => prev()}>
-                    Quay lại
-                  </button>
-                )}
-              {current === 1 &&
-                paymentMachineDetail.processStatus ===
-                  PaymentMachineProcessStatusValue.selected && (
-                  <button
-                    ref={changePaymentMethodButtonRef}
-                    className="btn"
-                    onClick={async () => {
-                      if (!changePaymentMethodButtonRef.current) return;
-
-                      changePaymentMethodButtonRef.current.classList.add(
-                        "active",
-                      );
-
-                      const answer = await openConfirmation({
-                        title: `Đổi phương thức hiện tại ?`,
-                        content: `Bạn có chắc muốn đổi phương thức này ? Sau khi đổi, bạn có thể chọn phương thức thanh toán khác để hoàn tất đơn hàng.`,
-                      });
-                      if (answer) {
-                        const response = await updateMutation.mutateAsync({
-                          values: {
-                            id: paymentMachineDetail.id,
-                            paymentMethodId: undefined,
-                            paymentTotalPrice: undefined,
-                            processStatus:
-                              PaymentMachineProcessStatusValue.pending as PaymentMachineProcessStatusEnum,
-                            status:
-                              PaymentMachineStatusValue.processing as PaymentMachineStatusEnum,
-                            feedbackExperience: undefined,
-                            feedbackScore1: undefined,
-                            feedbackScore2: undefined,
-                            feedbackScore3: undefined,
-                            feedbackScore4: undefined,
-                            feedbackScore5: undefined,
-                            feedbackMessage: undefined,
-                          },
-                        });
-                        if (response) {
-                          updateMethodInfo!({
-                            image: "",
-                            title: "",
-                          });
-                          updatePaymentInfo!({
-                            id: "",
-                            logo: "",
-                            qrCodeUrl: "",
-                            responseTime: 0,
-                            totalPrice: 0,
-                          });
-
-                          handleSendPendingPaymentMachineInform();
-                        }
-                      }
-
-                      changePaymentMethodButtonRef.current.classList.remove(
-                        "active",
-                      );
-                    }}
-                  >
-                    Đổi phương thức
-                  </button>
-                )}
-              {current == 2 &&
-                paymentMachineDetail.processStatus ===
-                  PaymentMachineProcessStatusValue.feedback && (
-                  <button
-                    ref={completedPaymentButtonRef}
-                    className="btn center"
-                    onClick={async () => {
-                      if (!completedPaymentButtonRef.current) return;
-
-                      completedPaymentButtonRef.current.classList.add("active");
-
-                      const answer = await openConfirmation({
-                        title: `Hoàn tất việc đánh giá ?`,
-                        content: `Nếu khách hàng hài lòng về đánh giá của mình thì hãy hoàn tất nhé !`,
-                      });
-                      if (answer) {
-                        if (!experienceValue) {
-                          openNotification({
-                            type: "warning",
-                            message: "Cảnh báo",
-                            description:
-                              "Xin vui lòng khách hàng hãy phản hồi mục trải nghiệm!",
-                          });
-
-                          return;
-                        }
-                        if (!score01Value) {
-                          openNotification({
-                            type: "warning",
-                            message: "Cảnh báo",
-                            description:
-                              "Xin vui lòng khách hàng hãy phản hồi mục chất lượng món ăn!",
-                          });
-
-                          return;
-                        }
-                        if (!score02Value) {
-                          openNotification({
-                            type: "warning",
-                            message: "Cảnh báo",
-                            description:
-                              "Xin vui lòng khách hàng hãy phản hồi mục tốc độ phục vụ!",
-                          });
-
-                          return;
-                        }
-                        if (!score03Value) {
-                          openNotification({
-                            type: "warning",
-                            message: "Cảnh báo",
-                            description:
-                              "Xin vui lòng khách hàng hãy phản hồi mục thái độ nhân viên!",
-                          });
-
-                          return;
-                        }
-                        if (!score04Value) {
-                          openNotification({
-                            type: "warning",
-                            message: "Cảnh báo",
-                            description:
-                              "Xin vui lòng khách hàng hãy phản hồi mục dịch vụ mang lại!",
-                          });
-
-                          return;
-                        }
-                        if (!score05Value) {
-                          openNotification({
-                            type: "warning",
-                            message: "Cảnh báo",
-                            description:
-                              "Xin vui lòng khách hàng hãy phản hồi mục không gian và vệ sinh!",
-                          });
-
-                          return;
-                        }
-                        if (!commentValue) {
-                          openNotification({
-                            type: "warning",
-                            message: "Cảnh báo",
-                            description:
-                              "Xin vui lòng khách hàng hãy góp ý cửa hàng!",
-                          });
-
-                          return;
-                        }
-
-                        const response = await updateMutation.mutateAsync({
-                          values: {
-                            id: paymentMachineDetail.id,
-                            paymentMethodId:
-                              paymentMachineDetail.paymentMethod.id,
-                            paymentTotalPrice:
-                              paymentMachineDetail.paymentTotalPrice,
-                            processStatus:
-                              PaymentMachineProcessStatusValue.completed as PaymentMachineProcessStatusEnum,
-                            status:
-                              PaymentMachineStatusValue.completed as PaymentMachineStatusEnum,
-                            feedbackExperience:
-                              experienceValue as FeedbackExperienceEnum,
-                            feedbackScore1: score01Value,
-                            feedbackScore2: score02Value,
-                            feedbackScore3: score03Value,
-                            feedbackScore4: score04Value,
-                            feedbackScore5: score05Value,
-                            feedbackMessage: commentValue,
-                          },
-                        });
-                        if (response) {
-                          setExperienceValue("");
-                          setScore01Value(0);
-                          setScore02Value(0);
-                          setScore03Value(0);
-                          setScore04Value(0);
-                          setScore05Value(0);
-                          setCommentValue("");
-                          updateMethodInfo!({
-                            image: "",
-                            title: "",
-                          });
-                          updatePaymentInfo!({
-                            id: "",
-                            logo: "",
-                            qrCodeUrl: "",
-                            responseTime: 0,
-                            totalPrice: 0,
-                          });
-                        }
-
-                        handleSendCompletedPaymentMachineInform();
-
-                        setCurrent(-1);
-                      }
-
-                      completedPaymentButtonRef.current.classList.remove(
-                        "active",
-                      );
-                    }}
-                  >
-                    Hoàn tất
-                  </button>
-                )}
-            </div>
+            <PaymentMachineActionsComponent
+              current={current}
+              processStatus={paymentMachineDetail.processStatus}
+              onNext={next}
+              onPrevious={prev}
+              onChangePaymentMethod={handleChangePaymentMethod}
+              onCompletePayment={handleCompletePayment}
+            />
           </div>
         </>
       ) : (

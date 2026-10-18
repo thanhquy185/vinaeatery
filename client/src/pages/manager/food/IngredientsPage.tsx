@@ -1,11 +1,10 @@
 import useModal from "../../../hooks/useModal";
 import useEntityQuery from "../../../hooks/useEntityQuery2";
 import useRestaurantContext from "../../../hooks/useRestaurantContext";
-import ModalComponent from "../../../components/ModalComponent";
-import TableRUDActionsComponent from "../../../components/TableRUDActionsComponent";
+import ModalComponent from "../../../components/shared/ModalComponent";
 import MainHeaderComponent from "../../../components/admin-manager/MainHeaderComponent";
-import MainFilterInfoComponent from "../../../components/admin-manager/MainFilterInfoComponent";
-import MainDataComponent from "../../../components/admin-manager/NewMainDataComponent";
+import MainFilterInfoComponent from "../../../components/admin-manager/filters/MainFilterInfoComponent";
+import IngredientsTableComponent from "../../../components/pages/manager/food/IngredientsTableComponent";
 import DetailIngredientModalComponent from "../../../components/admin-manager/modal/ingredient/DetailIngredientModalComponent";
 import CreateIngredientModalComponent from "../../../components/admin-manager/modal/ingredient/CreateIngredientModalComponent";
 import UpdateIngredientModalComponent from "../../../components/admin-manager/modal/ingredient/UpdateIngredientModalComponent";
@@ -13,24 +12,16 @@ import LockModalComponent from "../../../components/admin-manager/modal/LockModa
 import CategoryIngredientApiService from "../../../services/api/v1/CategoryIngredientApiService";
 import IngredientApiService from "../../../services/api/v1/IngredientApiService";
 import { useState } from "react";
-import { Button, InputNumber, Select, Tag } from "antd";
 import {
   CommonStatusValue,
   IngredientUnitValues,
   ModalTitleValue,
   ModalWidthValue,
 } from "../../../constants/values";
-import {
-  actionIndexes,
-  getActionNameEn,
-} from "../../../utils/defaultActionsUtil";
+import { actionIndexes, getActionNameEn } from "../../../utils/defaultActionsUtil";
 import { hasPermission } from "../../../utils/hasPermissionsUtil";
-import {
-  getFilterSelectValueToShow,
-  vietnamMoneyFormat,
-} from "../../../utils/otherEvents";
+import { getFilterSelectValueToShow } from "../../../utils/otherEvents";
 import type { SelectProps } from "antd";
-import type { ColumnsType } from "antd/es/table";
 import type { AdminManagerPageProps } from "../../../constants/props";
 import type { PageResponseType } from "../../../types/PageResponseType";
 import type { IngredientSummaryResponseType } from "../../../types/IngredientType";
@@ -106,195 +97,6 @@ const ManagerIngredientsPage: React.FC<AdminManagerPageProps> = ({
     },
     api: IngredientApiService.handleGetSummary,
   });
-  // - Cột thuộc tính
-  const columns: ColumnsType<IngredientSummaryResponseType> = [
-    {
-      title: "#",
-      dataIndex: "id",
-      key: "id",
-      width: 100,
-      fixed: "left",
-      sorter: (a, b) => a.id - b.id,
-    },
-    {
-      title: "Tên nguyên liệu",
-      dataIndex: "name",
-      key: "name",
-      width: "24%",
-      className: "left",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-      title: "Loại nguyên liệu",
-      key: "categoryIngredient",
-      width: "14%",
-      className: "left",
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
-        <div style={{ width: 250, padding: 8 }}>
-          <Select
-            allowClear
-            value={selectedKeys[0]}
-            placeholder="Chọn Loại nguyên liệu"
-            style={{ width: "100%" }}
-            options={categoryIngredients?.map((categoryIngredient) => ({
-              label: `#${categoryIngredient.id} - ${categoryIngredient.name}`,
-              value: categoryIngredient.id,
-            }))}
-            onChange={(val) => setSelectedKeys(val ? [val] : [])}
-          ></Select>
-          <Button
-            type="primary"
-            size="small"
-            style={{ width: "100%", marginTop: 8 }}
-            onClick={() => confirm()}
-          >
-            Lọc
-          </Button>
-        </div>
-      ),
-      onFilter: (value, record) => record.categoryIngredient.id === value,
-      sorter: (a, b) => a.categoryIngredient.id - b.categoryIngredient.id,
-      render: (record) =>
-        `#${record.categoryIngredient.id} - ${record.categoryIngredient.name}`,
-    },
-    {
-      title: "Đơn vị",
-      dataIndex: "unit",
-      key: "unit",
-      width: "10%",
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
-        <div style={{ width: 250, padding: 8 }}>
-          <Select
-            allowClear
-            value={selectedKeys[0]}
-            placeholder="Chọn Đơn vị"
-            style={{ width: "100%" }}
-            options={IngredientUnitValues?.map((unit) => ({
-              label: unit,
-              value: unit,
-            }))}
-            onChange={(val) => setSelectedKeys(val ? [val] : [])}
-          ></Select>
-          <Button
-            type="primary"
-            size="small"
-            style={{ width: "100%", marginTop: 8 }}
-            onClick={() => confirm()}
-          >
-            Lọc
-          </Button>
-        </div>
-      ),
-      onFilter: (value, record) => record.unit === value,
-      sorter: (a, b) => a.unit!.localeCompare(b.unit),
-    },
-    {
-      title: "Định lượng",
-      dataIndex: "capacity",
-      key: "capacity",
-      width: "10%",
-      sorter: (a, b) => a.capacity - b.capacity,
-    },
-    {
-      title: "Giá nhập",
-      dataIndex: "inputPrice",
-      key: "inputPrice",
-      width: "17%",
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => {
-        let min = 0,
-          max = 0;
-        if (selectedKeys[0]) {
-          try {
-            [min, max] = JSON.parse(selectedKeys[0] as string) as [
-              number,
-              number,
-            ];
-          } catch {}
-        }
-
-        return (
-          <div style={{ padding: 8 }}>
-            <InputNumber
-              placeholder="Tối thiểu"
-              style={{ marginBottom: 8, display: "block", width: "100%" }}
-              value={min || undefined}
-              onChange={(val) => {
-                setSelectedKeys([JSON.stringify([val ?? 0, max ?? 0])]);
-              }}
-            />
-            <InputNumber
-              placeholder="Tối đa"
-              style={{ marginBottom: 8, display: "block", width: "100%" }}
-              value={max || undefined}
-              onChange={(val) => {
-                setSelectedKeys([JSON.stringify([min ?? 0, val ?? 0])]);
-              }}
-            />
-            <Button
-              type="primary"
-              size="small"
-              style={{ width: "100%" }}
-              onClick={() => confirm()}
-            >
-              Lọc
-            </Button>
-          </div>
-        );
-      },
-      onFilter: (value, record) => {
-        if (!value) return true;
-        const [min, max] = JSON.parse(value as string) as [number, number];
-        const inputPrice = record.inputPrice ?? 0;
-        if (min && inputPrice < min) return false;
-        if (max && inputPrice > max) return false;
-        return true;
-      },
-      sorter: (a, b) => a.inputPrice - b.inputPrice,
-      render: (inputPrice: number) => vietnamMoneyFormat(inputPrice),
-    },
-    {
-      title: "Tồn kho",
-      dataIndex: "inventory",
-      key: "inventory",
-      width: "12%",
-      sorter: (a, b) => a.inventory - b.inventory,
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      width: "10%",
-      render: (status: string) => (
-        <Tag
-          color={status === CommonStatusValue.active ? "green" : "red"}
-          bordered={false}
-        >
-          {status}
-        </Tag>
-      ),
-    },
-    {
-      title: "",
-      dataIndex: "",
-      key: "actions",
-      width: 200,
-      fixed: "right",
-      className: "buttons",
-      render: (record: IngredientSummaryResponseType) => (
-        <TableRUDActionsComponent
-          nameEN={nameEN}
-          nameVN={nameVN}
-          isManager={isManager}
-          restaurantIdForCrud={restaurantIdForCrud}
-          validActions={validActions!}
-          record={record}
-          modalWidth={ModalWidthValue.split2}
-          managerModals={ManagerIngredientModals}
-          openModal={openModal}
-        />
-      ),
-    },
-  ];
 
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
@@ -418,10 +220,19 @@ const ManagerIngredientsPage: React.FC<AdminManagerPageProps> = ({
             })
           }
         />
-        <MainDataComponent<IngredientSummaryResponseType>
+        <IngredientsTableComponent
+          context={{
+            categoryIngredients,
+            nameEN,
+            nameVN,
+            isManager,
+            restaurantIdForCrud,
+            validActions,
+            ManagerIngredientModals,
+            openModal,
+          }}
           tableKey={tableKey}
           object={nameEN}
-          columns={columns}
           data={ingredientData}
           isLoading={isLoading}
           isScroll={true}

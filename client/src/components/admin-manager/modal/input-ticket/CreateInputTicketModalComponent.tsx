@@ -1,6 +1,6 @@
 import useEntityMutation from "../../../../hooks/useEntityMutation";
-import TableInputComponent from "../../TableInputComponent";
-import CardInfoInModalComponent from "../../CardInfoInModalComponent";
+import TableInputComponent from "../../tables/TableInputComponent";
+import CardInfoInModalComponent from "../../cards/CardInfoInModalComponent";
 import InputTicketApiService from "../../../../services/api/v1/InputTicketApiService";
 import { useMemo, useState } from "react";
 import { Form, Input, Select } from "antd";
@@ -18,7 +18,7 @@ import {
   vietnamMoneyFormat,
 } from "../../../../utils/otherEvents";
 import type { CrudObjectModalProps } from "../../../../constants/props";
-import type { TableInputComponentRowData } from "../../TableInputComponent";
+import type { TableInputComponentRowData } from "../../tables/TableInputComponent";
 import type { SupplierCrudResponseType } from "../../../../types/SupplierType";
 import type {
   InputTicketCreateRequestType,

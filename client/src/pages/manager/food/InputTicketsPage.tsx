@@ -1,12 +1,10 @@
 import useModal from "../../../hooks/useModal";
 import useEntityQuery from "../../../hooks/useEntityQuery2";
 import useRestaurantContext from "../../../hooks/useRestaurantContext";
-import ModalComponent from "../../../components/ModalComponent";
-import TableRUPActionsComponent from "../../../components/TableRUPActionsComponent";
+import ModalComponent from "../../../components/shared/ModalComponent";
 import MainHeaderComponent from "../../../components/admin-manager/MainHeaderComponent";
-import MainFilterInfoComponent from "../../../components/admin-manager/MainFilterInfoComponent";
-import MainStatisticCardsComponent from "../../../components/admin-manager/MainStatisticsCardsComponent";
-import MainDataComponent from "../../../components/admin-manager/NewMainDataComponent";
+import MainFilterInfoComponent from "../../../components/admin-manager/filters/MainFilterInfoComponent";
+import MainStatisticCardsComponent from "../../../components/admin-manager/dashboard/MainStatisticsCardsComponent";
 import DetailInputTicketModalComponent from "../../../components/admin-manager/modal/input-ticket/DetailInputTicketModalComponent";
 import CreateInputTicketModalComponent from "../../../components/admin-manager/modal/input-ticket/CreateInputTicketModalComponent";
 import UpdateInputTicketModalComponent from "../../../components/admin-manager/modal/input-ticket/UpdateInputTicketModalComponent";
@@ -14,21 +12,12 @@ import PrintInputTicketModalComponent from "../../../components/admin-manager/mo
 import SupplierApiService from "../../../services/api/v1/SupplierApiService";
 import InputTicketApiService from "../../../services/api/v1/InputTicketApiService";
 import IngredientApiService from "../../../services/api/v1/IngredientApiService";
-import dayjs from "dayjs";
 import { useMemo, useState } from "react";
-import {
-  Button,
-  DatePicker,
-  InputNumber,
-  Select,
-  Tag,
-  type SelectProps,
-} from "antd";
+import { type SelectProps } from "antd";
 import {
   InputTicketStatusValue,
   ModalTitleValue,
   ModalWidthValue,
-  InputTicketPaymentStatusValue,
 } from "../../../constants/values";
 import {
   actionIndexes,
@@ -37,12 +26,11 @@ import {
 import { hasPermission } from "../../../utils/hasPermissionsUtil";
 import {
   getFilterSelectValueToShow,
-  vietnamMoneyFormat,
 } from "../../../utils/otherEvents";
-import type { ColumnsType } from "antd/es/table";
 import type { AdminManagerPageProps } from "../../../constants/props";
 import type { PageResponseType } from "../../../types/PageResponseType";
 import type { SupplierCrudResponseType } from "../../../types/SupplierType";
+import InputTicketsTableComponent from "../../../components/pages/manager/food/InputTicketsTableComponent";
 import type { IngredientCrudResponseType } from "../../../types/IngredientType";
 import type { InputTicketSummaryResponseType } from "../../../types/InputTicketType";
 
@@ -130,273 +118,6 @@ const ManagerInputTicketsPage: React.FC<AdminManagerPageProps> = ({
     },
     api: InputTicketApiService.handleGetSummary,
   });
-  // - Cột thuộc tính
-  const columns: ColumnsType<InputTicketSummaryResponseType> = [
-    {
-      title: "#",
-      dataIndex: "id",
-      key: "id",
-      width: 50,
-      fixed: "left",
-      sorter: (a, b) => a.id - b.id,
-    },
-    {
-      title: "Thời gian tạo phiếu",
-      dataIndex: "createAt",
-      key: "createAt",
-      width: "16%",
-      filterDropdown: ({
-        setSelectedKeys,
-        selectedKeys,
-        confirm,
-        // clearFilters,
-      }) => (
-        <div style={{ padding: 8 }}>
-          <DatePicker.RangePicker
-            showTime
-            format="YYYY-MM-DD HH:mm:ss"
-            style={{ display: "flex" }}
-            value={
-              selectedKeys[0]
-                ? (() => {
-                    const [start, end] = JSON.parse(
-                      selectedKeys[0] as string,
-                    ) as [string, string];
-                    return [dayjs(start), dayjs(end)];
-                  })()
-                : null
-            }
-            onChange={(dates) =>
-              setSelectedKeys(
-                dates
-                  ? [
-                      JSON.stringify([
-                        dates[0]?.toISOString(),
-                        dates[1]?.toISOString(),
-                      ]),
-                    ]
-                  : [],
-              )
-            }
-          />
-          <Button
-            type="primary"
-            size="small"
-            style={{ width: "100%", marginTop: 8 }}
-            onClick={() => confirm()}
-          >
-            Lọc
-          </Button>
-          {/* Nếu muốn nút reset thì bật lại */}
-          {/* <Button
-        size="small"
-        style={{ width: "100%", marginTop: 4 }}
-        onClick={() => {
-          clearFilters?.();
-          confirm();
-        }}
-      >
-        Đặt lại
-      </Button> */}
-        </div>
-      ),
-      onFilter: (value, record) => {
-        if (!value) return true;
-        const [start, end] = JSON.parse(value as string) as [string, string];
-        const date = dayjs(record.createAt);
-
-        return (
-          date.isSame(dayjs(start)) ||
-          date.isSame(dayjs(end)) ||
-          (date.isAfter(dayjs(start)) && date.isBefore(dayjs(end)))
-        );
-      },
-      sorter: (a, b) =>
-        dayjs(a.createAt).valueOf() - dayjs(b.createAt).valueOf(),
-      render: (val) => (val ? dayjs(val).format("YYYY-MM-DD HH:mm:ss") : ""),
-    },
-    {
-      title: "Nhà cung cấp",
-      key: "supplier",
-      width: "24%",
-      className: "left",
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
-        <div style={{ width: 400, padding: 8 }}>
-          <Select
-            allowClear
-            value={selectedKeys[0]}
-            placeholder="Chọn Nhà cung cấp"
-            style={{ width: "100%" }}
-            options={suppliers?.map((supplier) => ({
-              label: `#${supplier.id} - ${supplier.fullname}`,
-              value: supplier.id,
-            }))}
-            onChange={(val) => setSelectedKeys(val ? [val] : [])}
-          ></Select>
-          <Button
-            type="primary"
-            size="small"
-            style={{ width: "100%", marginTop: 8 }}
-            onClick={() => confirm()}
-          >
-            Lọc
-          </Button>
-        </div>
-      ),
-      onFilter: (value, record) => record.supplier.id === value,
-      sorter: (a, b) => a.supplier.id - b.supplier.id,
-      render: (record) =>
-        `#${record.supplier.id} - ${record.supplier.fullname}`,
-    },
-    {
-      title: "Tổng thanh toán",
-      dataIndex: "totalInputPrice",
-      key: "totalInputPrice",
-      width: "16%",
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => {
-        let min = 0,
-          max = 0;
-        if (selectedKeys[0]) {
-          try {
-            [min, max] = JSON.parse(selectedKeys[0] as string) as [
-              number,
-              number,
-            ];
-          } catch {}
-        }
-
-        return (
-          <div style={{ padding: 8 }}>
-            <InputNumber
-              placeholder="Tối thiểu"
-              style={{ marginBottom: 8, display: "block", width: "100%" }}
-              value={min || undefined}
-              onChange={(val) => {
-                setSelectedKeys([JSON.stringify([val ?? 0, max ?? 0])]);
-              }}
-            />
-            <InputNumber
-              placeholder="Tối đa"
-              style={{ marginBottom: 8, display: "block", width: "100%" }}
-              value={max || undefined}
-              onChange={(val) => {
-                setSelectedKeys([JSON.stringify([min ?? 0, val ?? 0])]);
-              }}
-            />
-            <Button
-              type="primary"
-              size="small"
-              style={{ width: "100%" }}
-              onClick={() => confirm()}
-            >
-              Lọc
-            </Button>
-          </div>
-        );
-      },
-      onFilter: (value, record) => {
-        if (!value) return true;
-        const [min, max] = JSON.parse(value as string) as [number, number];
-        const totalInputPrice = record.totalInputPrice ?? 0;
-        if (min && totalInputPrice < min) return false;
-        if (max && totalInputPrice > max) return false;
-        return true;
-      },
-      sorter: (a, b) => a.totalInputPrice - b.totalInputPrice,
-      render: (totalInputPrice: number) => vietnamMoneyFormat(totalInputPrice),
-    },
-    {
-      title: "Thanh toán",
-      dataIndex: "paymentStatus",
-      key: "paymentStatus",
-      width: "13%",
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
-        <div style={{ width: 250, padding: 8 }}>
-          <Select
-            allowClear
-            value={selectedKeys[0]}
-            placeholder="Chọn Thanh toán"
-            style={{ width: "100%" }}
-            options={[
-              {
-                label: InputTicketPaymentStatusValue.paid,
-                value: InputTicketPaymentStatusValue.paid,
-              },
-              {
-                label: InputTicketPaymentStatusValue.unpaid,
-                value: InputTicketPaymentStatusValue.unpaid,
-              },
-            ]}
-            onChange={(val) => setSelectedKeys(val ? [val] : [])}
-          ></Select>
-          <Button
-            type="primary"
-            size="small"
-            style={{ width: "100%", marginTop: 8 }}
-            onClick={() => confirm()}
-          >
-            Lọc
-          </Button>
-        </div>
-      ),
-      onFilter: (value, record) => record.paymentStatus === value,
-      sorter: (a, b) => a.paymentStatus.localeCompare(b.paymentStatus),
-      render: (paymentStatus: string) => (
-        <Tag
-          color={
-            paymentStatus === InputTicketPaymentStatusValue.paid
-              ? "volcano"
-              : "default"
-          }
-          bordered={false}
-        >
-          {paymentStatus}
-        </Tag>
-      ),
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      width: "13%",
-      render: (status: string) => (
-        <Tag
-          color={
-            status === InputTicketStatusValue.confirmed
-              ? "green"
-              : status === InputTicketStatusValue.cancelled
-                ? "red"
-                : "default"
-          }
-          bordered={false}
-        >
-          {status}
-        </Tag>
-      ),
-    },
-    {
-      title: "",
-      dataIndex: "",
-      key: "actions",
-      width: 100,
-      fixed: "right",
-      className: "buttons",
-      render: (record: InputTicketSummaryResponseType) => (
-        <TableRUPActionsComponent
-          nameEN={nameEN}
-          nameVN={nameVN}
-          isManager={isManager}
-          restaurantIdForCrud={restaurantIdForCrud}
-          validActions={validActions!}
-          record={record}
-          modalWidth={ModalWidthValue.split3}
-          managerModals={ManagerInputTicketModals}
-          openModal={openModal}
-        />
-      ),
-    },
-  ];
-
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
   const { modal, openModal, closeModal } = useModal();
@@ -566,13 +287,18 @@ const ManagerInputTicketsPage: React.FC<AdminManagerPageProps> = ({
             cardValues.totalPending,
           ]}
         />
-        <MainDataComponent<InputTicketSummaryResponseType>
+        <InputTicketsTableComponent
           tableKey={tableKey}
-          object={nameEN}
-          columns={columns}
+          nameEN={nameEN}
+          nameVN={nameVN}
+          isManager={isManager}
+          restaurantIdForCrud={restaurantIdForCrud}
+          validActions={validActions!}
+          suppliers={suppliers}
+          managerModals={ManagerInputTicketModals}
+          openModal={openModal}
           data={inputTicketData}
           isLoading={isLoading}
-          isScroll={true}
           onPageChange={(page, size) => {
             setPage(page);
             setSize(size);

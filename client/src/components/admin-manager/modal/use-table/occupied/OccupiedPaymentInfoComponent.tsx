@@ -1,4 +1,4 @@
-import CurrentDateTimeComponent from "../../../CurrentDateTimeComponent";
+import CurrentDateTimeComponent from "../../../timing/CurrentDateTimeComponent";
 import {
   numberToVietnamWords,
   vietnamMoneyFormat,

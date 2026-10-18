@@ -1,6 +1,6 @@
 import useEntityQuery from "../../../../hooks/useEntityQuery2";
 import TextArea from "antd/es/input/TextArea";
-import ImageUploadComponent from "../../../ImageUploadComponent";
+import ImageUploadComponent from "../../../shared/ImageUploadComponent";
 import ManagerApiService from "../../../../services/api/v1/ManagerApiService";
 import dayjs from "dayjs";
 import { DatePicker, Form, Input, Select, Spin } from "antd";

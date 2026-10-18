@@ -1,18 +1,16 @@
 import useModal from "../../../hooks/useModal";
 import useEntityQuery from "../../../hooks/useEntityQuery2";
 import useRestaurantContext from "../../../hooks/useRestaurantContext";
-import ModalComponent from "../../../components/ModalComponent";
-import TableRUDActionsComponent from "../../../components/TableRUDActionsComponent";
+import ModalComponent from "../../../components/shared/ModalComponent";
 import MainHeaderComponent from "../../../components/admin-manager/MainHeaderComponent";
-import MainFilterInfoComponent from "../../../components/admin-manager/MainFilterInfoComponent";
-import MainDataComponent from "../../../components/admin-manager/NewMainDataComponent";
+import MainFilterInfoComponent from "../../../components/admin-manager/filters/MainFilterInfoComponent";
+import FloorsTableComponent from "../../../components/pages/manager/table/FloorsTableComponent";
 import DetailFloorModalComponent from "../../../components/admin-manager/modal/floor/DetailFloorModalComponent";
 import CreateFloorModalComponent from "../../../components/admin-manager/modal/floor/CreateFloorModalComponent";
 import UpdateFloorModalComponent from "../../../components/admin-manager/modal/floor/UpdateFloorModalComponent";
 import LockModalComponent from "../../../components/admin-manager/modal/LockModalComponent";
 import FloorApiService from "../../../services/api/v1/FloorApiService";
 import { useState } from "react";
-import { Tag } from "antd";
 import {
   CommonStatusValue,
   ModalTitleValue,
@@ -25,7 +23,6 @@ import {
   getActionNameEn,
 } from "../../../utils/defaultActionsUtil";
 import type { SelectProps } from "antd";
-import type { ColumnsType } from "antd/es/table";
 import type { AdminManagerPageProps } from "../../../constants/props";
 import type { PageResponseType } from "../../../types/PageResponseType";
 import type { FloorSummaryResponseType } from "../../../types/FloorType";
@@ -89,58 +86,6 @@ const ManagerFloorsPage: React.FC<AdminManagerPageProps> = ({
     },
     api: FloorApiService.handleGetSummary,
   });
-  // - Cột thuộc tính
-  const columns: ColumnsType<FloorSummaryResponseType> = [
-    {
-      title: "#",
-      dataIndex: "id",
-      key: "id",
-      width: "20%",
-      sorter: (a, b) => a.id - b.id,
-    },
-    {
-      title: "Tên tầng",
-      dataIndex: "name",
-      key: "name",
-      width: "40%",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      width: "20%",
-      render: (status: string) => (
-        <Tag
-          color={status === CommonStatusValue.active ? "green" : "red"}
-          bordered={false}
-        >
-          {status}
-        </Tag>
-      ),
-    },
-    {
-      title: "",
-      dataIndex: "",
-      key: "actions",
-      width: "20%",
-      className: "buttons",
-      render: (record: FloorSummaryResponseType) => (
-        <TableRUDActionsComponent
-          nameEN={nameEN}
-          nameVN={nameVN}
-          isManager={isManager}
-          restaurantIdForCrud={restaurantIdForCrud}
-          validActions={validActions!}
-          record={record}
-          modalWidth={ModalWidthValue.split2}
-          managerModals={ManagerFloorModals}
-          openModal={openModal}
-        />
-      ),
-    },
-  ];
-
   // Các thành phần giữ giá trị cho việc hiển thị modal
   // - Các biến
   const { modal, openModal, closeModal } = useModal();
@@ -241,15 +186,20 @@ const ManagerFloorsPage: React.FC<AdminManagerPageProps> = ({
             })
           }
         />
-        <MainDataComponent<FloorSummaryResponseType>
+        <FloorsTableComponent
           tableKey={tableKey}
-          object={nameEN}
-          columns={columns}
+          nameEN={nameEN}
+          nameVN={nameVN}
+          isManager={isManager}
+          validActions={validActions}
+          restaurantIdForCrud={restaurantIdForCrud}
+          managerModals={ManagerFloorModals}
+          openModal={openModal}
           data={floorData}
           isLoading={isLoading}
-          onPageChange={(page, size) => {
-            setPage(page);
-            setSize(size);
+          onPageChange={(nextPage, nextSize) => {
+            setPage(nextPage);
+            setSize(nextSize);
           }}
         />
       </main>

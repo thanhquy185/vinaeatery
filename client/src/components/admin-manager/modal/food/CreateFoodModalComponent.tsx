@@ -1,6 +1,6 @@
 import useEntityMutation from "../../../../hooks/useEntityMutation";
 import TextArea from "antd/es/input/TextArea";
-import ImageUploadComponent from "../../../ImageUploadComponent";
+import ImageUploadComponent from "../../../shared/ImageUploadComponent";
 import FoodApiService from "../../../../services/api/v1/FoodApiService";
 import { useState } from "react";
 import { Form, Input, InputNumber, Select } from "antd";
@@ -12,7 +12,7 @@ import {
 } from "../../../../constants/values";
 import TableInputComponent, {
   type TableInputComponentRowData,
-} from "../../TableInputComponent";
+} from "../../tables/TableInputComponent";
 import { openConfirmation } from "../../../../utils/showConfirmationUtil";
 import {
   inputNumberFormatter,

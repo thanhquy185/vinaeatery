@@ -1,9 +1,9 @@
 import useWards from "../../../../hooks/useWards";
 import useProvinces from "../../../../hooks/useProvinces";
 import useEntityMutation from "../../../../hooks/useEntityMutation";
-import RestaurantLocationPickerComponent from "../../../RestaurantLocationPicker";
-import CardInfoInModalComponent from "../../CardInfoInModalComponent";
-import ImagesUploadComponent from "../../../ImagesUploadComponent";
+import RestaurantLocationPickerComponent from "../../../shared/RestaurantLocationPicker";
+import CardInfoInModalComponent from "../../cards/CardInfoInModalComponent";
+import ImagesUploadComponent from "../../../shared/ImagesUploadComponent";
 import TextArea from "antd/es/input/TextArea";
 import RestaurantApiService from "../../../../services/api/v1/RestaurantApiService";
 import { useMemo, useRef, useState } from "react";

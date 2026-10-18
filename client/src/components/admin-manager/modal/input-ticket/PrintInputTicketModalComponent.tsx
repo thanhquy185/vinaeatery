@@ -1,6 +1,6 @@
 import useEntityQuery from "../../../../hooks/useEntityQuery2";
-import PrintTicketModalComponent from "../../PrintTicketModalComponent";
-import TableInputTicketDetailsComponent from "../../TableInputTicketDetailsComponent";
+import PrintTicketModalComponent from "../../printing/PrintTicketModalComponent";
+import TableInputTicketDetailsComponent from "../../tables/TableInputTicketDetailsComponent";
 import InputTicketApiService from "../../../../services/api/v1/InputTicketApiService";
 import { Spin } from "antd";
 import {

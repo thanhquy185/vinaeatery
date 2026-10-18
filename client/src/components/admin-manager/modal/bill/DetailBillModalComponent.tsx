@@ -1,6 +1,6 @@
 import useEntityQuery from "../../../../hooks/useEntityQuery2";
-import CardInfoInModalComponent from "../../CardInfoInModalComponent";
-import TableInputComponent from "../../TableInputComponent";
+import CardInfoInModalComponent from "../../cards/CardInfoInModalComponent";
+import TableInputComponent from "../../tables/TableInputComponent";
 import BillApiService from "../../../../services/api/v1/BillApiService";
 import dayjs from "dayjs";
 import { DatePicker, Form, Input, Spin } from "antd";
@@ -10,7 +10,7 @@ import {
   vietnamMoneyFormat,
 } from "../../../../utils/otherEvents";
 import type { CrudObjectModalProps } from "../../../../constants/props";
-import type { TableInputComponentRowData } from "../../TableInputComponent";
+import type { TableInputComponentRowData } from "../../tables/TableInputComponent";
 import type { BillDetailResponseType } from "../../../../types/BillType";
 import type { BillDetailCreateRequestType } from "../../../../types/BillDetailType";
 

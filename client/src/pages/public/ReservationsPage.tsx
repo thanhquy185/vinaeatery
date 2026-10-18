@@ -1,8 +1,8 @@
 import useEntityQuery from "../../hooks/useEntityQuery2";
-import PublicAccountPageHeaderComponent from "../../components/layout/PublicAccountPageHeaderComponent";
-import PublicAccountFilterBarComponent from "../../components/layout/PublicAccountFilterBarComponent";
-import PublicReservationListComponent from "../../components/layout/PublicReservationListComponent";
-import PublicReservationModalComponent from "../../components/layout/PublicReservationModalComponent";
+import PublicAccountPageHeaderComponent from "../../components/pages/public/account/PublicAccountPageHeaderComponent";
+import PublicAccountFilterBarComponent from "../../components/pages/public/account/PublicAccountFilterBarComponent";
+import PublicReservationListComponent from "../../components/pages/public/account/PublicReservationListComponent";
+import PublicReservationModalComponent from "../../components/pages/public/account/PublicReservationModalComponent";
 import ReservationApiService from "../../services/api/v1/ReservationApiService";
 import { ReservationStatusValue } from "../../constants/values";
 import { Button, Card, Layout, Typography } from "antd";
@@ -60,14 +60,14 @@ const PublicReservationsPage: React.FC<PublicPageProps> = ({
             </Link>
           }
         />
-        <Card
-          styles={{ body: { padding: 0 } }}
-          className="public-account-card"
-        >
+        <Card styles={{ body: { padding: 0 } }} className="public-account-card">
           <div className="public-account-card__header">
             <div className="public-account-card__title-row">
               <div>
-                <Typography.Title level={4} className="public-account-card__title">
+                <Typography.Title
+                  level={4}
+                  className="public-account-card__title"
+                >
                   Danh sách đặt bàn
                 </Typography.Title>
                 <Typography.Text type="secondary">
